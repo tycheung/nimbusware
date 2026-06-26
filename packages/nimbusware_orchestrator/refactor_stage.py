@@ -17,7 +17,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import append_gate_decision_event
 from nimbusware_orchestrator.refactor_proposal import (
     build_refactor_proposal,

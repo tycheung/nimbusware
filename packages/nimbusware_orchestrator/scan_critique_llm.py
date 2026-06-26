@@ -19,7 +19,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
     append_gate_decision_event,
     ollama_chat_json_via_plan_patch,

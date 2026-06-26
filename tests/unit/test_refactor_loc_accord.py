@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.loc_accord_stage import (
     REFACTOR_LOC_ACCORD_STAGE,
     emit_refactor_loc_accord_stage,

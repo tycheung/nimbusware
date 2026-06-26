@@ -9,7 +9,7 @@ import yaml
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
 from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from nimbusware_orchestrator.persona_probation_automation import (
     emit_probation_promotion_notice,
     run_probation_automation,

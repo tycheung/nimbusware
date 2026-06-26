@@ -7,7 +7,7 @@ from uuid import uuid4
 import httpx
 
 from nimbusware_env import find_repo_root
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm_plan import (
     execute_implementation_critique_llm,
     execute_plan_stage_llm,

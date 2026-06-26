@@ -14,7 +14,7 @@ from nimbusware_extensions import (
     bundle_faiss_index_ready,
     search_bundles,
 )
-from nimbusware_extensions.phase2 import ModuleIntegrator, SecurityScanner, UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import ModuleIntegrator, SecurityScanner, UniversalCritiqueRouter
 from nimbusware_orchestrator.ingress import assert_bundle_catalog_maps_resolve
 from nimbusware_orchestrator.registry import RoleRegistry
 

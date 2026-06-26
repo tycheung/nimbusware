@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_extensions.phase2 import ModuleIntegrator
+from nimbusware_extensions.extension_runtime import ModuleIntegrator
 from nimbusware_orchestrator.integrator_gate import (
     load_integrator_gate_emit_enabled,
     rank_bundle_compatibility_candidates,

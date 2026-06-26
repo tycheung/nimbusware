@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_env import find_repo_root
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.scan_critique_handlers import (
     SECURITY_CRITIQUE_STAGE,

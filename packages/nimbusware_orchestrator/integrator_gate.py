@@ -6,7 +6,7 @@ from typing import Any
 from nimbusware_env.env_flags import env_str
 from nimbusware_extensions.bundle_memory import blend_bundle_rank_score
 from nimbusware_extensions.catalog import load_bundle_catalog_content
-from nimbusware_extensions.phase2 import ModuleIntegrator
+from nimbusware_extensions.extension_runtime import ModuleIntegrator
 from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 

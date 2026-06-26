@@ -4,7 +4,7 @@ from typing import cast
 from uuid import UUID
 
 from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
     emit_stub_role_critique_panel,
     execute_post_verify_role_critique_llm,

@@ -8,7 +8,7 @@ from typing import Any, Literal, TypeVar
 from pydantic import BaseModel, Field
 
 from agent_core.models import RequiredFixArtifact
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.scan_critique_llm import execute_scan_critique_llm
 from nimbusware_orchestrator.scan_critique_tools import scan_tools_failed

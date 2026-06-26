@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 

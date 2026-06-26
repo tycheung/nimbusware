@@ -19,7 +19,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
     SELF_REFINEMENT_CRITIQUE_STAGE,
     LlmSelfRefinementCritiqueResponse,

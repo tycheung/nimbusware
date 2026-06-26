@@ -19,7 +19,7 @@ from agent_core.models import (
     StitchPlanEmittedEvent,
     StitchPlanEmittedPayload,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_maker.workspace import workspace_path_from_run_created_metadata
 from nimbusware_maker.workspace_snapshot import create_workspace_snapshot
 from nimbusware_orchestrator.registry import RoleRegistry

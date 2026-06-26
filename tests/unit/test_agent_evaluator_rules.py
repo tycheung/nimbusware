@@ -13,7 +13,7 @@ from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
 from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_extensions.phase2 import (
+from nimbusware_extensions.extension_runtime import (
     AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
     AGENT_EVALUATOR_STRONG_SCORE_THRESHOLD,
     AgentEvaluator,

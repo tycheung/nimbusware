@@ -61,7 +61,7 @@ nimbusware_console/
 | `bundle_memory_display.py` | Local implementation | **Keep** |
 | `memory_display.py` | Hybrid re-export + helpers | **Keep** |
 | `persona_assignment_display.py` | Local implementation | **Keep** |
-| `phase3_critique_display.py` | Local implementation | **Keep** |
+| `implementation_critique_display.py` | Local implementation | **Keep** |
 | `micro_slice_packet_display.py` | Local implementation | **Keep** |
 
 Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not collapse into a mega-barrel — each maps to one admin tab.
@@ -87,7 +87,7 @@ Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not col
 | `universal_critique_timeline_display` | Universal critique timeline (package) |
 | `self_refinement_display.py` | Self-refinement markers |
 | `security_scan_on_verify_display.py` | Security scan on verify |
-| `phase3_critique_display.py` | Phase-3 critique panels |
+| `implementation_critique_display.py` | Phase-3 critique panels |
 | `persona_assignment_display.py` | Persona assignment summary |
 
 Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `workflow_explainers/*`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nimbusware_env import find_repo_root
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.critique_routing import (
     default_critique_pairings_path,
     load_critique_router,

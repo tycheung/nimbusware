@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from nimbusware_api.app import app
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.post_verify_role_bindings import (
     emit_stub_test_writer_critique_panel,
     execute_test_writer_critique_llm,

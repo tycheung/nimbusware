@@ -73,7 +73,7 @@ def test_transplant_manifest_round_trip(tmp_path: Path) -> None:
 
 
 def test_stitch_budget_max_files_emits_failed(tmp_path: Path) -> None:
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
     from nimbusware_orchestrator.registry import RoleRegistry
     from nimbusware_research.stages_stitch import emit_stitch_stages_stub
 
@@ -204,7 +204,7 @@ def test_revert_workspace_restores_pre_stitch_snapshot(
 
 
 def test_stitch_license_fail_blocks_plan(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
     from nimbusware_orchestrator.registry import RoleRegistry
     from nimbusware_research import stages_stitch
     from nimbusware_research.stages_stitch import emit_stitch_stages_stub

@@ -9,7 +9,7 @@ from agent_core.critique_stages import (
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import MODULE_INTEGRATOR_CRITIQUE_STAGE
 from nimbusware_orchestrator.llm.post_verify_role_critique import bind_post_verify_role_critique
 from nimbusware_orchestrator.registry import RoleRegistry

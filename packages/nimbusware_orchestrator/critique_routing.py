@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER  # noqa: F401 — re-export
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 
 # Keep lifecycle producer accounting stable for coverage contracts.

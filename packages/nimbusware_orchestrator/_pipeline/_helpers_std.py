@@ -60,7 +60,7 @@ from nimbusware_env.env_flags import (
 )
 from nimbusware_executor.fetch import EgressResponseTooLarge
 from nimbusware_extensions import SelfRefinementPolicy, load_self_refinement_policy
-from nimbusware_extensions.phase2 import AgentEvaluator, agent_evaluator_score_band
+from nimbusware_extensions.extension_runtime import AgentEvaluator, agent_evaluator_score_band
 from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
 from nimbusware_orchestrator._pipeline._helpers_runtime import (
     _SELF_REFINEMENT_MAX_ITER_REASON,

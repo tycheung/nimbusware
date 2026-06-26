@@ -12,7 +12,7 @@ def _field(timeline: Mapping[str, Any] | None, key: str) -> dict[str, Any] | Non
     return raw if isinstance(raw, dict) else None
 
 
-def phase3_critique_caption(timeline: Mapping[str, Any] | None) -> str:
+def implementation_critique_caption(timeline: Mapping[str, Any] | None) -> str:
     parts: list[str] = []
     for key, label in (
         ("security_critique", "Security"),
@@ -25,10 +25,10 @@ def phase3_critique_caption(timeline: Mapping[str, Any] | None) -> str:
             continue
         verdict = block.get("verdict", "—")
         parts.append(f"{label}={verdict}")
-    return "; ".join(parts) if parts else "No Phase 3 critic stages on this timeline."
+    return "; ".join(parts) if parts else "No implementation critic stages on this timeline."
 
 
-def phase3_critique_table_rows(timeline: Mapping[str, Any] | None) -> list[dict[str, str]]:
+def implementation_critique_table_rows(timeline: Mapping[str, Any] | None) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for key, label in (
         ("security_critique", "implementation.security_critique"),

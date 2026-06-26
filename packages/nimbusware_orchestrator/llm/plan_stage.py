@@ -17,7 +17,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
     LlmPlanResponse,
     _finalize_critique_gate,

@@ -4,7 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_extensions.phase2 import agent_evaluator_score_band
+from nimbusware_extensions.extension_runtime import agent_evaluator_score_band
 from nimbusware_projections.fields.agent_evaluator import AGENT_EVALUATOR_SUMMARY_KEYS
 
 _AGENT_EVAL_STAGE_PREFIX = "agent_eval:"

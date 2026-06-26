@@ -635,7 +635,7 @@ def test_universal_critique_router_pairing_is_case_insensitive() -> None:
 def test_universal_critique_router_from_yaml_without_pairings_returns_empty(
     tmp_path: Path,
 ) -> None:
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text("version: 1\n", encoding="utf-8")
@@ -774,7 +774,7 @@ def test_universal_critique_router_from_yaml_ignores_non_string_keys(
     its taxonomy contract. A valid string-keyed entry alongside the bogus one proves the
     drop is selective (not a whole-file abort).
     """
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(
@@ -803,7 +803,7 @@ def test_universal_critique_router_from_yaml_ignores_non_list_values(
     must be ignored while a valid sibling entry is preserved, so a typo in one row cannot
     silently corrupt every other pairing in the same YAML.
     """
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(

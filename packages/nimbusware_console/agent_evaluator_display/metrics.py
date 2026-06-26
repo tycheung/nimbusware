@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import field_value_table_rows_csv
-from nimbusware_extensions.phase2 import agent_evaluator_score_band
+from nimbusware_extensions.extension_runtime import agent_evaluator_score_band
 
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (
     ("persona_id", "Persona id"),

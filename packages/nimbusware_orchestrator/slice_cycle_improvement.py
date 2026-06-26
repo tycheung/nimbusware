@@ -78,7 +78,7 @@ def run_research_transplant_track(
     )
     from agent_core.models.events_records import ResearchBriefEmittedEvent
     from nimbusware_env import find_repo_root
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
     from nimbusware_orchestrator.registry import RoleRegistry
     from nimbusware_research.artifacts import persist_research_brief
     from nimbusware_research.bundle_promotion import list_pending_stitch_catalog_candidates

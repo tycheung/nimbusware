@@ -15,7 +15,7 @@ from agent_core.models import (
 )
 from nimbusware_api.app import app
 from nimbusware_env import find_repo_root
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.critique_routing import (
     CRITIQUE_STAGE_TO_PRODUCER,
     critique_coverage_snapshot,

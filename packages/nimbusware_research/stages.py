@@ -21,7 +21,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_research.artifacts import persist_research_brief
 from nimbusware_research.bundle_promotion import write_catalog_candidate

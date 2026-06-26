@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from nimbusware_extensions.phase2 import AgentEvaluator
+from nimbusware_extensions.extension_runtime import AgentEvaluator
 from nimbusware_store.memory import InMemoryEventStore
 
 

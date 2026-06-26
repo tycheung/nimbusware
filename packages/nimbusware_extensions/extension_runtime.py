@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 from uuid import UUID
 
+from agent_core.coercion import is_strict_int
 from agent_core.yaml_io import load_yaml
 from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_store.protocol import EventStore
@@ -133,7 +134,7 @@ class AgentEvaluator:
                     if isinstance(ps, str) and ps.strip():
                         slot["probation_status"] = ps.strip()
                     ver = entry.get("version")
-                    if isinstance(ver, int) and not isinstance(ver, bool):
+                    if is_strict_int(ver):
                         slot["version"] = ver
                     coverage["business_area"] = slot
             if dr_id:
@@ -146,7 +147,7 @@ class AgentEvaluator:
                     if isinstance(ps, str) and ps.strip():
                         slot["probation_status"] = ps.strip()
                     ver = entry.get("version")
-                    if isinstance(ver, int) and not isinstance(ver, bool):
+                    if is_strict_int(ver):
                         slot["version"] = ver
                     coverage["development_role"] = slot
 

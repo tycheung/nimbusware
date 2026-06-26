@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 

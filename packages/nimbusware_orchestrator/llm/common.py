@@ -27,7 +27,7 @@ from agent_core.models import (
     Verdict,
 )
 from nimbusware_env.env_flags import nimbusware_repo_root_path
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts

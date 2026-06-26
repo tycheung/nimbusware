@@ -7,7 +7,7 @@ from typing import Any
 from uuid import UUID
 
 from agent_core.context_budget import truncate_for_llm_history
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.scan_critique_kinds import (
     NETWORK_KIND,

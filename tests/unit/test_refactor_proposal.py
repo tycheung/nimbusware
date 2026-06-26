@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.refactor_proposal import (
     build_refactor_proposal,
     orphan_gate_exceeded,
@@ -75,7 +75,7 @@ def test_refactor_orphan_gate_fails_critique(tmp_path: Path) -> None:
 def test_refactor_llm_patch_path(monkeypatch: object, tmp_path: Path) -> None:
     from uuid import uuid4
 
-    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
     from nimbusware_orchestrator.refactor_stage import emit_refactor_stage_and_critique
     from nimbusware_orchestrator.registry import RoleRegistry
     from nimbusware_store.memory import InMemoryEventStore

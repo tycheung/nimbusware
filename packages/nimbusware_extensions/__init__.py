@@ -7,7 +7,7 @@ from nimbusware_extensions.catalog import (
 )
 from nimbusware_extensions.escalation import EscalationPolicy
 from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_extensions.phase2 import (
+from nimbusware_extensions.extension_runtime import (
     AgentEvaluator,
     ModuleIntegrator,
     SecurityScanner,

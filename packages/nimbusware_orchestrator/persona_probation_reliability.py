@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agent_core.models import EventType
-from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from nimbusware_store.protocol import EventStore
 
 ProbationReliabilityDecision = Literal[

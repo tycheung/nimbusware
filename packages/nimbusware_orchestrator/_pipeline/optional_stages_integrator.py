@@ -90,7 +90,7 @@ class IntegratorOptionalStagesMixin:
         )
 
     def _emit_bundle_integrator_gate(self: IntegratorOptionalStagesHost, run_id: UUID) -> None:
-        from nimbusware_extensions.phase2 import ModuleIntegrator
+        from nimbusware_extensions.extension_runtime import ModuleIntegrator
         from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
 
         rows, wf = optional_rows_and_profile(self, run_id)
