@@ -10,7 +10,7 @@ from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.workflow_exports import (
     workflow_explainer_payload_export_json,
     workflow_explainer_payload_table_rows,
@@ -142,10 +142,20 @@ def full_workflow_merge_diff_operator_metrics_caption(
 
 
 (
+    full_workflow_merge_diff_operator_metrics,
+    full_workflow_merge_diff_operator_metrics_table_rows,
+    full_workflow_merge_diff_operator_metrics_caption,
     full_workflow_merge_diff_operator_metrics_export_json,
     full_workflow_merge_diff_operator_metrics_table_rows_csv,
-    full_workflow_merge_diff_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(export_slug="full_workflow_merge_diff_operator_metrics")
+    _full_workflow_merge_diff_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="full_workflow_merge_diff",
+    metrics=full_workflow_merge_diff_operator_metrics,
+    table_rows=full_workflow_merge_diff_operator_metrics_table_rows,
+    caption=full_workflow_merge_diff_operator_metrics_caption,
+    export_slug="full_workflow_merge_diff_operator_metrics",
+)
 
 
 def full_workflow_merge_attention_export_filename_slug() -> str:
@@ -278,7 +288,17 @@ def full_workflow_merge_attention_operator_metrics_caption(
 
 
 (
+    full_workflow_merge_attention_operator_metrics,
+    full_workflow_merge_attention_operator_metrics_table_rows,
+    full_workflow_merge_attention_operator_metrics_caption,
     full_workflow_merge_attention_operator_metrics_export_json,
     full_workflow_merge_attention_operator_metrics_table_rows_csv,
-    full_workflow_merge_attention_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(export_slug="full_workflow_merge_attention_operator_metrics")
+    _full_workflow_merge_attention_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="full_workflow_merge_attention",
+    metrics=full_workflow_merge_attention_operator_metrics,
+    table_rows=full_workflow_merge_attention_operator_metrics_table_rows,
+    caption=full_workflow_merge_attention_operator_metrics_caption,
+    export_slug="full_workflow_merge_attention_operator_metrics",
+)

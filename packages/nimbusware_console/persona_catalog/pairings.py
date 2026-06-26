@@ -7,10 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.coercion import is_strict_int
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    table_rows_csv,
+from nimbusware_console.components.operator_metrics import table_rows_csv
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    build_metrics_fn,
+    install_operator_metrics_module,
+    table_rows_fn,
 )
 
 
@@ -131,63 +132,21 @@ def critique_pairings_operator_summary_export_json(
     return json.dumps(dict(summary), indent=2, ensure_ascii=False)
 
 
-def critique_pairings_operator_summary_operator_metrics(
-    summary: Mapping[str, Any] | None,
-) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "has_critique_pairings_yaml": False,
-        "producer_taxonomy_key_count": 0,
-        "critic_role_entries_total": 0,
-        "load_error_present": False,
-    }
-    if not isinstance(summary, Mapping):
-        return metrics
-    metrics["has_critique_pairings_yaml"] = summary.get("has_critique_pairings_yaml") is True
-    pk = summary.get("producer_taxonomy_key_count")
-    if is_strict_int(pk) and pk >= 0:
-        metrics["producer_taxonomy_key_count"] = pk
-    total = summary.get("critique_pairing_critic_role_entries_total")
-    if is_strict_int(total) and total >= 0:
-        metrics["critic_role_entries_total"] = total
-    err = summary.get("load_error")
-    metrics["load_error_present"] = isinstance(err, str) and bool(err.strip())
-    return metrics
+_PAIRINGS_METRICS_DEFAULTS: dict[str, Any] = {
+    "has_critique_pairings_yaml": False,
+    "producer_taxonomy_key_count": 0,
+    "critic_role_entries_total": 0,
+    "load_error_present": False,
+}
+
+_PAIRINGS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Critique pairings YAML present", "has_critique_pairings_yaml"),
+    ("Producer taxonomy keys", "producer_taxonomy_key_count"),
+    ("Critic role entries total", "critic_role_entries_total"),
+)
 
 
-def critique_pairings_operator_summary_operator_metrics_table_rows(
-    metrics: Mapping[str, Any] | None,
-) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "Critique pairings YAML present",
-            "value": str(metrics.get("has_critique_pairings_yaml", False)).lower(),
-        },
-        {
-            "field": "Producer taxonomy keys",
-            "value": str(metrics.get("producer_taxonomy_key_count", 0)),
-        },
-        {
-            "field": "Critic role entries total",
-            "value": str(metrics.get("critic_role_entries_total", 0)),
-        },
-    ]
-    if metrics.get("load_error_present") is True:
-        rows.append({"field": "Load error", "value": "yes"})
-    return rows
-
-
-def critique_pairings_operator_summary_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-critique_pairings_operator_summary_operator_metrics_table_rows_csv = field_value_table_rows_csv
-
-
-def critique_pairings_operator_summary_operator_metrics_caption(
+def _critique_pairings_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
     if not isinstance(metrics, Mapping):
@@ -198,9 +157,9 @@ def critique_pairings_operator_summary_operator_metrics_caption(
         return "Critique pairings operator metrics: YAML present with **load error**."
     pk = metrics.get("producer_taxonomy_key_count", 0)
     total = metrics.get("critic_role_entries_total", 0)
-    if not isinstance(pk, int) or isinstance(pk, bool):
+    if not is_strict_int(pk):
         pk = 0
-    if not isinstance(total, int) or isinstance(total, bool):
+    if not is_strict_int(total):
         total = 0
     return (
         f"Critique pairings operator metrics: **{pk}** producer key(s), "
@@ -208,8 +167,29 @@ def critique_pairings_operator_summary_operator_metrics_caption(
     )
 
 
-def critique_pairings_operator_summary_operator_metrics_export_filename_slug() -> str:
-    return "critique_pairings_operator_summary_operator_metrics"
+(
+    critique_pairings_operator_summary_operator_metrics,
+    critique_pairings_operator_summary_operator_metrics_table_rows,
+    critique_pairings_operator_summary_operator_metrics_caption,
+    critique_pairings_operator_summary_operator_metrics_export_json,
+    critique_pairings_operator_summary_operator_metrics_table_rows_csv,
+    _critique_pairings_operator_summary_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="critique_pairings_operator_summary",
+    metrics=build_metrics_fn(
+        _PAIRINGS_METRICS_DEFAULTS,
+        bool_fields=(("has_critique_pairings_yaml", "has_critique_pairings_yaml"),),
+        int_fields=(
+            ("producer_taxonomy_key_count", "producer_taxonomy_key_count"),
+            ("critique_pairing_critic_role_entries_total", "critic_role_entries_total"),
+        ),
+        load_error=True,
+    ),
+    table_rows=table_rows_fn(_PAIRINGS_TABLE_ROWS, append_load_error_row=True),
+    caption=_critique_pairings_operator_metrics_caption,
+    export_slug="critique_pairings_operator_summary_operator_metrics",
+)
 
 
 def critique_pairings_export_filename_slug() -> str:

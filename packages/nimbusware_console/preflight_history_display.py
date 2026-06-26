@@ -6,7 +6,7 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import mapping_export_json
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_histogram
@@ -314,10 +314,20 @@ def preflight_history_operator_metrics_caption(
 
 
 (
+    preflight_history_operator_metrics,
+    preflight_history_operator_metrics_table_rows,
+    preflight_history_operator_metrics_caption,
     preflight_history_operator_metrics_export_json,
     preflight_history_operator_metrics_table_rows_csv,
     _preflight_history_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="preflight_history_operator_metrics")
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="preflight_history",
+    metrics=preflight_history_operator_metrics,
+    table_rows=preflight_history_operator_metrics_table_rows,
+    caption=preflight_history_operator_metrics_caption,
+    export_slug="preflight_history_operator_metrics",
+)
 
 
 def preflight_history_operator_metrics_export_filename_slug(

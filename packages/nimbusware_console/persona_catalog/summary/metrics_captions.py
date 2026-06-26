@@ -4,8 +4,10 @@ from collections.abc import Mapping
 from typing import Any
 
 from agent_core.coercion import is_strict_int
-from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 
 
 def persona_catalog_operator_summary_operator_metrics(
@@ -54,44 +56,27 @@ def _int_field_from_dict(d: Mapping[str, Any], key: str) -> int:
     return 0
 
 
+_PERSONA_SUMMARY_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Total entries", "total_entries"),
+    ("Business area entries", "business_area_count"),
+    ("Development role entries", "development_role_count"),
+    ("Without instructions", "without_instructions"),
+    ("Empty/missing id", "empty_or_missing_id_count"),
+    ("Probation", "probation_total"),
+    ("Promoted", "promoted_total"),
+    ("Shelved", "shelved_total"),
+    ("Duplicate row signals", "duplicate_row_signals"),
+)
+
+
 def persona_catalog_operator_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    return [
-        {"field": "Total entries", "value": str(metrics.get("total_entries", 0))},
-        {
-            "field": "Business area entries",
-            "value": str(metrics.get("business_area_count", 0)),
-        },
-        {
-            "field": "Development role entries",
-            "value": str(metrics.get("development_role_count", 0)),
-        },
-        {
-            "field": "Without instructions",
-            "value": str(metrics.get("without_instructions", 0)),
-        },
-        {
-            "field": "Empty/missing id",
-            "value": str(metrics.get("empty_or_missing_id_count", 0)),
-        },
-        {"field": "Probation", "value": str(metrics.get("probation_total", 0))},
-        {"field": "Promoted", "value": str(metrics.get("promoted_total", 0))},
-        {"field": "Shelved", "value": str(metrics.get("shelved_total", 0))},
-        {
-            "field": "Duplicate row signals",
-            "value": str(metrics.get("duplicate_row_signals", 0)),
-        },
-    ]
-
-
-(
-    persona_catalog_operator_summary_operator_metrics_export_json,
-    persona_catalog_operator_summary_operator_metrics_table_rows_csv,
-    persona_catalog_operator_summary_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(export_slug="persona_operator_summary_metrics")
+    return metrics_table_rows(
+        metrics,
+        _PERSONA_SUMMARY_TABLE_ROWS,
+        bool_lower=False,
+    )
 
 
 def persona_catalog_operator_summary_operator_metrics_caption(
@@ -109,6 +94,23 @@ def persona_catalog_operator_summary_operator_metrics_caption(
         "Persona operator summary metrics: ",
         [f"**{total}** entr(y/ies)", f"**{woi}** without instructions"],
     )
+
+
+(
+    persona_catalog_operator_summary_operator_metrics,
+    persona_catalog_operator_summary_operator_metrics_table_rows,
+    persona_catalog_operator_summary_operator_metrics_caption,
+    persona_catalog_operator_summary_operator_metrics_export_json,
+    persona_catalog_operator_summary_operator_metrics_table_rows_csv,
+    persona_catalog_operator_summary_operator_metrics_export_filename_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="persona_catalog_operator_summary",
+    metrics=persona_catalog_operator_summary_operator_metrics,
+    table_rows=persona_catalog_operator_summary_operator_metrics_table_rows,
+    caption=persona_catalog_operator_summary_operator_metrics_caption,
+    export_slug="persona_operator_summary_metrics",
+)
 
 
 def persona_catalog_without_instructions_caption(

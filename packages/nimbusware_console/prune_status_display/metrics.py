@@ -8,7 +8,7 @@ from agent_core.coercion import is_strict_int
 
 SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.prune_status_display.status_captions import (
     _parse_wrote_at,
 )
@@ -174,7 +174,17 @@ def prune_status_operator_metrics_caption(
 
 
 (
+    prune_status_operator_metrics,
+    prune_status_operator_metrics_table_rows,
+    prune_status_operator_metrics_caption,
     prune_status_operator_metrics_export_json,
     prune_status_operator_metrics_table_rows_csv,
     prune_status_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(export_slug="prune_status_operator_metrics")
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="prune_status",
+    metrics=prune_status_operator_metrics,
+    table_rows=prune_status_operator_metrics_table_rows,
+    caption=prune_status_operator_metrics_caption,
+    export_slug="prune_status_operator_metrics",
+)

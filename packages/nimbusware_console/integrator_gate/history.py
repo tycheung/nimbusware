@@ -7,7 +7,7 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.integrator_gate._helpers import (
     _format_tag_list_sample,
@@ -265,10 +265,20 @@ def integrator_gate_history_metrics_table_rows(
 
 
 (
+    integrator_gate_history_operator_metrics,
+    integrator_gate_history_operator_metrics_table_rows,
+    integrator_gate_history_operator_metrics_caption,
     integrator_gate_history_operator_metrics_export_json,
     integrator_gate_history_operator_metrics_table_rows_csv,
     _integrator_gate_history_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="integrator_gate_history_operator_metrics")
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="integrator_gate_history",
+    metrics=integrator_gate_history_operator_metrics,
+    table_rows=integrator_gate_history_metrics_table_rows,
+    caption=integrator_gate_history_operator_metrics_caption,
+    export_slug="integrator_gate_history_operator_metrics",
+)
 
 
 def integrator_gate_history_operator_metrics_export_filename_slug(
