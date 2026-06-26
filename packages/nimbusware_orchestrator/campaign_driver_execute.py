@@ -57,8 +57,20 @@ def _parallel_slice_count() -> int:
     return max(1, resolve_int("NIMBUSWARE_CAMPAIGN_PARALLEL_SLICES", default=1))
 
 
+def _parallel_slice_count_for_run(run_id: UUID) -> int:
+    base = _parallel_slice_count()
+    if base > 1:
+        return base
+    from nimbusware_orchestrator.mesh_pipeline_hook import resolve_mesh_context_for_run
+
+    session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
+    if session_id is not None and (node_ids or workload != "host_only"):
+        return 2
+    return base
+
+
 def _select_slices_for_tick(run_id: UUID, backlog: Any) -> list[SelectedSlice]:
-    parallel = _parallel_slice_count()
+    parallel = _parallel_slice_count_for_run(run_id)
     if parallel <= 1:
         one = select_next_slice(backlog)
         return [one] if one is not None else []
@@ -143,12 +155,12 @@ def _execute_campaign_slices(
             last_slice_passed=False,
         )
 
-    for selected in selected_list:
-        if remote_by_slice[selected.slice.slice_id]:
-            continue
+    local_slices = [sel for sel in selected_list if not remote_by_slice[sel.slice.slice_id]]
+
+    def _run_one_local(selected: SelectedSlice) -> bool:
         rows = orch._store.list_run_events(str(run_id))
-        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
-        completed = backlog.metadata.slices_completed
+        local_backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        local_completed = local_backlog.metadata.slices_completed
         plan = parse_slice_plan(
             {
                 "slice_id": selected.slice.slice_id,
@@ -159,17 +171,35 @@ def _execute_campaign_slices(
         )
         gate = orch.execute_single_micro_slice(
             run_id,
-            slice_index=completed + 1,
+            slice_index=local_completed + 1,
             workspace=workspace,
             plan=plan,
             backlog_slice_id=selected.slice.slice_id,
         )
-        rows = orch._store.list_run_events(str(run_id))
-        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
-        completed = backlog.metadata.slices_completed
-        failure = _handle_slice_failure(passed=gate.passed)
-        if failure is not None:
-            return failure
+        return gate.passed
+
+    if len(local_slices) > 1:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        with ThreadPoolExecutor(max_workers=len(local_slices)) as pool:
+            futures = {pool.submit(_run_one_local, sel): sel for sel in local_slices}
+            for fut in as_completed(futures):
+                passed = fut.result()
+                rows = orch._store.list_run_events(str(run_id))
+                backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+                completed = backlog.metadata.slices_completed
+                failure = _handle_slice_failure(passed=passed)
+                if failure is not None:
+                    return failure
+    else:
+        for selected in local_slices:
+            passed = _run_one_local(selected)
+            rows = orch._store.list_run_events(str(run_id))
+            backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+            completed = backlog.metadata.slices_completed
+            failure = _handle_slice_failure(passed=passed)
+            if failure is not None:
+                return failure
 
     if remote_stages:
         ws_path = Path(workspace).resolve() if workspace is not None else None

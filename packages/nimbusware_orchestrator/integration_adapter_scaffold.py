@@ -338,12 +338,26 @@ def write_integration_adapter_scaffold(
 def _sync_target_body(kind: str) -> str:
     if kind == "api_bridge":
         return (
+            '        import os\n'
             '        state_path = self._workspace_dir / "target_state.json"\n'
+            "        raw = {}\n"
+            "        if state_path.is_file():\n"
+            "            try:\n"
+            "                raw = __import__('json').loads(state_path.read_text(encoding='utf-8'))\n"
+            "            except (OSError, ValueError):\n"
+            "                raw = {}\n"
+            '        endpoint = str(raw.get("endpoint") or "http://127.0.0.1:8080/health").strip()\n'
+            '        live = os.environ.get("NIMBUSWARE_INTEGRATION_ADAPTER_LIVE", "").strip().lower() in ("1", "true", "yes")\n'
             "        payload = {\n"
             '            "connected": True,\n'
             '            "action": "probe",\n'
-            '            "endpoint": "http://127.0.0.1:8080/health",\n'
+            '            "endpoint": endpoint,\n'
             "        }\n"
+            "        if live and endpoint:\n"
+            "            import httpx\n"
+            "            resp = httpx.get(endpoint, timeout=5.0, follow_redirects=True)\n"
+            "            payload['http_status'] = resp.status_code\n"
+            "            payload['http_ok'] = resp.is_success\n"
             "        state_path.write_text(__import__('json').dumps(payload, indent=2), encoding='utf-8')\n"
             "        return payload\n"
         )

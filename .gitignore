@@ -133,6 +133,8 @@ plan_gap.md
 benchmarks/*
 !benchmarks/README.md
 !benchmarks/latest_*.json
+!benchmarks/gate_failure_comprehension_fixture.json
+!benchmarks/archetype_fit_streak.json
 
 # Local CI log dumps (not committed)
 ci_*.log

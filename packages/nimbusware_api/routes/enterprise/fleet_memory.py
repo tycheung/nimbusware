@@ -13,6 +13,7 @@ from nimbusware_env.edition import enterprise_feature_enabled
 from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_iam.context import get_auth_context
 from nimbusware_memory.factory import build_memory_chunk_store
+from nimbusware_memory.fleet_embedding import resolve_fleet_embedding_mode
 from nimbusware_memory.fleet_index import rebuild_fleet_memory_index
 from nimbusware_memory.fleet_sync import (
     fleet_memory_remote_status,
@@ -28,6 +29,10 @@ router = APIRouter(prefix="/enterprise/fleet-memory", tags=["enterprise"])
 class FleetRebuildBody(BaseModel):
     org_slug: str = Field(default="default", max_length=64)
     audit_run_id: str | None = None
+    embedding_mode: str | None = Field(
+        default=None,
+        description="deterministic or ollama; default auto-selects ollama when LLM enabled",
+    )
 
 
 class FleetSyncBody(BaseModel):
@@ -86,6 +91,7 @@ def fleet_memory_rebuild(
         memory_store,
         tenant_id=ctx.tenant_id,
         org_slug=body.org_slug,
+        embedding_mode=resolve_fleet_embedding_mode(body.embedding_mode),
         conninfo=conninfo,
         in_memory_event_rows=in_memory_rows,
         audit_store=store,
@@ -97,6 +103,7 @@ def fleet_memory_rebuild(
         "generation_id": str(result.generation_id),
         "chunks_added": result.chunks_added,
         "chunks_skipped": result.chunks_skipped,
+        "embedding_mode": resolve_fleet_embedding_mode(body.embedding_mode),
     }
 
 
@@ -106,6 +113,7 @@ def fleet_memory_search(
     q: Annotated[str, Query(min_length=1, max_length=512)],
     k: Annotated[int, Query(ge=1, le=20)] = 5,
     max_chars: Annotated[int, Query(ge=0, le=8000)] = 2000,
+    embedding_mode: Annotated[str | None, Query()] = None,
 ) -> dict[str, Any]:
     ctx = get_auth_context()
     if ctx is None:
@@ -117,16 +125,19 @@ def fleet_memory_search(
             detail=problem("memory_store_unavailable", "memory chunk store is not configured"),
         )
     _, org_scope = resolve_fleet_scope(tenant_id=ctx.tenant_id)
+    mode = resolve_fleet_embedding_mode(embedding_mode)
     hits = search_fleet_memory(
         memory_store,
         q,
         org_scope_hash=org_scope,
         tenant_id=ctx.tenant_id,
         k=k,
+        embedding_mode=mode,
     )
     return {
         "org_scope_hash": org_scope,
         "query": q,
+        "embedding_mode": mode,
         "hit_count": len(hits),
         "hits": [h.model_dump(mode="json") for h in hits],
         "excerpt": format_memory_excerpt(hits, max_chars=max_chars),

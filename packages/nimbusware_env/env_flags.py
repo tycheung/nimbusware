@@ -98,6 +98,10 @@ def nimbusware_outbound_fetch_enabled() -> bool:
     return env_flag_bool("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raw=True)
 
 
+def nimbusware_integration_adapter_live_enabled() -> bool:
+    return env_flag_bool("NIMBUSWARE_INTEGRATION_ADAPTER_LIVE", raw=True)
+
+
 def env_tri_state(name: str) -> str | None:
     from nimbusware_env.settings_resolve import resolve_tri_state
 

@@ -80,10 +80,13 @@ def emit_live_integration_adapter_writer_stage(
     repo_root: Path | None = None,
 ) -> None:
     """Append live-path ``stage.started`` with workspace manifest I/O when ``repo_root`` set."""
+    from nimbusware_env.env_flags import nimbusware_integration_adapter_live_enabled
+
     iaw: dict[str, Any] = {
         "stub_only": block.stub_only,
         "target_adapter_kind": block.target_adapter_kind,
         "scaffold_status": "live_adapter_recorded",
+        "live_io_enabled": nimbusware_integration_adapter_live_enabled(),
     }
     if repo_root is not None:
         workspace = record_live_adapter_workspace(repo_root, run_id, block)

@@ -87,6 +87,8 @@ jobs:
         run: poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
       - name: Archetype fit CI gate
         run: poetry run python scripts/ci/run_archetype_fit_ci_gate.py
+      - name: Gate comprehension CI gate
+        run: poetry run python scripts/ci/run_gate_comprehension_ci_gate.py
 
   web:
     runs-on: ubuntu-latest

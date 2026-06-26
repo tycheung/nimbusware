@@ -2,7 +2,7 @@
   "version": 3,
   "ok": true,
   "target_score": 0.95,
-  "measured_at": "2026-06-26T13:41:24.391756+00:00",
+  "measured_at": "2026-06-26T14:39:10.521944+00:00",
   "mode": "behavioral_rubric",
   "pytest_modules_ok": true,
   "archetypes": {
@@ -57,8 +57,8 @@
         },
         "behavioral": {
           "fit_score": 1.0,
-          "checks_passed": 2,
-          "checks_total": 2,
+          "checks_passed": 3,
+          "checks_total": 3,
           "missing": [],
           "meets_target": true
         },
@@ -81,15 +81,15 @@
         "fit_score": 1.0,
         "static": {
           "fit_score": 1.0,
-          "checks_passed": 3,
-          "checks_total": 3,
+          "checks_passed": 5,
+          "checks_total": 5,
           "missing": [],
           "meets_target": true
         },
         "behavioral": {
           "fit_score": 1.0,
-          "checks_passed": 2,
-          "checks_total": 2,
+          "checks_passed": 4,
+          "checks_total": 4,
           "missing": [],
           "meets_target": true
         },

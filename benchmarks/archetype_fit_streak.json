@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "target_score": 0.95,
+  "weeks": [
+    {
+      "week": "2026-W26",
+      "recorded_at": "2026-06-26T14:00:00+00:00",
+      "ok": true,
+      "note": "seed week after §20.34 + P3 stretch ship"
+    }
+  ]
+}

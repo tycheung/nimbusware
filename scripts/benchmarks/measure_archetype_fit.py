@@ -59,6 +59,8 @@ _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
     "packages/nimbusware_maker_web/static/js/tabs/home.js",
     "tests/e2e/web/maker_enterprise_journey.spec.ts",
     "tests/e2e/web/maker_enterprise_install_journey.spec.ts",
+    "packages/nimbusware_memory/fleet_embedding.py",
+    "scripts/benchmarks/measure_gate_comprehension.py",
 )
 
 
@@ -104,10 +106,13 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
         "engineer": {
             "collab_persist": "save_persisted_collab_enabled" in collab_store,
             "host_hydrate": "ensure_mesh_binding_for_llm" in hydrate,
+            "campaign_parallel": "ThreadPoolExecutor" in (root / "packages/nimbusware_orchestrator/campaign_driver_execute.py").read_text(encoding="utf-8"),
         },
         "enterprise": {
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
+            "fleet_semantic_embedding": (root / "packages/nimbusware_memory/fleet_embedding.py").is_file(),
+            "gate_comprehension_harness": (root / "scripts/benchmarks/measure_gate_comprehension.py").is_file(),
         },
     }
 

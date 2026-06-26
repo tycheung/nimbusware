@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "target_score": 0.8,
+  "scenarios": [
+    {
+      "id": "slice_test_fail",
+      "latest_stage": "slice.test",
+      "blocked": true,
+      "expected_phrases": ["review findings", "widen", "chat"]
+    },
+    {
+      "id": "slice_gate_fail",
+      "latest_stage": "slice.gate",
+      "blocked": true,
+      "expected_phrases": ["review findings", "widen"]
+    },
+    {
+      "id": "slice_verify_fail",
+      "latest_stage": "slice.verify",
+      "blocked": true,
+      "expected_phrases": ["checking the diff", "review findings"]
+    },
+    {
+      "id": "not_blocked",
+      "latest_stage": "slice.test",
+      "blocked": false,
+      "expected_phrases": []
+    }
+  ]
+}
