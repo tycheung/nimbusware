@@ -174,6 +174,15 @@ def system_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
+            "NIMBUSWARE_INTEGRATION_ADAPTER_LIVE",
+            _SYSTEM,
+            _BOOL,
+            "",
+            "Integration adapter live I/O",
+            "When on, api_bridge sync_target performs HTTP probes instead of noop.",
+            "System — optional stages",
+        ),
+        SettingDef(
             "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE",
             _SYSTEM,
             _BOOL,

@@ -9,6 +9,8 @@ import yaml
 from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator.put_e2e_capture import (
     _playwright_module_ready,
+    http_flow_stub_findings,
+    stub_capture_sections,
     stub_console_capture,
     stub_network_capture,
 )
@@ -33,6 +35,8 @@ __all__ = [
     "load_factory_flow_catalog",
     "match_factory_flow_id",
     "run_put_e2e_flow",
+    "http_flow_stub_findings",
+    "stub_capture_sections",
     "stub_console_capture",
     "stub_network_capture",
 ]
@@ -120,11 +124,13 @@ def run_put_e2e_flow(
             out["console"] = [row for row in live_findings if row.get("kind") == "console"]
             out["network"] = [row for row in live_findings if row.get("kind") == "network"]
         elif console_on or network_on:
-            out["console"] = [f.to_dict() for f in stub_console_capture(enabled=console_on)]
-            out["network"] = [
-                f.to_dict()
-                for f in stub_network_capture(enabled=network_on, exercised_paths=exercised_paths)
-            ]
+            sections = stub_capture_sections(
+                console_on=console_on,
+                network_on=network_on,
+                exercised_paths=exercised_paths,
+            )
+            out["console"] = sections["console"]
+            out["network"] = sections["network"]
         return out
 
     def _fail_result(
@@ -173,15 +179,11 @@ def run_put_e2e_flow(
                 if not _run_http_step(
                     client, base_url, step, exercised=exercised, findings=findings
                 ):
-                    step_capture = {
-                        "console": [f.to_dict() for f in stub_console_capture(enabled=console_on)],
-                        "network": [
-                            f.to_dict()
-                            for f in stub_network_capture(
-                                enabled=network_on, exercised_paths=exercised
-                            )
-                        ],
-                    }
+                    step_capture = stub_capture_sections(
+                        console_on=console_on,
+                        network_on=network_on,
+                        exercised_paths=exercised,
+                    )
                     detail = findings[-1].message if findings else "flow step failed"
                     return _fail_result(
                         detail=detail,
@@ -195,8 +197,13 @@ def run_put_e2e_flow(
             capture={},
         )
 
-    findings.extend(stub_console_capture(enabled=console_on))
-    findings.extend(stub_network_capture(enabled=network_on, exercised_paths=exercised))
+    findings.extend(
+        http_flow_stub_findings(
+            console_on=console_on,
+            network_on=network_on,
+            exercised_paths=exercised,
+        ),
+    )
     capture: dict[str, Any] = {
         "console": [f.to_dict() for f in findings if f.kind == "console"],
         "network": [f.to_dict() for f in findings if f.kind == "network"],
