@@ -8,7 +8,7 @@ from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     mapping_export_json,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.security_scan_on_verify._helpers import (
     _SECURITY_SCAN_ON_VERIFY_FIELDS,
@@ -137,10 +137,18 @@ def security_scan_on_verify_latest_operator_metrics_caption(
 
 
 (
+    security_scan_on_verify_latest_operator_metrics,
+    security_scan_on_verify_latest_operator_metrics_table_rows,
+    security_scan_on_verify_latest_operator_metrics_caption,
     security_scan_on_verify_latest_operator_metrics_export_json,
     security_scan_on_verify_latest_operator_metrics_table_rows_csv,
     _security_scan_on_verify_latest_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="security_scan_on_verify_latest",
+    metrics=security_scan_on_verify_latest_operator_metrics,
+    table_rows=security_scan_on_verify_latest_operator_metrics_table_rows,
+    caption=security_scan_on_verify_latest_operator_metrics_caption,
     export_slug="security_scan_on_verify_latest_operator_metrics",
 )
 
@@ -151,13 +159,6 @@ def security_scan_on_verify_latest_operator_metrics_export_filename_slug(
     max_len: int = 36,
 ) -> str:
     return security_scan_on_verify_latest_export_filename_slug(run_id, max_len=max_len)
-
-
-(
-    security_scan_linter_operator_metrics_export_json,
-    security_scan_linter_operator_metrics_table_rows_csv,
-    _security_scan_linter_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="security_scan_linter_operator_metrics")
 
 
 def security_scan_linter_operator_metrics_export_filename_slug(

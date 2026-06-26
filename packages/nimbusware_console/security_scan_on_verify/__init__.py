@@ -15,8 +15,6 @@ from nimbusware_console.security_scan_on_verify.history_metrics import (
 from nimbusware_console.security_scan_on_verify.latest import (
     _security_scan_snippet_char_len,
     security_scan_linter_operator_metrics_export_filename_slug,
-    security_scan_linter_operator_metrics_export_json,
-    security_scan_linter_operator_metrics_table_rows_csv,
     security_scan_on_verify_latest_export_filename_slug,
     security_scan_on_verify_latest_export_json,
     security_scan_on_verify_latest_operator_metrics,
@@ -35,7 +33,9 @@ from nimbusware_console.security_scan_on_verify.linter import (
     security_scan_linter_ok_linters_caption,
     security_scan_linter_operator_metrics,
     security_scan_linter_operator_metrics_caption,
+    security_scan_linter_operator_metrics_export_json,
     security_scan_linter_operator_metrics_table_rows,
+    security_scan_linter_operator_metrics_table_rows_csv,
     security_scan_linter_operator_rollup_caption,
     security_scan_linter_status_rows,
     security_scan_linter_status_summary_caption,

@@ -8,7 +8,7 @@ from typing import Any
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.run_list_pagination_display.run_detail_summary import (
     run_detail_summary_export_filename_slug,
@@ -160,16 +160,26 @@ def timeline_events_operator_metrics_caption(
     return metrics_caption("Timeline events metrics: ", parts)
 
 
+(
+    timeline_events_operator_metrics,
+    timeline_events_operator_metrics_table_rows,
+    timeline_events_operator_metrics_caption,
+    timeline_events_operator_metrics_export_json,
+    timeline_events_operator_metrics_table_rows_csv,
+    _timeline_events_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="timeline_events",
+    metrics=timeline_events_operator_metrics,
+    table_rows=timeline_events_operator_metrics_table_rows,
+    caption=timeline_events_operator_metrics_caption,
+    export_slug="timeline_events_operator_metrics",
+)
+
+
 def timeline_events_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return timeline_events_export_filename_slug(run_id, max_len=max_len)
-
-
-(
-    timeline_events_operator_metrics_export_json,
-    timeline_events_operator_metrics_table_rows_csv,
-    _timeline_events_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="timeline_events_operator_metrics")

@@ -5,7 +5,7 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.run_escalated.rows import (
     run_escalated_delta_export_filename_slug,
@@ -126,14 +126,6 @@ def run_escalated_operator_metrics_caption(
     return "Run escalated metrics: " + ", ".join(present) + " present."
 
 
-def run_escalated_operator_metrics_export_filename_slug(
-    run_id: str,
-    *,
-    max_len: int = 36,
-) -> str:
-    return run_escalated_export_filename_slug(run_id, max_len=max_len)
-
-
 def run_escalated_history_operator_metrics(
     history: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
@@ -186,14 +178,6 @@ def run_escalated_history_operator_metrics_caption(
         word = "actor" if dac == 1 else "actors"
         parts.append(f"**{dac}** distinct {word}")
     return metrics_caption("Run escalated history metrics: ", parts)
-
-
-def run_escalated_history_operator_metrics_export_filename_slug(
-    run_id: str,
-    *,
-    max_len: int = 36,
-) -> str:
-    return run_escalated_history_export_filename_slug(run_id, max_len=max_len)
 
 
 def run_escalated_delta_operator_metrics(
@@ -264,28 +248,74 @@ def run_escalated_delta_operator_metrics_caption(
     return metrics_caption("Run escalated delta metrics: changed ", changed)
 
 
+(
+    run_escalated_operator_metrics,
+    run_escalated_operator_metrics_table_rows,
+    run_escalated_operator_metrics_caption,
+    run_escalated_operator_metrics_export_json,
+    run_escalated_operator_metrics_table_rows_csv,
+    _run_escalated_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="run_escalated",
+    metrics=run_escalated_operator_metrics,
+    table_rows=run_escalated_operator_metrics_table_rows,
+    caption=run_escalated_operator_metrics_caption,
+    export_slug="run_escalated_operator_metrics",
+)
+
+(
+    run_escalated_history_operator_metrics,
+    run_escalated_history_operator_metrics_table_rows,
+    run_escalated_history_operator_metrics_caption,
+    run_escalated_history_operator_metrics_export_json,
+    run_escalated_history_operator_metrics_table_rows_csv,
+    _run_escalated_history_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="run_escalated_history",
+    metrics=run_escalated_history_operator_metrics,
+    table_rows=run_escalated_history_operator_metrics_table_rows,
+    caption=run_escalated_history_operator_metrics_caption,
+    export_slug="run_escalated_history_operator_metrics",
+)
+
+(
+    run_escalated_delta_operator_metrics,
+    run_escalated_delta_operator_metrics_table_rows,
+    run_escalated_delta_operator_metrics_caption,
+    run_escalated_delta_operator_metrics_export_json,
+    run_escalated_delta_operator_metrics_table_rows_csv,
+    _run_escalated_delta_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="run_escalated_delta",
+    metrics=run_escalated_delta_operator_metrics,
+    table_rows=run_escalated_delta_operator_metrics_table_rows,
+    caption=run_escalated_delta_operator_metrics_caption,
+    export_slug="run_escalated_delta_operator_metrics",
+)
+
+
+def run_escalated_operator_metrics_export_filename_slug(
+    run_id: str,
+    *,
+    max_len: int = 36,
+) -> str:
+    return run_escalated_export_filename_slug(run_id, max_len=max_len)
+
+
+def run_escalated_history_operator_metrics_export_filename_slug(
+    run_id: str,
+    *,
+    max_len: int = 36,
+) -> str:
+    return run_escalated_history_export_filename_slug(run_id, max_len=max_len)
+
+
 def run_escalated_delta_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return run_escalated_delta_export_filename_slug(run_id, max_len=max_len)
-
-
-(
-    run_escalated_operator_metrics_export_json,
-    run_escalated_operator_metrics_table_rows_csv,
-    _run_escalated_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="run_escalated_operator_metrics")
-
-(
-    run_escalated_history_operator_metrics_export_json,
-    run_escalated_history_operator_metrics_table_rows_csv,
-    _run_escalated_history_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="run_escalated_history_operator_metrics")
-
-(
-    run_escalated_delta_operator_metrics_export_json,
-    run_escalated_delta_operator_metrics_table_rows_csv,
-    _run_escalated_delta_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="run_escalated_delta_operator_metrics")

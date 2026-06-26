@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+
 _LINTER_EXIT_FIELDS: tuple[tuple[str, str], ...] = (
     ("Ruff", "security_scan_ruff_exit"),
     ("Bandit", "security_scan_bandit_exit"),
@@ -234,3 +236,20 @@ def security_scan_linter_operator_metrics_table_rows(
     if worst_exit is not None:
         rows.append({"field": "Worst exit", "value": str(worst_exit)})
     return rows
+
+
+(
+    security_scan_linter_operator_metrics,
+    security_scan_linter_operator_metrics_table_rows,
+    security_scan_linter_operator_metrics_caption,
+    security_scan_linter_operator_metrics_export_json,
+    security_scan_linter_operator_metrics_table_rows_csv,
+    _security_scan_linter_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="security_scan_linter",
+    metrics=security_scan_linter_operator_metrics,
+    table_rows=security_scan_linter_operator_metrics_table_rows,
+    caption=security_scan_linter_operator_metrics_caption,
+    export_slug="security_scan_linter_operator_metrics",
+)

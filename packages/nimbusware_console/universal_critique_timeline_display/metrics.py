@@ -5,7 +5,7 @@ from typing import Any
 
 from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.universal_critique_timeline_display.rows import (
     universal_critique_timeline_export_filename_slug,
@@ -264,16 +264,26 @@ def universal_critique_unanimous_gate_caption(summary: Mapping[str, Any] | None)
     return None
 
 
+(
+    universal_critique_timeline_operator_metrics,
+    universal_critique_timeline_operator_metrics_table_rows,
+    universal_critique_timeline_operator_metrics_caption,
+    universal_critique_timeline_operator_metrics_export_json,
+    universal_critique_timeline_operator_metrics_table_rows_csv,
+    _universal_critique_timeline_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="universal_critique_timeline",
+    metrics=universal_critique_timeline_operator_metrics,
+    table_rows=universal_critique_timeline_operator_metrics_table_rows,
+    caption=universal_critique_timeline_operator_metrics_caption,
+    export_slug="universal_critique_timeline_operator_metrics",
+)
+
+
 def universal_critique_timeline_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return universal_critique_timeline_export_filename_slug(run_id, max_len=max_len)
-
-
-(
-    universal_critique_timeline_operator_metrics_export_json,
-    universal_critique_timeline_operator_metrics_table_rows_csv,
-    _universal_critique_timeline_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="universal_critique_timeline_operator_metrics")

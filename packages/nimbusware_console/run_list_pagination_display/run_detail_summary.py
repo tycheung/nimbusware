@@ -7,7 +7,7 @@ from typing import Any
 
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
-    install_named_operator_metrics_exports,
+    install_operator_metrics_module,
 )
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
@@ -90,11 +90,17 @@ def run_detail_summary_operator_metrics_caption(
 
 
 (
+    run_detail_summary_operator_metrics,
+    run_detail_summary_operator_metrics_table_rows,
+    run_detail_summary_operator_metrics_caption,
     run_detail_summary_operator_metrics_export_json,
     run_detail_summary_operator_metrics_table_rows_csv,
     run_detail_summary_operator_metrics_export_filename_slug,
-) = install_named_operator_metrics_exports(
+) = install_operator_metrics_module(
     globals(),
-    "run_detail_summary",
+    module_prefix="run_detail_summary",
+    metrics=run_detail_summary_operator_metrics,
+    table_rows=run_detail_summary_operator_metrics_table_rows,
+    caption=run_detail_summary_operator_metrics_caption,
     export_slug="run_detail_summary_operator_metrics",
 )

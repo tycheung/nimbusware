@@ -7,7 +7,7 @@ from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     mapping_export_json,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_named_operator_metrics_exports
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.self_refinement._helpers import (
     _SELF_REFINEMENT_FIELDS,
@@ -45,7 +45,11 @@ def self_refinement_latest_export_filename_slug(
     _self_refinement_timeline_operator_metrics_export_json_impl,
     self_refinement_timeline_operator_metrics_table_rows_csv,
     _self_refinement_timeline_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="self_refinement_timeline_operator_metrics")
+) = install_named_operator_metrics_exports(
+    globals(),
+    "self_refinement_timeline",
+    export_slug="self_refinement_timeline_operator_metrics",
+)
 
 
 def self_refinement_timeline_operator_metrics_export_json(
