@@ -35,8 +35,9 @@ def _load_policy_or_default(
             disk_bytes = int(path.stat().st_size)
         except OSError:
             disk_bytes = None
+    snap: dict[str, Any]
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
-        snap: dict[str, Any] = {
+        snap = {
             "relpath": "configs/self_refinement/policy.yaml",
             "exists": True,
             "source": "materializer",
@@ -58,7 +59,7 @@ def _load_policy_or_default(
         )
         return pol, snap
     path = repo_root / "configs" / "self_refinement" / "policy.yaml"
-    snap: dict[str, Any] = {
+    snap = {
         "relpath": "configs/self_refinement/policy.yaml",
         "exists": path.is_file(),
     }

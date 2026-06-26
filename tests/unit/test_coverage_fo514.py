@@ -119,6 +119,12 @@ def test_workflow_read_profile_path(tmp_path: Path) -> None:
     assert workflow_read.workflow_profile_path(tmp_path, "default").is_file()
 
 
+def test_workflow_read_escalation_policy_breadth(repo_root: Path) -> None:
+    from nimbusware_config import workflow_read
+
+    assert isinstance(workflow_read.escalation_policy_breadth(repo_root), dict)
+
+
 @pytest.fixture
 def repo_root() -> Path:
     from nimbusware_env import find_repo_root
@@ -183,3 +189,23 @@ def test_export_config_to_repo_in_memory(tmp_path: Path) -> None:
     out.mkdir()
     counts = export_config_to_repo(store, out)
     assert sum(counts.values()) >= 1
+
+
+def test_preview_seed_skips_duplicate_workflow_stem(tmp_path: Path) -> None:
+    from nimbusware_config.seed import preview_seed_from_repo
+
+    wf = tmp_path / "configs" / "workflows"
+    wf.mkdir(parents=True)
+    (wf / "dup.yaml").write_text("x: 1\n", encoding="utf-8")
+    (wf / "dup.yml").write_text("y: 2\n", encoding="utf-8")
+    rows = preview_seed_from_repo(tmp_path)
+    assert sum(1 for row in rows if row.get("document_key") == "dup") == 1
+
+
+def test_seed_policy_documents_from_repo_accepts_extra(tmp_path: Path) -> None:
+    from nimbusware_config.seed import seed_policy_documents_from_repo
+    from nimbusware_config.store import InMemoryConfigStore
+
+    store = InMemoryConfigStore()
+    counts = seed_policy_documents_from_repo(tmp_path, store, extra={})
+    assert isinstance(counts, dict)

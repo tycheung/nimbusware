@@ -14,7 +14,11 @@ def test_collab_settings_toggle_without_env_restart(
 ) -> None:
     from nimbusware_config import collab_settings_store
 
-    monkeypatch.setattr(collab_settings_store, "collab_settings_path", lambda repo_root=None: tmp_path / "collab_settings.yaml")
+    monkeypatch.setattr(
+        collab_settings_store,
+        "collab_settings_path",
+        lambda repo_root=None: tmp_path / "collab_settings.yaml",
+    )
     monkeypatch.setenv("NIMBUSWARE_COLLAB_ENABLED", "1")
     from nimbusware_env.collab_runtime import set_runtime_collab_enabled
 

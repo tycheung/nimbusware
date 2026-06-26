@@ -191,7 +191,12 @@ def test_projections_has_no_module_level_orchestrator_imports() -> None:
 
 
 def test_workflow_explainers_use_config_workflow_read_facade() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console" / "workflow_explainers"
+    root = (
+        Path(__file__).resolve().parents[2]
+        / "packages"
+        / "nimbusware_console"
+        / "workflow_explainers"
+    )
     offenders: list[str] = []
     for path in sorted(root.glob("*/payload.py")):
         hits = [

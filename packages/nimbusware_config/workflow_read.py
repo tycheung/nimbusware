@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
 from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
@@ -29,10 +32,11 @@ __all__ = [
     "security_scan_metadata_on_verify_enabled",
     "workflow_profile_dict",
     "workflow_profile_path",
+    "escalation_policy_breadth",
 ]
 
 
-def escalation_policy_breadth(repo_root):  # type: ignore[no-untyped-def]
+def escalation_policy_breadth(repo_root: Path) -> dict[str, Any]:
     """Lazy import — optional policy breadth helper for escalation explainers."""
     from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth as _fn
 

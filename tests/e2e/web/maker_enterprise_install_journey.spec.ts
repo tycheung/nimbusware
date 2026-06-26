@@ -72,8 +72,18 @@ test("enterprise install journey shows audit export and strict chips", async ({ 
 
   await activateMakerRoute(page, "/review");
   await page.evaluate(() => {
-    sessionStorage.setItem("maker_active_run_id", "11111111-1111-4111-8111-111111111111");
+    sessionStorage.setItem("maker_active_project_id", "p1");
+    sessionStorage.setItem(
+      "maker_active_run_id:p1",
+      "11111111-1111-4111-8111-111111111111",
+    );
   });
+  await page.route("**/v1/runs/*/maker/git-status**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ git_commit: null, git_outputs: {} }),
+    }),
+  );
   await page.reload();
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
   await activateMakerRoute(page, "/review");

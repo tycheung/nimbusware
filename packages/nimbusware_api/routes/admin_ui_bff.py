@@ -22,13 +22,13 @@ from nimbusware_console.critic_reliability_display import (
     fleet_critic_reliability_table_rows,
 )
 from nimbusware_console.findings_display import findings_list_from_response, findings_table_rows
+from nimbusware_console.operator_chat_core import ChatState, process_user_message
+from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_console.workflow_explainers.integration_adapter_writer import (
     integration_adapter_writer_from_events,
     integration_adapter_writer_run_caption,
     integration_adapter_writer_run_table_rows,
 )
-from nimbusware_console.operator_chat_core import ChatState, process_user_message
-from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_env.edition import is_enterprise
 from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
 from nimbusware_iam.constants import API_KEY_HEADER

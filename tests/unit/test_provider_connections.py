@@ -28,6 +28,11 @@ def test_provider_vault_roundtrip() -> None:
     assert decrypt_secret(blob) == "sk-test-key-123"
 
 
+def test_provider_vault_rejects_invalid_blob() -> None:
+    with pytest.raises(ValueError, match="invalid provider secret blob"):
+        decrypt_secret(b"\x00" + b"x" * 20)
+
+
 def test_subscription_secret_payload() -> None:
     blob = encode_secret_payload(connection_kind="subscription", subscription_connected=True)
     decoded = decode_secret_payload(blob, connection_kind="subscription")

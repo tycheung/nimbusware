@@ -338,7 +338,7 @@ def write_integration_adapter_scaffold(
 def _sync_target_body(kind: str) -> str:
     if kind == "api_bridge":
         return (
-            '        import os\n'
+            "        import os\n"
             '        state_path = self._workspace_dir / "target_state.json"\n'
             "        raw = {}\n"
             "        if state_path.is_file():\n"

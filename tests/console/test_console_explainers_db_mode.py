@@ -13,7 +13,9 @@ from nimbusware_console.workflow_explainers.agent_evaluator import (
 from nimbusware_console.workflow_explainers.escalation_suppress import (
     escalation_suppress_workflow_explainer_payload,
 )
-from nimbusware_console.workflow_explainers.integrator_threshold import integrator_threshold_explainer_payload
+from nimbusware_console.workflow_explainers.integrator_threshold import (
+    integrator_threshold_explainer_payload,
+)
 from nimbusware_console.workflow_explainers.security_scan_metadata import (
     security_scan_metadata_workflow_explainer_payload,
 )
