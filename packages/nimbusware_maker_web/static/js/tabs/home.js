@@ -91,7 +91,7 @@ export async function mountHome(root) {
       <p class="actions">
         <a href="#/review" data-testid="maker-home-enterprise-review">Review &amp; audit exports</a>
         · <a href="/admin/#/fleet" target="_blank" rel="noopener" data-testid="maker-home-enterprise-fleet">Admin Fleet</a>
-        · <a href="/admin/#/fleet" target="_blank" rel="noopener" data-testid="maker-home-enterprise-compliance">Compliance dashboard</a>
+        · <a href="/admin/#/fleet?panel=compliance" target="_blank" rel="noopener" data-testid="maker-home-enterprise-compliance">Compliance dashboard</a>
       </p>
     </section>
     <p class="muted">To delete a project, use the Admin console (requires admin token).</p>`;

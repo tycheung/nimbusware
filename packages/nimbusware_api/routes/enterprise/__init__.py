@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from nimbusware_api.routes.enterprise.audit_export import router as enterprise_audit_export_router
+from nimbusware_api.routes.enterprise.audit_policy import router as audit_policy_router
 from nimbusware_api.routes.enterprise.collab_policy import router as collab_policy_router
 from nimbusware_api.routes.enterprise.compliance import router as compliance_router
 from nimbusware_api.routes.enterprise.config_notify import router as config_notify_router
@@ -67,6 +68,7 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_commit_router)
     router.include_router(fleet_critic_reliability_router)
     router.include_router(enterprise_audit_export_router)
+    router.include_router(audit_policy_router)
     router.include_router(compliance_router)
     router.include_router(model_policy_router)
     router.include_router(collab_policy_router)

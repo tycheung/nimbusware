@@ -374,3 +374,42 @@ def build_competitive_summary(
             ),
         },
     }
+
+
+def build_compliance_dashboard_metrics(
+    store: Any,
+    *,
+    limit_runs: int = 200,
+) -> dict[str, Any]:
+    rows, runs_scanned = fetch_recent_run_event_rows(store, limit_runs=limit_runs)
+    by_run = _rows_by_run(rows)
+    slice_gate = _slice_gate_pass_rate(rows)
+    slices = _slices_per_completed_run(by_run)
+    commit_events = sum(
+        1 for r in rows if str(r.get("event_type") or "") == EventType.STAGE_PASSED.value
+    )
+    last_event_at: str | None = None
+    if rows:
+        ts = _parse_ts(rows[-1].get("occurred_at"))
+        if ts is not None:
+            last_event_at = ts.isoformat()
+    buckets: dict[str, int] = {"1": 0, "2-3": 0, "4+": 0}
+    for count in slices.get("sample") or []:
+        n = int(count)
+        if n <= 1:
+            buckets["1"] += 1
+        elif n <= 3:
+            buckets["2-3"] += 1
+        else:
+            buckets["4+"] += 1
+    return {
+        "gate_pass_rate": slice_gate.get("rate"),
+        "gate_pass_count": slice_gate.get("pass_count"),
+        "gate_fail_count": slice_gate.get("fail_count"),
+        "slice_size_histogram": buckets,
+        "mean_slices_per_run": slices.get("mean_slices"),
+        "completed_runs": slices.get("completed_runs"),
+        "commit_stage_events": commit_events,
+        "runs_scanned": runs_scanned,
+        "last_event_at": last_event_at,
+    }
