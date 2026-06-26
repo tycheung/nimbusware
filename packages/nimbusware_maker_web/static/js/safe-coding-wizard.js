@@ -2,6 +2,7 @@ import { apiJson, toast } from "./api-client.js";
 import { isSafeCodingUx } from "./safe-coding-ux.js";
 
 const WIZARD_DISMISSED_KEY = "maker_safe_coding_wizard_done";
+const BOOTSTRAP_POLL_MS = 2500;
 
 export function safeCodingWizardDismissed() {
   return localStorage.getItem(WIZARD_DISMISSED_KEY) === "1";
@@ -10,6 +11,18 @@ export function safeCodingWizardDismissed() {
 function workspacePathFromProjects(projects) {
   const first = (projects?.projects || projects || [])[0];
   return first?.workspace_path?.trim() || "";
+}
+
+async function pollPlaywrightBootstrap(statusEl) {
+  for (let i = 0; i < 120; i += 1) {
+    const body = await apiJson("/platform/playwright-bootstrap");
+    const status = String(body.status || "");
+    if (body.plain_summary) statusEl.textContent = body.plain_summary;
+    if (status === "ready") return body;
+    if (status === "error") throw new Error(body.plain_summary || "Playwright install failed");
+    await new Promise((resolve) => setTimeout(resolve, BOOTSTRAP_POLL_MS));
+  }
+  throw new Error("Browser check install timed out — try again from Home.");
 }
 
 export async function mountSafeCodingWizard(root) {
@@ -66,6 +79,7 @@ export async function mountSafeCodingWizard(root) {
   prepareBtn?.addEventListener("click", async () => {
     if (!workspacePath) return;
     prepareBtn.disabled = true;
+    skipBtn.disabled = true;
     statusEl.textContent = "Preparing workspace…";
     try {
       await apiJson("/platform/workspace-scaffold", {
@@ -78,7 +92,8 @@ export async function mountSafeCodingWizard(root) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspace_path: workspacePath }),
       });
-      const boot = await apiJson("/platform/playwright-bootstrap", { method: "POST" });
+      await apiJson("/platform/playwright-bootstrap", { method: "POST" });
+      const boot = await pollPlaywrightBootstrap(statusEl);
       statusEl.textContent = boot.plain_summary || "Workspace prepared.";
       localStorage.setItem(WIZARD_DISMISSED_KEY, "1");
       prepareBtn.hidden = true;
@@ -88,6 +103,7 @@ export async function mountSafeCodingWizard(root) {
       toast(String(e.message || e), "error");
     } finally {
       prepareBtn.disabled = false;
+      skipBtn.disabled = false;
     }
   });
 

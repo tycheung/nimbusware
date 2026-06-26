@@ -25,7 +25,7 @@ def assess_workspace_readiness(workspace_path: Path) -> dict[str, Any]:
     playwright = shutil.which("playwright") or shutil.which("npx")
     checks["playwright_cli"] = bool(playwright)
     if not checks["playwright_cli"]:
-        warnings.append("Playwright CLI not found — install with: poetry run playwright install")
+        warnings.append("Browser checks are not installed — use Prepare workspace on Home.")
 
     pyproject = ws / "pyproject.toml"
     package_json = ws / "package.json"
