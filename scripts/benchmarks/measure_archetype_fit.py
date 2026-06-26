@@ -1,4 +1,4 @@
-"""Measure consumer archetype fit via static rubric (CI-stable)."""
+#!/usr/bin/env python3
 
 from __future__ import annotations
 
@@ -14,26 +14,48 @@ if str(_REPO / "packages") not in sys.path:
 
 from nimbusware_env import find_repo_root
 
-_TARGET_SCORE = 0.85
+_TARGET_SCORE = 0.95
 
-_SAFE_CODING_CHECKS: tuple[str, ...] = (
+_SAFE_CODING_STATIC: tuple[str, ...] = (
     "configs/workflows/safe_coding.yaml",
     "docs/product/safe-coding.md",
-    "packages/nimbusware_maker_web/static/js/archetype-picker.js",
+    "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js",
     "packages/nimbusware_maker_web/static/js/safe-coding-ux.js",
-    "configs/install/bundles/default.env.yaml",
+    "packages/nimbusware_api/routes/platform.py",
 )
 
-_ENGINEER_CHECKS: tuple[str, ...] = (
-    "packages/nimbusware_orchestrator/participant_output_packet.py",
-    "packages/nimbusware_orchestrator/collab_output_redaction.py",
-    "configs/autopilot/user_profiles.yaml",
-    "packages/nimbusware_api/routes/provider_subscription_oauth.py",
+_SAFE_CODING_BEHAVIORAL: tuple[str, ...] = (
+    "packages/nimbusware_maker/consumer_test_scaffold.py",
+    "packages/nimbusware_maker/playwright_bootstrap.py",
+    "tests/e2e/web/maker_safe_coding_onboarding.spec.ts",
+)
+
+_ENGINEER_STATIC: tuple[str, ...] = (
+    "packages/nimbusware_orchestrator/collab_binding_resolver.py",
+    "packages/nimbusware_api/routes/platform_collab_settings.py",
+    "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
+    "configs/install/bundles/default.config.yaml",
+)
+
+_ENGINEER_BEHAVIORAL: tuple[str, ...] = (
+    "packages/nimbusware_maker_web/static/js/archetype-picker.js",
+    "tests/api/test_collab_settings_api.py",
+    "tests/api/test_collab_model_routing_api.py",
+)
+
+_ENTERPRISE_STATIC: tuple[str, ...] = (
     "configs/install/bundles/enterprise.env.yaml",
+    "packages/nimbusware_api/routes/enterprise/compliance.py",
+    "packages/nimbusware_api/routes/enterprise/audit_export.py",
+)
+
+_ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
+    "packages/nimbusware_maker_web/static/js/tabs/home.js",
+    "tests/e2e/web/maker_enterprise_journey.spec.ts",
 )
 
 
-def _rubric_score(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
+def _score_paths(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
     passed = 0
     missing: list[str] = []
     for rel in rel_paths:
@@ -52,20 +74,45 @@ def _rubric_score(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
     }
 
 
+def _blend(static: dict[str, object], behavioral: dict[str, object]) -> dict[str, object]:
+    s = float(static["fit_score"])  # type: ignore[arg-type]
+    b = float(behavioral["fit_score"])  # type: ignore[arg-type]
+    fit = round(0.4 * s + 0.6 * b, 3)
+    missing = list(static.get("missing", [])) + list(behavioral.get("missing", []))  # type: ignore[arg-type]
+    return {
+        "fit_score": fit,
+        "static": static,
+        "behavioral": behavioral,
+        "missing": missing,
+        "meets_target": fit >= _TARGET_SCORE,
+    }
+
+
 def measure_archetype_fit(*, repo_root: Path | None = None) -> dict[str, object]:
     root = repo_root or find_repo_root()
-    safe = _rubric_score(root, _SAFE_CODING_CHECKS)
-    engineer = _rubric_score(root, _ENGINEER_CHECKS)
-    ok = bool(safe.get("meets_target")) and bool(engineer.get("meets_target"))
+    safe = _blend(
+        _score_paths(root, _SAFE_CODING_STATIC),
+        _score_paths(root, _SAFE_CODING_BEHAVIORAL),
+    )
+    engineer = _blend(
+        _score_paths(root, _ENGINEER_STATIC),
+        _score_paths(root, _ENGINEER_BEHAVIORAL),
+    )
+    enterprise = _blend(
+        _score_paths(root, _ENTERPRISE_STATIC),
+        _score_paths(root, _ENTERPRISE_BEHAVIORAL),
+    )
+    ok = all(row.get("meets_target") for row in (safe, engineer, enterprise))
     return {
-        "version": 1,
+        "version": 2,
         "ok": ok,
         "target_score": _TARGET_SCORE,
         "measured_at": datetime.now(timezone.utc).isoformat(),
-        "mode": "static_rubric",
+        "mode": "behavioral_rubric",
         "archetypes": {
             "safe_coding": safe,
             "engineer": engineer,
+            "enterprise": enterprise,
         },
         "repo_root": str(root),
     }

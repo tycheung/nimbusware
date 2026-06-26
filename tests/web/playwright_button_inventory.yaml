@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 129
+  total_buttons: 136
   clicked: 36
-  visible_only: 7
-  unwired: 86
-  click_ratio: 0.2791
+  visible_only: 8
+  unwired: 92
+  click_ratio: 0.2647
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -133,6 +133,12 @@ buttons:
   visible_only_in:
   - tests/e2e/web/maker_chat_override.spec.ts
   - tests/e2e/web/maker_chat_patch.spec.ts
+- test_id: maker-chat-collab-models-drawer
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-commentary
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_ui.js
@@ -241,6 +247,12 @@ buttons:
 - test_id: maker-chat-library-tag-filter
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_library_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-model-drawer-btn
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -386,6 +398,12 @@ buttons:
   label: Apply to run
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
+  visible_only_in: []
+- test_id: maker-enterprise-strict-chips
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
+  label: (dynamic)
+  clicked_in: []
   visible_only_in: []
 - test_id: maker-factory-evidence-download
   app: maker
@@ -756,6 +774,31 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-safe-coding-prepare
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  label: Prepare workspace
+  clicked_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_safe_coding_onboarding.spec.ts
+- test_id: maker-safe-coding-readiness-ribbon
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-safe-coding-wizard
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-safe-coding-wizard-skip
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  label: Skip for now
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-agent-models-save

@@ -64,6 +64,9 @@ export async function mountBuild(root) {
           workflow_profile: "campaign_micro_slice",
         };
     const payload = applyDefaultProfilesToPayload(base);
+    if (!quickMode) {
+      payload.workflow_profile = "campaign_micro_slice";
+    }
     const body = await apiJson(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

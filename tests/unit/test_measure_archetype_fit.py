@@ -21,9 +21,9 @@ def test_measure_archetype_fit_rubric_passes() -> None:
     mod = _measure_module()
     metrics = mod.measure_archetype_fit(repo_root=_ROOT)
     assert metrics["ok"] is True
-    assert metrics["mode"] == "static_rubric"
-    for name in ("safe_coding", "engineer"):
+    assert metrics["mode"] == "behavioral_rubric"
+    assert metrics["version"] == 2
+    for name in ("safe_coding", "engineer", "enterprise"):
         row = metrics["archetypes"][name]
-        assert row["fit_score"] >= 0.85
-        assert row["checks_passed"] == row["checks_total"]
-        assert row["missing"] == []
+        assert row["fit_score"] >= 0.95
+        assert row["meets_target"] is True

@@ -10,7 +10,7 @@ from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
 _SNAPSHOT = _ROOT / "benchmarks" / "latest_archetype_metrics.json"
-_TARGET_SCORE = 0.85
+_TARGET_SCORE = 0.95
 _MEASURE = _ROOT / "scripts" / "benchmarks" / "measure_archetype_fit.py"
 
 
@@ -38,7 +38,7 @@ def _validate_snapshot(body: dict[str, object]) -> int:
     if not body.get("ok"):
         print("archetype fit gate: snapshot not ok", file=sys.stderr)
         return 1
-    for name in ("safe_coding", "engineer"):
+    for name in ("safe_coding", "engineer", "enterprise"):
         score = _archetype_score(body, name)
         if score is None:
             print(f"archetype fit gate: {name} fit_score missing", file=sys.stderr)
@@ -88,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
         if not live.get("ok"):
             print("archetype fit gate: live harness ok=false", file=sys.stderr)
             return 1
-        for name in ("safe_coding", "engineer"):
+        for name in ("safe_coding", "engineer", "enterprise"):
             score = _archetype_score(live, name)
             if score is None or score < _TARGET_SCORE:
                 print(
@@ -109,9 +109,10 @@ def main(argv: list[str] | None = None) -> int:
 
     safe = _archetype_score(snap, "safe_coding")
     engineer = _archetype_score(snap, "engineer")
+    enterprise = _archetype_score(snap, "enterprise")
     print(
         f"archetype fit CI gate OK (safe_coding={safe:.0%}, engineer={engineer:.0%}, "
-        f"target={_TARGET_SCORE:.0%})",
+        f"enterprise={enterprise:.0%}, target={_TARGET_SCORE:.0%})",
         flush=True,
     )
     return 0

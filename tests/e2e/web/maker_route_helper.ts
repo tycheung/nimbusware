@@ -2,6 +2,10 @@ import { Page } from "@playwright/test";
 
 export async function activateMakerRoute(page: Page, route: string): Promise<void> {
   await page.evaluate((targetRoute) => {
+    if (!localStorage.getItem("maker_archetype_subchoice")) {
+      localStorage.setItem("maker_archetype_subchoice", "engineer");
+    }
+    document.querySelector("[data-testid='maker-archetype-picker']")?.remove();
     const current = window.location.hash;
     const qIdx = current.indexOf("?");
     const query = qIdx >= 0 ? current.slice(qIdx) : "";
@@ -25,6 +29,10 @@ export async function activateMakerRoute(page: Page, route: string): Promise<voi
 /** Activate a full hash (e.g. ``#/chat?run_id=…``) without dynamic module imports. */
 export async function activateMakerRouteHash(page: Page, hash: string): Promise<void> {
   await page.evaluate((targetHash) => {
+    if (!localStorage.getItem("maker_archetype_subchoice")) {
+      localStorage.setItem("maker_archetype_subchoice", "engineer");
+    }
+    document.querySelector("[data-testid='maker-archetype-picker']")?.remove();
     const h = targetHash.startsWith("#") ? targetHash : `#${targetHash}`;
     const path = h.replace(/^#/, "").split("?")[0] || "/chat";
     const normalized = path.startsWith("/") ? path : `/${path}`;

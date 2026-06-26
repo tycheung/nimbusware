@@ -1,3 +1,4 @@
+import { apiJson, toast } from "./api-client.js";
 import { plainCheckpointLabel } from "./plain-language.js";
 import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 

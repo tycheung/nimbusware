@@ -175,7 +175,6 @@ def retrieve_memory_excerpt_for_slice(
     actor_user_id: str = "",
     retrieval_policy: dict[str, bool] | None = None,
 ) -> tuple[str, list[MemoryRetrievalHit], str]:
-    """Merge user-private and project-shared memory per retrieval policy."""
     query = memory_query_from_slice_plan(plan)
     scope = repo_scope_hash(repo_root)
     policy = retrieval_policy or default_memory_retrieval_policy()
