@@ -32,6 +32,7 @@ def test_workflow_explainer_inits_include_export_install_line() -> None:
     for spec in WORKFLOW_EXPLAINER_SPECS:
         text = (root / spec.package / "__init__.py").read_text(encoding="utf-8")
         assert EXPORT_INSTALL_MARKER in text
+        compact = "".join(text.split())
         assert (
-            f'install_package_workflow_explainer_exports(globals(), "{spec.slug}")' in text
+            f'install_package_workflow_explainer_exports(globals(),"{spec.slug}")' in compact
         )
