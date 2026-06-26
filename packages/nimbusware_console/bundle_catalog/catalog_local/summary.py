@@ -23,7 +23,11 @@ from nimbusware_console.components.operator_metrics import (
     mapping_to_sorted_table_rows,
     table_rows_csv,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    build_metrics_fn,
+    install_operator_metrics_module,
+    table_rows_fn,
+)
 
 
 def bundle_catalog_local_summary(
@@ -81,27 +85,29 @@ bundle_catalog_local_summary_table_rows_csv = partial(
 )
 
 
-def bundle_catalog_local_summary_operator_metrics(
+_LOCAL_SUMMARY_PREFIX = "bundle_catalog_local_summary"
+
+_LOCAL_SUMMARY_DEFAULTS: dict[str, Any] = {
+    "has_catalog_yaml": False,
+    "catalog_yaml_present": False,
+    "bundle_count": 0,
+    "distinct_tag_count": 0,
+    "avg_tags_per_bundle": 0.0,
+}
+
+_LOCAL_SUMMARY_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Catalog YAML present", "catalog_yaml_present"),
+    ("Bundle count", "bundle_count"),
+    ("Distinct tag count", "distinct_tag_count"),
+    ("Distinct tags / bundle", "avg_tags_per_bundle"),
+)
+
+
+def _local_summary_postprocess(
+    metrics: dict[str, Any],
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "has_catalog_yaml": False,
-        "catalog_yaml_present": False,
-        "bundle_count": 0,
-        "distinct_tag_count": 0,
-        "avg_tags_per_bundle": 0.0,
-    }
-    if not isinstance(summary, Mapping):
-        return metrics
-    has_yaml = summary.get("has_catalog_yaml") is True
-    metrics["has_catalog_yaml"] = has_yaml
-    metrics["catalog_yaml_present"] = has_yaml
-    bc = summary.get("bundle_count")
-    if is_strict_int(bc) and bc >= 0:
-        metrics["bundle_count"] = bc
-    dtc = summary.get("distinct_tag_count")
-    if is_strict_int(dtc) and dtc >= 0:
-        metrics["distinct_tag_count"] = dtc
+    metrics["catalog_yaml_present"] = metrics["has_catalog_yaml"]
     if metrics["bundle_count"] > 0:
         metrics["avg_tags_per_bundle"] = round(
             metrics["distinct_tag_count"] / metrics["bundle_count"],
@@ -110,46 +116,48 @@ def bundle_catalog_local_summary_operator_metrics(
     return metrics
 
 
-def bundle_catalog_local_summary_operator_metrics_table_rows(
+def _local_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "Catalog YAML present",
-            "value": str(metrics.get("catalog_yaml_present", False)).lower(),
-        },
-        {"field": "Bundle count", "value": str(metrics.get("bundle_count", 0))},
-        {
-            "field": "Distinct tag count",
-            "value": str(metrics.get("distinct_tag_count", 0)),
-        },
-    ]
-    avg = metrics.get("avg_tags_per_bundle")
-    if is_number(avg):
-        rows.append({"field": "Distinct tags / bundle", "value": str(avg)})
-    return rows
+    return table_rows_fn(
+        _LOCAL_SUMMARY_TABLE_ROWS,
+        include_when=lambda _m, key: key != "avg_tags_per_bundle" or is_number(_m.get(key)),
+    )(metrics)
 
 
-(
-    bundle_catalog_local_summary_operator_metrics_export_json,
-    bundle_catalog_local_summary_operator_metrics_table_rows_csv,
-    bundle_catalog_local_summary_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(export_slug="bundle_catalog_local_summary_operator_metrics")
-
-
-def bundle_catalog_local_summary_operator_metrics_caption(
+def _local_summary_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
-    if metrics.get("catalog_yaml_present") is not True:
+    if not isinstance(metrics, Mapping) or metrics.get("catalog_yaml_present") is not True:
         return None
     bc = metrics.get("bundle_count", 0)
     dtc = metrics.get("distinct_tag_count", 0)
-    if not isinstance(bc, int) or isinstance(bc, bool):
+    if not is_strict_int(bc):
         bc = 0
-    if not isinstance(dtc, int) or isinstance(dtc, bool):
+    if not is_strict_int(dtc):
         dtc = 0
     return f"Local catalog operator metrics: **{bc}** bundle(s), **{dtc}** distinct tag(s)."
+
+
+(
+    bundle_catalog_local_summary_operator_metrics,
+    bundle_catalog_local_summary_operator_metrics_table_rows,
+    bundle_catalog_local_summary_operator_metrics_caption,
+    bundle_catalog_local_summary_operator_metrics_export_json,
+    bundle_catalog_local_summary_operator_metrics_table_rows_csv,
+    _bundle_catalog_local_summary_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix=_LOCAL_SUMMARY_PREFIX,
+    metrics=build_metrics_fn(
+        _LOCAL_SUMMARY_DEFAULTS,
+        bool_fields=(("has_catalog_yaml", "has_catalog_yaml"),),
+        int_fields=(
+            ("bundle_count", "bundle_count"),
+            ("distinct_tag_count", "distinct_tag_count"),
+        ),
+        postprocess=_local_summary_postprocess,
+    ),
+    table_rows=_local_summary_operator_metrics_table_rows,
+    caption=_local_summary_operator_metrics_caption,
+)

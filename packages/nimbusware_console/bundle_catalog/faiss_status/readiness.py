@@ -23,7 +23,11 @@ from nimbusware_console.components.operator_metrics import (
     mapping_to_sorted_table_rows,
     table_rows_csv,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from agent_core.coercion import as_stripped_str, is_strict_int
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    build_metrics_fn,
+    install_operator_metrics_module,
+)
 
 
 def bundle_faiss_readiness_summary(repo_root: Path) -> dict[str, Any]:
@@ -106,58 +110,48 @@ def bundle_faiss_readiness_summary_table_rows(
 bundle_faiss_readiness_summary_table_rows_csv = field_value_table_rows_csv
 
 
-def bundle_faiss_readiness_summary_operator_metrics(
+_FAISS_READINESS_PREFIX = "bundle_faiss_readiness_summary"
+
+_FAISS_READINESS_DEFAULTS: dict[str, Any] = {
+    "code": None,
+    "missing_path_count": 0,
+    "is_ready": False,
+    "is_stale": False,
+    "is_incomplete": False,
+    "is_no_catalog": False,
+    "catalog_mtime_observable": False,
+    "index_mtime_observable": False,
+    "mtime_both_observable": False,
+    "headline_present": False,
+    "auto_rebuild_recommended": False,
+}
+
+
+def _faiss_readiness_postprocess(
+    metrics: dict[str, Any],
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "code": None,
-        "missing_path_count": 0,
-        "is_ready": False,
-        "is_stale": False,
-        "is_incomplete": False,
-        "is_no_catalog": False,
-        "catalog_mtime_observable": False,
-        "index_mtime_observable": False,
-        "mtime_both_observable": False,
-        "headline_present": False,
-        "auto_rebuild_recommended": False,
-    }
-    if not isinstance(summary, Mapping):
-        return metrics
-    code = summary.get("code")
+    code = metrics.get("code")
     if isinstance(code, str) and code.strip():
         code_s = code.strip()
-        metrics["code"] = code_s
         metrics["is_ready"] = code_s == "ready"
         metrics["is_stale"] = code_s == "stale"
         metrics["is_incomplete"] = code_s == "incomplete"
         metrics["is_no_catalog"] = code_s == "no_catalog"
-    missing = summary.get("missing")
-    if isinstance(missing, list):
-        metrics["missing_path_count"] = len(missing)
-    if summary.get("catalog_mtime_observable") is True:
-        metrics["catalog_mtime_observable"] = True
-    if summary.get("index_mtime_observable") is True:
-        metrics["index_mtime_observable"] = True
     if metrics["catalog_mtime_observable"] and metrics["index_mtime_observable"]:
         metrics["mtime_both_observable"] = True
-    headline = summary.get("headline")
-    if isinstance(headline, str) and headline.strip():
-        metrics["headline_present"] = True
-    if summary.get("auto_rebuild_recommended") is True:
-        metrics["auto_rebuild_recommended"] = True
     return metrics
 
 
-def bundle_faiss_readiness_summary_operator_metrics_table_rows(
+def _faiss_readiness_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
-    code = metrics.get("code")
-    if isinstance(code, str) and code.strip():
-        rows.append({"field": "Readiness code", "value": code.strip()})
+    code = as_stripped_str(metrics.get("code"))
+    if code is not None:
+        rows.append({"field": "Readiness code", "value": code})
     rows.append(
         {"field": "Missing paths", "value": str(metrics.get("missing_path_count", 0))},
     )
@@ -166,10 +160,6 @@ def bundle_faiss_readiness_summary_operator_metrics_table_rows(
         ("Stale", "is_stale"),
         ("Incomplete", "is_incomplete"),
         ("No catalog", "is_no_catalog"),
-    ):
-        if metrics.get(key) is True:
-            rows.append({"field": label, "value": "yes"})
-    for label, key in (
         ("Catalog mtime observable", "catalog_mtime_observable"),
         ("Index mtime observable", "index_mtime_observable"),
         ("Both mtimes observable", "mtime_both_observable"),
@@ -180,27 +170,18 @@ def bundle_faiss_readiness_summary_operator_metrics_table_rows(
     return rows
 
 
-(
-    bundle_faiss_readiness_summary_operator_metrics_export_json,
-    bundle_faiss_readiness_summary_operator_metrics_table_rows_csv,
-    bundle_faiss_readiness_summary_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
-    export_slug="bundle_faiss_readiness_summary_operator_metrics",
-)
-
-
-def bundle_faiss_readiness_summary_operator_metrics_caption(
+def _faiss_readiness_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
     if not isinstance(metrics, Mapping):
         return None
-    code = metrics.get("code")
-    if not isinstance(code, str) or not code.strip():
+    code = as_stripped_str(metrics.get("code"))
+    if code is None:
         return None
     missing = metrics.get("missing_path_count", 0)
-    if not isinstance(missing, int) or isinstance(missing, bool):
+    if not is_strict_int(missing):
         missing = 0
-    parts = [f"FAISS readiness metrics: **{code.strip()}**"]
+    parts = [f"FAISS readiness metrics: **{code}**"]
     if missing > 0:
         parts.append(f"**{missing}** missing path(s)")
     if metrics.get("is_stale") is True:
@@ -218,6 +199,33 @@ def bundle_faiss_readiness_summary_operator_metrics_caption(
     if metrics.get("headline_present") is True:
         parts.append("headline present")
     return ", ".join(parts) + "."
+
+
+(
+    bundle_faiss_readiness_summary_operator_metrics,
+    bundle_faiss_readiness_summary_operator_metrics_table_rows,
+    bundle_faiss_readiness_summary_operator_metrics_caption,
+    bundle_faiss_readiness_summary_operator_metrics_export_json,
+    bundle_faiss_readiness_summary_operator_metrics_table_rows_csv,
+    _bundle_faiss_readiness_summary_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix=_FAISS_READINESS_PREFIX,
+    metrics=build_metrics_fn(
+        _FAISS_READINESS_DEFAULTS,
+        str_strip_fields=(("code", "code"),),
+        list_len_fields=(("missing", "missing_path_count"),),
+        bool_fields=(
+            ("catalog_mtime_observable", "catalog_mtime_observable"),
+            ("index_mtime_observable", "index_mtime_observable"),
+            ("auto_rebuild_recommended", "auto_rebuild_recommended"),
+        ),
+        str_present=(("headline", "headline_present"),),
+        postprocess=_faiss_readiness_postprocess,
+    ),
+    table_rows=_faiss_readiness_operator_metrics_table_rows,
+    caption=_faiss_readiness_operator_metrics_caption,
+)
 
 
 def bundle_faiss_readiness_export_filename_slug(

@@ -22,7 +22,11 @@ from nimbusware_console.components.operator_metrics import (
     mapping_to_sorted_table_rows,
     table_rows_csv,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    build_metrics_fn,
+    install_operator_metrics_module,
+    table_rows_fn,
+)
 
 
 def bundle_catalog_bundles_without_tags_count(
@@ -93,28 +97,29 @@ bundle_catalog_bundles_without_tags_rollup_table_rows_csv = partial(
 )
 
 
-def bundle_catalog_bundles_without_tags_rollup_operator_metrics(
+_ROLLUP_WITHOUT_TAGS_PREFIX = "bundle_catalog_bundles_without_tags_rollup"
+
+_ROLLUP_WITHOUT_TAGS_DEFAULTS: dict[str, Any] = {
+    "has_catalog_yaml": False,
+    "bundle_count": 0,
+    "bundles_without_tags_count": 0,
+    "bundles_with_tags_count": 0,
+    "untagged_ratio": None,
+}
+
+_ROLLUP_WITHOUT_TAGS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Catalog YAML present", "has_catalog_yaml"),
+    ("Bundle count", "bundle_count"),
+    ("Bundles without tags", "bundles_without_tags_count"),
+    ("Bundles with tags", "bundles_with_tags_count"),
+    ("Untagged ratio", "untagged_ratio"),
+)
+
+
+def _rollup_without_tags_postprocess(
+    metrics: dict[str, Any],
     rollup: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "has_catalog_yaml": False,
-        "bundle_count": 0,
-        "bundles_without_tags_count": 0,
-        "bundles_with_tags_count": 0,
-        "untagged_ratio": None,
-    }
-    if not isinstance(rollup, Mapping):
-        return metrics
-    metrics["has_catalog_yaml"] = rollup.get("has_catalog_yaml") is True
-    bc = rollup.get("bundle_count")
-    if is_strict_int(bc) and bc >= 0:
-        metrics["bundle_count"] = bc
-    without = rollup.get("bundles_without_tags_count")
-    if is_strict_int(without) and without >= 0:
-        metrics["bundles_without_tags_count"] = without
-    with_tags = rollup.get("bundles_with_tags_count")
-    if is_strict_int(with_tags) and with_tags >= 0:
-        metrics["bundles_with_tags_count"] = with_tags
     if metrics["bundle_count"] > 0:
         metrics["untagged_ratio"] = round(
             metrics["bundles_without_tags_count"] / metrics["bundle_count"],
@@ -123,52 +128,50 @@ def bundle_catalog_bundles_without_tags_rollup_operator_metrics(
     return metrics
 
 
-def bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows(
+def _rollup_without_tags_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "Catalog YAML present",
-            "value": str(metrics.get("has_catalog_yaml", False)).lower(),
-        },
-        {"field": "Bundle count", "value": str(metrics.get("bundle_count", 0))},
-        {
-            "field": "Bundles without tags",
-            "value": str(metrics.get("bundles_without_tags_count", 0)),
-        },
-        {
-            "field": "Bundles with tags",
-            "value": str(metrics.get("bundles_with_tags_count", 0)),
-        },
-    ]
-    ratio = metrics.get("untagged_ratio")
-    if is_number(ratio):
-        rows.append({"field": "Untagged ratio", "value": str(ratio)})
+    rows = table_rows_fn(
+        _ROLLUP_WITHOUT_TAGS_TABLE_ROWS,
+        include_when=lambda _m, key: key != "untagged_ratio" or is_number(_m.get(key)),
+    )(metrics)
     return rows
 
 
-(
-    bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_json,
-    bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows_csv,
-    bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
-    export_slug="bundle_catalog_bundles_without_tags_rollup_operator_metrics",
-)
-
-
-def bundle_catalog_bundles_without_tags_rollup_operator_metrics_caption(
+def _rollup_without_tags_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
-    if metrics.get("has_catalog_yaml") is not True:
+    if not isinstance(metrics, Mapping) or metrics.get("has_catalog_yaml") is not True:
         return None
     bc = metrics.get("bundle_count", 0)
     without = metrics.get("bundles_without_tags_count", 0)
-    if not isinstance(bc, int) or isinstance(bc, bool):
+    if not is_strict_int(bc):
         bc = 0
-    if not isinstance(without, int) or isinstance(without, bool):
+    if not is_strict_int(without):
         without = 0
     return f"Bundles without tags rollup metrics: **{without}** untagged of **{bc}** bundle(s)."
+
+
+(
+    bundle_catalog_bundles_without_tags_rollup_operator_metrics,
+    bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows,
+    bundle_catalog_bundles_without_tags_rollup_operator_metrics_caption,
+    bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_json,
+    bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows_csv,
+    _bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix=_ROLLUP_WITHOUT_TAGS_PREFIX,
+    metrics=build_metrics_fn(
+        _ROLLUP_WITHOUT_TAGS_DEFAULTS,
+        bool_fields=(("has_catalog_yaml", "has_catalog_yaml"),),
+        int_fields=(
+            ("bundle_count", "bundle_count"),
+            ("bundles_without_tags_count", "bundles_without_tags_count"),
+            ("bundles_with_tags_count", "bundles_with_tags_count"),
+        ),
+        postprocess=_rollup_without_tags_postprocess,
+    ),
+    table_rows=_rollup_without_tags_operator_metrics_table_rows,
+    caption=_rollup_without_tags_operator_metrics_caption,
+)

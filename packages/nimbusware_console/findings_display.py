@@ -11,7 +11,7 @@ from typing import Any
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _FINDINGS_TABLE_COLUMNS: tuple[str, ...] = (
@@ -186,16 +186,26 @@ def findings_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
     return slug[:max_len]
 
 
+(
+    findings_operator_metrics,
+    findings_operator_metrics_table_rows,
+    findings_operator_metrics_caption,
+    findings_operator_metrics_export_json,
+    findings_operator_metrics_table_rows_csv,
+    _findings_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="findings",
+    metrics=findings_operator_metrics,
+    table_rows=findings_operator_metrics_table_rows,
+    caption=findings_operator_metrics_caption,
+    export_slug="findings_operator_metrics",
+)
+
+
 def findings_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return findings_export_filename_slug(run_id, max_len=max_len)
-
-
-(
-    findings_operator_metrics_export_json,
-    findings_operator_metrics_table_rows_csv,
-    _findings_operator_metrics_exports_slug,
-) = bind_operator_metrics_exports(export_slug="findings_operator_metrics")

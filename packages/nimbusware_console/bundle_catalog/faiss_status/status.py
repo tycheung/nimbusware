@@ -7,32 +7,29 @@ from typing import Any
 from nimbusware_console.bundle_catalog.faiss_status._constants import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
 )
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    build_metrics_fn,
+    install_operator_metrics_module,
+)
+
+_PREFIX = "bundle_faiss_index_status"
+
+_DEFAULTS: dict[str, Any] = {
+    "ready": False,
+    "stale": None,
+    "faiss_index_exists": False,
+    "bundle_order_exists": False,
+}
+
+_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("FAISS ready", "ready"),
+    ("Index stale vs catalog", "stale"),
+    ("faiss.index on disk", "faiss_index_exists"),
+    ("bundle_order.json on disk", "bundle_order_exists"),
+)
 
 
-def bundle_faiss_index_status_operator_metrics(
-    status: Mapping[str, Any] | None,
-) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "ready": False,
-        "stale": None,
-        "faiss_index_exists": False,
-        "bundle_order_exists": False,
-    }
-    if not isinstance(status, Mapping):
-        return metrics
-    if status.get("ready") is True:
-        metrics["ready"] = True
-    stale = status.get("stale")
-    if isinstance(stale, bool):
-        metrics["stale"] = stale
-    if status.get("faiss_index_exists") is True:
-        metrics["faiss_index_exists"] = True
-    if status.get("bundle_order_exists") is True:
-        metrics["bundle_order_exists"] = True
-    return metrics
-
-
-def bundle_faiss_index_status_operator_metrics_table_rows(
+def _faiss_index_status_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
@@ -50,7 +47,7 @@ def bundle_faiss_index_status_operator_metrics_table_rows(
     return rows
 
 
-def bundle_faiss_index_status_operator_metrics_caption(
+def _faiss_index_status_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
     if not isinstance(metrics, Mapping):
@@ -63,6 +60,30 @@ def bundle_faiss_index_status_operator_metrics_caption(
     if stale is False:
         return "FAISS index: **ready** and in sync with catalog."
     return "FAISS index: **ready**."
+
+
+(
+    bundle_faiss_index_status_operator_metrics,
+    bundle_faiss_index_status_operator_metrics_table_rows,
+    bundle_faiss_index_status_operator_metrics_caption,
+    bundle_faiss_index_status_operator_metrics_export_json,
+    bundle_faiss_index_status_operator_metrics_table_rows_csv,
+    _bundle_faiss_index_status_operator_metrics_export_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix=_PREFIX,
+    metrics=build_metrics_fn(
+        _DEFAULTS,
+        bool_fields=(
+            ("ready", "ready"),
+            ("faiss_index_exists", "faiss_index_exists"),
+            ("bundle_order_exists", "bundle_order_exists"),
+        ),
+        bool_value_fields=(("stale", "stale"),),
+    ),
+    table_rows=_faiss_index_status_operator_metrics_table_rows,
+    caption=_faiss_index_status_operator_metrics_caption,
+)
 
 
 def bundle_faiss_index_workflow_caption_note() -> str:
