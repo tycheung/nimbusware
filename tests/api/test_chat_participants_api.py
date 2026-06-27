@@ -209,4 +209,3 @@ def test_agent_overlay_get_and_put(
     )
     assert cleared.status_code == 200
     assert "backend" not in cleared.json()["overlays"]
-
