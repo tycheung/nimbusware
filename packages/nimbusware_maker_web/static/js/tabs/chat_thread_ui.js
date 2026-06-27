@@ -33,9 +33,22 @@ function renderTurnLine(thread, turn) {
   if (turn.turn_id) li.dataset.testid = `maker-chat-turn-${turn.turn_id}`;
 
   const label = document.createElement("strong");
-  label.textContent = turnRoleLabel(turn);
+  if (turn.payload?.kind === "discipline_route") {
+    label.textContent = "Routed";
+    li.classList.add("chat-thread-line--discipline-route");
+    li.dataset.testid = "maker-chat-discipline-route";
+  } else {
+    label.textContent = turnRoleLabel(turn);
+  }
   li.appendChild(label);
   li.appendChild(document.createTextNode(` ${turn.text || ""}`));
+
+  if (turn.payload?.kind === "discipline_route" && turn.payload?.taxonomy_key) {
+    const meta = document.createElement("span");
+    meta.className = "muted";
+    meta.textContent = ` (${turn.payload.discipline || turn.payload.taxonomy_key})`;
+    li.appendChild(meta);
+  }
 
   if (role === "classifier" && turn.payload?.work_type) {
     const meta = document.createElement("span");

@@ -36,11 +36,15 @@ export function renderParticipantStrip(root, session) {
     const role = String(p.role || "session_read").replace("session_", "");
     const hostMark = session?.host_user_id && p.user_id === session.host_user_id ? " ★" : "";
     const disciplineMark = p.user_discipline ? ` · ${p.user_discipline}` : "";
+    const expertiseMark =
+      Array.isArray(p.expertise_bullets) && p.expertise_bullets.length
+        ? ` · ${p.expertise_bullets.slice(0, 2).join(", ")}`
+        : "";
     const profiles = [];
     if (p.autopilot_profile_id) profiles.push(`trust:${p.autopilot_profile_id}`);
     if (p.enforcement_profile_id) profiles.push(`enforce:${p.enforcement_profile_id}`);
     const profileMark = profiles.length ? ` [${profiles.join(", ")}]` : "";
-    return `${name} · ${role}${disciplineMark}${hostMark}${profileMark}`;
+    return `${name} · ${role}${disciplineMark}${expertiseMark}${hostMark}${profileMark}`;
   });
   strip.replaceChildren();
   const text = document.createElement("span");

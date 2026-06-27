@@ -120,6 +120,19 @@ def get_chat_session(
             raw_parts,
             repo_root=find_repo_root(),
         )
+        from nimbusware_maker.user_participant_context import load_user_participant_context
+
+        enriched: list[dict[str, Any]] = []
+        for row in payload["participants"]:
+            item = dict(row)
+            uid = str(item.get("user_id") or "")
+            if uid:
+                ctx = load_user_participant_context(uid, repo_root=find_repo_root())
+                bullets = ctx.get("expertise_bullets")
+                if bullets:
+                    item["expertise_bullets"] = bullets
+            enriched.append(item)
+        payload["participants"] = enriched
         if user is not None:
             part = collab_store.get_participant(session_id, user.user_id)
             if part is not None:

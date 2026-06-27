@@ -40,6 +40,44 @@ def enqueue_collab_discipline_routes(
     return enqueued
 
 
+def _actor_display_name(collab_store: Any, session_id: UUID, actor_user_id: UUID | None) -> str:
+    if actor_user_id is None:
+        return "operator"
+    participant = collab_store.get_participant(session_id, actor_user_id)
+    if participant is None:
+        return str(actor_user_id)[:8]
+    return participant.display_name or participant.username or str(actor_user_id)[:8]
+
+
+def append_routed_feedback_turns(
+    chat_store: Any,
+    collab_store: Any,
+    *,
+    session_id: UUID,
+    message: str,
+    actor_user_id: UUID | None,
+    routes: list[dict[str, str]],
+) -> None:
+    if not routes:
+        return
+    actor = _actor_display_name(collab_store, session_id, actor_user_id)
+    excerpt = message.strip()[:240]
+    for route in routes:
+        taxonomy_key = route.get("taxonomy_key") or route.get("discipline") or "agent"
+        chat_store.append_turn(
+            session_id,
+            role="participant",
+            text=f"{actor} → {taxonomy_key}: {excerpt}",
+            payload={
+                "kind": "discipline_route",
+                "discipline": route.get("discipline"),
+                "taxonomy_key": taxonomy_key,
+                "routed_from_user_id": str(actor_user_id) if actor_user_id else None,
+                "source": route.get("source"),
+            },
+        )
+
+
 def maybe_route_collab_message(
     store: Any,
     chat_store: Any,
@@ -57,10 +95,19 @@ def maybe_route_collab_message(
         participant = collab_store.get_participant(session_id, actor_user_id)
         if participant is not None and getattr(participant, "user_discipline", None):
             participant_discipline = str(participant.user_discipline)
-    return enqueue_collab_discipline_routes(
+    routes = enqueue_collab_discipline_routes(
         store,
         run_id=session.run_id,
         message=message,
         actor_user_id=str(actor_user_id) if actor_user_id is not None else None,
         participant_discipline=participant_discipline,
     )
+    append_routed_feedback_turns(
+        chat_store,
+        collab_store,
+        session_id=session_id,
+        message=message,
+        actor_user_id=actor_user_id,
+        routes=routes,
+    )
+    return routes

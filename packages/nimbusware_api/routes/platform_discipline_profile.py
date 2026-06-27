@@ -14,12 +14,20 @@ from nimbusware_maker.user_discipline_profile import (
     load_user_discipline_profile,
     save_user_discipline_profile,
 )
+from nimbusware_maker.user_participant_context import (
+    load_user_participant_context,
+    save_user_participant_context,
+)
 
 router = APIRouter(tags=["platform"])
 
 
 class DisciplineProfileBody(BaseModel):
     default_discipline: str | None = Field(default=None, max_length=32)
+
+
+class ParticipantContextBody(BaseModel):
+    expertise_bullets: list[str] = Field(default_factory=list)
 
 
 @router.get("/users/me/discipline-profile")
@@ -65,6 +73,47 @@ def put_discipline_profile(
         return save_user_discipline_profile(
             uid,
             default_discipline=discipline,
+            repo_root=orch.repo_root,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+@router.get("/users/me/participant-context")
+def get_participant_context(
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    return load_user_participant_context(uid, repo_root=orch.repo_root)
+
+
+@router.put("/users/me/participant-context")
+def put_participant_context(
+    body: ParticipantContextBody,
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    try:
+        return save_user_participant_context(
+            uid,
+            expertise_bullets=body.expertise_bullets,
             repo_root=orch.repo_root,
         )
     except ValueError as exc:
