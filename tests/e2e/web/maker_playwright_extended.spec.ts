@@ -24,6 +24,7 @@ test("campaign pause posts pause action", async ({ page, request }) => {
 });
 
 test("build tab starts campaign from form submit", async ({ page, request }) => {
+  const runId = "00000000-0000-4000-8000-000000000099";
   const headers = { "X-Nimbusware-Admin-Token": adminToken };
   const project = await request.post("/v1/projects", {
     headers,
@@ -35,6 +36,17 @@ test("build tab starts campaign from form submit", async ({ page, request }) => 
   });
   expect(project.ok()).toBeTruthy();
   const projectId = (await project.json()).project_id as string;
+
+  await page.route("**/v1/campaigns", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    const path = new URL(route.request().url()).pathname;
+    if (!path.endsWith("/campaigns")) return route.continue();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ run_id: runId, campaign_id: runId }),
+    });
+  });
 
   await page.goto("/v1/maker/app/");
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
@@ -56,7 +68,7 @@ test("build tab starts campaign from form submit", async ({ page, request }) => 
   await page.getByTestId("maker-build-start-run").click();
   const startResp = await startPromise;
   expect(startResp.ok(), await startResp.text()).toBeTruthy();
-  await expect(page).toHaveURL(/#\/progress\?run_id=/);
+  await expect(page).toHaveURL(new RegExp(`#/progress\\?run_id=${runId.replace(/-/g, "\\-")}`));
 });
 
 test("wizard quick demo navigates to chat", async ({ page }) => {

@@ -22,6 +22,7 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       NIMBUSWARE_SKIP_PREFLIGHT: "1",
+      NIMBUSWARE_LAUNCH_TEST_STUB: "1",
       NIMBUSWARE_REPO_ROOT: process.env.NIMBUSWARE_REPO_ROOT || repoRoot,
       NIMBUSWARE_API_BASE: `http://127.0.0.1:${port}/v1`,
       NIMBUSWARE_ADMIN_TOKEN:
