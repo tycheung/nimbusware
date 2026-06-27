@@ -368,12 +368,10 @@ def resolve_workflow_profile(
         return profile
     if work_type == WorkType.QUICK:
         return DEFAULT_QUICK_WORKFLOW
-    if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY):
-        return (
-            "campaign_factory_zero_touch"
-            if work_type == WorkType.FACTORY
-            else "campaign_micro_slice"
-        )
+    if work_type == WorkType.FACTORY:
+        return "campaign_factory_zero_touch"
+    if work_type == WorkType.CAMPAIGN:
+        return "campaign_fullstack"
     meta = project_metadata(project_store, project_uuid)
     return str(meta.get("default_workflow_profile") or "micro_slice")
 

@@ -66,9 +66,20 @@ _PROFILE_BY_WORK_TYPE: dict[WorkType, str] = {
     WorkType.QUICK: "quick_local",
     WorkType.PATCH: "patch",
     WorkType.SLICE: "micro_slice",
-    WorkType.CAMPAIGN: "campaign_micro_slice",
+    WorkType.CAMPAIGN: "campaign_fullstack",
     WorkType.FACTORY: "campaign_factory_zero_touch",
 }
+
+_BACKEND_ONLY_PHRASES = (
+    "backend only",
+    "api only",
+    "rest api only",
+    "no frontend",
+    "no ui",
+    "python only",
+    "backend-only",
+    "api-only",
+)
 
 
 @dataclass
@@ -157,11 +168,36 @@ def _resolve_slice_profile(
     return "micro_slice"
 
 
-def _resolve_factory_profile(extracted: dict[str, Any]) -> str:
+def scope_narrowed_to_backend_only(message: str) -> bool:
+    low = _lower(message)
+    return any(phrase in low for phrase in _BACKEND_ONLY_PHRASES)
+
+
+def _resolve_campaign_profile(
+    message: str,
+    project_metadata: dict[str, Any] | None,
+) -> str:
+    meta = project_metadata or {}
+    template = str(meta.get("template") or "").strip().lower()
+    default_profile = str(meta.get("default_workflow_profile") or "").strip()
+    if scope_narrowed_to_backend_only(message):
+        return "campaign_micro_slice"
+    if template == "api" or default_profile == "campaign_micro_slice":
+        return "campaign_micro_slice"
+    if template in {"fullstack", "web"} or default_profile == "campaign_fullstack":
+        return "campaign_fullstack"
+    return "campaign_fullstack"
+
+
+def _resolve_factory_profile(extracted: dict[str, Any], message: str) -> str:
     prompt_id = str(extracted.get("prompt_id") or "").strip().lower()
     if prompt_id in {"t3", "tier3", "campaign_factory_t3"}:
         return "campaign_factory_t3"
-    return "campaign_factory_zero_touch"
+    if prompt_id in {"todo_api", "contacts_api"} or scope_narrowed_to_backend_only(message):
+        return "campaign_factory_zero_touch"
+    if prompt_id:
+        return "campaign_factory_zero_touch"
+    return "campaign_fullstack"
 
 
 def _score_work_types(
@@ -269,7 +305,7 @@ def _rationale_for(work_type: WorkType, signals: list[str]) -> str:
     if "attachment_failing_test" in signals or "attachment_stack_trace" in signals:
         return "Error context detected — patch lane with targeted test."
     if "keyword_campaign" in signals:
-        return "Product-scale intent — campaign_micro_slice recommended."
+        return "Product-scale intent — full-stack campaign recommended."
     if "attachment_prompt_id" in signals:
         return "Catalog prompt_id present — factory campaign profile."
     return base
@@ -294,7 +330,9 @@ def _rules_classification_result(
     if work_type == WorkType.SLICE:
         profile = _resolve_slice_profile(text, project_metadata, platform_hints)
     elif work_type == WorkType.FACTORY:
-        profile = _resolve_factory_profile(extracted)
+        profile = _resolve_factory_profile(extracted, text)
+    elif work_type == WorkType.CAMPAIGN:
+        profile = _resolve_campaign_profile(text, project_metadata)
     else:
         profile = _PROFILE_BY_WORK_TYPE[work_type]
 

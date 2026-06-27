@@ -35,7 +35,7 @@ GOLDEN_INTENTS: list[tuple[str, dict, dict, dict, WorkType, str]] = [
         [],
         {},
         WorkType.CAMPAIGN,
-        "campaign_micro_slice",
+        "campaign_fullstack",
     ),
     (
         "slice_feature",
@@ -118,6 +118,37 @@ def test_classify_intent_web_template_slice_profile() -> None:
     )
     assert result.work_type == WorkType.SLICE
     assert result.suggested_profile == "micro_slice_web"
+
+
+def test_classify_intent_backend_only_campaign_uses_micro_slice() -> None:
+    result = classify_intent("Build a REST API for todos, backend only")
+    assert result.work_type == WorkType.CAMPAIGN
+    assert result.suggested_profile == "campaign_micro_slice"
+
+
+def test_classify_intent_fullstack_template_campaign() -> None:
+    result = classify_intent(
+        "Build a CRM MVP with contacts and pipeline",
+        project_metadata={"template": "fullstack"},
+    )
+    assert result.work_type == WorkType.CAMPAIGN
+    assert result.suggested_profile == "campaign_fullstack"
+
+
+def test_campaign_fullstack_workflow_parses() -> None:
+    from pathlib import Path
+
+    from nimbusware_env import find_repo_root
+    from nimbusware_orchestrator.workflow_campaign import (
+        parse_backlog_workflow_block,
+        parse_campaign_workflow_block,
+    )
+
+    repo = find_repo_root(start=Path(__file__).resolve().parents[1])
+    block = parse_campaign_workflow_block(repo, "campaign_fullstack")
+    assert block.enabled is True
+    backlog = parse_backlog_workflow_block(repo, "campaign_fullstack")
+    assert backlog.generator == "heuristic"
 
 
 def test_classify_intent_llm_overridden_by_rules(monkeypatch: pytest.MonkeyPatch) -> None:
