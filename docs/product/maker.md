@@ -23,8 +23,9 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 
 - Rules-first intent classifier with optional LLM (`NIMBUSWARE_INTENT_CLASSIFIER_MODEL`)
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
-- **Full-stack campaigns:** greenfield product prompts route to `campaign_fullstack`; scope discovery runs in Chat before Start (`POST /v1/chat/scope/discover`, `/scope/gather`, `/scope/recommend`)
-- **Start gate:** full-stack campaigns require completed discovery or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
+- **Full-stack campaigns:** greenfield product prompts route to `campaign_fullstack`; scope discovery runs in Chat before Start (`POST /v1/chat/scope/discover`, `/scope/gather`, `/scope/recommend`, `/scope/confirm`)
+- **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks (`fastapi_python`, `react_vite`, …) from `configs/stacks/`; backlog and slice dispatch are surface-aware
+- **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion

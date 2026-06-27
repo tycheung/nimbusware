@@ -31,6 +31,7 @@ KNOWN_STAGE_GRAPH_STAGES: frozenset[str] = frozenset(
         "slice.verify",
         "slice.critique",
         "slice.test",
+        "slice.contract",
         "slice.e2e",
         "slice.gate",
         "launch_test.plan",
