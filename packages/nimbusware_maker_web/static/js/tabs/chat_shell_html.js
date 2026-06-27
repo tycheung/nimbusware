@@ -45,7 +45,7 @@ export function chatLayoutHtml() {
           </label>
           <label>Message
             <textarea name="message" id="chat-message" rows="4" required
-              data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature…"></textarea>
+              data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature… Use @frontend, @backend, …"></textarea>
           </label>
           <fieldset class="chat-attachments">
             <legend>Attachments (optional)</legend>

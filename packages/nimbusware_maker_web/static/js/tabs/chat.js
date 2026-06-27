@@ -23,6 +23,7 @@ import {
   wireChatOperatorRibbons,
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
+import { wireChatMentionAutocomplete } from "../chat_mention_ui.js";
 
 export async function mountChat(root) {
   root.innerHTML = chatLayoutHtml();
@@ -63,6 +64,8 @@ export async function mountChat(root) {
   if (msgEl && deepPrompt && !msgEl.value.trim()) {
     msgEl.value = deepPrompt;
   }
+  wireChatMentionAutocomplete(msgEl);
+  root.querySelectorAll("[data-interjection-message]").forEach((el) => wireChatMentionAutocomplete(el));
 
   const sessionApi = createChatSessionApi(root, { chatResumeEnabled });
   if (hashSessionId) sessionApi.setSessionId(hashSessionId);
