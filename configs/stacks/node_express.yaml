@@ -1,0 +1,12 @@
+stack_id: node_express
+surface: api
+display_name: Node Express
+workspace_subdir: backend
+writer_role: backend_writer
+allowed_globs:
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/package.json"
+verify_commands:
+  - ["npm", "test"]
+launch_framework_id: null

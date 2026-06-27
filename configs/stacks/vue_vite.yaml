@@ -1,0 +1,13 @@
+stack_id: vue_vite
+surface: web
+display_name: Vue + Vite
+workspace_subdir: frontend
+writer_role: frontend_writer
+allowed_globs:
+  - "**/*.vue"
+  - "**/*.ts"
+  - "**/package.json"
+  - "**/vite.config.*"
+verify_commands:
+  - ["npm", "run", "build"]
+launch_framework_id: vue_vite

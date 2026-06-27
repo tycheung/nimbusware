@@ -1,0 +1,12 @@
+stack_id: fastapi_python
+surface: api
+display_name: Python FastAPI
+workspace_subdir: backend
+writer_role: backend_writer
+allowed_globs:
+  - "**/*.py"
+  - "**/pyproject.toml"
+  - "**/requirements.txt"
+verify_commands:
+  - ["python", "-m", "pytest", "-q"]
+launch_framework_id: null

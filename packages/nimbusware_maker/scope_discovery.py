@@ -174,12 +174,12 @@ def scope_gather(
     out["answers"] = merged
 
     if recommend_for_me_flag or _is_recommend_answer(merged):
-        return recommend_for_me(out)
+        return attach_discovery_summary(recommend_for_me(out))
 
     if out.get("scope_narrowed"):
         out["discovery_complete"] = True
         out["stack_manifest"] = deepcopy(BACKEND_ONLY_MANIFEST)
-        return out
+        return attach_discovery_summary(out)
 
     if _answers_sufficient(merged):
         out["discovery_complete"] = True
@@ -187,7 +187,7 @@ def scope_gather(
     else:
         out["discovery_complete"] = False
         out["stack_manifest"] = None
-    return out
+    return attach_discovery_summary(out)
 
 
 def discovery_complete_for_start(
@@ -208,6 +208,40 @@ def discovery_complete_for_start(
     if scope_narrowed_to_backend_only(prompt):
         return True, None
     return False, "Complete scope discovery or choose Recommend for me before starting"
+
+
+def scope_confirm(state: dict[str, Any]) -> dict[str, Any]:
+    from nimbusware_maker.stack_manifest import freeze_manifest, validate_frozen_manifest
+
+    manifest_raw = state.get("stack_manifest")
+    if not isinstance(manifest_raw, dict):
+        raise ValueError("stack_manifest required")
+    answers = state.get("answers") if isinstance(state.get("answers"), dict) else {}
+    frozen = freeze_manifest(manifest_raw, answers=answers, confirmed=True)
+    errors = validate_frozen_manifest(frozen)
+    if errors:
+        raise ValueError("; ".join(errors))
+    out = deepcopy(state)
+    out["stack_manifest"] = frozen.model_dump()
+    out["scope_confirmed"] = True
+    out["discovery_complete"] = True
+    return out
+
+
+def attach_discovery_summary(state: dict[str, Any]) -> dict[str, Any]:
+    from nimbusware_maker.stack_manifest import discovery_summary_from_answers
+
+    out = deepcopy(state)
+    manifest = out.get("stack_manifest")
+    if not isinstance(manifest, dict):
+        return out
+    answers = out.get("answers") if isinstance(out.get("answers"), dict) else {}
+    summary = discovery_summary_from_answers(answers)
+    if summary:
+        manifest = dict(manifest)
+        manifest["discovery_summary"] = summary
+        out["stack_manifest"] = manifest
+    return out
 
 
 def attach_scope_to_requirements(

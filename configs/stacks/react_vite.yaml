@@ -1,0 +1,14 @@
+stack_id: react_vite
+surface: web
+display_name: React + Vite
+workspace_subdir: frontend
+writer_role: frontend_writer
+allowed_globs:
+  - "**/*.tsx"
+  - "**/*.ts"
+  - "**/*.html"
+  - "**/package.json"
+  - "**/vite.config.*"
+verify_commands:
+  - ["npm", "run", "build"]
+launch_framework_id: react_vite

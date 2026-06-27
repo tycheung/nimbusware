@@ -10,6 +10,7 @@ from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
 from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
 from nimbusware_maker.scope_discovery import (
     recommend_for_me,
+    scope_confirm,
     scope_discover,
     scope_gather,
 )
@@ -78,4 +79,26 @@ def post_scope_recommend(body: ScopeRecommendBody) -> ScopeDiscoverResponse:
         archetype=body.archetype,
     )
     recommended["stack_manifest"] = manifest
-    return ScopeDiscoverResponse(scope=recommended)
+    from nimbusware_maker.scope_discovery import attach_discovery_summary
+
+    return ScopeDiscoverResponse(scope=attach_discovery_summary(recommended))
+
+
+class ScopeConfirmBody(BaseModel):
+    state: dict[str, Any]
+
+
+@router.post("/scope/confirm", response_model=ScopeDiscoverResponse)
+def post_scope_confirm(body: ScopeConfirmBody) -> ScopeDiscoverResponse:
+    try:
+        confirmed = scope_confirm(body.state)
+    except ValueError as exc:
+        from fastapi import HTTPException
+
+        from nimbusware_api.errors import problem
+
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+    return ScopeDiscoverResponse(scope=confirmed)

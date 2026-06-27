@@ -1,0 +1,10 @@
+version: 1
+stacks:
+  - id: fastapi_python
+    path: fastapi_python.yaml
+  - id: react_vite
+    path: react_vite.yaml
+  - id: vue_vite
+    path: vue_vite.yaml
+  - id: node_express
+    path: node_express.yaml
