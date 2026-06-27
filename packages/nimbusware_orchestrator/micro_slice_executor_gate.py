@@ -130,13 +130,49 @@ def finish_micro_slice_gate_chain(
         duration_ms=0,
     )
 
+    contract_required = str(active_plan.surface_id or "") == "contract"
+    if not contract_required:
+        from nimbusware_orchestrator.backlog_generator import _requirements_from_rows
+        from nimbusware_maker.stack_manifest import manifest_from_requirements
+
+        manifest = manifest_from_requirements(_requirements_from_rows(rows))
+        if manifest is not None:
+            surfaces = set(manifest.surfaces)
+            contract_required = "api" in surfaces and "web" in surfaces
+
+    if contract_required:
+        from nimbusware_orchestrator.slice_contract import run_slice_contract_check
+
+        contract = run_slice_contract_check(ws)
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.contract",
+            metadata={
+                "slice_id": active_plan.slice_id,
+                "passed": contract.passed,
+                "detail": contract.detail[:500],
+            },
+            duration_ms=0,
+        )
+        if not contract.passed:
+            verify_ok = False
+            verify_log = f"{verify_log}\n[contract] {contract.detail}".strip()
+
     if _launch_test_enabled(rows):
+        from nimbusware_orchestrator.backlog_generator import _requirements_from_rows
         from nimbusware_orchestrator.dev_env_supervisor import frontend_base_url
         from nimbusware_orchestrator.launch_test_stage import run_launch_test_stage
 
         preview = frontend_base_url(ws)
+        requirements = _requirements_from_rows(rows)
         for lt_stage in ("launch_test.plan", "launch_test.write", "launch_test.critique"):
-            code, detail, _ = run_launch_test_stage(ws, lt_stage, preview_base_url=preview)
+            code, detail, _ = run_launch_test_stage(
+                ws,
+                lt_stage,
+                preview_base_url=preview,
+                requirements=requirements,
+            )
             _emit_slice_stage(
                 orch,
                 run_id,

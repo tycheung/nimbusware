@@ -101,6 +101,30 @@ def _deep_eval_due(slices_completed: int, every_n: int) -> bool:
     return slices_completed % every == 0
 
 
+def _manifest_surfaces_satisfied(
+    backlog: Any,
+    requirements: dict[str, Any] | None,
+) -> tuple[bool, list[str]]:
+    from nimbusware_maker.stack_manifest import manifest_from_requirements
+
+    manifest = manifest_from_requirements(requirements)
+    if manifest is None or not manifest.surfaces:
+        return True, []
+    missing: list[str] = []
+    for surface in manifest.surfaces:
+        if surface == "contract":
+            continue
+        passed = any(
+            str(sl.surface_id or "") == surface and sl.status == SliceStatus.PASSED
+            for epic in backlog.epics
+            for feature in epic.features
+            for sl in feature.slices
+        )
+        if not passed:
+            missing.append(f"surface_{surface}_incomplete")
+    return not missing, missing
+
+
 def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
     """Tiered completion: slice terminal state plus workflow completion policy."""
     policy = _completion_policy_from_rows(rows)
@@ -145,6 +169,14 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
             blocking.append("project_tests_not_passed")
         if policy.require_all_must_have_features and not _features_satisfied(backlog):
             blocking.append("must_have_features_incomplete")
+        from nimbusware_orchestrator.backlog_generator import _requirements_from_rows
+
+        surfaces_ok, surface_gaps = _manifest_surfaces_satisfied(
+            backlog,
+            _requirements_from_rows(rows),
+        )
+        if not surfaces_ok:
+            blocking.extend(surface_gaps)
         if not _deep_eval_due(completed, policy.deep_eval_every_n_slices):
             blocking.append("deep_eval_cadence_pending")
         from nimbusware_orchestrator.factory_cadence import factory_blocks_campaign_pass

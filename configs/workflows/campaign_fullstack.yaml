@@ -60,8 +60,10 @@ stage_graph:
     depends_on: [slice.verify]
   - stage_name: slice.test
     depends_on: [slice.critique]
-  - stage_name: launch_test.plan
+  - stage_name: slice.contract
     depends_on: [slice.test]
+  - stage_name: launch_test.plan
+    depends_on: [slice.contract]
   - stage_name: launch_test.write
     depends_on: [launch_test.plan]
   - stage_name: launch_test.critique

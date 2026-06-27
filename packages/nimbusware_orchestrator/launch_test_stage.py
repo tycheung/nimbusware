@@ -61,12 +61,30 @@ def _critique_flow(flow_yaml: dict[str, Any]) -> tuple[bool, str, list[str]]:
     return True, "PASS", []
 
 
+def _launch_pack_id(
+    workspace: Path,
+    *,
+    requirements: dict[str, Any] | None = None,
+    repo_root: Path | None = None,
+) -> str:
+    from nimbusware_maker.stack_manifest import manifest_from_requirements
+    from nimbusware_orchestrator.stack_catalog import stack_for_surface
+
+    manifest = manifest_from_requirements(requirements)
+    if manifest is not None:
+        web_stack = stack_for_surface(manifest.model_dump(), "web", repo_root=repo_root)
+        if web_stack is not None and web_stack.launch_framework_id:
+            return web_stack.launch_framework_id
+    return detect_js_framework(workspace, repo_root=repo_root)
+
+
 def run_launch_test_plan(
     workspace: Path,
     *,
     preview_base_url: str | None = None,
+    requirements: dict[str, Any] | None = None,
 ) -> LaunchTestStageResult:
-    pack_id = detect_js_framework(workspace)
+    pack_id = _launch_pack_id(workspace, requirements=requirements)
     pack = load_framework_pack(pack_id)
     flow = synthesize_ui_flow_from_ism(workspace, preview_base_url=preview_base_url)
     writer_prompt = build_launch_test_writer_prompt(workspace)
@@ -127,8 +145,9 @@ def run_launch_test_write(
     *,
     preview_base_url: str | None = None,
     flow_id: str = "launch_draft",
+    requirements: dict[str, Any] | None = None,
 ) -> LaunchTestStageResult:
-    pack_id = detect_js_framework(workspace)
+    pack_id = _launch_pack_id(workspace, requirements=requirements)
     findings: list[dict[str, Any]] = [
         {"writer_prompt": build_launch_test_writer_prompt(workspace)},
     ]
@@ -195,12 +214,21 @@ def run_launch_test_stage(
     stage_name: str,
     *,
     preview_base_url: str | None = None,
+    requirements: dict[str, Any] | None = None,
 ) -> tuple[int, str, Literal["plan", "write", "critique", "unknown"]]:
     if stage_name == "launch_test.plan":
-        result = run_launch_test_plan(workspace, preview_base_url=preview_base_url)
+        result = run_launch_test_plan(
+            workspace,
+            preview_base_url=preview_base_url,
+            requirements=requirements,
+        )
         return (0 if result.passed else 1), result.detail, "plan"
     if stage_name == "launch_test.write":
-        result = run_launch_test_write(workspace, preview_base_url=preview_base_url)
+        result = run_launch_test_write(
+            workspace,
+            preview_base_url=preview_base_url,
+            requirements=requirements,
+        )
         return (0 if result.passed else 1), result.detail, "write"
     if stage_name == "launch_test.critique":
         result = run_launch_test_critique(workspace)
