@@ -4,7 +4,6 @@ from typing import Any
 
 from nimbusware_env.env_flags import env_str
 from nimbusware_maker.archetype_surface_defaults import default_surfaces_for_archetype
-from nimbusware_orchestrator.fleet_enforcement_policy import tenant_enforcement_policy
 
 
 def fleet_governance_summary(
@@ -13,6 +12,8 @@ def fleet_governance_summary(
     archetype: str | None = None,
     tenant_slug: str | None = None,
 ) -> dict[str, Any]:
+    from nimbusware_orchestrator.fleet_enforcement_policy import tenant_enforcement_policy
+
     bundle = (setup_bundle or env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default").lower()
     enforcement = tenant_enforcement_policy(tenant_slug or None)
     surfaces = default_surfaces_for_archetype(setup_bundle=bundle, archetype=archetype)

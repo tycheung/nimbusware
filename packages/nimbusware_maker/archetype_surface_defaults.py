@@ -3,6 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from nimbusware_maker.archetype_workflow import campaign_profile_for_archetype
+
 _DEFAULT_MANIFEST: dict[str, Any] = {
     "surfaces": ["api", "web"],
     "stacks": {"api": "fastapi_python", "web": "react_vite"},
@@ -60,8 +62,6 @@ def manifest_for_archetype(
     )
     return apply_fleet_surface_policy(manifest, fleet_policy)
 
-
-from nimbusware_maker.archetype_workflow import campaign_profile_for_archetype
 
 __all__ = [
     "apply_fleet_surface_policy",

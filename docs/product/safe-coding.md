@@ -19,7 +19,7 @@ Safe Coding is for builders who want working software with **fewer errors**, not
 
 | Control | Safe Coding default |
 |---------|---------------------|
-| Workflow | `safe_coding` — fullstack gates + launch test + approval |
+| Workflow | `safe_coding` for slices; **`safe_coding_campaign_fullstack`** for greenfield “build an app” campaigns |
 | Autopilot | `guided` — pauses on gate and regression failures |
 | Enforcement | `balanced` |
 | Auto-advance | Off |
@@ -35,8 +35,9 @@ When Safe Coding is active, Maker **Home** shows:
   - `POST /v1/platform/workspace-scaffold`
   - `POST /v1/platform/workspace-precommit`
   - `POST /v1/platform/playwright-bootstrap` then poll `GET` every few seconds until `status` is `ready`
+- After preparation, **Build full-stack app** opens Chat in campaign mode with scope discovery and manifest approval
 
-Starting a `safe_coding` run auto-scaffolds missing smoke tests when the workspace lacks `tests/e2e` and `tests/test_smoke.py`.
+Starting a `safe_coding` run auto-scaffolds missing smoke tests when the workspace lacks `tests/e2e` and `tests/test_smoke.py`. Full-stack campaigns use the merged workflow with contract gate, maker approval, and optional **frontend-owasp** critic pack.
 
 ## Industry critic packs (Settings)
 

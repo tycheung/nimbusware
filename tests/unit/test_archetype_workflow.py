@@ -7,7 +7,9 @@ from nimbusware_maker.archetype_workflow import (
 
 
 def test_safe_coding_archetype_uses_merged_campaign_profile() -> None:
-    assert campaign_profile_for_archetype(archetype="safe_coding") == "safe_coding_campaign_fullstack"
+    assert (
+        campaign_profile_for_archetype(archetype="safe_coding") == "safe_coding_campaign_fullstack"
+    )
 
 
 def test_resolve_start_remaps_safe_coding_for_campaign() -> None:

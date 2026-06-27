@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from nimbusware_maker.solo_discipline import solo_discipline_routes as build_solo_discipline_routes
+
 CLARIFYING_QUESTIONS: tuple[dict[str, str], ...] = (
     {
         "id": "audience",

@@ -15,7 +15,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Review** | Research approve/reject, slice approval, deploy cockpit, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
-| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets, deploy connection labels |
+| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets, deploy connection labels, solo discipline hat |
 
 PWA manifest + offline service worker; Web Push when VAPID configured. Deep links: `?run_id=`.
 
@@ -25,7 +25,10 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
 - **Full-stack campaigns:** greenfield product prompts route to `campaign_fullstack`; scope discovery runs in Chat before Start (`POST /v1/chat/scope/discover`, `/scope/gather`, `/scope/recommend`, `/scope/confirm`)
 - **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks (`fastapi_python`, `react_vite`, …) from `configs/stacks/`; backlog and slice dispatch are surface-aware; Plan tab shows per-slice surface badges and `slice.contract` gate status
-- **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat (routing lands in Phase 5)
+- **Manifest approval:** Chat shows a plain-language “You are approving: web UI + REST API…” card with **Approve manifest** before campaign start
+- **Safe Coding campaigns:** archetype `safe_coding` routes greenfield builds to `safe_coding_campaign_fullstack` (campaign driver + approval gates + OWASP web critic pack)
+- **Solo discipline hat:** Settings → **Solo discipline hat** routes `@frontend` / `@backend` mentions (and the active hat) into `solo_discipline_routes` on requirements — full collab routing lands in Phase 5
+- **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal includes roster templates
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
@@ -52,6 +55,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Enterprise enforcement policy** — Admin Fleet page + `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy` clamps tenant min/max depth
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
 - **Deploy cockpit** — Progress and Review show CI/plan/approval shell from run timeline; Settings stores AWS/GitHub workflow labels locally until vault-backed deploy (Phase 6)
+- **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, and enforcement depth clamps for enterprise bundles
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled
 
