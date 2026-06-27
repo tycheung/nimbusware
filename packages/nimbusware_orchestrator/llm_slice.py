@@ -43,6 +43,10 @@ class LlmSliceImplementResponse(BaseModel):
 
 
 def _custom_agent_prompt_from_rows(rows: list[dict[str, Any]]) -> str:
+    base = (
+        "You are a Nimbusware planning agent. Propose one small slice at a time with clear "
+        "target paths and acceptance criteria. Never request whole-repo rewrites."
+    )
     for row in rows:
         if row.get("event_type") != "run.created":
             continue
@@ -53,12 +57,19 @@ def _custom_agent_prompt_from_rows(rows: list[dict[str, Any]]) -> str:
         if isinstance(agent, dict):
             preview = agent.get("system_prompt_preview") or ""
             if preview:
-                return str(preview)
+                base = str(preview)
         break
-    return (
-        "You are a Nimbusware planning agent. Propose one small slice at a time with clear "
-        "target paths and acceptance criteria. Never request whole-repo rewrites."
+    from nimbusware_env import find_repo_root
+    from nimbusware_maker.user_agent_overlay import prompt_addon_for_run_claims
+    from nimbusware_orchestrator.model_binding_audit import active_role_claims_from_events
+
+    addon = prompt_addon_for_run_claims(
+        active_role_claims_from_events(rows),
+        repo_root=find_repo_root(),
     )
+    if addon:
+        return f"{base}\n\n{addon}"
+    return base
 
 
 def execute_slice_replan_llm(

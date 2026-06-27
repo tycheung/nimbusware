@@ -18,6 +18,11 @@ from nimbusware_maker.user_participant_context import (
     load_user_participant_context,
     save_user_participant_context,
 )
+from nimbusware_maker.user_agent_overlay import (
+    load_user_agent_overlays,
+    overlay_catalog,
+    save_user_agent_overlay,
+)
 
 router = APIRouter(tags=["platform"])
 
@@ -28,6 +33,11 @@ class DisciplineProfileBody(BaseModel):
 
 class ParticipantContextBody(BaseModel):
     expertise_bullets: list[str] = Field(default_factory=list)
+
+
+class AgentOverlayBody(BaseModel):
+    custom_agent_id: str | None = Field(default=None, max_length=120)
+    prompt_extension: str | None = Field(default=None, max_length=2000)
 
 
 @router.get("/users/me/discipline-profile")
@@ -114,6 +124,52 @@ def put_participant_context(
         return save_user_participant_context(
             uid,
             expertise_bullets=body.expertise_bullets,
+            repo_root=orch.repo_root,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+@router.get("/users/me/agent-overlays")
+def get_agent_overlays(
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    body = load_user_agent_overlays(uid, repo_root=orch.repo_root)
+    body["disciplines"] = overlay_catalog(repo_root=orch.repo_root)
+    return body
+
+
+@router.put("/users/me/agent-overlays/{discipline}")
+def put_agent_overlay(
+    discipline: str,
+    body: AgentOverlayBody,
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    try:
+        return save_user_agent_overlay(
+            uid,
+            discipline,
+            custom_agent_id=body.custom_agent_id,
+            prompt_extension=body.prompt_extension,
             repo_root=orch.repo_root,
         )
     except ValueError as exc:
