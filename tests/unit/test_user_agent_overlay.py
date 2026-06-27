@@ -81,6 +81,8 @@ disciplines:
 def test_save_unknown_discipline_raises(tmp_path: Path) -> None:
     repo = tmp_path
     (repo / "configs" / "collab").mkdir(parents=True)
-    (repo / "configs" / "collab" / "disciplines.yaml").write_text("disciplines: []\n", encoding="utf-8")
+    (repo / "configs" / "collab" / "disciplines.yaml").write_text(
+        "disciplines: []\n", encoding="utf-8"
+    )
     with pytest.raises(ValueError, match="unknown discipline"):
         save_user_agent_overlay("user-4", "not-a-discipline", prompt_extension="x", repo_root=repo)

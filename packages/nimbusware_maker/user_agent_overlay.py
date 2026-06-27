@@ -6,7 +6,11 @@ from typing import Any
 import yaml
 
 from nimbusware_env import find_repo_root
-from nimbusware_maker.collab_disciplines import list_disciplines, normalize_discipline, taxonomy_keys_for_discipline
+from nimbusware_maker.collab_disciplines import (
+    list_disciplines,
+    normalize_discipline,
+    taxonomy_keys_for_discipline,
+)
 
 
 def _path(repo_root: Path, user_id: str) -> Path:

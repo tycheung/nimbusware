@@ -33,13 +33,14 @@ Legacy: set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loo
 | GET | `/v1/platform/collab-disciplines` | Discipline catalog (`configs/collab/disciplines.yaml`) |
 | GET/PUT | `/v1/users/me/discipline-profile` | Default discipline when joining sessions |
 | GET/PUT | `/v1/users/me/participant-context` | Expertise bullets (fo2186) shown on roster |
+| GET/PUT | `/v1/users/me/agent-overlays/{discipline}` | Per-discipline prompt extensions merged when roles are claimed |
 | GET | `/v1/chat/sessions/{id}/stream` | Session SSE theater fan-out (0.5s poll, capped backlog) |
 
 ## Disciplines (A2 team collab)
 
-Each participant can wear a **discipline** (PM, architect, frontend, backend, QA, DevOps) mapped to agent taxonomy keys. The join flow shows a discipline picker; invites can suggest a discipline via template or `recommended_discipline`. Chat `@` mentions route targeted feedback to the run interjection queue when a session has an active run, and append **routed feedback** lines in the thread (`Alice → frontend_writer: …`). Per-user expertise bullets: `GET/PUT /v1/users/me/participant-context`.
+Each participant can wear a **discipline** (PM, architect, frontend, backend, QA, DevOps) mapped to agent taxonomy keys. The join flow shows a discipline picker; invites can suggest a discipline via template or `recommended_discipline`. Chat `@` mentions route targeted feedback to the run interjection queue when a session has an active run, and append **routed feedback** lines in the thread (`Alice → frontend_writer: …`). Per-user expertise bullets: `GET/PUT /v1/users/me/participant-context`. Per-discipline **agent overlays** (prompt extensions) save via Settings **My agent overlays** or `GET/PUT /v1/users/me/agent-overlays/{discipline}` and merge into slice prompts when that user claims the matching role. Only one active claim per role per run — a second claim returns **409** and Chat shows **Taken** on the role chip.
 
-Catalog: `configs/collab/disciplines.yaml`. Per-user default: `configs/collab/users/{user_id}.yaml`.
+Catalog: `configs/collab/disciplines.yaml`. Per-user default discipline: `configs/collab/users/{user_id}.yaml`. Agent overlays: `configs/collab/users/{user_id}_agent_overlays.yaml`.
 
 ## Individual deployment
 

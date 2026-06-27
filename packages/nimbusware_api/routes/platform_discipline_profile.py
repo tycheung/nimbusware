@@ -10,6 +10,11 @@ from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_api.user import maker_user_id_str
 from nimbusware_maker.collab_disciplines import normalize_discipline
+from nimbusware_maker.user_agent_overlay import (
+    load_user_agent_overlays,
+    overlay_catalog,
+    save_user_agent_overlay,
+)
 from nimbusware_maker.user_discipline_profile import (
     load_user_discipline_profile,
     save_user_discipline_profile,
@@ -17,11 +22,6 @@ from nimbusware_maker.user_discipline_profile import (
 from nimbusware_maker.user_participant_context import (
     load_user_participant_context,
     save_user_participant_context,
-)
-from nimbusware_maker.user_agent_overlay import (
-    load_user_agent_overlays,
-    overlay_catalog,
-    save_user_agent_overlay,
 )
 
 router = APIRouter(tags=["platform"])
