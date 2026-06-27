@@ -16,6 +16,7 @@ import { settingsShellHtml } from "./settings_shell_html.js";
 import { wireSafeCodingSettingsPanel } from "./settings_safe_coding_ui.js";
 import { deploySettingsSectionHtml, wireDeploySettingsPanel } from "./settings_deploy_ui.js";
 import { soloDisciplineSectionHtml, wireSoloDisciplinePanel } from "./settings_solo_discipline_ui.js";
+import { agentOverlaySectionHtml, wireAgentOverlayPanel } from "./settings_agent_overlay_ui.js";
 
 function labelForKey(catalog, key) {
   const groups = catalog?.groups;
@@ -36,12 +37,13 @@ export async function mountSettings(root) {
   ]);
   const stored = me.stored || me.values || me.settings || me;
 
-  root.innerHTML = settingsShellHtml() + deploySettingsSectionHtml() + soloDisciplineSectionHtml();
+  root.innerHTML = settingsShellHtml() + deploySettingsSectionHtml() + soloDisciplineSectionHtml() + agentOverlaySectionHtml();
 
   await Promise.all([wireRoutingPresetsPanel(root), wireAgentModelsPanel(root)]);
   await wireSafeCodingSettingsPanel(root);
   wireDeploySettingsPanel(root);
   wireSoloDisciplinePanel(root);
+  await wireAgentOverlayPanel(root);
 
   const collabSection = root.querySelector("#settings-collab");
   const collabToggle = root.querySelector("#settings-collab-enabled");

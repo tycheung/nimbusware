@@ -15,7 +15,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Review** | Research approve/reject, slice approval, deploy cockpit + approve, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), active slice highlight, maintenance countdown, contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
-| **Settings** | Hardware, Ollama, autopilot, enforcement depth, hybrid routing, deploy credential vault sync, solo discipline hat, collab toggle |
+| **Settings** | Hardware, Ollama, autopilot, enforcement depth, hybrid routing, deploy credential vault sync, solo discipline hat, **My agent overlays** editor, collab toggle |
 
 PWA manifest + offline service worker; Web Push when VAPID configured. Deep links: `?run_id=`.
 
@@ -28,11 +28,11 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Manifest approval:** Chat shows a plain-language “You are approving: web UI + REST API…” card with **Approve manifest** before campaign start
 - **Safe Coding campaigns:** archetype `safe_coding` routes greenfield builds to `safe_coding_campaign_fullstack` (campaign driver + approval gates + OWASP web critic pack)
 - **Solo discipline hat:** Settings → **Solo discipline hat** routes `@` mentions (and the active hat) into `solo_discipline_routes` on requirements when working alone
-- **Collab disciplines:** join discipline picker, roster badges, `@` routing to interjection queue, routed-feedback thread lines (`Alice → frontend_writer: …`); expertise bullets via `GET/PUT /v1/users/me/participant-context`
+- **Collab disciplines:** join discipline picker, roster badges, `@` routing to interjection queue, routed-feedback thread lines; expertise bullets via `GET/PUT /v1/users/me/participant-context`; per-discipline agent overlays via Settings **My agent overlays** or `GET/PUT /v1/users/me/agent-overlays/{discipline}` merged into slice prompts when roles are claimed
 - **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal includes roster templates with suggested disciplines
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
-- **Open preview** link on active run cards when dev environment session is live (`GET /runs/{id}/dev-env/status`)
+- **Open preview** link on active run cards when dev environment session is live; **Live API / Live web** links when deploy timeline includes URLs (`GET /runs/{id}/dev-env/status`, run timeline metadata)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
 - APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, `POST /v1/chat/scope/discover`, fork/graph/switch-mode

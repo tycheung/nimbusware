@@ -19,7 +19,7 @@ Server-side **maker approval** state machine and slice workflow helpers. The ope
 | Progress | Full run theater SSE, maker-progress SSE, operator ribbons, theater transcript export |
 | Plan | Campaign backlog tree with surface badges, active slice highlight, maintenance countdown |
 | Models | Ranked models, presets, Ollama pull, catalog-info strip |
-| Settings | Operator settings, chat session resume toggle, hardware profile |
+| Settings | Operator settings, chat session resume toggle, hardware profile, per-discipline agent overlay editor |
 
 First-run onboarding uses `GET /v1/platform/onboarding` (wizard tab in maker web).
 

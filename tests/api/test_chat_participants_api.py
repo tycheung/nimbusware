@@ -179,3 +179,34 @@ def test_admin_adds_write_participant(
         json={"text": "writer can post"},
     )
     assert ok.status_code == 200
+
+
+def test_agent_overlay_get_and_put(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_collab(monkeypatch)
+    _signup(client, "overlay-user")
+
+    empty = client.get("/v1/users/me/agent-overlays")
+    assert empty.status_code == 200
+    assert empty.json()["user_id"]
+    assert isinstance(empty.json()["disciplines"], list)
+
+    saved = client.put(
+        "/v1/users/me/agent-overlays/backend",
+        json={"prompt_extension": "Keep handlers thin."},
+    )
+    assert saved.status_code == 200
+    assert saved.json()["overlays"]["backend"]["prompt_extension"] == "Keep handlers thin."
+
+    again = client.get("/v1/users/me/agent-overlays")
+    assert again.json()["overlays"]["backend"]["prompt_extension"] == "Keep handlers thin."
+
+    cleared = client.put(
+        "/v1/users/me/agent-overlays/backend",
+        json={"prompt_extension": None, "custom_agent_id": None},
+    )
+    assert cleared.status_code == 200
+    assert "backend" not in cleared.json()["overlays"]
+
