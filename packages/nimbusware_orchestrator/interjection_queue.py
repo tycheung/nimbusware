@@ -29,6 +29,9 @@ class InterjectionItem:
     patch_from_chat: bool = False
     steer_from_chat: bool = False
     skip_slice: bool = False
+    discipline: str | None = None
+    taxonomy_key: str | None = None
+    routed_from_user_id: str | None = None
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -46,6 +49,9 @@ class InterjectionQueue:
         patch_from_chat: bool = False,
         steer_from_chat: bool = False,
         skip_slice: bool = False,
+        discipline: str | None = None,
+        taxonomy_key: str | None = None,
+        routed_from_user_id: str | None = None,
     ) -> InterjectionItem:
         stripped, prefix_flags = parse_interjection_prefix(message)
         item = InterjectionItem(
@@ -57,6 +63,9 @@ class InterjectionQueue:
             patch_from_chat=patch_from_chat or prefix_flags.get("patch_from_chat", False),
             steer_from_chat=steer_from_chat or prefix_flags.get("steer_from_chat", False),
             skip_slice=skip_slice or prefix_flags.get("skip_slice", False),
+            discipline=discipline,
+            taxonomy_key=taxonomy_key,
+            routed_from_user_id=routed_from_user_id,
         )
         if priority == InterjectionPriority.LAST:
             self.items.append(item)
@@ -85,6 +94,9 @@ class InterjectionQueue:
                     "patch_from_chat": i.patch_from_chat,
                     "steer_from_chat": i.steer_from_chat,
                     "skip_slice": i.skip_slice,
+                    "discipline": i.discipline,
+                    "taxonomy_key": i.taxonomy_key,
+                    "routed_from_user_id": i.routed_from_user_id,
                 }
                 for i in self.items
             ],

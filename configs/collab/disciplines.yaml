@@ -1,0 +1,30 @@
+# Collab discipline catalog (fo2180) — maps human roles to agent taxonomy keys.
+disciplines:
+  - id: pm
+    display_name: Product (PM)
+    taxonomy_key: planner
+    aliases: [product]
+  - id: architect
+    display_name: Architect
+    taxonomy_key: architect
+    aliases: [arch]
+  - id: frontend
+    display_name: Frontend
+    taxonomy_key: frontend_writer
+    aliases: [fe, ui]
+  - id: backend
+    display_name: Backend
+    taxonomy_key: backend_writer
+    aliases: [be, api]
+  - id: qa
+    display_name: QA
+    taxonomy_key: test_writer
+    aliases: [test, quality]
+  - id: devops
+    display_name: DevOps
+    taxonomy_key: integration_adapter_writer
+    aliases: [ops, infra]
+  - id: fullstack
+    display_name: Full stack
+    taxonomy_keys: [frontend_writer, backend_writer]
+    aliases: [fs]

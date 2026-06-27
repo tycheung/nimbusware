@@ -198,6 +198,7 @@ class InMemoryCollabStore:
         session_id: UUID,
         user_id: UUID,
         role: str,
+        user_discipline: str | None = None,
     ) -> ParticipantRecord:
         role_n = role.strip().lower()
         if role_n not in SESSION_PARTICIPANT_ROLES:
@@ -211,9 +212,32 @@ class InMemoryCollabStore:
             joined_at=now,
             username=user.username if user else None,
             display_name=user.display_name if user else None,
+            user_discipline=user_discipline,
         )
         self._participants[(session_id, user_id)] = row
         return row
+
+    def update_participant_discipline(
+        self,
+        *,
+        session_id: UUID,
+        user_id: UUID,
+        user_discipline: str | None,
+    ) -> ParticipantRecord | None:
+        row = self._participants.get((session_id, user_id))
+        if row is None:
+            return None
+        updated = ParticipantRecord(
+            session_id=row.session_id,
+            user_id=row.user_id,
+            role=row.role,
+            joined_at=row.joined_at,
+            username=row.username,
+            display_name=row.display_name,
+            user_discipline=user_discipline,
+        )
+        self._participants[(session_id, user_id)] = updated
+        return updated
 
     def remove_participant(self, session_id: UUID, user_id: UUID) -> bool:
         return self._participants.pop((session_id, user_id), None) is not None
@@ -225,6 +249,7 @@ class InMemoryCollabStore:
         role: str,
         created_by: UUID,
         expires_at: datetime,
+        recommended_discipline: str | None = None,
     ) -> InviteRecord:
         import secrets
 
@@ -242,6 +267,7 @@ class InMemoryCollabStore:
             expires_at=expires_at,
             created_by=created_by,
             created_at=now,
+            recommended_discipline=recommended_discipline,
         )
         self._invites[token] = row
         self._invite_by_id[iid] = row
@@ -252,6 +278,14 @@ class InMemoryCollabStore:
         if row is None:
             return None
         self._invite_by_id.pop(row.invite_id, None)
+        if row.expires_at < _utc_now():
+            return None
+        return row
+
+    def peek_invite(self, token: str) -> InviteRecord | None:
+        row = self._invites.get(token)
+        if row is None:
+            return None
         if row.expires_at < _utc_now():
             return None
         return row
@@ -300,6 +334,7 @@ class PostgresCollabStore:
         session_id: UUID,
         user_id: UUID,
         role: str,
+        user_discipline: str | None = None,
     ) -> ParticipantRecord:
         role_n = role.strip().lower()
         if role_n not in SESSION_PARTICIPANT_ROLES:
@@ -308,12 +343,16 @@ class PostgresCollabStore:
         with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 """
-                INSERT INTO nimbusware_chat_participant (session_id, user_id, role, joined_at)
-                VALUES (%s, %s, %s, %s)
-                ON CONFLICT (session_id, user_id) DO UPDATE SET role = EXCLUDED.role
-                RETURNING session_id, user_id, role, joined_at
+                INSERT INTO nimbusware_chat_participant (
+                  session_id, user_id, role, joined_at, user_discipline
+                )
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (session_id, user_id) DO UPDATE SET
+                  role = EXCLUDED.role,
+                  user_discipline = COALESCE(EXCLUDED.user_discipline, nimbusware_chat_participant.user_discipline)
+                RETURNING session_id, user_id, role, joined_at, user_discipline
                 """,
-                (session_id, user_id, role_n, now),
+                (session_id, user_id, role_n, now, user_discipline),
             )
             row = cur.fetchone()
             cur.execute(
@@ -330,6 +369,43 @@ class PostgresCollabStore:
             joined_at=row["joined_at"],
             username=str(user_row["username"]) if user_row else None,
             display_name=str(user_row["display_name"]) if user_row else None,
+            user_discipline=str(row["user_discipline"]) if row.get("user_discipline") else None,
+        )
+
+    def update_participant_discipline(
+        self,
+        *,
+        session_id: UUID,
+        user_id: UUID,
+        user_discipline: str | None,
+    ) -> ParticipantRecord | None:
+        with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(
+                """
+                UPDATE nimbusware_chat_participant
+                SET user_discipline = %s
+                WHERE session_id = %s AND user_id = %s
+                RETURNING session_id, user_id, role, joined_at, user_discipline
+                """,
+                (user_discipline, session_id, user_id),
+            )
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cur.execute(
+                "SELECT username, display_name FROM nimbusware_user WHERE user_id = %s",
+                (user_id,),
+            )
+            user_row = cur.fetchone()
+            conn.commit()
+        return ParticipantRecord(
+            session_id=row["session_id"],
+            user_id=row["user_id"],
+            role=str(row["role"]),
+            joined_at=row["joined_at"],
+            username=str(user_row["username"]) if user_row else None,
+            display_name=str(user_row["display_name"]) if user_row else None,
+            user_discipline=str(row["user_discipline"]) if row.get("user_discipline") else None,
         )
 
     def remove_participant(self, session_id: UUID, user_id: UUID) -> bool:
@@ -349,6 +425,7 @@ class PostgresCollabStore:
         role: str,
         created_by: UUID,
         expires_at: datetime,
+        recommended_discipline: str | None = None,
     ) -> InviteRecord:
         import secrets
 
@@ -363,10 +440,11 @@ class PostgresCollabStore:
             cur.execute(
                 """
                 INSERT INTO nimbusware_chat_invite (
-                  invite_id, session_id, token_hash, role, expires_at, created_by, created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                  invite_id, session_id, token_hash, role, expires_at, created_by, created_at,
+                  recommended_discipline
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (iid, session_id, digest, role_n, expires_at, created_by, now),
+                (iid, session_id, digest, role_n, expires_at, created_by, now, recommended_discipline),
             )
             conn.commit()
         return InviteRecord(
@@ -377,6 +455,7 @@ class PostgresCollabStore:
             expires_at=expires_at,
             created_by=created_by,
             created_at=now,
+            recommended_discipline=recommended_discipline,
         )
 
     def consume_invite(self, token: str) -> InviteRecord | None:
@@ -407,6 +486,36 @@ class PostgresCollabStore:
             expires_at=row["expires_at"],
             created_by=row["created_by"],
             created_at=row["created_at"],
+            recommended_discipline=(
+                str(row["recommended_discipline"]) if row.get("recommended_discipline") else None
+            ),
+        )
+
+    def peek_invite(self, token: str) -> InviteRecord | None:
+        digest = _hash_invite_token(token)
+        now = _utc_now()
+        with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(
+                """
+                SELECT * FROM nimbusware_chat_invite
+                WHERE token_hash = %s AND consumed_at IS NULL AND expires_at > %s
+                """,
+                (digest, now),
+            )
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return InviteRecord(
+            invite_id=row["invite_id"],
+            session_id=row["session_id"],
+            role=str(row["role"]),
+            token=token,
+            expires_at=row["expires_at"],
+            created_by=row["created_by"],
+            created_at=row["created_at"],
+            recommended_discipline=(
+                str(row["recommended_discipline"]) if row.get("recommended_discipline") else None
+            ),
         )
 
 
@@ -418,6 +527,7 @@ def _participant_from_row(row: dict[str, object]) -> ParticipantRecord:
         joined_at=row["joined_at"],  # type: ignore[arg-type]
         username=str(row["username"]) if row.get("username") else None,
         display_name=str(row["display_name"]) if row.get("display_name") else None,
+        user_discipline=str(row["user_discipline"]) if row.get("user_discipline") else None,
     )
 
 

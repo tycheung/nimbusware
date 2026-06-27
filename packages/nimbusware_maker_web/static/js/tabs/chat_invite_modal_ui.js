@@ -32,11 +32,13 @@ function copyText(text) {
   return Promise.resolve();
 }
 
-async function createInviteLink(sessionId, role) {
+async function createInviteLink(sessionId, role, recommendedDiscipline) {
+  const payload = { role, expires_hours: 24 };
+  if (recommendedDiscipline) payload.recommended_discipline = recommendedDiscipline;
   const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/invites`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ role, expires_hours: 24 }),
+    body: JSON.stringify(payload),
   });
   const origin = window.location.origin;
   return `${origin}${body.join_url}`;
@@ -151,10 +153,16 @@ export function openInviteModal(root, sessionId) {
   overlay.querySelector("#chat-invite-copy-link")?.addEventListener("click", async () => {
     const role = overlay.querySelector("#chat-invite-role-link")?.value || "session_read";
     const status = overlay.querySelector("#chat-invite-link-status");
+    const tpl = INVITE_TEMPLATES.find((t) => t.id === templateSelect?.value);
+    const recommended = tpl?.disciplines?.[0] || "";
     try {
-      const url = await createInviteLink(sessionId, role);
+      const url = await createInviteLink(sessionId, role, recommended);
       await copyText(url);
-      if (status) status.textContent = "Invite link copied.";
+      if (status) {
+        status.textContent = recommended
+          ? `Invite link copied (suggested discipline: ${recommended}).`
+          : "Invite link copied.";
+      }
     } catch (e) {
       if (status) status.textContent = String(e.message || e);
     }

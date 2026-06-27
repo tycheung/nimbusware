@@ -44,6 +44,7 @@ class ParticipantRecord:
     joined_at: datetime
     username: str | None = None
     display_name: str | None = None
+    user_discipline: str | None = None
 
     def to_dict(self) -> dict[str, str]:
         out = {
@@ -56,6 +57,8 @@ class ParticipantRecord:
             out["username"] = self.username
         if self.display_name is not None:
             out["display_name"] = self.display_name
+        if self.user_discipline is not None:
+            out["user_discipline"] = self.user_discipline
         return out
 
 
@@ -68,3 +71,4 @@ class InviteRecord:
     expires_at: datetime
     created_by: UUID
     created_at: datetime
+    recommended_discipline: str | None = None

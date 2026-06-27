@@ -26,9 +26,19 @@ Legacy: set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loo
 | POST | `/v1/auth/signup` | Create local user (first user becomes owner) |
 | POST | `/v1/auth/signin` | Session cookie |
 | GET | `/v1/chat/sessions/{id}/participants` | List participants |
-| POST | `/v1/chat/sessions/{id}/invites` | Create join link |
-| POST | `/v1/chat/join` | Redeem invite token |
+| POST | `/v1/chat/sessions/{id}/invites` | Create join link (optional `recommended_discipline`) |
+| GET | `/v1/chat/join-preview?token=` | Preview invite role + suggested discipline |
+| POST | `/v1/chat/join` | Redeem invite token (optional `user_discipline`) |
+| PUT | `/v1/chat/sessions/{id}/participants/me/discipline` | Update your discipline in this session |
+| GET | `/v1/platform/collab-disciplines` | Discipline catalog (`configs/collab/disciplines.yaml`) |
+| GET/PUT | `/v1/users/me/discipline-profile` | Default discipline when joining sessions |
 | GET | `/v1/chat/sessions/{id}/stream` | Session SSE theater fan-out (0.5s poll, capped backlog) |
+
+## Disciplines (A2 team collab)
+
+Each participant can wear a **discipline** (PM, architect, frontend, backend, QA, DevOps) mapped to agent taxonomy keys. The join flow shows a discipline picker; invites can suggest a discipline via template or `recommended_discipline`. Chat `@` mentions route targeted feedback to the run interjection queue when a session has an active run.
+
+Catalog: `configs/collab/disciplines.yaml`. Per-user default: `configs/collab/users/{user_id}.yaml`.
 
 ## Individual deployment
 
@@ -45,7 +55,8 @@ Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{to
 | `chat_collab_wiring.js` | Collab session stream + host transfer wiring |
 | `chat_model_drawer_ui.js` | In-session role model swap drawer |
 | `chat_invite_modal_ui.js` | Invite link / directory / group modal |
-| `chat_join.js` | `#/chat/join/{token}` sign-in + redeem |
+| `chat_join.js` | `#/chat/join/{token}` sign-in, discipline picker, redeem |
+| `chat_mention_ui.js` | `@` discipline autocomplete in composer |
 | `chat_session_ui.js` | Participants strip, session sidebar, compute nodes |
 | `chat_branch_ui.js` | Conversation branch tree |
 

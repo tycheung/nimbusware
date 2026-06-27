@@ -119,6 +119,9 @@ CREATE TABLE IF NOT EXISTS nimbusware_chat_participant (
 CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_participant_user
   ON nimbusware_chat_participant (user_id, joined_at DESC);
 
+ALTER TABLE nimbusware_chat_participant
+  ADD COLUMN IF NOT EXISTS user_discipline TEXT NULL;
+
 CREATE TABLE IF NOT EXISTS nimbusware_chat_invite (
   invite_id UUID PRIMARY KEY,
   session_id UUID NOT NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
@@ -129,6 +132,9 @@ CREATE TABLE IF NOT EXISTS nimbusware_chat_invite (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   consumed_at TIMESTAMPTZ NULL
 );
+
+ALTER TABLE nimbusware_chat_invite
+  ADD COLUMN IF NOT EXISTS recommended_discipline TEXT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_invite_session
   ON nimbusware_chat_invite (session_id, created_at DESC);

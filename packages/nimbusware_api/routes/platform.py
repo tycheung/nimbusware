@@ -9,7 +9,9 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
+from nimbusware_api.routes.platform_collab_disciplines import router as collab_disciplines_router
 from nimbusware_api.routes.platform_collab_settings import router as collab_settings_router
+from nimbusware_api.routes.platform_discipline_profile import router as discipline_profile_router
 from nimbusware_api.routes.platform_hardware import router as hardware_router
 from nimbusware_api.routes.platform_model_routing import router as model_routing_router
 from nimbusware_api.routes.platform_operator_profiles import router as operator_profiles_router
@@ -35,6 +37,8 @@ router.include_router(hardware_router)
 router.include_router(user_profiles_router)
 router.include_router(operator_profiles_router)
 router.include_router(collab_settings_router)
+router.include_router(collab_disciplines_router)
+router.include_router(discipline_profile_router)
 router.include_router(model_routing_router)
 
 

@@ -35,11 +35,12 @@ export function renderParticipantStrip(root, session) {
     const name = p.display_name || p.username || p.user_id?.slice(0, 8) || "user";
     const role = String(p.role || "session_read").replace("session_", "");
     const hostMark = session?.host_user_id && p.user_id === session.host_user_id ? " ★" : "";
+    const disciplineMark = p.user_discipline ? ` · ${p.user_discipline}` : "";
     const profiles = [];
     if (p.autopilot_profile_id) profiles.push(`trust:${p.autopilot_profile_id}`);
     if (p.enforcement_profile_id) profiles.push(`enforce:${p.enforcement_profile_id}`);
     const profileMark = profiles.length ? ` [${profiles.join(", ")}]` : "";
-    return `${name} · ${role}${hostMark}${profileMark}`;
+    return `${name} · ${role}${disciplineMark}${hostMark}${profileMark}`;
   });
   strip.replaceChildren();
   const text = document.createElement("span");

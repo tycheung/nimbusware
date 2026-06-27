@@ -19,6 +19,15 @@ async function ensureSignedIn(username, password, displayName, mode) {
   });
 }
 
+async function loadDisciplineOptions() {
+  try {
+    const body = await apiJson("/platform/collab-disciplines");
+    return body.disciplines || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function mountChatJoin(root) {
   const token = joinTokenFromHash();
   root.innerHTML = `
@@ -31,6 +40,12 @@ export async function mountChatJoin(root) {
         <label class="chat-join-signup-only">Display name
           <input name="display_name" autocomplete="name" />
         </label>
+        <label>Your discipline
+          <select name="user_discipline" data-testid="maker-chat-join-discipline">
+            <option value="">— pick later —</option>
+          </select>
+        </label>
+        <p id="chat-join-invite-hint" class="muted" hidden data-testid="maker-chat-join-invite-hint"></p>
         <div class="actions">
           <button type="submit" name="mode" value="signin">Sign in & join</button>
           <button type="submit" name="mode" value="signup" class="btn btn--secondary">Create account & join</button>
@@ -39,6 +54,15 @@ export async function mountChatJoin(root) {
       <p id="chat-join-error" class="error" hidden></p>
     </section>`;
 
+  const disciplineSelect = root.querySelector("[data-testid='maker-chat-join-discipline']");
+  const disciplines = await loadDisciplineOptions();
+  for (const d of disciplines) {
+    const opt = document.createElement("option");
+    opt.value = d.id;
+    opt.textContent = d.display_name || d.id;
+    disciplineSelect?.appendChild(opt);
+  }
+
   if (!token) {
     const err = root.querySelector("#chat-join-error");
     if (err) {
@@ -46,6 +70,23 @@ export async function mountChatJoin(root) {
       err.textContent = "Missing invite token in URL.";
     }
     return;
+  }
+
+  try {
+    const preview = await apiJson(`/chat/join-preview?token=${encodeURIComponent(token)}`);
+    const hint = root.querySelector("#chat-join-invite-hint");
+    if (hint) {
+      const role = String(preview.role || "session_read").replace("session_", "");
+      const parts = [`Invited as ${role}`];
+      if (preview.recommended_discipline) {
+        parts.push(`suggested discipline: ${preview.recommended_discipline}`);
+        if (disciplineSelect) disciplineSelect.value = preview.recommended_discipline;
+      }
+      hint.textContent = parts.join(" · ");
+      hint.hidden = false;
+    }
+  } catch {
+    /* preview optional */
   }
 
   root.querySelector("#chat-join-form")?.addEventListener("submit", async (ev) => {
@@ -57,13 +98,16 @@ export async function mountChatJoin(root) {
     const username = String(data.get("username") || "").trim();
     const password = String(data.get("password") || "");
     const displayName = String(data.get("display_name") || "").trim();
+    const userDiscipline = String(data.get("user_discipline") || "").trim();
     const errEl = root.querySelector("#chat-join-error");
     try {
       await ensureSignedIn(username, password, displayName, mode);
+      const joinBody = { token };
+      if (userDiscipline) joinBody.user_discipline = userDiscipline;
       const joined = await apiJson("/chat/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify(joinBody),
       });
       const sessionId = joined.session_id;
       window.location.hash = `/chat?session_id=${encodeURIComponent(sessionId)}`;

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
-from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep
+from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes import chat_scope, chat_start
 from nimbusware_api.routes.auth import OptionalUserDep
@@ -203,6 +203,7 @@ def append_chat_turn(
     chat_store: ChatStoreDep,
     collab_store: CollabStoreDep,
     project_store: ProjectStoreDep,
+    store: StoreDep,
     user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
@@ -248,6 +249,17 @@ def append_chat_turn(
         )
     except (KeyError, ValueError) as exc:
         raise _chat_http_error(exc) from exc
+    if nimbusware_collab_enabled():
+        from nimbusware_maker.collab_discipline_routing import maybe_route_collab_message
+
+        maybe_route_collab_message(
+            store,
+            chat_store,
+            collab_store,
+            session_id=session_id,
+            message=body.text,
+            actor_user_id=actor_id,
+        )
     message = {
         "role": "user",
         "text": body.text,
@@ -274,6 +286,7 @@ def post_chat_message(
     chat_store: ChatStoreDep,
     collab_store: CollabStoreDep,
     project_store: ProjectStoreDep,
+    store: StoreDep,
     user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
@@ -284,6 +297,7 @@ def post_chat_message(
         chat_store,
         collab_store,
         project_store,
+        store,
         user,
         _user,
     )

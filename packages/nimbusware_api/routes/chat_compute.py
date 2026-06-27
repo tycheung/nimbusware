@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
+from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import OptionalUserDep
 from nimbusware_api.routes.chat_collab_common import actor_user_id, require_collab_enabled
@@ -31,6 +31,7 @@ def post_session_commentary(
     request: Request,
     chat_store: ChatStoreDep,
     collab_store: CollabStoreDep,
+    store: StoreDep,
     user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
@@ -49,7 +50,22 @@ def post_session_commentary(
         text=body.text.strip(),
         payload={"kind": "commentary"},
     )
-    return {"turn": turn.to_dict()}
+    routes: list[dict[str, str]] = []
+    if nimbusware_collab_enabled():
+        from nimbusware_maker.collab_discipline_routing import maybe_route_collab_message
+
+        routes = maybe_route_collab_message(
+            store,
+            chat_store,
+            collab_store,
+            session_id=session_id,
+            message=body.text.strip(),
+            actor_user_id=actor_id,
+        )
+    result: dict[str, Any] = {"turn": turn.to_dict()}
+    if routes:
+        result["discipline_routes"] = routes
+    return result
 
 
 class DelegateControlBody(BaseModel):
