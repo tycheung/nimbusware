@@ -17,6 +17,24 @@ import { renderMessagesFromSession, renderTurnLine } from "./chat_thread_ui.js";
 let sessionStreamTurnCount = 0;
 let cachedCurrentUserId = null;
 
+function maybeHostFallbackBanner(root, session, participants) {
+  const hostId = session?.host_user_id;
+  if (!hostId || !participants?.length) return;
+  const hostPresent = participants.some((p) => String(p.user_id) === String(hostId));
+  const existing = root.querySelector("[data-testid='maker-chat-host-fallback']");
+  if (hostPresent) {
+    existing?.remove();
+    return;
+  }
+  if (existing) return;
+  const banner = document.createElement("p");
+  banner.className = "muted chat-host-fallback-banner";
+  banner.dataset.testid = "maker-chat-host-fallback";
+  banner.textContent =
+    "Host is offline — theater and compute fall back to participants on this session.";
+  root.querySelector(".chat-main")?.prepend(banner);
+}
+
 export async function resolveCurrentUserId() {
   if (cachedCurrentUserId) return cachedCurrentUserId;
   try {
@@ -59,6 +77,7 @@ export async function wireCollabSessionUi(root, sessionId, session) {
           participants: data.participants,
           host_user_id: session?.host_user_id,
         });
+        maybeHostFallbackBanner(root, session, data.participants);
         mountInviteButton(root, sessionId);
         mountMyModelsLink(root, sessionId);
       }

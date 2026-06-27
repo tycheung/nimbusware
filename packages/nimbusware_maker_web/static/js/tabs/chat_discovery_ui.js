@@ -88,6 +88,7 @@ function renderManifestPreview(mount, state, { onConfirmed } = {}) {
     approve.type = "button";
     approve.className = "primary";
     approve.textContent = "Approve manifest";
+    approve.title = "Freeze the stack manifest and unlock run start";
     approve.dataset.testid = "maker-chat-scope-confirm";
     approve.addEventListener("click", async () => {
       approve.disabled = true;
@@ -174,6 +175,7 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
   recommendBtn.type = "button";
   recommendBtn.className = "primary";
   recommendBtn.textContent = "Recommend for me";
+  recommendBtn.title = "Let Nimbusware infer surfaces and stacks from your answers";
   recommendBtn.dataset.testid = "maker-chat-recommend-for-me";
   recommendBtn.addEventListener("click", async () => {
     recommendBtn.disabled = true;
