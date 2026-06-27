@@ -9,7 +9,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Home | `home.js` + `home_readiness_ui.js`, `home_enterprise_policy_ui.js`, `safe-coding-wizard.js` | `/platform/readiness`, `/platform/fleet-governance`, workspace scaffold/precommit, Playwright bootstrap |
 | Chat | `chat.js` + `chat_session_lifecycle.js`, `chat_shell_html.js`, `chat_run_card_ui.js`, `chat_collab_wiring.js`, `chat_model_drawer_ui.js`, `chat_invite_modal_ui.js`, `chat_mention_ui.js`, `chat_join.js`, `chat_*_ui.js` | `/chat/sessions`, classify/start, `@` routing, join discipline picker, dev-env **Open preview** on run cards |
 | Build | `static/js/tabs/build.js` | `POST /campaigns` (banner redirects operators to Chat for new work) |
-| Plan | `static/js/tabs/plan.js` | `/campaigns/{id}/backlog`, run timeline for `slice.contract` gate |
+| Plan | `static/js/tabs/plan.js` | `/campaigns/{id}/backlog`, `/runs/{id}/maker-progress` (active slice + maintenance), timeline for `slice.contract` gate |
 | Review | `review.js` + `review_*_ui.js`, `deploy_cockpit.js` | maker pending, deploy cockpit (validate + approve), git/PR/CI status, scorecard |
 | Progress | `static/js/tabs/progress.js` + `progress/*`, `deploy_cockpit.js` | theater SSE (severity + evidence), findings filter, completion cockpit + auto launch check, deploy cockpit, ribbons |
 | Models | `models.js` + `models_local_ui.js`, `models_ollama_ui.js`, `models_*_ui.js` | `/platform/hardware`, `/platform/models/catalog-info`, Ollama pull |

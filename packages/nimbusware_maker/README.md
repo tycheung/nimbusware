@@ -17,7 +17,7 @@ Server-side **maker approval** state machine and slice workflow helpers. The ope
 | Build | Redirect banner to Chat; legacy `POST /runs` flow via API |
 | Review | Pending slices, diff preview, research approve/reject, stitch summary, git commit status |
 | Progress | Full run theater SSE, maker-progress SSE, operator ribbons, theater transcript export |
-| Plan | Campaign backlog tree |
+| Plan | Campaign backlog tree with surface badges, active slice highlight, maintenance countdown |
 | Models | Ranked models, presets, Ollama pull, catalog-info strip |
 | Settings | Operator settings, chat session resume toggle, hardware profile |
 

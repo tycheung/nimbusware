@@ -9,9 +9,6 @@ from nimbusware_maker.archetype_surface_defaults import default_surfaces_for_arc
 def _allowed_deploy_targets(bundle: str) -> list[str]:
     if bundle != "enterprise":
         return []
-    raw = env_str("NIMBUSWARE_ALLOWED_DEPLOY_TARGETS").strip()
-    if raw:
-        return [part.strip() for part in raw.split(",") if part.strip()]
     return ["aws-ecs", "aws-static-site", "github-actions"]
 
 

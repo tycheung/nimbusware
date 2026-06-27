@@ -13,7 +13,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
 | **Progress** | SSE theater (Evidence toggle per line), maker-progress, deploy cockpit + Terraform validate, findings panel, operator ribbons |
 | **Review** | Research approve/reject, slice approval, deploy cockpit + approve, factory evidence, audit export |
-| **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), contract gate card, steer actions |
+| **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), active slice highlight, maintenance countdown, contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
 | **Settings** | Hardware, Ollama, autopilot, enforcement depth, hybrid routing, deploy credential vault sync, solo discipline hat, collab toggle |
 
@@ -60,7 +60,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
 - **Completion cockpit** — plain-language terminal banner when campaigns finish; auto **launch check** on terminal runs; per-surface launch summary chips
 - **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run
-- **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, and enforcement depth clamps for enterprise bundles
+- **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, allowed deploy targets, and enforcement depth clamps for enterprise bundles
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled
 
