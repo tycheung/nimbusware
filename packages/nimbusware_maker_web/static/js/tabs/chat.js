@@ -15,6 +15,7 @@ import {
   mountAutopilotLadderHint,
   renderClassifierCard,
   startRunFromSession,
+  mountScopeDiscoveryIfNeeded,
 } from "./chat_composer_ui.js";
 import {
   bindChatTheaterForRun,
@@ -52,7 +53,8 @@ export async function mountChat(root) {
   const INTENT_HINTS = {
     patch: "Describe the bug or paste a failing test name…",
     slice: "Describe the feature to add or change…",
-    factory: "Describe the app you want (e.g. todo API with REST endpoints)…",
+    factory: "Describe the app you want (e.g. todo app with web UI and API)…",
+    campaign: "Describe the product you want built end-to-end…",
   };
   if (intent && CHAT_WORK_TYPES.includes(intent) && workSel) {
     workSel.value = intent;
@@ -215,6 +217,7 @@ export async function mountChat(root) {
           runStart(wt);
         },
       });
+      await mountScopeDiscoveryIfNeeded(root, classification, message);
       const confidence = Number(classification.confidence ?? 1);
       if (confidence < 0.5) {
         toast("Low confidence — confirm work type before starting", "info");

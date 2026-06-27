@@ -5,7 +5,12 @@ import {
   defaultWorkflowProfileId,
 } from "../operator-default-profiles.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
-import { ensureRunCard } from "./chat_theater_ui.js";
+import {
+  clearScopeDiscoveryState,
+  discoveryBlocksStart,
+  mountScopeDiscoveryIfNeeded,
+  scopeRequirementsPayload,
+} from "./chat_discovery_ui.js";
 import { renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
@@ -68,7 +73,13 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
   accept.className = "primary";
   accept.textContent = `Start as ${workTypeLabel(wt)}`;
   accept.dataset.testid = "maker-chat-accept-chip";
-  accept.addEventListener("click", () => onAccept(wt));
+  accept.addEventListener("click", () => {
+    if (discoveryBlocksStart(root, wt)) {
+      toast("Complete scope discovery or choose Recommend for me", "info");
+      return;
+    }
+    onAccept(wt);
+  });
   chips.appendChild(accept);
 
   for (const alt of WORK_TYPES.filter((t) => t !== "auto" && t !== wt)) {
@@ -92,6 +103,9 @@ async function startRunFromSession(
   { replayFromSeq, alignRunReplay } = {},
 ) {
   const message = root.querySelector("#chat-message")?.value?.trim() || "";
+  if (discoveryBlocksStart(root, workType)) {
+    throw new Error("Complete scope discovery or choose Recommend for me before starting");
+  }
   const patchContext = attachmentFields(root);
   const dropdown = root.querySelector("#chat-work-type")?.value || "auto";
   const source = dropdown === "auto" ? "classifier" : "operator_override";
@@ -107,7 +121,7 @@ async function startRunFromSession(
   const workflowProfileId = defaultWorkflowProfileId();
   if (workflowProfileId) startPayload.workflow_profile = workflowProfileId;
   if (message) {
-    startPayload.requirements = { business_prompt: message };
+    startPayload.requirements = scopeRequirementsPayload(root, message);
   }
   if (workType === "patch" && Object.keys(patchContext).length) {
     startPayload.patch_context = patchContext;
@@ -146,6 +160,7 @@ async function startRunFromSession(
     toast(`${workTypeLabel(workType)} run started`, "success");
   }
   root.querySelector("#chat-classifier-mount")?.replaceChildren();
+  clearScopeDiscoveryState(root);
   root.querySelector("#chat-message").value = "";
   return runId;
 }
@@ -185,4 +200,5 @@ export {
   mountAutopilotLadderHint,
   renderClassifierCard,
   startRunFromSession,
+  mountScopeDiscoveryIfNeeded,
 };

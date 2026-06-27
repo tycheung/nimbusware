@@ -59,13 +59,16 @@ export async function mountBuild(root) {
         }
       : {
           project_id: fd.get("project_id"),
-          requirements: { business_prompt: fd.get("prompt") },
+          requirements: {
+            business_prompt: fd.get("prompt"),
+            recommend_for_me: true,
+          },
           autonomous: true,
-          workflow_profile: "campaign_micro_slice",
+          workflow_profile: "campaign_fullstack",
         };
     const payload = applyDefaultProfilesToPayload(base);
     if (!quickMode) {
-      payload.workflow_profile = "campaign_micro_slice";
+      payload.workflow_profile = "campaign_fullstack";
     }
     const body = await apiJson(endpoint, {
       method: "POST",

@@ -6,21 +6,21 @@ import { renderModelsFirstStrip, renderReadiness } from "./home_readiness_ui.js"
 
 const FACTORY_DEMOS = [
   {
-    promptId: "todo_api",
-    title: "Todo API",
-    prompt: "Build a minimal todo list REST API with tests",
+    promptId: "todo_fullstack",
+    title: "Todo app",
+    prompt: "Build a todo app with a web UI and REST API with tests",
     testId: "maker-factory-demo-todo",
   },
   {
-    promptId: "basic_crm",
+    promptId: "basic_crm_fullstack",
     title: "Basic CRM",
-    prompt: "Build a minimal CRM with user authentication",
+    prompt: "Build a minimal CRM with web UI, authentication, and API",
     testId: "maker-factory-demo-crm",
   },
   {
-    promptId: "contacts_api",
-    title: "Contacts API",
-    prompt: "Build a contacts REST API with OpenAPI docs",
+    promptId: "contacts_fullstack",
+    title: "Contacts app",
+    prompt: "Build a contacts app with React UI and OpenAPI-backed REST API",
     testId: "maker-factory-demo-contacts",
   },
 ];
@@ -39,10 +39,10 @@ const INTENT_CARDS = [
     testId: "maker-intent-slice",
   },
   {
-    id: "factory",
+    id: "campaign",
     title: "Build an app",
-    detail: "Autonomous factory from a business prompt",
-    testId: "maker-intent-factory",
+    detail: "Full-stack autonomous delivery from your prompt",
+    testId: "maker-intent-campaign",
   },
 ];
 
@@ -70,8 +70,8 @@ export async function mountHome(root) {
       <div class="intent-cards" id="intent-cards"></div>
     </section>
     <section class="guided-campaign panel" data-testid="maker-home-guided-campaign" id="factory-hero-section">
-      <h3>Factory hero demos</h3>
-      <p class="muted" id="factory-hero-caption">Catalog zero-touch factory prompts — weekly pass rates appear in Admin Metrics.</p>
+      <h3>Full-stack demos</h3>
+      <p class="muted" id="factory-hero-caption">Example product prompts — scope discovery runs in Chat before the campaign starts.</p>
       <div class="intent-cards" id="factory-demo-cards"></div>
       <button type="button" id="home-start-factory" class="secondary" data-testid="maker-home-start-factory">Custom app prompt…</button>
       <p class="actions">
@@ -195,13 +195,13 @@ export async function mountHome(root) {
         : "";
     btn.innerHTML = `<strong>${demo.title}</strong><span class="muted">${demo.prompt}${catalogNote}</span>`;
     btn.addEventListener("click", () =>
-      openChatIntent("factory", { prompt: demo.prompt, promptId: demo.promptId }),
+      openChatIntent("campaign", { prompt: demo.prompt, promptId: demo.promptId }),
     );
     factoryCards?.appendChild(btn);
   }
 
   root.querySelector("#home-start-factory")?.addEventListener("click", () => {
-    openChatIntent("factory");
+    openChatIntent("campaign");
   });
 
   await refresh();

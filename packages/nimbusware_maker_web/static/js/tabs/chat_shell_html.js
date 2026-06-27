@@ -77,6 +77,7 @@ export function chatLayoutHtml() {
         </details>
         <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
         <div id="chat-classifier-mount"></div>
+        <div id="chat-discovery-mount" data-testid="maker-chat-discovery-mount"></div>
       </div>
     </div>`;
 }
