@@ -29,6 +29,51 @@ async function agentStripContext() {
   return { sessionId: sessionId || null, computeNodes };
 }
 
+export function previewUrlFromDevEnvStatus(body) {
+  if (!body?.active) return null;
+  const session = body.session;
+  if (!session || typeof session !== "object") return null;
+  const url = session.frontend_base_url || session.base_url || session.api_base_url;
+  const trimmed = String(url || "").trim();
+  return trimmed || null;
+}
+
+export async function refreshChatRunPreview(card, runId) {
+  if (!card || !runId) return;
+  let strip = card.querySelector(".chat-run-card__preview");
+  if (!strip) {
+    strip = document.createElement("p");
+    strip.className = "chat-run-card__preview actions muted";
+    strip.dataset.testid = "maker-chat-run-preview";
+    const theater = card.querySelector(".chat-run-card__theater");
+    card.insertBefore(strip, theater);
+  }
+  try {
+    const st = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`);
+    const url = previewUrlFromDevEnvStatus(st);
+    strip.replaceChildren();
+    if (!url) {
+      strip.textContent = st.active ? "Preview warming up…" : "";
+      strip.hidden = !st.active;
+      return;
+    }
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Open preview";
+    link.dataset.testid = "maker-chat-open-preview";
+    const status = document.createElement("span");
+    status.className = "muted";
+    status.textContent = ` · ${url}`;
+    strip.append(link, status);
+    strip.hidden = false;
+  } catch {
+    strip.hidden = true;
+    strip.textContent = "";
+  }
+}
+
 export function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) {
   const thread = root.querySelector("#chat-thread");
   if (!thread || !runId) return null;
@@ -70,6 +115,7 @@ export function ensureRunCard(root, runId, { workType = "", status = "running" }
   card.appendChild(theaterList);
   thread.appendChild(card);
   loadRunCardOperatorProfile(root, runId);
+  void refreshChatRunPreview(card, runId);
   return card;
 }
 

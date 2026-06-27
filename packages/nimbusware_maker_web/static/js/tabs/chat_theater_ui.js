@@ -12,6 +12,7 @@ import {
   FOLLOW_LIVE_KEY,
   loadRunCardOperatorProfile,
   loadRunCardTrust,
+  refreshChatRunPreview,
   theaterCap,
 } from "./chat_run_card_ui.js";
 
@@ -25,6 +26,13 @@ export {
 
 function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   if (!runId) return null;
+  let previewTimer = null;
+  const schedulePreviewRefresh = () => {
+    const card = root.querySelector(`[data-run-id="${runId}"]`);
+    if (card) void refreshChatRunPreview(card, runId);
+  };
+  schedulePreviewRefresh();
+  previewTimer = setInterval(schedulePreviewRefresh, 20_000);
   const mount = root.querySelector("#chat-theater-mount");
   if (mount) {
     mount.removeAttribute("hidden");
@@ -52,9 +60,10 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
     if (!msg || (!msg.headline && !msg.body_md)) return;
     appendTheaterToThread(root, runId, msg);
     if (msg.message_kind === "gate" && msg.severity === "block") onGateBlock();
+    schedulePreviewRefresh();
   };
 
-  return openSseStream(
+  const stream = openSseStream(
     `/runs/${encodeURIComponent(runId)}/theater/stream?profile=chat&cap=${theaterCap()}`,
     {
       onEvent: {
@@ -69,6 +78,12 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
       },
     },
   );
+  const baseClose = stream.close.bind(stream);
+  stream.close = () => {
+    if (previewTimer) clearInterval(previewTimer);
+    baseClose();
+  };
+  return stream;
 }
 
 function wireChatOperatorRibbons(root, runId) {
