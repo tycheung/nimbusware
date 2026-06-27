@@ -11,6 +11,7 @@ import {
   mountScopeDiscoveryIfNeeded,
   scopeRequirementsPayload,
 } from "./chat_discovery_ui.js";
+import { ensureRunCard } from "./chat_run_card_ui.js";
 import { renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];

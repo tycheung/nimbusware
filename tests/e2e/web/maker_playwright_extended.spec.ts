@@ -38,7 +38,7 @@ test("build tab starts campaign from form submit", async ({ page, request }) => 
 
   await page.goto("/v1/maker/app/");
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
-  await activateMakerRoute(page, "/build");
+  await activateMakerRouteHash(page, "#/build?campaign=1");
 
   await expect(page.getByTestId("maker-build-start-run")).toBeVisible({ timeout: 15_000 });
   await page.locator("#build-project-select").selectOption(projectId);
