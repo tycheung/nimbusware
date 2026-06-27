@@ -161,6 +161,23 @@ export function renderCampaignControls(cp) {
   }
 }
 
+function completionHeadline(state, cp, completionPayload, gateSummary) {
+  const verdict = String(completionPayload?.verdict || "").toUpperCase();
+  const slices =
+    cp?.slices_total != null ? ` · ${cp.slices_completed || 0}/${cp.slices_total} slices` : "";
+  if (verdict === "PASS" || state === "completed") {
+    return `Campaign complete — launch-ready${slices}`;
+  }
+  if (verdict === "FAIL" || state === "failed") {
+    return `Campaign finished — needs attention${slices}`;
+  }
+  if (gateSummary && (state === "completed" || state === "failed")) {
+    const gateText = formatGateSummary(gateSummary);
+    if (gateText) return `Campaign ${state} — ${gateText}${slices}`;
+  }
+  return `Campaign: ${state}${slices}`;
+}
+
 export function renderCompletion(completionPayload, cp, body = {}) {
   const panel = document.getElementById("completion-cockpit");
   if (!panel) return;
@@ -180,13 +197,16 @@ export function renderCompletion(completionPayload, cp, body = {}) {
   const terminalEl = document.getElementById("completion-terminal");
   const rationale = document.getElementById("completion-rationale");
   const blocking = document.getElementById("completion-blocking");
+  const latest = completionPayload || {};
+  const verdict = String(latest.verdict || "").toUpperCase();
   const state = String(cp?.state || bodyRunStatus(completionPayload) || runStatus || "executing");
   if (terminalEl) {
-    const slices = cp?.slices_total != null ? ` · ${cp.slices_completed || 0}/${cp.slices_total} slices` : "";
-    terminalEl.textContent = `Campaign: ${state}${slices}`;
+    terminalEl.textContent = completionHeadline(state, cp, latest, gateSummary);
     terminalEl.dataset.state = state;
+    terminalEl.dataset.testid = "maker-completion-terminal";
+    terminalEl.classList.toggle("completion-terminal--ready", verdict === "PASS" || state === "completed");
+    terminalEl.classList.toggle("completion-terminal--failed", verdict === "FAIL" || state === "failed");
   }
-  const latest = completionPayload || {};
   if (rationale) {
     const gateText = formatGateSummary(gateSummary);
     const rationaleText = latest.rationale || (gateText ? `Gate: ${gateText}` : "");

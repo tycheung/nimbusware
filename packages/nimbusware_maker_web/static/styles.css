@@ -468,6 +468,27 @@ body.mobile-mode #theater-list {
   border-left-color: #d97706;
 }
 
+.completion-cockpit {
+  margin: 0.75rem 0;
+  border: 1px solid var(--color-border, #d8d8d8);
+  border-radius: var(--radius, 8px);
+  padding: 0.75rem 1rem;
+}
+
+#completion-terminal.completion-terminal--ready {
+  color: #166534;
+  font-weight: 600;
+}
+
+#completion-terminal.completion-terminal--failed {
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.finding-card--advisory {
+  opacity: 0.92;
+}
+
 .finding-card.severity-low {
   border-left-color: #3b82f6;
 }
