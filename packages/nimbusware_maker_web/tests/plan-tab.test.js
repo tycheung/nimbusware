@@ -9,6 +9,9 @@ describe("plan tab module", () => {
     expect(planJs).toContain("/campaigns/");
     expect(planJs).toContain("maker-plan-tree");
     expect(planJs).toContain("maker-plan-slice-badge");
+    expect(planJs).toContain("maker-plan-surface-badge");
+    expect(planJs).toContain("maker-plan-contract-gate");
+    expect(planJs).toContain("slice.contract");
     expect(planJs).toContain("maker-progress/stream");
     expect(planJs).toContain("unmountPlan");
   });

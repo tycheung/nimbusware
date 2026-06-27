@@ -13,13 +13,55 @@ const SLICE_STATUS_CLASS = {
   FAILED: "slice-badge--failed",
 };
 
+const SURFACE_LABEL = {
+  api: "API",
+  web: "Web",
+  infra: "Infra",
+  contract: "Contract",
+};
+
+export function surfaceBadge(surfaceId) {
+  const raw = String(surfaceId || "").trim().toLowerCase();
+  if (!raw) return "";
+  const label = SURFACE_LABEL[raw] || raw.toUpperCase();
+  return `<span class="surface-badge surface-badge--${raw}" data-testid="maker-plan-surface-badge" data-surface="${raw}">${label}</span>`;
+}
+
 function sliceBadge(status) {
   const raw = String(status || "pending");
   const cls = SLICE_STATUS_CLASS[raw] || "slice-badge--pending";
   return `<span class="slice-badge ${cls}" data-testid="maker-plan-slice-badge">${raw}</span>`;
 }
 
-function renderTree(root, tree) {
+export function contractGateFromTimeline(events) {
+  let state = "pending";
+  let detail = "Contract gate not run yet";
+  for (const ev of events || []) {
+    if (ev.event_type !== "stage.passed" && ev.event_type !== "stage.failed") continue;
+    const stage = String(ev.payload?.stage_name || "");
+    if (stage !== "slice.contract") continue;
+    state = ev.event_type === "stage.passed" ? "passed" : "failed";
+    detail =
+      ev.metadata?.detail ||
+      ev.payload?.detail ||
+      ev.payload?.message ||
+      (state === "passed" ? "Contract artifacts verified" : "Contract check failed");
+    break;
+  }
+  return { state, detail };
+}
+
+function contractGateCard(gate) {
+  const state = gate?.state || "pending";
+  const detail = gate?.detail || "";
+  return `<section class="plan-contract-gate panel" data-testid="maker-plan-contract-gate" data-state="${state}">
+    <h4>Contract gate</h4>
+    <p class="plan-contract-status" data-testid="maker-plan-contract-status">${state}</p>
+    ${detail ? `<p class="muted plan-contract-detail" data-testid="maker-plan-contract-detail">${detail}</p>` : ""}
+  </section>`;
+}
+
+function renderTree(root, tree, contractGate) {
   const epics = tree.epics || [];
   const summary = tree.summary || {};
   if (!epics.length) {
@@ -28,6 +70,7 @@ function renderTree(root, tree) {
     return;
   }
   const parts = [
+    contractGate ? contractGateCard(contractGate) : "",
     `<div class="plan-toolbar actions">
       <span class="plan-summary muted" data-testid="maker-plan-summary">
         ${summary.slices_completed ?? 0}/${summary.total_slices ?? "?"} slices complete
@@ -53,9 +96,14 @@ function renderTree(root, tree) {
           slice.status === "pending" || slice.status === "PENDING"
             ? `<button type="button" class="linkish plan-steer-btn" data-slice-id="${slice.slice_id}" data-testid="maker-plan-steer-${slice.slice_id}">Steer</button>`
             : "";
+        const stackHint = slice.stack_id
+          ? `<span class="muted plan-stack" data-testid="maker-plan-stack">${slice.stack_id}</span>`
+          : "";
         parts.push(
           `<li data-testid="maker-plan-slice">
+            ${surfaceBadge(slice.surface_id)}
             ${sliceBadge(slice.status)} <code>${slice.slice_id}</code>
+            ${stackHint}
             ${rationale ? `<span class="muted plan-rationale">${rationale}</span>` : ""}
             ${steer}
           </li>`,
@@ -99,8 +147,12 @@ function stopPlanRefresh() {
 
 async function loadBacklog(root, runId) {
   try {
-    const tree = await apiJson(`/campaigns/${encodeURIComponent(runId)}/backlog`);
-    renderTree(root, tree);
+    const [tree, timeline] = await Promise.all([
+      apiJson(`/campaigns/${encodeURIComponent(runId)}/backlog`),
+      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=120`).catch(() => ({ events: [] })),
+    ]);
+    const contractGate = contractGateFromTimeline(timeline.events || []);
+    renderTree(root, tree, contractGate);
     return true;
   } catch (err) {
     root.innerHTML = `<p class='muted' data-testid='maker-plan-pending'>Backlog not available yet (${err.message || "pending"}).</p>`;

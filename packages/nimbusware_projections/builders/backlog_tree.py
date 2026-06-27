@@ -20,6 +20,8 @@ def backlog_tree_from_events(events: list[dict[str, Any]]) -> dict[str, Any] | N
                 {
                     "slice_id": sl.slice_id,
                     "status": sl.status.value,
+                    "surface_id": sl.surface_id,
+                    "stack_id": sl.stack_id,
                     "target_paths": list(sl.target_paths),
                     "depends_on": list(sl.depends_on),
                     "estimated_loc": sl.estimated_loc,
