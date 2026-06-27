@@ -27,6 +27,7 @@ def _free_port() -> int:
         sock.bind(("127.0.0.1", 0))
         return int(sock.getsockname()[1])
 
+
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_repo]
 
 PROMPT = "Build a todo app"
@@ -43,7 +44,9 @@ def _backlog_surface_ids(tree: dict) -> set[str]:
     return surfaces
 
 
-def test_one_prompt_scope_to_fullstack_campaign_backlog(journey_client: JourneyClient, tmp_path) -> None:
+def test_one_prompt_scope_to_fullstack_campaign_backlog(
+    journey_client: JourneyClient, tmp_path
+) -> None:
     discover = journey_client.client.post(
         "/v1/chat/scope/discover",
         json={"business_prompt": PROMPT},

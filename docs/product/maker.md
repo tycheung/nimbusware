@@ -11,7 +11,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Home** | Readiness, hardware strip, intents, full-stack demo prompts |
 | **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
-| **Progress** | SSE theater (Evidence toggle per line), maker-progress, deploy cockpit + Terraform validate, findings panel, operator ribbons |
+| **Progress** | SSE theater (Evidence toggle per line), maker-progress with surface-aware slice headlines, deploy cockpit + Terraform validate, findings panel, operator ribbons |
 | **Review** | Research approve/reject, slice approval, deploy cockpit + approve, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), active slice highlight, maintenance countdown, contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
