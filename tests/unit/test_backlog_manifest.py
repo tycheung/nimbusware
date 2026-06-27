@@ -23,7 +23,9 @@ def test_manifest_template_id_fullstack() -> None:
 
 
 def test_generate_heuristic_backlog_uses_fullstack_template() -> None:
-    backlog = generate_heuristic_backlog("run-fs", requirements=_fullstack_requirements(), max_slices=20)
+    backlog = generate_heuristic_backlog(
+        "run-fs", requirements=_fullstack_requirements(), max_slices=20
+    )
     surfaces = {
         str(sl.surface_id or "")
         for epic in backlog.epics

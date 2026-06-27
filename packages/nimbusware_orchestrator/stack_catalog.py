@@ -37,7 +37,9 @@ def _parse_stack_doc(doc: dict[str, Any]) -> StackDefinition | None:
         return None
     writer = str(doc.get("writer_role") or _SURFACE_WRITER.get(surface, "backend_writer")).strip()
     globs_raw = doc.get("allowed_globs")
-    globs = tuple(str(g) for g in globs_raw if str(g).strip()) if isinstance(globs_raw, list) else ()
+    globs = (
+        tuple(str(g) for g in globs_raw if str(g).strip()) if isinstance(globs_raw, list) else ()
+    )
     verify_raw = doc.get("verify_commands")
     verify: list[tuple[str, ...]] = []
     if isinstance(verify_raw, list):

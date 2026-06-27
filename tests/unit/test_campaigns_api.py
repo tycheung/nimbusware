@@ -52,7 +52,9 @@ def test_post_campaigns_creates_run(client: TestClient, tmp_path: Path) -> None:
     assert body.get("workflow_profile") == "campaign_fullstack"
 
 
-def test_post_campaigns_blocks_fullstack_without_discovery(client: TestClient, tmp_path: Path) -> None:
+def test_post_campaigns_blocks_fullstack_without_discovery(
+    client: TestClient, tmp_path: Path
+) -> None:
     ws = tmp_path / "campaign-gate"
     ws.mkdir()
     project = client.post(

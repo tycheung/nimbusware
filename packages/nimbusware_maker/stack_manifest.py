@@ -41,9 +41,7 @@ def parse_stack_manifest(raw: dict[str, Any]) -> StackManifest:
     stacks = {str(k): str(v) for k, v in stacks_raw.items()} if isinstance(stacks_raw, dict) else {}
     summary_raw = raw.get("discovery_summary")
     summary = (
-        {str(k): str(v) for k, v in summary_raw.items()}
-        if isinstance(summary_raw, dict)
-        else {}
+        {str(k): str(v) for k, v in summary_raw.items()} if isinstance(summary_raw, dict) else {}
     )
     return StackManifest(
         surfaces=surfaces,
