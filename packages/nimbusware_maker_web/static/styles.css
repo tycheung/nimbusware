@@ -634,6 +634,37 @@ body.mobile-mode #theater-list {
   background: var(--color-accent-soft, #e8f0fe);
 }
 
+.surface-launch-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.surface-launch-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+}
+
+.surface-launch-chip--passed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.surface-launch-chip--failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.interjection-prefixes {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
 .completion-cockpit {
   margin: 1rem 0;
 }

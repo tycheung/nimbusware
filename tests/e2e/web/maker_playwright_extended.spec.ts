@@ -384,6 +384,61 @@ test("plan refresh reloads campaign backlog", async ({ page, request }) => {
   expect(backlogCalls).toBeGreaterThan(before);
 });
 
+test("plan shows surface badges from backlog API", async ({ page, request }) => {
+  const { runId } = await seedCampaign(request, repoRoot, "plan-surfaces");
+  await page.route(`**/v1/campaigns/${runId}/backlog`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        epics: [
+          {
+            title: "Full stack",
+            status: "open",
+            features: [
+              {
+                title: "API",
+                slices: [
+                  { slice_id: "api-1", status: "passed", surface_id: "api", stack_id: "fastapi_python" },
+                ],
+              },
+              {
+                title: "Web",
+                slices: [
+                  { slice_id: "web-1", status: "pending", surface_id: "web", stack_id: "react_vite" },
+                ],
+              },
+            ],
+          },
+        ],
+        summary: { slices_completed: 1, total_slices: 2 },
+      }),
+    }),
+  );
+  await page.route(`**/v1/runs/${runId}/timeline**`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        events: [
+          {
+            event_type: "stage.passed",
+            payload: { stage_name: "slice.contract" },
+            metadata: { detail: "openapi.yaml present" },
+          },
+        ],
+      }),
+    }),
+  );
+
+  await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/plan`);
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/plan");
+
+  await expect(page.getByTestId("maker-plan-contract-gate")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("maker-plan-surface-badge").first()).toBeVisible();
+  await expect(page.locator(".surface-badge--api")).toBeVisible();
+  await expect(page.locator(".surface-badge--web")).toBeVisible();
+});
+
 test("autopilot profile save posts user profile", async ({ page, request }) => {
   const { runId } = await seedProjectAndRun(request, repoRoot, "autopilot-profile");
   page.on("dialog", async (dialog) => {

@@ -25,6 +25,29 @@ function interjectionEl(root, dataAttr, id) {
   return root.querySelector(`[${dataAttr}]`) || (id ? root.querySelector(`#${id}`) : null);
 }
 
+const INTERJECTION_PREFIXES = ["[steer]", "[patch]", "[skip]", "[build]"];
+
+function interjectionPrefixChipsHtml() {
+  const chips = INTERJECTION_PREFIXES.map(
+    (prefix) =>
+      `<button type="button" class="linkish interjection-prefix-chip" data-interjection-prefix="${prefix}" data-testid="maker-interjection-prefix-${prefix.slice(1, -1)}">${prefix}</button>`,
+  ).join("");
+  return `<div class="interjection-prefixes actions" data-testid="maker-interjection-prefixes">${chips}</div>`;
+}
+
+function wireInterjectionPrefixes(root, message) {
+  if (!message) return;
+  root.querySelectorAll("[data-interjection-prefix]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const prefix = btn.getAttribute("data-interjection-prefix") || "";
+      const value = message.value || "";
+      if (value.startsWith(prefix)) return;
+      message.value = `${prefix} ${value}`.trim();
+      message.focus();
+    });
+  });
+}
+
 export function wireInterjectionRibbon(root, runId, { showQueue = true } = {}) {
   const message = interjectionEl(root, "data-interjection-message", "interjection-message")
     || interjectionEl(root, "data-interjection-message", "chat-interjection-message");
@@ -52,6 +75,7 @@ export function wireInterjectionRibbon(root, runId, { showQueue = true } = {}) {
 
   nextBtn?.addEventListener("click", () => post("next"));
   lastBtn?.addEventListener("click", () => post("last"));
+  wireInterjectionPrefixes(root, message);
   if (queueBody) void refreshInterjectionQueue(runId, queueBody);
 }
 
@@ -65,6 +89,7 @@ export function interjectionRibbonHtml({ rootId = "interjection-ribbon", compact
   return `
     <${tag}${idAttr} class="interjection-ribbon${panelClass}" data-testid="maker-interjection-ribbon">
       <h4>Interjection${compact ? "" : " queue"}</h4>
+      ${interjectionPrefixChipsHtml()}
       <textarea data-interjection-message id="interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-interjection-input"></textarea>
       <div class="actions">
         <button type="button" data-interjection-next id="interjection-next-btn" data-testid="maker-interjection-next">${compact ? "Next" : "Next in queue"}</button>
@@ -78,6 +103,7 @@ export function chatInterjectionRibbonHtml() {
   return `
     <div class="chat-interjection-ribbon panel" data-testid="maker-chat-interjection-ribbon">
       <h4>Interjection</h4>
+      ${interjectionPrefixChipsHtml()}
       <textarea data-interjection-message id="chat-interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-chat-interjection-input"></textarea>
       <div class="actions">
         <button type="button" data-interjection-next id="chat-interjection-next" data-testid="maker-chat-interjection-next">Next</button>

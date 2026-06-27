@@ -1,6 +1,6 @@
 import { apiJson, toast } from "../api-client.js";
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
-import { renderLaunchScorecard, fetchScorecardForRun } from "../launch-scorecard.js";
+import { renderLaunchScorecard, fetchScorecardForRun, renderSurfaceLaunchSummary } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
 import { appendTheaterLine } from "../../../../nimbusware_ui_shared/js/theater-dom.js";
@@ -71,7 +71,10 @@ export async function mountProgress(root) {
       const scoreMount = document.getElementById("completion-launch-scorecard");
       if (scoreMount && !scoreMount.querySelector("table")) {
         const scorecard = await fetchScorecardForRun(apiJson, id);
-        if (scorecard) renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
+        if (scorecard) {
+          renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
+          renderSurfaceLaunchSummary(scoreMount, scorecard);
+        }
       }
     }
   }

@@ -11,11 +11,11 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Home** | Readiness, hardware strip, intents, full-stack demo prompts |
 | **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
-| **Progress** | SSE theater, maker-progress (incl. enforcement chip), findings, operator ribbons |
-| **Review** | Research approve/reject, slice approval, factory evidence, audit export |
-| **Plan** | Campaign backlog tree, steer actions |
+| **Progress** | SSE theater, maker-progress (incl. enforcement chip), deploy cockpit shell, findings, operator ribbons |
+| **Review** | Research approve/reject, slice approval, deploy cockpit, factory evidence, audit export |
+| **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
-| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets |
+| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets, deploy connection labels |
 
 PWA manifest + offline service worker; Web Push when VAPID configured. Deep links: `?run_id=`.
 
@@ -24,7 +24,8 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - Rules-first intent classifier with optional LLM (`NIMBUSWARE_INTENT_CLASSIFIER_MODEL`)
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
 - **Full-stack campaigns:** greenfield product prompts route to `campaign_fullstack`; scope discovery runs in Chat before Start (`POST /v1/chat/scope/discover`, `/scope/gather`, `/scope/recommend`, `/scope/confirm`)
-- **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks (`fastapi_python`, `react_vite`, …) from `configs/stacks/`; backlog and slice dispatch are surface-aware
+- **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks (`fastapi_python`, `react_vite`, …) from `configs/stacks/`; backlog and slice dispatch are surface-aware; Plan tab shows per-slice surface badges and `slice.contract` gate status
+- **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat (routing lands in Phase 5)
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
@@ -49,7 +50,8 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Trust/autopilot slider** — `GET/PUT /v1/runs/{id}/autopilot`; presets in `configs/autopilot/presets.yaml`
 - **Enforcement depth slider** — `GET/PUT /v1/runs/{id}/enforcement`; presets in `configs/enforcement/presets.yaml`; saved profiles in `configs/enforcement/user_profiles.yaml`; level 10 = workspace CI parity + terminal `enforcement.gate` (ADR [026](../adr/026-enforcement-depth-slider.md)). Progress tab shows `enforcement_status` chip; Build/Campaign start honor Settings default profile.
 - **Enterprise enforcement policy** — Admin Fleet page + `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy` clamps tenant min/max depth
-- **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
+- **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
+- **Deploy cockpit** — Progress and Review show CI/plan/approval shell from run timeline; Settings stores AWS/GitHub workflow labels locally until vault-backed deploy (Phase 6)
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled
 
