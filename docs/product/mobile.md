@@ -1,4 +1,4 @@
-# Mobile native surface (Phase 8 — deferred)
+# Mobile native surface (deferred)
 
 Nimbusware ships **web-first** via Maker at `/v1/maker/app/`. Native mobile (React Native / Expo) is **deferred** until the web vertical slice gate is green (fo2172 + fo2275 journey E2E).
 

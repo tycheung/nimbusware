@@ -86,7 +86,7 @@ function renderTree(root, tree, contractGate) {
     );
     for (const feature of epic.features || []) {
       parts.push(
-        `<details class="plan-feature">
+        `<details class="plan-feature" open>
           <summary><em>${feature.title}</em> (${(feature.slices || []).length} slices)</summary>
           <ul class="plan-slice-list">`,
       );
