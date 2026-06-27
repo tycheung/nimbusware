@@ -48,6 +48,7 @@ export function launchEvalPlainSummary(scorecard) {
 export const ARCHETYPE_PRESETS = {
   safe_coding: {
     workflow_profile: "safe_coding",
+    campaign_workflow_profile: "safe_coding_campaign_fullstack",
     autopilot_profile_id: "guided",
     enforcement_profile_id: "balanced",
     collab_hint: false,
@@ -55,6 +56,7 @@ export const ARCHETYPE_PRESETS = {
   },
   engineer: {
     workflow_profile: "micro_slice",
+    campaign_workflow_profile: "campaign_fullstack",
     autopilot_profile_id: "guided",
     enforcement_profile_id: "balanced",
     collab_hint: true,

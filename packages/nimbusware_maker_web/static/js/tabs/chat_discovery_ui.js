@@ -36,7 +36,33 @@ function manifestSummary(manifest) {
     .join(" · ");
 }
 
-function renderManifestPreview(mount, state) {
+export function plainManifestApprovalText(manifest, state) {
+  if (!manifest || typeof manifest !== "object") return "";
+  const surfaces = Array.isArray(manifest.surfaces) ? manifest.surfaces : [];
+  const stacks = manifest.stacks && typeof manifest.stacks === "object" ? manifest.stacks : {};
+  const productParts = [];
+  if (surfaces.includes("web")) productParts.push("web UI");
+  if (surfaces.includes("api")) productParts.push("REST API");
+  if (surfaces.includes("contract")) productParts.push("shared contracts");
+  const stackParts = [];
+  if (stacks.web) stackParts.push(`${stacks.web} frontend`);
+  if (stacks.api) stackParts.push(`${stacks.api} backend`);
+  const product = productParts.length ? productParts.join(" + ") : "full-stack app";
+  const stackLine = stackParts.length ? ` (${stackParts.join(", ")})` : "";
+  const lead = state?.recommend_for_me ? "Recommended plan" : "You are approving";
+  return `${lead}: ${product}${stackLine} with automated tests`;
+}
+
+async function confirmScopeState(state) {
+  const body = await apiJson("/chat/scope/confirm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ state }),
+  });
+  return body.scope;
+}
+
+function renderManifestPreview(mount, state, { onConfirmed } = {}) {
   const manifest = state?.stack_manifest;
   if (!manifest) return;
   const card = document.createElement("article");
@@ -45,10 +71,45 @@ function renderManifestPreview(mount, state) {
   const title = document.createElement("h4");
   title.textContent = state.recommend_for_me ? "Recommended stack manifest" : "Scope manifest";
   card.appendChild(title);
+  const plain = document.createElement("p");
+  plain.className = "chat-manifest-plain";
+  plain.dataset.testid = "maker-chat-scope-manifest-plain";
+  plain.textContent = plainManifestApprovalText(manifest, state);
+  card.appendChild(plain);
   const summary = document.createElement("p");
   summary.className = "muted";
   summary.textContent = manifestSummary(manifest);
   card.appendChild(summary);
+  if (!state.scope_confirmed) {
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const approve = document.createElement("button");
+    approve.type = "button";
+    approve.className = "primary";
+    approve.textContent = "Approve manifest";
+    approve.dataset.testid = "maker-chat-scope-confirm";
+    approve.addEventListener("click", async () => {
+      approve.disabled = true;
+      try {
+        const confirmed = await confirmScopeState(state);
+        onConfirmed?.(confirmed);
+        toast("Manifest approved — you can start the run", "success");
+        mount.replaceChildren();
+        renderManifestPreview(mount, confirmed, { onConfirmed });
+      } catch (e) {
+        toast(String(e.message || e), "error");
+        approve.disabled = false;
+      }
+    });
+    actions.appendChild(approve);
+    card.appendChild(actions);
+  } else {
+    const ok = document.createElement("p");
+    ok.className = "muted";
+    ok.dataset.testid = "maker-chat-scope-confirmed";
+    ok.textContent = "Manifest approved";
+    card.appendChild(ok);
+  }
   mount.appendChild(card);
 }
 
@@ -89,7 +150,11 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
 
   if (state.discovery_complete) {
     root._scopeDiscoveryState = state;
-    renderManifestPreview(mount, state);
+    renderManifestPreview(mount, state, {
+      onConfirmed: (confirmed) => {
+        root._scopeDiscoveryState = confirmed;
+      },
+    });
     return true;
   }
 
@@ -115,7 +180,11 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
       currentState = await gatherScope(currentState, answers, { recommendForMe: true });
       root._scopeDiscoveryState = currentState;
       mount.replaceChildren();
-      renderManifestPreview(mount, currentState);
+      renderManifestPreview(mount, currentState, {
+        onConfirmed: (confirmed) => {
+          root._scopeDiscoveryState = confirmed;
+        },
+      });
       toast("Stack manifest ready — you can start the run", "success");
     } catch (e) {
       toast(String(e.message || e), "error");
@@ -145,7 +214,11 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
           if (currentState.discovery_complete) {
             root._scopeDiscoveryState = currentState;
             mount.replaceChildren();
-            renderManifestPreview(mount, currentState);
+            renderManifestPreview(mount, currentState, {
+              onConfirmed: (confirmed) => {
+                root._scopeDiscoveryState = confirmed;
+              },
+            });
             toast("Scope complete — you can start the run", "success");
           }
         } catch (e) {

@@ -659,6 +659,11 @@ body.mobile-mode #theater-list {
   color: #991b1b;
 }
 
+.chat-manifest-plain {
+  font-size: 1rem;
+  margin: 0.35rem 0;
+}
+
 .interjection-prefixes {
   flex-wrap: wrap;
   gap: 0.25rem;

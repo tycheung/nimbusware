@@ -18,6 +18,16 @@ const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
 const RESUME_KEY = "maker_chat_resume_session";
 
+function workflowProfileForStart(workType) {
+  const stored = defaultWorkflowProfileId();
+  if (!stored) return undefined;
+  if (workType === "campaign") {
+    if (stored === "safe_coding") return "safe_coding_campaign_fullstack";
+    if (stored === "micro_slice") return undefined;
+  }
+  return stored;
+}
+
 function chatResumeEnabled() {
   const raw = localStorage.getItem(RESUME_KEY);
   return raw == null || raw === "1" || raw === "true";
@@ -119,7 +129,7 @@ async function startRunFromSession(
   if (profileId) startPayload.autopilot_profile_id = profileId;
   const enforcementProfileId = defaultEnforcementProfileId();
   if (enforcementProfileId) startPayload.enforcement_profile_id = enforcementProfileId;
-  const workflowProfileId = defaultWorkflowProfileId();
+  const workflowProfileId = workflowProfileForStart(workType);
   if (workflowProfileId) startPayload.workflow_profile = workflowProfileId;
   if (message) {
     startPayload.requirements = scopeRequirementsPayload(root, message);
