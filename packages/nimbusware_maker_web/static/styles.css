@@ -506,6 +506,16 @@ body.mobile-mode #theater-list {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+}
+
+.plan-current-slice {
+  font-size: 0.85rem;
+}
+
+.plan-maintenance {
+  font-size: 0.85rem;
 }
 
 .plan-tree {
@@ -523,6 +533,14 @@ body.mobile-mode #theater-list {
 .plan-slice-list {
   margin: 0.35rem 0 0.5rem;
   padding-left: 1.25rem;
+}
+
+.plan-slice--current {
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+  margin-left: -0.5rem;
+  padding: 0.15rem 0 0.15rem 0.5rem;
+  border-radius: 4px;
 }
 
 .slice-badge {

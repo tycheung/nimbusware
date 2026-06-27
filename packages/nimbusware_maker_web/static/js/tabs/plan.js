@@ -61,7 +61,23 @@ function contractGateCard(gate) {
   </section>`;
 }
 
-function renderTree(root, tree, contractGate) {
+function maintenanceCountdownHtml(campaignProgress) {
+  const nm = campaignProgress?.next_maintenance;
+  if (!nm) return "";
+  const parts = [];
+  const refactor = nm.refactor_in_slices;
+  const arch = nm.architecture_in_slices;
+  if (refactor != null) {
+    parts.push(`refactor in ${refactor} slice${refactor === 1 ? "" : "s"}`);
+  }
+  if (arch != null) {
+    parts.push(`architecture in ${arch} slice${arch === 1 ? "" : "s"}`);
+  }
+  if (!parts.length) return "";
+  return `<span class="plan-maintenance muted" data-testid="maker-plan-maintenance">${parts.join(" · ")}</span>`;
+}
+
+function renderTree(root, tree, contractGate, campaignProgress) {
   const epics = tree.epics || [];
   const summary = tree.summary || {};
   if (!epics.length) {
@@ -69,12 +85,15 @@ function renderTree(root, tree, contractGate) {
       "<p class='muted' data-testid='maker-plan-empty'>No backlog yet — start a campaign from Build.</p>";
     return;
   }
+  const currentSliceId = String(campaignProgress?.current_slice_id || "").trim() || null;
   const parts = [
     contractGate ? contractGateCard(contractGate) : "",
     `<div class="plan-toolbar actions">
       <span class="plan-summary muted" data-testid="maker-plan-summary">
         ${summary.slices_completed ?? 0}/${summary.total_slices ?? "?"} slices complete
       </span>
+      ${currentSliceId ? `<span class="plan-current-slice" data-testid="maker-plan-current-slice">Current: <code>${currentSliceId}</code></span>` : ""}
+      ${maintenanceCountdownHtml(campaignProgress)}
       <button type="button" id="plan-refresh" data-testid="maker-plan-refresh">Refresh</button>
     </div>`,
     "<div class='plan-tree' data-testid='maker-plan-tree'>",
@@ -99,8 +118,9 @@ function renderTree(root, tree, contractGate) {
         const stackHint = slice.stack_id
           ? `<span class="muted plan-stack" data-testid="maker-plan-stack">${slice.stack_id}</span>`
           : "";
+        const isCurrent = Boolean(currentSliceId && slice.slice_id === currentSliceId);
         parts.push(
-          `<li data-testid="maker-plan-slice">
+          `<li class="${isCurrent ? "plan-slice--current" : ""}" data-testid="maker-plan-slice"${isCurrent ? ' data-current="true"' : ""}>
             ${surfaceBadge(slice.surface_id)}
             ${sliceBadge(slice.status)} <code>${slice.slice_id}</code>
             ${stackHint}
@@ -147,12 +167,13 @@ function stopPlanRefresh() {
 
 async function loadBacklog(root, runId) {
   try {
-    const [tree, timeline] = await Promise.all([
+    const [tree, timeline, progress] = await Promise.all([
       apiJson(`/campaigns/${encodeURIComponent(runId)}/backlog`),
       apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=120`).catch(() => ({ events: [] })),
+      apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch(() => null),
     ]);
     const contractGate = contractGateFromTimeline(timeline.events || []);
-    renderTree(root, tree, contractGate);
+    renderTree(root, tree, contractGate, progress?.campaign_progress || null);
     return true;
   } catch (err) {
     root.innerHTML = `<p class='muted' data-testid='maker-plan-pending'>Backlog not available yet (${err.message || "pending"}).</p>`;

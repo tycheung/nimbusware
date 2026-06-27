@@ -13,6 +13,10 @@ describe("plan tab module", () => {
     expect(planJs).toContain("maker-plan-contract-gate");
     expect(planJs).toContain("slice.contract");
     expect(planJs).toContain("maker-progress/stream");
+    expect(planJs).toContain("maker-progress?simple=true");
+    expect(planJs).toContain("maker-plan-current-slice");
+    expect(planJs).toContain("maker-plan-maintenance");
+    expect(planJs).toContain("plan-slice--current");
     expect(planJs).toContain("unmountPlan");
   });
 });
