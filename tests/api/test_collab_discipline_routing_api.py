@@ -98,7 +98,9 @@ def test_commentary_routes_discipline_to_interjection_queue(
     assert "frontend_writer" in routed[-1]["text"]
 
 
-def test_participant_context_round_trip(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_participant_context_round_trip(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
     _enable_collab(monkeypatch)
     _signup(client, "ctxuser")
     saved = client.put(

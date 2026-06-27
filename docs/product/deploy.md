@@ -1,4 +1,4 @@
-# Deploy pipeline (Phase 6)
+# Deploy pipeline
 
 Operators wire cloud deploy through Terraform validation, GitHub Actions, and per-user connection labels (no secrets in repo).
 

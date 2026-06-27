@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 152
+  total_buttons: 153
   clicked: 37
   visible_only: 7
-  unwired: 108
-  click_ratio: 0.2434
+  unwired: 109
+  click_ratio: 0.2418
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -148,6 +148,12 @@ buttons:
 - test_id: maker-chat-delegate-control
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-discipline-route
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_thread_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

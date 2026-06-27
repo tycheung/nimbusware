@@ -138,13 +138,13 @@ def get_chat_session(
             if part is not None:
                 payload["my_participant_role"] = part.role
         else:
-            uid = None
+            actor_uid: UUID | None = None
             try:
-                uid = actor_user_id(request, user)
+                actor_uid = actor_user_id(request, user)
             except HTTPException:
-                uid = None
-            if uid is not None:
-                part = collab_store.get_participant(session_id, uid)
+                actor_uid = None
+            if actor_uid is not None:
+                part = collab_store.get_participant(session_id, actor_uid)
                 if part is not None:
                     payload["my_participant_role"] = part.role
     return ChatSessionResponse(**payload)
