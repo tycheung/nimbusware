@@ -63,6 +63,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Configure settings (~256 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Collaborative chat & disciplines | [docs/collaborative-chat.md](docs/collaborative-chat.md) |
 | Deploy pipeline (Terraform / CI) | [docs/product/deploy.md](docs/product/deploy.md) |
+| Mobile native (deferred) | [docs/product/mobile.md](docs/product/mobile.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
 | First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
