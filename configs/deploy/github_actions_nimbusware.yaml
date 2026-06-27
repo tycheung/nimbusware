@@ -1,0 +1,51 @@
+name: Nimbusware deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Nimbusware (editable)
+        run: pip install -e ".[dev]"
+      - name: Unit tests
+        run: python -m pytest tests/unit -q --tb=no
+      - name: Terraform fmt
+        if: hashFiles('**/*.tf') != ''
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform validate
+        if: hashFiles('**/*.tf') != ''
+        run: |
+          terraform fmt -check -recursive
+          terraform init -backend=false -input=false
+          terraform validate
+      - name: Terraform plan
+        if: hashFiles('**/*.tf') != ''
+        run: terraform plan -input=false -no-color -out=plan.tfplan
+      - name: Upload plan artifact
+        if: hashFiles('**/*.tf') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: plan.tfplan
+
+  deploy:
+    needs: test-and-plan
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy placeholder
+        run: echo "Wire terraform apply or container publish here after operator approval"

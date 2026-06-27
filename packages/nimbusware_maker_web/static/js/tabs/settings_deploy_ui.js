@@ -1,4 +1,4 @@
-import { toast } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
 
 const STORAGE_KEY = "maker_deploy_connections";
 
@@ -20,8 +20,7 @@ export function deploySettingsSectionHtml() {
     <section id="settings-deploy" class="panel" data-testid="maker-settings-deploy">
       <h3>Deploy connections</h3>
       <p class="muted">
-        Store connection labels locally until vault-backed deploy credentials ship.
-        Secrets belong in Admin → API connections or environment variables.
+        Connection labels are stored per user (no secrets). Wire AWS/GitHub secrets via Admin or environment variables.
       </p>
       <form id="settings-deploy-form">
         <label>
@@ -45,7 +44,7 @@ export function deploySettingsSectionHtml() {
     </section>`;
 }
 
-export function wireDeploySettingsPanel(root) {
+export async function wireDeploySettingsPanel(root) {
   const form = root.querySelector("#settings-deploy-form");
   if (!form) return;
 
@@ -54,21 +53,44 @@ export function wireDeploySettingsPanel(root) {
   const workflow = root.querySelector("#settings-deploy-workflow");
   const hint = root.querySelector("#settings-deploy-hint");
 
-  const stored = readStored();
-  if (aws && stored.aws) aws.value = stored.aws;
-  if (github && stored.github) github.value = stored.github;
-  if (workflow && stored.workflow) workflow.value = stored.workflow;
-  if (hint && (stored.aws || stored.github)) {
-    hint.textContent = "Labels saved locally — wire secrets via Admin before live deploy.";
+  let stored = readStored();
+  try {
+    const remote = await apiJson("/platform/deploy/credentials");
+    stored = { ...stored, ...remote };
+  } catch {
+    /* offline or unsigned */
+  }
+  if (aws && stored.aws_profile) aws.value = stored.aws_profile;
+  else if (aws && stored.aws) aws.value = stored.aws;
+  if (github && stored.github_repo) github.value = stored.github_repo;
+  else if (github && stored.github) github.value = stored.github;
+  if (workflow && stored.workflow_path) workflow.value = stored.workflow_path;
+  else if (workflow && stored.workflow) workflow.value = stored.workflow;
+  if (hint && (stored.aws_profile || stored.aws || stored.github_repo || stored.github)) {
+    hint.textContent = "Labels saved — copy GitHub workflow from Deploy cockpit or GET /platform/deploy/github-workflow-template.";
   }
 
-  form.addEventListener("submit", (ev) => {
+  form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    writeStored({
+    const payload = {
       aws: aws?.value?.trim() || "",
       github: github?.value?.trim() || "",
       workflow: workflow?.value?.trim() || "",
-    });
+    };
+    writeStored(payload);
+    try {
+      await apiJson("/platform/deploy/credentials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          aws_profile: payload.aws,
+          github_repo: payload.github,
+          workflow_path: payload.workflow,
+        }),
+      });
+    } catch {
+      /* local-only fallback */
+    }
     if (hint) hint.textContent = "Deploy connection labels saved.";
     toast("Deploy labels saved", "success");
   });

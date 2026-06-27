@@ -57,6 +57,9 @@ export function deployCockpitHtml({ scope = "progress" } = {}) {
       <p class="muted deploy-cockpit-plan" data-testid="maker-deploy-plan-artifact-${scope}" hidden></p>
       <p class="muted deploy-cockpit-urls" data-testid="maker-deploy-live-urls-${scope}" hidden></p>
       <div class="actions">
+        <button type="button" class="deploy-validate-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-validate-${scope}">
+          Run Terraform validate
+        </button>
         <button type="button" class="deploy-approve-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-approve-${scope}" disabled>
           Approve deploy
         </button>
@@ -126,13 +129,47 @@ export async function refreshDeployCockpit(runId, { scope = "progress" } = {}) {
   }
 }
 
-export function wireDeployCockpit(runId, { scope = "progress" } = {}) {
+export async function wireDeployCockpit(runId, { scope = "progress", workspacePath = "" } = {}) {
   const root = cockpitRoot(scope);
   if (!root) return;
+  let ws = workspacePath;
+  if (!ws && runId) {
+    try {
+      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=20`);
+      for (const ev of timeline.events || []) {
+        const project = ev.metadata?.project;
+        if (project?.workspace_path) {
+          ws = String(project.workspace_path);
+          break;
+        }
+      }
+    } catch {
+      /* optional */
+    }
+  }
   const refresh = () => refreshDeployCockpit(runId, { scope });
   root.querySelector(".deploy-cockpit-refresh")?.addEventListener("click", refresh);
+  root.querySelector(".deploy-validate-btn")?.addEventListener("click", async () => {
+    if (!ws) {
+      toast("Workspace path unavailable for this run", "info");
+      return;
+    }
+    try {
+      const body = { workspace_path: ws };
+      if (runId) body.run_id = runId;
+      const result = await apiJson("/platform/deploy/terraform-validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      toast(`Terraform: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
   root.querySelector(".deploy-approve-btn")?.addEventListener("click", () => {
-    toast("Deploy approval will post when CI pipeline is wired (Settings → Deploy connections)", "info");
+    toast("Deploy approval records when CI plan artifact exists on the run timeline", "info");
   });
   void refresh();
 }
