@@ -6,7 +6,9 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import mapping_export_json
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_histogram

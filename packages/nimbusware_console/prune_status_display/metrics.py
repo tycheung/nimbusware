@@ -8,7 +8,9 @@ from agent_core.coercion import is_strict_int
 
 SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.prune_status_display.status_captions import (
     _parse_wrote_at,
 )

@@ -5,7 +5,9 @@ from typing import Any
 
 from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.universal_critique_timeline_display.rows import (
     universal_critique_timeline_export_filename_slug,

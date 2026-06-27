@@ -6,6 +6,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 
+from agent_core.coercion import as_stripped_str, is_strict_int
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_faiss_readiness_summary_cell,
 )
@@ -23,7 +24,6 @@ from nimbusware_console.components.operator_metrics import (
     mapping_to_sorted_table_rows,
     table_rows_csv,
 )
-from agent_core.coercion import as_stripped_str, is_strict_int
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     build_metrics_fn,
     install_operator_metrics_module,

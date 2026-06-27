@@ -7,7 +7,9 @@ from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     mapping_export_json,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import install_named_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.self_refinement._helpers import (
     _SELF_REFINEMENT_FIELDS,

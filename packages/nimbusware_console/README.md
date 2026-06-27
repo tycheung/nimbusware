@@ -26,7 +26,7 @@ Build Admin SPA before packaging: `cd packages/nimbusware_admin_ui && npm ci && 
 nimbusware_console/
 ├── services/                 # HTTP clients to /v1 (runs, chat, config, ollama, …)
 ├── components/               # Shared explainer panel + operator metrics helpers
-├── explainer_core/           # metrics_scaffold, field_caption, repo_yaml, workflow_exports, table_rows_csv
+├── explainer_core/           # metrics_scaffold, operator_metrics_exports, schema_metrics, table_rows_csv
 ├── integrator_core/          # Shared thresholds / min-score / gate emission SSOT (C62)
 ├── workflow_explainers/      # Unified per-workflow operator explainers (7 slugs)
 ├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)
@@ -91,6 +91,18 @@ Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not col
 | `persona_assignment_display.py` | Persona assignment summary |
 
 Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `workflow_explainers/*`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
+
+## Operator metrics scaffold
+
+Console display modules expose operator metrics (table rows, captions, JSON/CSV export) through `explainer_core.operator_metrics_exports`:
+
+| Pattern | Use when |
+|---------|----------|
+| `install_operator_metrics_module` | Full bundle: metrics + table rows + caption + exports |
+| `build_metrics_fn` + `table_rows_fn` | Mapping payloads with declarative field specs |
+| `install_named_operator_metrics_exports` | Exports only (custom metrics builders or guard-wrapped JSON) |
+
+Reference: `agent_evaluator_display/metrics.py`. Prefer `agent_core.coercion` guards over hand-rolled `isinstance` checks. Custom run-id export slugs are defined **after** `install_*` so they override the static slug helper.
 
 ## Tests
 

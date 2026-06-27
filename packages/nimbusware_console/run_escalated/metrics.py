@@ -5,7 +5,9 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.run_escalated.rows import (
     run_escalated_delta_export_filename_slug,

@@ -10,7 +10,9 @@ from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.explainer_core.workflow_exports import (
     workflow_explainer_payload_export_json,
     workflow_explainer_payload_table_rows,

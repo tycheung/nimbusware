@@ -8,7 +8,9 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
 

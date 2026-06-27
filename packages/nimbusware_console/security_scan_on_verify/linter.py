@@ -3,7 +3,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.operator_metrics_exports import install_operator_metrics_module
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
 
 _LINTER_EXIT_FIELDS: tuple[tuple[str, str], ...] = (
     ("Ruff", "security_scan_ruff_exit"),
