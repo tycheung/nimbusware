@@ -18,6 +18,7 @@ import { renderContextArtifacts, renderMemoryInfluence } from "./progress/contex
 
 let theaterHandle = null;
 let progressHandle = null;
+let lastFindings = [];
 
 function stopStreams() {
   theaterHandle?.close();
@@ -142,11 +143,17 @@ export async function mountProgress(root) {
 
   try {
     const findingsBody = await apiJson(`/runs/${id}/findings`);
-    renderFindings(findingsBody.findings || []);
+    lastFindings = findingsBody.findings || [];
+    renderFindings(lastFindings);
     await renderGateFailSteps(apiJson, id);
   } catch {
+    lastFindings = [];
     renderFindings([]);
   }
+
+  document.getElementById("findings-show-all")?.addEventListener("change", () => {
+    renderFindings(lastFindings);
+  });
 
   try {
     const timeline = await apiJson(`/runs/${id}/timeline?limit=1`);

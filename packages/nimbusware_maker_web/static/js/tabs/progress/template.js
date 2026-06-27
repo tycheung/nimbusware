@@ -93,6 +93,11 @@ export const PROGRESS_MOUNT_HTML = `
       </section>
       <section id="findings-workspace" class="findings-workspace" data-testid="maker-findings-workspace">
         <h4>Gate failures &amp; findings</h4>
+        <label class="findings-filter muted">
+          <input type="checkbox" id="findings-show-all" data-testid="maker-findings-show-all" />
+          Show all severities
+        </label>
+        <p id="findings-count" class="muted findings-count" data-testid="maker-findings-count" hidden></p>
         <div id="gate-fail-steps" class="gate-fail-steps" hidden data-testid="maker-gate-fail-steps"></div>
         <ul id="findings-list"></ul>
       </section>

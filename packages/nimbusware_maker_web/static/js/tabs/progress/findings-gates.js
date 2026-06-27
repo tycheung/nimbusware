@@ -9,15 +9,33 @@ function reproSummary(steps) {
   return joined.length > 160 ? `${joined.slice(0, 157)}…` : joined;
 }
 
-export function renderFindings(findings) {
+export function findingsShowAll() {
+  const box = document.getElementById("findings-show-all");
+  return Boolean(box?.checked);
+}
+
+export function renderFindings(findings, { showAll = findingsShowAll() } = {}) {
   const list = document.getElementById("findings-list");
+  const countEl = document.getElementById("findings-count");
   if (!list) return;
   list.replaceChildren();
-  const blocked = (findings || []).filter((ev) => {
+  const all = findings || [];
+  const blocked = all.filter((ev) => {
     const sev = String(ev?.payload?.severity || "").toUpperCase();
     return BLOCKING_SEVERITIES.has(sev);
   });
-  const items = blocked.length ? blocked : findings || [];
+  if (countEl) {
+    if (all.length) {
+      countEl.hidden = false;
+      countEl.textContent = showAll
+        ? `${all.length} finding(s)`
+        : `${blocked.length} blocking · ${all.length} total`;
+    } else {
+      countEl.hidden = true;
+      countEl.textContent = "";
+    }
+  }
+  const items = showAll ? all : blocked.length ? blocked : all;
   if (!items.length) {
     const li = document.createElement("li");
     li.className = "finding-card finding-card--empty";
@@ -30,7 +48,7 @@ export function renderFindings(findings) {
     const pl = ev.payload || {};
     const sev = String(pl.severity || "unknown").toUpperCase();
     const li = document.createElement("li");
-    li.className = `finding-card severity-${sev.toLowerCase()}`;
+    li.className = `finding-card severity-${sev.toLowerCase()}${BLOCKING_SEVERITIES.has(sev) ? "" : " finding-card--advisory"}`;
     li.dataset.testid = "maker-finding-card";
     const head = document.createElement("div");
     head.className = "finding-headline";
