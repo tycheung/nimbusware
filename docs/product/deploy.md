@@ -20,4 +20,4 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 - **Progress / Review** deploy cockpit — **Run Terraform validate**, CI status from `terraform.*` / `ci.*` timeline stages
 - **Settings → Deploy connections** — sync labels with vault API
 
-Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment).
+Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Record operator approval with `POST /v1/platform/deploy/approve` (emits `deploy.approved` on the run timeline; wired in the deploy cockpit).

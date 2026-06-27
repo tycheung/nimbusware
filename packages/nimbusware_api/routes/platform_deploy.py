@@ -32,6 +32,36 @@ class DeployCredentialsBody(BaseModel):
     workflow_path: str | None = Field(default=None, max_length=500)
 
 
+class DeployApproveBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+
+
+@router.post("/platform/deploy/approve")
+def post_deploy_approve(
+    body: DeployApproveBody,
+    store: StoreDep,
+) -> dict[str, str]:
+    from uuid import UUID
+
+    from nimbusware_maker.deploy_pipeline_events import emit_deploy_approved
+
+    try:
+        rid = UUID(body.run_id.strip())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "run_id must be a UUID"),
+        ) from exc
+    rows = store.list_run_events(str(rid))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
+        )
+    emit_deploy_approved(store, rid)
+    return {"run_id": str(rid), "status": "approved"}
+
+
 @router.post("/platform/deploy/terraform-validate")
 def post_terraform_validate(
     body: TerraformValidateBody,

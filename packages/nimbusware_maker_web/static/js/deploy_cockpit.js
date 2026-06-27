@@ -168,8 +168,22 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       toast(String(e.message || e), "error");
     }
   });
-  root.querySelector(".deploy-approve-btn")?.addEventListener("click", () => {
-    toast("Deploy approval records when CI plan artifact exists on the run timeline", "info");
+  root.querySelector(".deploy-approve-btn")?.addEventListener("click", async () => {
+    if (!runId) {
+      toast("No active run for deploy approval", "info");
+      return;
+    }
+    try {
+      await apiJson("/platform/deploy/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: runId }),
+      });
+      toast("Deploy approval recorded on run timeline", "success");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
   void refresh();
 }

@@ -12,6 +12,21 @@ from agent_core.models.events_payloads import (
 )
 
 
+def emit_deploy_approved(store: Any, run_id: UUID | str) -> None:
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    now = datetime.now(timezone.utc)
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=now,
+            metadata={"detail": "operator approved deploy"},
+            payload=StagePassedPayload(stage_name="deploy.approved", duration_ms=0),
+        ),
+    )
+
+
 def emit_terraform_validate_stages(
     store: Any,
     run_id: UUID | str,
