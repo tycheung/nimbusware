@@ -32,6 +32,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal includes roster templates with suggested disciplines
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
+- **Open preview** link on active run cards when dev environment session is live (`GET /runs/{id}/dev-env/status`)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
 - APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, `POST /v1/chat/scope/discover`, fork/graph/switch-mode
@@ -56,6 +57,8 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Enterprise enforcement policy** — Admin Fleet page + `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy` clamps tenant min/max depth
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
 - **Deploy cockpit** — Progress and Review show CI/plan/approval from run timeline; **Run Terraform validate** posts stages; **Approve deploy** records `deploy.approved`; Settings syncs deploy labels with `GET/PUT /v1/platform/deploy/credentials`
+- **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
+- **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run
 - **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, and enforcement depth clamps for enterprise bundles
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled

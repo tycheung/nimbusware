@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 153
+  total_buttons: 156
   clicked: 37
   visible_only: 7
-  unwired: 109
-  click_ratio: 0.2418
+  unwired: 112
+  click_ratio: 0.2372
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -298,6 +298,12 @@ buttons:
   label: New session
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-open-preview
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-optimizer-panel
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_optimizer_ui.js
@@ -329,6 +335,12 @@ buttons:
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-run-card-header
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-run-preview
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
@@ -743,6 +755,12 @@ buttons:
 - test_id: maker-review-gate-summary
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-git-status
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
