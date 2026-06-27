@@ -6,6 +6,15 @@ from nimbusware_env.env_flags import env_str
 from nimbusware_maker.archetype_surface_defaults import default_surfaces_for_archetype
 
 
+def _allowed_deploy_targets(bundle: str) -> list[str]:
+    if bundle != "enterprise":
+        return []
+    raw = env_str("NIMBUSWARE_ALLOWED_DEPLOY_TARGETS").strip()
+    if raw:
+        return [part.strip() for part in raw.split(",") if part.strip()]
+    return ["aws-ecs", "aws-static-site", "github-actions"]
+
+
 def fleet_governance_summary(
     *,
     setup_bundle: str | None = None,
@@ -28,4 +37,5 @@ def fleet_governance_summary(
         },
         "enforcement_policy": enforcement.to_dict(),
         "deploy_chain_required": bundle == "enterprise",
+        "allowed_deploy_targets": _allowed_deploy_targets(bundle),
     }

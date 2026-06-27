@@ -31,6 +31,14 @@ export async function mountEnterpriseGovernancePanel(root) {
     body.className = "muted";
     body.textContent = lines.join(" · ");
     card.appendChild(body);
+    const targets = Array.isArray(gov.allowed_deploy_targets) ? gov.allowed_deploy_targets : [];
+    if (targets.length) {
+      const allow = document.createElement("p");
+      allow.className = "muted";
+      allow.dataset.testid = "maker-home-deploy-allowlist";
+      allow.textContent = `Allowed deploy targets: ${targets.join(", ")}`;
+      card.appendChild(allow);
+    }
     mount.appendChild(card);
   } catch {
     mount.replaceChildren();

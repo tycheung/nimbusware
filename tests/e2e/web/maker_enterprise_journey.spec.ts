@@ -20,6 +20,19 @@ test("enterprise home shell shows fleet links and hides factory hero", async ({ 
       body: JSON.stringify({ models: [], profile_tier: "mid" }),
     }),
   );
+  await page.route("**/v1/platform/fleet-governance**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        setup_bundle: "enterprise",
+        mandatory_discovery: true,
+        default_surfaces: ["web", "api"],
+        deploy_chain_required: true,
+        allowed_deploy_targets: ["aws-ecs", "aws-static-site", "github-actions"],
+        enforcement_policy: { min_enforcement_level: 4, max_enforcement_level: 8 },
+      }),
+    }),
+  );
   await page.route("**/v1/platform/readiness**", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -48,5 +61,6 @@ test("enterprise home shell shows fleet links and hides factory hero", async ({ 
 
   await expect(page.getByTestId("maker-home-enterprise")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("maker-home-enterprise-fleet")).toBeVisible();
+  await expect(page.getByTestId("maker-home-deploy-allowlist")).toContainText("aws-ecs");
   await expect(page.getByTestId("maker-home-guided-campaign")).toBeHidden();
 });
