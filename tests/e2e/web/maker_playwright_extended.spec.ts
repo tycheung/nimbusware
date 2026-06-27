@@ -44,10 +44,18 @@ test("build tab starts campaign from form submit", async ({ page, request }) => 
   await page.locator("#build-project-select").selectOption(projectId);
   await page.locator("#intent-form textarea[name='prompt']").fill("Build tab campaign from Playwright");
   const startPromise = page.waitForResponse(
-    (resp) => resp.url().includes("/v1/campaigns") && resp.request().method() === "POST",
+    (resp) => {
+      try {
+        const path = new URL(resp.url()).pathname;
+        return path.endsWith("/campaigns") && resp.request().method() === "POST";
+      } catch {
+        return false;
+      }
+    },
   );
   await page.getByTestId("maker-build-start-run").click();
-  expect((await startPromise).ok()).toBeTruthy();
+  const startResp = await startPromise;
+  expect(startResp.ok(), await startResp.text()).toBeTruthy();
   await expect(page).toHaveURL(/#\/progress\?run_id=/);
 });
 
