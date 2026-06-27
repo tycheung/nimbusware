@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { deployStateFromTimeline } from "../deploy_cockpit.js";
 
 export function wireReviewGitPanel(root, { currentRunId }) {
   async function loadGitStatus() {
@@ -22,12 +23,22 @@ export function wireReviewGitPanel(root, { currentRunId }) {
     const actions = root.querySelector("#rev-git-actions");
     if (actions) actions.replaceChildren();
     try {
-      const body = await apiJson(`/runs/${id}/maker/git-status`);
+      const [body, timeline] = await Promise.all([
+        apiJson(`/runs/${id}/maker/git-status`),
+        apiJson(`/runs/${id}/timeline?limit=120`).catch(() => ({ events: [] })),
+      ]);
+      const deploy = deployStateFromTimeline(timeline.events || []);
       const gc = body.git_commit;
       const outputs = body.git_outputs || {};
       const branch = outputs.branch || gc?.branch || "";
       const prUrl = outputs.pr_url || "";
+      const prStatus = outputs.pr_status || "";
       const lines = [];
+      if (deploy.ciStatus && deploy.ciStatus !== "not_started") {
+        lines.push(
+          `CI: ${deploy.ciStatus}${deploy.ciDetail ? ` — ${deploy.ciDetail}` : ""}`,
+        );
+      }
       if (gc) {
         const status = gc.status || "unknown";
         const sha = gc.sha ? ` (${String(gc.sha).slice(0, 8)})` : "";
@@ -38,7 +49,9 @@ export function wireReviewGitPanel(root, { currentRunId }) {
       }
       if (branch) lines.push(`Branch: ${branch}`);
       if (prUrl) lines.push(`PR: ${prUrl}`);
+      if (prStatus) lines.push(`PR status: ${prStatus}`);
       el.textContent = lines.join(" · ");
+      el.dataset.testid = "maker-review-git-status";
       if (branch && actions) {
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
