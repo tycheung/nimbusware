@@ -5,8 +5,6 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from nimbusware_orchestrator.stack_catalog import load_stack_catalog, resolve_manifest_stacks
-
 
 class StackManifest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -88,6 +86,8 @@ def validate_frozen_manifest(
     *,
     repo_root: Any | None = None,
 ) -> list[str]:
+    from nimbusware_orchestrator.stack_catalog import load_stack_catalog, resolve_manifest_stacks
+
     errors: list[str] = []
     if not manifest.surfaces:
         errors.append("manifest has no surfaces")
