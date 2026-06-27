@@ -167,6 +167,8 @@ def _execute_campaign_slices(
                 "rationale": selected.slice.rationale,
                 "target_paths": list(selected.slice.target_paths),
                 "acceptance_criteria": "Campaign backlog slice",
+                "surface_id": selected.slice.surface_id,
+                "stack_id": selected.slice.stack_id,
             },
         )
         gate = orch.execute_single_micro_slice(

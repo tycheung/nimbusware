@@ -98,6 +98,14 @@ def execute_slice_implement(
     if mode == "llm" and llm_base_url and llm_model_id:
         from nimbusware_orchestrator.llm_slice import execute_slice_implement_llm
         from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
+        from nimbusware_orchestrator.stack_catalog import load_stack_catalog
+
+        prompt = llm_system_prompt or ""
+        if plan.stack_id:
+            stack = load_stack_catalog().get(plan.stack_id)
+            if stack is not None:
+                role_hint = f"Implement for {stack.display_name} ({stack.surface} surface)."
+                prompt = f"{prompt}\n{role_hint}".strip() if prompt else role_hint
 
         edits = execute_slice_implement_llm(
             plan=plan,
@@ -105,7 +113,7 @@ def execute_slice_implement(
             base_url=llm_base_url,
             model_id=llm_model_id,
             timeout_seconds=timeout_seconds,
-            system_prompt=llm_system_prompt,
+            system_prompt=prompt,
             learning_excerpt=learning_excerpt,
         )
         if edits:

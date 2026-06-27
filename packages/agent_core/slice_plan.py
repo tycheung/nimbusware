@@ -10,6 +10,8 @@ class SlicePlan:
     rationale: str
     target_paths: tuple[str, ...]
     acceptance_criteria: str = ""
+    surface_id: str | None = None
+    stack_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -34,4 +36,6 @@ def parse_slice_plan(raw: dict[str, Any]) -> SlicePlan:
         rationale=str(raw.get("rationale", "")).strip(),
         target_paths=paths,
         acceptance_criteria=str(raw.get("acceptance_criteria", "")).strip(),
+        surface_id=str(raw.get("surface_id") or "").strip() or None,
+        stack_id=str(raw.get("stack_id") or "").strip() or None,
     )

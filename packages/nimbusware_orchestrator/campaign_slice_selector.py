@@ -28,12 +28,44 @@ def _passed_ids(backlog: DeliveryBacklog) -> set[str]:
     return passed
 
 
+def _surface_pass_counts(backlog: DeliveryBacklog) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for epic in backlog.epics:
+        for feature in epic.features:
+            for sl in feature.slices:
+                sid = str(sl.surface_id or "").strip()
+                if not sid:
+                    continue
+                if sl.status == SliceStatus.PASSED:
+                    counts[sid] = counts.get(sid, 0) + 1
+    return counts
+
+
+def _pick_round_robin(ready: list[SelectedSlice], backlog: DeliveryBacklog) -> SelectedSlice | None:
+    if not ready:
+        return None
+    if len(ready) == 1:
+        return ready[0]
+    counts = _surface_pass_counts(backlog)
+    surfaces = {str(s.slice.surface_id or "") for s in ready if s.slice.surface_id}
+    if len(surfaces) <= 1:
+        return ready[0]
+    return min(
+        ready,
+        key=lambda sel: (
+            counts.get(str(sel.slice.surface_id or ""), 0),
+            sel.slice.slice_id,
+        ),
+    )
+
+
 def _select_with_extra_passed(
     backlog: DeliveryBacklog,
     extra_passed: set[str],
 ) -> SelectedSlice | None:
     graph = backlog_dependency_graph(backlog)
     passed = _passed_ids(backlog) | extra_passed
+    ready: list[SelectedSlice] = []
     blocked: set[str] = set()
     for epic in backlog.epics:
         for feature in epic.features:
@@ -50,10 +82,12 @@ def _select_with_extra_passed(
                     continue
                 deps = graph.get(sl.slice_id, ())
                 if all(dep in passed for dep in deps):
-                    return SelectedSlice(
-                        slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
+                    ready.append(
+                        SelectedSlice(
+                            slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
+                        ),
                     )
-    return None
+    return _pick_round_robin(ready, backlog)
 
 
 def select_next_slice(backlog: DeliveryBacklog) -> SelectedSlice | None:
