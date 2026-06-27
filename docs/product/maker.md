@@ -11,11 +11,11 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Home** | Readiness, hardware strip, intents, full-stack demo prompts |
 | **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
-| **Progress** | SSE theater, maker-progress (incl. enforcement chip), deploy cockpit shell, findings, operator ribbons |
-| **Review** | Research approve/reject, slice approval, deploy cockpit, factory evidence, audit export |
+| **Progress** | SSE theater (Evidence toggle per line), maker-progress, deploy cockpit + Terraform validate, findings panel, operator ribbons |
+| **Review** | Research approve/reject, slice approval, deploy cockpit + approve, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
-| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets, deploy connection labels, solo discipline hat |
+| **Settings** | Hardware, Ollama, autopilot, enforcement depth, hybrid routing, deploy credential vault sync, solo discipline hat, collab toggle |
 
 PWA manifest + offline service worker; Web Push when VAPID configured. Deep links: `?run_id=`.
 
@@ -27,8 +27,9 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks (`fastapi_python`, `react_vite`, …) from `configs/stacks/`; backlog and slice dispatch are surface-aware; Plan tab shows per-slice surface badges and `slice.contract` gate status
 - **Manifest approval:** Chat shows a plain-language “You are approving: web UI + REST API…” card with **Approve manifest** before campaign start
 - **Safe Coding campaigns:** archetype `safe_coding` routes greenfield builds to `safe_coding_campaign_fullstack` (campaign driver + approval gates + OWASP web critic pack)
-- **Solo discipline hat:** Settings → **Solo discipline hat** routes `@frontend` / `@backend` mentions (and the active hat) into `solo_discipline_routes` on requirements — full collab routing lands in Phase 5
-- **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal includes roster templates
+- **Solo discipline hat:** Settings → **Solo discipline hat** routes `@` mentions (and the active hat) into `solo_discipline_routes` on requirements when working alone
+- **Collab disciplines:** join discipline picker, roster badges, `@` routing to interjection queue, routed-feedback thread lines (`Alice → frontend_writer: …`); expertise bullets via `GET/PUT /v1/users/me/participant-context`
+- **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal includes roster templates with suggested disciplines
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
@@ -54,7 +55,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Enforcement depth slider** — `GET/PUT /v1/runs/{id}/enforcement`; presets in `configs/enforcement/presets.yaml`; saved profiles in `configs/enforcement/user_profiles.yaml`; level 10 = workspace CI parity + terminal `enforcement.gate` (ADR [026](../adr/026-enforcement-depth-slider.md)). Progress tab shows `enforcement_status` chip; Build/Campaign start honor Settings default profile.
 - **Enterprise enforcement policy** — Admin Fleet page + `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy` clamps tenant min/max depth
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
-- **Deploy cockpit** — Progress and Review show CI/plan/approval shell from run timeline; Settings stores AWS/GitHub workflow labels locally until vault-backed deploy (Phase 6)
+- **Deploy cockpit** — Progress and Review show CI/plan/approval from run timeline; **Run Terraform validate** posts stages; **Approve deploy** records `deploy.approved`; Settings syncs deploy labels with `GET/PUT /v1/platform/deploy/credentials`
 - **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, and enforcement depth clamps for enterprise bundles
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled
