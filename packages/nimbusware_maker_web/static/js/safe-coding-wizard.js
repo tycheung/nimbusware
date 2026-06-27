@@ -51,12 +51,16 @@ export async function mountSafeCodingWizard(root) {
     <p data-testid="maker-safe-coding-wizard-status" class="muted">Checking workspace…</p>
     <div class="actions">
       <button type="button" class="primary" data-testid="maker-safe-coding-prepare" hidden>Prepare workspace</button>
+      <a href="#/chat?intent=campaign" class="secondary" data-testid="maker-safe-coding-start-campaign" hidden>
+        Build full-stack app
+      </a>
       <button type="button" class="linkish" data-testid="maker-safe-coding-wizard-skip">Skip for now</button>
     </div>`;
   host.appendChild(panel);
 
   const statusEl = panel.querySelector("[data-testid='maker-safe-coding-wizard-status']");
   const prepareBtn = panel.querySelector("[data-testid='maker-safe-coding-prepare']");
+  const campaignLink = panel.querySelector("[data-testid='maker-safe-coding-start-campaign']");
   const skipBtn = panel.querySelector("[data-testid='maker-safe-coding-wizard-skip']");
 
   async function refreshReadiness() {
@@ -71,6 +75,7 @@ export async function mountSafeCodingWizard(root) {
       statusEl.textContent = body.plain_summary || (body.ready ? "Ready to start." : "Needs preparation.");
       const needsWork = (body.warnings || []).length > 0 || !body.checks?.e2e_dir;
       prepareBtn.hidden = !needsWork;
+      if (campaignLink) campaignLink.hidden = needsWork;
     } catch (e) {
       statusEl.textContent = String(e.message || e);
     }

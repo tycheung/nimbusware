@@ -3,6 +3,7 @@ import { setActiveProjectId } from "../session-hub.js";
 import { mountSafeCodingReadinessRibbon, mountSafeCodingWizard } from "../safe-coding-wizard.js";
 import { isSafeCodingUx } from "../safe-coding-ux.js";
 import { renderModelsFirstStrip, renderReadiness } from "./home_readiness_ui.js";
+import { mountEnterpriseGovernancePanel } from "./home_enterprise_policy_ui.js";
 
 const FACTORY_DEMOS = [
   {
@@ -61,7 +62,7 @@ export async function mountHome(root) {
     <section class="maker-safe-coding panel" data-testid="maker-home-safe-coding" id="safe-coding-panel" hidden>
       <h3>Safe Coding</h3>
       <p class="muted">Extra checkpoints and approval before apply — best for non-engineers.</p>
-      <a href="#/chat?intent=slice" data-testid="maker-home-safe-coding-link">Start in Chat with Safe Coding preset</a>
+      <a href="#/chat?intent=campaign" data-testid="maker-home-safe-coding-link">Start full-stack campaign in Chat</a>
       · <a href="https://github.com/nimbusware/nimbusware/blob/main/docs/product/safe-coding.md" target="_blank" rel="noopener">Guide</a>
     </section>
     <section class="maker-intents panel" data-testid="maker-home-intents">
@@ -88,6 +89,7 @@ export async function mountHome(root) {
     <section class="maker-enterprise panel" data-testid="maker-home-enterprise" id="enterprise-home-panel" hidden>
       <h3>Enterprise operations</h3>
       <p class="muted">Fleet governance, compliance, and audit exports for regulated teams.</p>
+      <div id="enterprise-governance-mount"></div>
       <p class="actions">
         <a href="#/review" data-testid="maker-home-enterprise-review">Review &amp; audit exports</a>
         · <a href="/admin/#/fleet" target="_blank" rel="noopener" data-testid="maker-home-enterprise-fleet">Admin Fleet</a>
@@ -117,6 +119,7 @@ export async function mountHome(root) {
     const factorySection = root.querySelector("#factory-hero-section");
     if (readiness.setup_bundle === "enterprise") {
       if (enterprisePanel) enterprisePanel.hidden = false;
+      void mountEnterpriseGovernancePanel(root);
       if (factorySection) factorySection.hidden = true;
       if (safePanel) safePanel.hidden = true;
     } else if (safePanel && readiness.setup_bundle === "default") {

@@ -84,6 +84,19 @@ def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     return build_platform_readiness(repo_root=orch.repo_root, store=store)
 
 
+@router.get("/platform/fleet-governance")
+def get_platform_fleet_governance(
+    archetype: str = "",
+    tenant_slug: str = "",
+) -> dict[str, Any]:
+    from nimbusware_maker.fleet_governance_summary import fleet_governance_summary
+
+    return fleet_governance_summary(
+        archetype=archetype.strip() or None,
+        tenant_slug=tenant_slug.strip() or None,
+    )
+
+
 @router.get("/platform/workspace-readiness")
 def get_workspace_readiness(
     workspace_path: str,
