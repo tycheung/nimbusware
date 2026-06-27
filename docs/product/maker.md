@@ -8,9 +8,9 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 
 | Tab | Purpose |
 |-----|---------|
-| **Home** | Readiness, hardware strip, intents, factory catalog demos |
-| **Chat** (default) | Classify intent → work type → start run or campaign |
-| **Build** | Redirects to Chat; legacy API flow still available |
+| **Home** | Readiness, hardware strip, intents, full-stack demo prompts |
+| **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
+| **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
 | **Progress** | SSE theater, maker-progress (incl. enforcement chip), findings, operator ribbons |
 | **Review** | Research approve/reject, slice approval, factory evidence, audit export |
 | **Plan** | Campaign backlog tree, steer actions |
@@ -23,10 +23,12 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 
 - Rules-first intent classifier with optional LLM (`NIMBUSWARE_INTENT_CLASSIFIER_MODEL`)
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
+- **Full-stack campaigns:** greenfield product prompts route to `campaign_fullstack`; scope discovery runs in Chat before Start (`POST /v1/chat/scope/discover`, `/scope/gather`, `/scope/recommend`)
+- **Start gate:** full-stack campaigns require completed discovery or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
-- APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, fork/graph/switch-mode
+- APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, `POST /v1/chat/scope/discover`, fork/graph/switch-mode
 - MCP tools: [ide-bridge.md](../ide-bridge.md); ADRs [020](../adr/020-unified-chat-work-type-routing.md), [021](../adr/021-conversation-dag-branching.md)
 
 ## Progress & Review

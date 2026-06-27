@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 137
+  total_buttons: 140
   clicked: 37
   visible_only: 7
-  unwired: 93
-  click_ratio: 0.2701
+  unwired: 96
+  click_ratio: 0.2643
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -148,6 +148,12 @@ buttons:
 - test_id: maker-chat-delegate-control
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-discovery-card
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -298,6 +304,12 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-recommend-for-me
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-run-card-header
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
@@ -307,6 +319,12 @@ buttons:
 - test_id: maker-chat-run-theater
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-scope-manifest
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

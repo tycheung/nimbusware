@@ -60,9 +60,9 @@ def install_named_operator_metrics_exports(
     return export_json, table_rows_csv, export_filename_slug
 
 
-MetricsFn = Callable[[Mapping[str, Any] | None], dict[str, Any]]
-TableRowsFn = Callable[[Mapping[str, Any] | None], list[dict[str, str]]]
-CaptionFn = Callable[[Mapping[str, Any] | None], str | None]
+MetricsFn = Callable[[Any], dict[str, Any]]
+TableRowsFn = Callable[[Any], list[dict[str, str]]]
+CaptionFn = Callable[[Any], str | None]
 IncludeWhen = Callable[[Mapping[str, Any], str], bool]
 
 
@@ -74,14 +74,7 @@ def install_operator_metrics_module(
     table_rows: TableRowsFn,
     caption: CaptionFn,
     export_slug: str | None = None,
-) -> tuple[
-    MetricsFn,
-    TableRowsFn,
-    CaptionFn,
-    Callable[[Mapping[str, Any] | None], str],
-    Callable[[Sequence[Mapping[str, str]]], str],
-    Callable[[], str],
-]:
+) -> Any:
     namespace[f"{module_prefix}_operator_metrics"] = metrics
     namespace[f"{module_prefix}_operator_metrics_table_rows"] = table_rows
     namespace[f"{module_prefix}_operator_metrics_caption"] = caption

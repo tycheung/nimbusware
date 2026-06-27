@@ -68,8 +68,8 @@ def _bundle_search_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     return table_rows_fn(
         _TABLE_ROWS,
-        include_when=lambda _m, key: key != "top_hit_id" or (
-            isinstance(_m.get(key), str) and str(_m.get(key)).strip()
+        include_when=lambda _m, key: (
+            key != "top_hit_id" or (isinstance(_m.get(key), str) and str(_m.get(key)).strip())
         ),
     )(metrics)
 

@@ -7,8 +7,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes import chat_start
-from nimbusware_api.routes import chat_scope
+from nimbusware_api.routes import chat_scope, chat_start
 from nimbusware_api.routes.auth import OptionalUserDep
 from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.routes.chat_common import (

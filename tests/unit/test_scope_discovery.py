@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
 from nimbusware_maker.scope_discovery import (
     discovery_complete_for_start,

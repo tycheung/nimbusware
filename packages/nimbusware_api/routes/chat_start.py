@@ -10,7 +10,6 @@ from nimbusware_api.routes.chat_common import (
     StartChatSessionBody,
     StartChatSessionResponse,
     chat_http_error,
-    enforce_discovery_gate,
     maybe_apply_chat_replay_alignment,
     patch_context_payload,
     requirements_payload,
@@ -19,6 +18,7 @@ from nimbusware_api.routes.chat_common import (
     start_campaign,
     start_run,
 )
+from nimbusware_api.routes.chat_requirements import enforce_discovery_gate
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
 from nimbusware_maker.chat_service import (
