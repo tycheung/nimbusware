@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 158
-  clicked: 37
+  total_buttons: 160
+  clicked: 38
   visible_only: 8
-  unwired: 113
-  click_ratio: 0.2342
+  unwired: 114
+  click_ratio: 0.2375
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -924,6 +924,19 @@ buttons:
   label: Save bindings
   clicked_in:
   - tests/e2e/web/maker_settings_agent_models.spec.ts
+  visible_only_in: []
+- test_id: maker-settings-agent-overlay-clear
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_agent_overlay_ui.js
+  label: Clear overlay
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-settings-agent-overlay-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_agent_overlay_ui.js
+  label: Save overlay
+  clicked_in:
+  - tests/e2e/web/maker_settings_agent_overlay.spec.ts
   visible_only_in: []
 - test_id: maker-settings-critic-probation
   app: maker
