@@ -10,6 +10,8 @@ class HeuristicSliceSpec:
     rationale: str
     target_suffixes: tuple[str, ...] = ()
     estimated_loc: int = 80
+    surface_id: str | None = None
+    stack_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -183,6 +185,80 @@ HEURISTIC_TEMPLATES: dict[str, HeuristicTemplate] = {
             ),
             HeuristicSliceSpec(
                 "slice-003", "Tests", "UI smoke and component tests", ("test_", ".spec."), 70
+            ),
+        ),
+    ),
+    "fullstack_todo": HeuristicTemplate(
+        template_id="fullstack_todo",
+        feature_title="Full-stack todo app",
+        acceptance=(
+            "REST API with todo CRUD",
+            "Web UI lists and mutates todos against the API",
+            "Contract between API and UI is stable",
+        ),
+        slices=(
+            HeuristicSliceSpec(
+                "slice-api-001",
+                "API scaffold",
+                "Backend scaffold with health check",
+                ("backend/", "app.py", "main.py", "pyproject.toml"),
+                90,
+                surface_id="api",
+                stack_id="fastapi_python",
+            ),
+            HeuristicSliceSpec(
+                "slice-api-002",
+                "Todo CRUD API",
+                "Create, list, update, delete todo endpoints",
+                ("backend/", "todo", "routes", "api"),
+                120,
+                surface_id="api",
+                stack_id="fastapi_python",
+            ),
+            HeuristicSliceSpec(
+                "slice-api-003",
+                "API tests",
+                "Backend tests for todo endpoints",
+                ("backend/tests", "test_"),
+                80,
+                surface_id="api",
+                stack_id="fastapi_python",
+            ),
+            HeuristicSliceSpec(
+                "slice-web-001",
+                "Web scaffold",
+                "Frontend shell with routing and API client",
+                ("frontend/", "src/", "package.json", "vite.config"),
+                100,
+                surface_id="web",
+                stack_id="react_vite",
+            ),
+            HeuristicSliceSpec(
+                "slice-web-002",
+                "Todo UI",
+                "List, add, and delete todos in the web UI",
+                ("frontend/src", "components", "pages"),
+                130,
+                surface_id="web",
+                stack_id="react_vite",
+            ),
+            HeuristicSliceSpec(
+                "slice-web-003",
+                "UI tests",
+                "Frontend component or e2e smoke tests",
+                ("frontend/", "test_", ".spec."),
+                70,
+                surface_id="web",
+                stack_id="react_vite",
+            ),
+            HeuristicSliceSpec(
+                "slice-contract-001",
+                "API/UI contract",
+                "Shared OpenAPI or types gate between API and UI",
+                ("openapi", "schema", "types"),
+                60,
+                surface_id="contract",
+                stack_id=None,
             ),
         ),
     ),

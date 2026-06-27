@@ -19,6 +19,8 @@ from nimbusware_orchestrator.backlog_heuristic_templates import (
     HeuristicSliceSpec,
     match_template_id,
 )
+from nimbusware_orchestrator.backlog_manifest import manifest_template_id
+from nimbusware_orchestrator.stack_catalog import load_stack_catalog
 
 _BACKLOG_GENERATOR_MODE: Literal["heuristic"] = "heuristic"
 
@@ -166,8 +168,20 @@ def generate_heuristic_backlog(
     prompt = _normalize_prompt(requirements)
     title = _title_from_prompt(prompt)
     root = Path(repo_root).resolve() if repo_root is not None else None
-    template_id = _catalog_template_id(prompt, root) or match_template_id(prompt)
+    template_id = (
+        manifest_template_id(requirements)
+        or _catalog_template_id(prompt, root)
+        or match_template_id(prompt)
+    )
     template = HEURISTIC_TEMPLATES.get(template_id) or HEURISTIC_TEMPLATES["generic"]
+    manifest_stacks = {}
+    if isinstance(requirements, dict):
+        raw_manifest = requirements.get("stack_manifest")
+        if isinstance(raw_manifest, dict):
+            stacks_raw = raw_manifest.get("stacks")
+            if isinstance(stacks_raw, dict):
+                manifest_stacks = {str(k): str(v) for k, v in stacks_raw.items()}
+    catalog = load_stack_catalog(root)
     workspace_paths = _discover_workspace_paths(root)
     fallback = _fallback_paths(root)
     count = max(1, min(max_slices, len(template.slices)))
@@ -176,6 +190,12 @@ def generate_heuristic_backlog(
     for spec in template.slices[:count]:
         targets = _resolve_target_paths(spec, workspace_paths, fallback=fallback)
         deps: tuple[str, ...] = (prior_id,) if prior_id else ()
+        stack_id = spec.stack_id
+        if not stack_id and spec.surface_id and spec.surface_id in manifest_stacks:
+            stack_id = manifest_stacks[spec.surface_id]
+        allowed: tuple[str, ...] = ()
+        if stack_id and stack_id in catalog:
+            allowed = catalog[stack_id].allowed_globs
         slices.append(
             BacklogSlice(
                 slice_id=spec.slice_id,
@@ -184,6 +204,9 @@ def generate_heuristic_backlog(
                 depends_on=deps,
                 estimated_loc=spec.estimated_loc,
                 rationale=f"{spec.title}: {spec.rationale}",
+                surface_id=spec.surface_id,
+                stack_id=stack_id,
+                allowed_globs=allowed,
             ),
         )
         prior_id = spec.slice_id

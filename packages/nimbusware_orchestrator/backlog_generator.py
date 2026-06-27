@@ -97,11 +97,18 @@ def validate_backlog_limits(backlog: DeliveryBacklog, *, max_slices: int) -> lis
     return errors
 
 
-def validate_backlog(backlog: DeliveryBacklog, *, max_slices: int) -> list[str]:
+def validate_backlog(
+    backlog: DeliveryBacklog,
+    *,
+    max_slices: int,
+    requirements: dict[str, Any] | None = None,
+) -> list[str]:
     from agent_core.models.backlog import validate_backlog_dag
+    from nimbusware_orchestrator.backlog_manifest import validate_manifest_backlog
 
     errors = list(validate_backlog_dag(backlog))
     errors.extend(validate_backlog_limits(backlog, max_slices=max_slices))
+    errors.extend(validate_manifest_backlog(backlog, requirements))
     return errors
 
 
@@ -150,7 +157,11 @@ def _generate_backlog_for_run(
                     repo_context=repo_context,
                 )
                 if llm_backlog is not None:
-                    errors = validate_backlog(llm_backlog, max_slices=max_slices)
+                    errors = validate_backlog(
+                        llm_backlog,
+                        max_slices=max_slices,
+                        requirements=requirements,
+                    )
                     if not errors:
                         return sync_backlog_metadata(llm_backlog)
     return generate_heuristic_backlog(

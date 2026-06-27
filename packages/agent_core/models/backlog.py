@@ -32,6 +32,9 @@ class BacklogSlice(BaseModel):
     depends_on: tuple[str, ...] = ()
     estimated_loc: int = Field(default=0, ge=0, le=10_000)
     rationale: str = Field(default="", max_length=2000)
+    surface_id: str | None = Field(default=None, max_length=32)
+    stack_id: str | None = Field(default=None, max_length=64)
+    allowed_globs: tuple[str, ...] = ()
 
 
 class BacklogFeature(BaseModel):
