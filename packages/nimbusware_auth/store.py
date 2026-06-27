@@ -444,7 +444,16 @@ class PostgresCollabStore:
                   recommended_discipline
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (iid, session_id, digest, role_n, expires_at, created_by, now, recommended_discipline),
+                (
+                    iid,
+                    session_id,
+                    digest,
+                    role_n,
+                    expires_at,
+                    created_by,
+                    now,
+                    recommended_discipline,
+                ),
             )
             conn.commit()
         return InviteRecord(

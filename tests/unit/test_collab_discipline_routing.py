@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from uuid import uuid4
 
+from nimbusware_auth.store import InMemoryCollabStore, InMemoryUserStore
 from nimbusware_maker.chat_store_memory import InMemoryChatStore
 from nimbusware_maker.collab_discipline_routing import maybe_route_collab_message
-from nimbusware_auth.store import InMemoryCollabStore, InMemoryUserStore
 from nimbusware_orchestrator.interjection_queue import queue_for_run
 from nimbusware_store.memory import InMemoryEventStore
 

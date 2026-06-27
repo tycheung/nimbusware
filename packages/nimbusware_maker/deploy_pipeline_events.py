@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, StageFailedEvent, StagePassedEvent, StageStartedEvent
-from agent_core.models.events_payloads import StageFailedPayload, StagePassedPayload, StageStartedPayload
+from agent_core.models.events_payloads import (
+    StageFailedPayload,
+    StagePassedPayload,
+    StageStartedPayload,
+)
 
 
 def emit_terraform_validate_stages(
@@ -76,6 +79,10 @@ def emit_terraform_validate_stages(
                 run_id=rid,
                 occurred_at=now,
                 metadata={**meta, "stderr": result.get("stderr", "")},
-                payload=StageFailedPayload(stage_name="terraform.validate", duration_ms=0),
+                payload=StageFailedPayload(
+                    stage_name="terraform.validate",
+                    reason_code="terraform_validate_failed",
+                    message=detail[:500],
+                ),
             ),
         )

@@ -4,8 +4,6 @@ from typing import Any
 from uuid import UUID
 
 from nimbusware_maker.collab_disciplines import discipline_routes
-from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
-from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
 
 
 def enqueue_collab_discipline_routes(
@@ -16,6 +14,9 @@ def enqueue_collab_discipline_routes(
     actor_user_id: str | None = None,
     participant_discipline: str | None = None,
 ) -> list[dict[str, str]]:
+    from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
+    from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
+
     routes = discipline_routes(message, participant_discipline=participant_discipline)
     if not routes:
         return []

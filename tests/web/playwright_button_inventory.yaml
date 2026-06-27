@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 140
+  total_buttons: 152
   clicked: 37
   visible_only: 7
-  unwired: 96
-  click_ratio: 0.2643
+  unwired: 108
+  click_ratio: 0.2434
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -184,6 +184,12 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-host-fallback
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_wiring.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-host-transfer
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_host_transfer_ui.js
@@ -256,6 +262,12 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-mention-menu
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/chat_mention_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-model-drawer-btn
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
@@ -322,7 +334,25 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-scope-confirm
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-scope-confirmed
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-scope-manifest
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-scope-manifest-plain
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
@@ -381,6 +411,24 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-approve-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Approve deploy
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-refresh-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Refresh
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-validate-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Run Terraform validate
   clicked_in: []
   visible_only_in: []
 - test_id: maker-dev-env-regression
@@ -512,6 +560,12 @@ buttons:
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
+- test_id: maker-home-fleet-governance
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-home-inference-mode
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
@@ -596,6 +650,12 @@ buttons:
   label: '${compact ? "Next" : "Next in queue"}'
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
+  visible_only_in: []
+- test_id: maker-interjection-prefix-${prefix.slice(1, -1)}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  label: ${prefix}
+  clicked_in: []
   visible_only_in: []
 - test_id: maker-latest-handoff
   app: maker
@@ -833,6 +893,12 @@ buttons:
   label: Load probation reliability
   clicked_in: []
   visible_only_in: []
+- test_id: maker-settings-deploy-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_deploy_ui.js
+  label: Save deploy labels
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-settings-industry-critic-save
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
@@ -899,6 +965,12 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
   label: Load candidates
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-surface-launch-summary
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/launch-scorecard.js
+  label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-variant-candidate

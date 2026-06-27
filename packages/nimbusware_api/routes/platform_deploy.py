@@ -11,7 +11,10 @@ from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_api.user import maker_user_id_str
-from nimbusware_maker.deploy_credential_vault import load_deploy_credentials, save_deploy_credentials
+from nimbusware_maker.deploy_credential_vault import (
+    load_deploy_credentials,
+    save_deploy_credentials,
+)
 from nimbusware_maker.deploy_pipeline_events import emit_terraform_validate_stages
 from nimbusware_maker.terraform_validate import validate_workspace_terraform
 

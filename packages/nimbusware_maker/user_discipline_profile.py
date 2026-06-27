@@ -42,7 +42,11 @@ def save_user_discipline_profile(
     if not uid:
         raise ValueError("user_id required")
     root = repo_root or find_repo_root()
-    discipline = normalize_discipline(default_discipline or "", repo_root=root) if default_discipline else None
+    discipline = (
+        normalize_discipline(default_discipline or "", repo_root=root)
+        if default_discipline
+        else None
+    )
     path = _user_path(root, uid)
     path.parent.mkdir(parents=True, exist_ok=True)
     if discipline:
