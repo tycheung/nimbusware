@@ -2,8 +2,9 @@ import { apiJson, toast } from "../api-client.js";
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard, fetchScorecardForRun, renderSurfaceLaunchSummary } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
-import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
+import { openSseStream, parseSseJson } from "../sse-client.js";
 import { appendTheaterLine } from "../../../../nimbusware_ui_shared/js/theater-dom.js";
+import { theaterPayloadFromSse } from "../theater-renderer.js";
 import { PROGRESS_MOUNT_HTML } from "./progress/template.js";
 import { renderFindings, renderGateFailSteps } from "./progress/findings-gates.js";
 import { renderProgressBody, loadCompletionEval } from "./progress/render-chips.js";
@@ -19,6 +20,37 @@ import { renderContextArtifacts, renderMemoryInfluence } from "./progress/contex
 let theaterHandle = null;
 let progressHandle = null;
 let lastFindings = [];
+let autoLaunchCheckDone = false;
+
+async function maybeAutoLaunchCheck(runId, body) {
+  if (autoLaunchCheckDone || !runId) return;
+  const cpState = String(body?.campaign_progress?.state || "").toLowerCase();
+  const runStatus = String(body?.run_status || "").toLowerCase();
+  const terminal =
+    cpState === "completed" ||
+    cpState === "failed" ||
+    runStatus === "completed" ||
+    runStatus === "failed";
+  if (!terminal) return;
+  const scoreMount = document.getElementById("completion-launch-scorecard");
+  if (scoreMount?.querySelector("table")) {
+    autoLaunchCheckDone = true;
+    return;
+  }
+  autoLaunchCheckDone = true;
+  try {
+    const scorecard = await apiJson(`/runs/${encodeURIComponent(runId)}/maker/launch-eval`, {
+      method: "POST",
+    });
+    if (scoreMount) {
+      renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
+      renderSurfaceLaunchSummary(scoreMount, scorecard);
+    }
+    document.getElementById("completion-cockpit")?.removeAttribute("hidden");
+  } catch {
+    autoLaunchCheckDone = false;
+  }
+}
 
 function stopStreams() {
   theaterHandle?.close();
@@ -27,9 +59,24 @@ function stopStreams() {
   progressHandle = null;
 }
 
-function appendTheater(msg) {
+function appendTheaterPayload(data) {
+  const msg = theaterPayloadFromSse(data);
+  if (!msg || (!msg.headline && !msg.body_md)) return;
   const list = document.getElementById("theater-list");
-  appendTheaterLine(list, msg);
+  appendTheaterLine(list, msg, {
+    testid: msg.data_testid || "maker-progress-theater-line",
+  });
+}
+
+function handleProgressTheaterEvent(data) {
+  if (!data || typeof data !== "object") return;
+  if (data.headline || data.body_md || data.actor_display) {
+    appendTheaterPayload(data);
+    return;
+  }
+  if (Array.isArray(data.messages)) {
+    for (const row of data.messages) appendTheaterPayload(row);
+  }
 }
 
 export async function mountProgress(root) {
@@ -77,6 +124,7 @@ export async function mountProgress(root) {
           renderSurfaceLaunchSummary(scoreMount, scorecard);
         }
       }
+      await maybeAutoLaunchCheck(id, body);
     }
   }
 
@@ -84,15 +132,12 @@ export async function mountProgress(root) {
     onEvent: {
       theater: (ev) => {
         const data = parseSseJson(ev);
-        const text = theaterLineText(data);
-        if (text) appendTheater(text);
+        if (data) handleProgressTheaterEvent(data);
       },
     },
     onMessage: (ev) => {
       const data = parseSseJson(ev);
-      const text = theaterLineText(data);
-      if (text) appendTheater(text);
-      else if (data?.messages) data.messages.forEach((m) => appendTheater(theaterLineText(m)));
+      if (data) handleProgressTheaterEvent(data);
     },
   });
 
