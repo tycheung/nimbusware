@@ -1,7 +1,13 @@
 from uuid import uuid4
 
+import pytest
+
 from nimbusware_orchestrator.mesh_scheduler import MeshScheduler
-from nimbusware_orchestrator.model_binding_audit import active_role_claims_from_events
+from nimbusware_orchestrator.model_binding_audit import (
+    RoleClaimConflictError,
+    active_role_claims_from_events,
+    assert_role_claim_available,
+)
 from nimbusware_orchestrator.role_claims_mesh import stage_role_claims
 
 
@@ -50,3 +56,27 @@ def test_active_role_claims_from_events() -> None:
         },
     ]
     assert active_role_claims_from_events(rows) == {}
+
+
+def test_assert_role_claim_available_blocks_second_claim() -> None:
+    run_id = uuid4()
+    rows = [
+        {
+            "event_type": "workload.role_claimed",
+            "event_id": str(uuid4()),
+            "run_id": str(run_id),
+            "occurred_at": "2026-01-01T00:00:00+00:00",
+            "payload": {
+                "agent_role": "backend_writer",
+                "claimer_user_id": "user-a",
+                "provider_id": "ollama",
+                "model_id": "llama",
+            },
+        },
+    ]
+    with pytest.raises(RoleClaimConflictError):
+        assert_role_claim_available(
+            rows,
+            agent_role="backend_writer",
+            claimer_user_id="user-b",
+        )

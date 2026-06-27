@@ -9,7 +9,11 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.user import UserDep, maker_user_id_str
-from nimbusware_orchestrator.model_binding_audit import extract_model_binding_audit_rows
+from nimbusware_orchestrator.model_binding_audit import (
+    RoleClaimConflictError,
+    assert_role_claim_available,
+    extract_model_binding_audit_rows,
+)
 from nimbusware_orchestrator.model_binding_swap import (
     append_model_binding_override,
     append_role_claim,
@@ -68,13 +72,30 @@ def post_run_role_claim(
     _: UserDep,
 ) -> dict[str, Any]:
     _require_run(store, run_id)
+    rows = store.list_run_events(str(run_id))
+    claimer = maker_user_id_str(request)
+    try:
+        assert_role_claim_available(
+            rows,
+            agent_role=body.agent_role,
+            claimer_user_id=claimer,
+        )
+    except RoleClaimConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail=problem(
+                "role_claim_conflict",
+                f"Role {body.agent_role} is already claimed",
+                details={"existing_claimer": exc.existing_claimer},
+            ),
+        ) from exc
     payload = append_role_claim(
         store,
         run_id,
         agent_role=body.agent_role,
         provider_id=body.provider_id,
         model_id=body.model_id,
-        claimer_user_id=maker_user_id_str(request),
+        claimer_user_id=claimer,
     )
     return {"ok": True, "event": "workload.role_claimed", "payload": payload}
 

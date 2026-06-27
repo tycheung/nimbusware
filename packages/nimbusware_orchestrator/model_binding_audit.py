@@ -32,6 +32,23 @@ def active_role_claims_from_events(rows: list[dict[str, Any]]) -> dict[str, str]
     return claims
 
 
+class RoleClaimConflictError(Exception):
+    def __init__(self, existing_claimer: str) -> None:
+        self.existing_claimer = existing_claimer
+        super().__init__(existing_claimer)
+
+
+def assert_role_claim_available(
+    rows: list[dict[str, Any]],
+    *,
+    agent_role: str,
+    claimer_user_id: str,
+) -> None:
+    claims = active_role_claims_from_events(rows)
+    if agent_role in claims:
+        raise RoleClaimConflictError(claims[agent_role])
+
+
 def extract_model_binding_audit_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for row in rows:

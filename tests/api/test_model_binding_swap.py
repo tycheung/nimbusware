@@ -46,6 +46,20 @@ def test_run_role_claim_and_release(client: TestClient) -> None:
     assert release.json().get("event") == "workload.role_released"
 
 
+def test_run_role_claim_conflict_returns_409(client: TestClient) -> None:
+    run_id = _create_run(client)
+    payload = {
+        "agent_role": "planner",
+        "provider_id": "ollama",
+        "model_id": "llama3.1:8b",
+    }
+    first = client.post(f"/v1/runs/{run_id}/role-claims", json=payload)
+    assert first.status_code == 200, first.text
+    second = client.post(f"/v1/runs/{run_id}/role-claims", json=payload)
+    assert second.status_code == 409, second.text
+    assert second.json()["code"] == "role_claim_conflict"
+
+
 def test_run_model_binding_audit(client: TestClient) -> None:
     run_id = _create_run(client)
     client.post(

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { resolveCurrentUserId } from "./chat_collab_wiring.js";
 import {
   nodeHeadroom,
   openModelSwapDialog,
@@ -67,9 +68,10 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
   const strip = card?.querySelector(".chat-run-card__agents");
   if (!strip) return;
   try {
-    const [defaults, claims] = await Promise.all([
+    const [defaults, claims, currentUserId] = await Promise.all([
       apiJson("/platform/model-bindings/defaults"),
       fetchActiveClaims(runId),
+      resolveCurrentUserId(),
     ]);
     const roles = (defaults.roles || []).slice(0, 6);
     strip.replaceChildren();
@@ -88,9 +90,12 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
       badge.dataset.testid = `maker-chat-agent-${agentRole}`;
       const model = binding.model_id || "default";
       const provider = binding.provider_id || "ollama";
+      const claimerId = String(claim?.claimer_user_id || "");
       const claimed = Boolean(claim);
+      const claimedByMe = claimed && (!claimerId || claimerId === String(currentUserId || ""));
+      const claimedByOther = claimed && claimerId && claimerId !== String(currentUserId || "");
       badge.textContent = `${row.display_name || agentRole} · ${model}${claimed ? " ★" : ""}`;
-      badge.title = "Swap model";
+      badge.title = claimedByOther ? `Claimed by ${claimerId.slice(0, 8)}…` : "Swap model";
       badge.onclick = async () => {
         const swap = await openModelSwapDialog({
           agentRole,
@@ -121,10 +126,17 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
       claimBtn.type = "button";
       claimBtn.className = "chat-agent-claim linkish";
       claimBtn.dataset.testid = `maker-chat-agent-claim-${agentRole}`;
-      claimBtn.textContent = claimed ? "Release" : "Claim";
+      claimBtn.textContent = claimedByMe ? "Release" : claimedByOther ? "Taken" : "Claim";
+      claimBtn.disabled = claimedByOther;
+      claimBtn.title = claimedByOther
+        ? `Already claimed by ${claimerId.slice(0, 8)}…`
+        : claimedByMe
+          ? "Release this role"
+          : "Claim this role for your node";
       claimBtn.onclick = async () => {
+        if (claimedByOther) return;
         try {
-          if (claimed) {
+          if (claimedByMe) {
             await deleteRoleClaim({ runId, sessionId, agentRole });
             toast(`Released ${agentRole}`, "success");
           } else {
@@ -137,7 +149,13 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
           }
           await loadRunCardAgents(card, runId, { sessionId, computeNodes });
         } catch (e) {
-          toast(String(e.message || e), "error");
+          const code = e?.body?.code || e?.code;
+          if (code === "role_claim_conflict") {
+            const who = e?.body?.details?.existing_claimer || "another operator";
+            toast(`Role already claimed by ${String(who).slice(0, 8)}…`, "error");
+          } else {
+            toast(String(e.message || e), "error");
+          }
         }
       };
       const info = document.createElement("button");

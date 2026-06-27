@@ -12,6 +12,10 @@ from nimbusware_api.routes.chat_common import ChatMessageResponse
 from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep, maker_user_id_str
+from nimbusware_orchestrator.model_binding_audit import (
+    RoleClaimConflictError,
+    assert_role_claim_available,
+)
 from nimbusware_orchestrator.model_binding_swap import (
     append_model_binding_override,
     append_role_claim,
@@ -98,13 +102,30 @@ def session_role_claim(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(body.run_id)}),
         )
+    rows = store.list_run_events(str(body.run_id))
+    claimer = maker_user_id_str(request)
+    try:
+        assert_role_claim_available(
+            rows,
+            agent_role=body.agent_role,
+            claimer_user_id=claimer,
+        )
+    except RoleClaimConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail=problem(
+                "role_claim_conflict",
+                f"Role {body.agent_role} is already claimed",
+                details={"existing_claimer": exc.existing_claimer},
+            ),
+        ) from exc
     payload = append_role_claim(
         store,
         body.run_id,
         agent_role=body.agent_role,
         provider_id=body.provider_id,
         model_id=body.model_id,
-        claimer_user_id=maker_user_id_str(request),
+        claimer_user_id=claimer,
     )
     chat_store.append_turn(
         session_id,
