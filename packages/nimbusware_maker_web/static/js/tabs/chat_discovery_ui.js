@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { readSoloDiscipline } from "./settings_solo_discipline_ui.js";
 
 const ANSWER_CHIPS = {
   client_form: ["Web app", "Mobile (web-first)", "Both", "You pick"],
@@ -248,6 +249,8 @@ export function scopeRequirementsPayload(root, message) {
   base.scope_discovery = scopeState;
   if (scopeState.stack_manifest) base.stack_manifest = scopeState.stack_manifest;
   if (scopeState.recommend_for_me) base.recommend_for_me = true;
+  const hat = readSoloDiscipline();
+  if (hat) base.solo_discipline = hat;
   return base;
 }
 

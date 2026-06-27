@@ -37,6 +37,7 @@ class RunRequirementsBody(BaseModel):
     scope_discovery: dict[str, Any] | None = None
     recommend_for_me: bool = False
     stack_manifest: dict[str, Any] | None = None
+    solo_discipline: str | None = Field(default=None, max_length=32)
 
 
 class PatchContextBody(BaseModel):

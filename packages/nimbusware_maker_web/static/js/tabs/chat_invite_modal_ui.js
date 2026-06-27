@@ -1,5 +1,20 @@
 import { apiJson } from "../api-client.js";
 
+export const INVITE_TEMPLATES = [
+  {
+    id: "pair-devs-qa",
+    label: "2 devs + QA",
+    hint: "Invite frontend, backend, and QA reviewers",
+    disciplines: ["frontend", "backend", "qa"],
+  },
+  {
+    id: "full-team",
+    label: "Full team",
+    hint: "PM, architect, frontend, backend, and QA",
+    disciplines: ["pm", "architect", "frontend", "backend", "qa"],
+  },
+];
+
 export function closeInviteModal() {
   document.querySelector("[data-testid='maker-chat-invite-modal']")?.remove();
 }
@@ -60,6 +75,13 @@ export function openInviteModal(root, sessionId) {
         <button type="button" class="chat-invite-tab" data-tab="group">Group</button>
       </div>
       <div class="chat-invite-panel" data-panel="link">
+        <label>Invite template
+          <select id="chat-invite-template" data-testid="maker-chat-invite-template">
+            <option value="">Custom link</option>
+            ${INVITE_TEMPLATES.map((t) => `<option value="${t.id}">${t.label}</option>`).join("")}
+          </select>
+        </label>
+        <p id="chat-invite-template-hint" class="muted" data-testid="maker-chat-invite-template-hint" hidden></p>
         <label>Role
           <select id="chat-invite-role-link">
             <option value="session_read">Read (watch)</option>
@@ -109,6 +131,19 @@ export function openInviteModal(root, sessionId) {
     btn.addEventListener("click", () => showTab(btn.dataset.tab || "link"));
   });
   overlay.querySelector("#chat-invite-close")?.addEventListener("click", closeInviteModal);
+  const templateSelect = overlay.querySelector("#chat-invite-template");
+  const templateHint = overlay.querySelector("#chat-invite-template-hint");
+  templateSelect?.addEventListener("change", () => {
+    const tpl = INVITE_TEMPLATES.find((t) => t.id === templateSelect.value);
+    if (!templateHint) return;
+    if (!tpl) {
+      templateHint.hidden = true;
+      templateHint.textContent = "";
+      return;
+    }
+    templateHint.hidden = false;
+    templateHint.textContent = `${tpl.hint} — disciplines: ${tpl.disciplines.join(", ")}`;
+  });
   overlay.addEventListener("click", (ev) => {
     if (ev.target === overlay) closeInviteModal();
   });

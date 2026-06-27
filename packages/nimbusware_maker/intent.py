@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from nimbusware_maker.solo_discipline import solo_discipline_routes as build_solo_discipline_routes
 CLARIFYING_QUESTIONS: tuple[dict[str, str], ...] = (
     {
         "id": "audience",
@@ -34,6 +35,7 @@ def build_requirements_artifact(
     scope_discovery: dict[str, Any] | None = None,
     recommend_for_me: bool = False,
     stack_manifest: dict[str, Any] | None = None,
+    solo_discipline: str | None = None,
 ) -> dict[str, Any]:
     prompt = business_prompt.strip()
     if not prompt:
@@ -65,6 +67,9 @@ def build_requirements_artifact(
         artifact["recommend_for_me"] = True
     if stack_manifest is not None:
         artifact["stack_manifest"] = stack_manifest
+    routes = build_solo_discipline_routes(prompt, solo_hat=solo_discipline)
+    if routes:
+        artifact["solo_discipline_routes"] = routes
     return artifact
 
 

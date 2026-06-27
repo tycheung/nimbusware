@@ -24,6 +24,7 @@ def build_requirements_from_body(requirements: RunRequirementsBody) -> dict[str,
         scope_discovery=requirements.scope_discovery,
         recommend_for_me=requirements.recommend_for_me,
         stack_manifest=requirements.stack_manifest,
+        solo_discipline=requirements.solo_discipline,
     )
     if requirements.recommend_for_me and not requirements.scope_discovery:
         state = scope_discover(requirements.business_prompt)
