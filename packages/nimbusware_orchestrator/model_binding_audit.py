@@ -18,6 +18,13 @@ def active_role_claims_from_events(rows: list[dict[str, Any]]) -> dict[str, str]
     claims: dict[str, str] = {}
     for row in rows:
         et = str(row.get("event_type") or "")
+        if et not in (
+            EventType.WORKLOAD_ROLE_CLAIMED.value,
+            EventType.WORKLOAD_ROLE_RELEASED.value,
+        ):
+            continue
+        if "occurred_at" not in row:
+            continue
         ev = serialized_event_from_row(row)
         payload = ev.get("payload") if isinstance(ev, dict) else {}
         if not isinstance(payload, dict):
