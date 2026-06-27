@@ -168,6 +168,10 @@ export function scopeRequirementsPayload(root, message) {
   if (!root._scopeDiscoveryRequired) {
     return base;
   }
+  const scopeState = getScopeDiscoveryState(root);
+  if (!scopeState?.discovery_complete) {
+    return base;
+  }
   base.scope_discovery = scopeState;
   if (scopeState.stack_manifest) base.stack_manifest = scopeState.stack_manifest;
   if (scopeState.recommend_for_me) base.recommend_for_me = true;

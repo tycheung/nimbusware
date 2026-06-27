@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from nimbusware_env.env_flags import env_str
+from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
 from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
 from nimbusware_maker.scope_discovery import (
     recommend_for_me,
@@ -62,7 +63,19 @@ def post_scope_gather(body: ScopeGatherBody) -> ScopeDiscoverResponse:
     return ScopeDiscoverResponse(scope=gathered)
 
 
+class ScopeRecommendBody(BaseModel):
+    business_prompt: str = Field(min_length=1, max_length=8000)
+    archetype: str | None = Field(default=None, max_length=80)
+
+
 @router.post("/scope/recommend", response_model=ScopeDiscoverResponse)
-def post_scope_recommend(body: ScopeDiscoverBody) -> ScopeDiscoverResponse:
+def post_scope_recommend(body: ScopeRecommendBody) -> ScopeDiscoverResponse:
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     state = scope_discover(body.business_prompt)
-    return ScopeDiscoverResponse(scope=recommend_for_me(state))
+    recommended = recommend_for_me(state)
+    manifest = manifest_for_archetype(
+        setup_bundle=setup_bundle,
+        archetype=body.archetype,
+    )
+    recommended["stack_manifest"] = manifest
+    return ScopeDiscoverResponse(scope=recommended)

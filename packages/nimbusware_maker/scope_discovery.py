@@ -3,6 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from nimbusware_maker.archetype_surface_defaults import apply_fleet_surface_policy
+
 SCOPE_QUESTIONS: tuple[dict[str, str], ...] = (
     {
         "id": "client_form",
@@ -90,9 +92,22 @@ def scope_discover(business_prompt: str) -> dict[str, Any]:
     }
 
 
-def recommend_for_me(state: dict[str, Any] | None = None) -> dict[str, Any]:
+def recommend_for_me(
+    state: dict[str, Any] | None = None,
+    *,
+    setup_bundle: str = "default",
+    archetype: str | None = None,
+    fleet_policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
+
     base = dict(state or {})
-    base["stack_manifest"] = deepcopy(DEFAULT_MANIFEST)
+    manifest = manifest_for_archetype(
+        setup_bundle=setup_bundle,
+        archetype=archetype,
+        fleet_policy=fleet_policy,
+    )
+    base["stack_manifest"] = manifest
     base["discovery_complete"] = True
     base["recommend_for_me"] = True
     answers = dict(base.get("answers") or {})
@@ -132,12 +147,13 @@ def _manifest_from_answers(answers: dict[str, str]) -> dict[str, Any]:
         if "vue" in frontend:
             stacks["web"] = "vue_vite"
     hosting = str(answers.get("hosting") or "local").strip() or "local"
-    return {
+    manifest = {
         "surfaces": surfaces,
         "stacks": stacks,
         "hosting": hosting,
         "recommended": False,
     }
+    return apply_fleet_surface_policy(manifest, None)
 
 
 def scope_gather(
