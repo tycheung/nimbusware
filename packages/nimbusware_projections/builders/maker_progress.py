@@ -162,22 +162,51 @@ def _gate_summary_plain(*, blocked: bool, latest_stage: str | None) -> str | Non
     return "Blocked at gates — review findings or widen the slice in Chat."
 
 
+_SURFACE_PLAIN = {"api": "API", "web": "Web UI", "infra": "Infra", "contract": "Contract"}
+
+
+def _plain_surface_label(surface_id: str | None) -> str | None:
+    if not surface_id:
+        return None
+    return _SURFACE_PLAIN.get(surface_id.strip().lower(), surface_id.upper())
+
+
+def _slice_surface_map(events: list[dict[str, Any]]) -> dict[str, str]:
+    from nimbusware_projections.builders.backlog_tree import backlog_tree_from_events
+
+    tree = backlog_tree_from_events(events)
+    if not isinstance(tree, dict):
+        return {}
+    out: dict[str, str] = {}
+    for epic in tree.get("epics") or []:
+        for feature in epic.get("features") or []:
+            for sl in feature.get("slices") or []:
+                sid = str(sl.get("slice_id") or "").strip()
+                surf = str(sl.get("surface_id") or "").strip()
+                if sid and surf:
+                    out[sid] = surf
+    return out
+
+
 def _headline_for_slice(
     *,
     index: int,
     total: int,
     status: str,
     tests_passed: bool | None,
+    surface_id: str | None = None,
 ) -> str:
+    label = _plain_surface_label(surface_id)
+    who = f"{label} slice {index}" if label else f"Slice {index}"
     if status == "passed":
         if tests_passed is False:
-            return f"Slice {index} of {total} — tests failed"
-        return f"Slice {index} of {total} — tests passed — ready for next slice"
+            return f"{who} of {total} — tests failed"
+        return f"{who} of {total} — tests passed — ready for next slice"
     if status == "failed":
-        return f"Slice {index} of {total} — blocked at gates"
+        return f"{who} of {total} — blocked at gates"
     if status == "in_progress":
-        return f"Slice {index} of {total} — in progress"
-    return f"Slice {index} of {total} — planned"
+        return f"{who} of {total} — in progress"
+    return f"{who} of {total} — planned"
 
 
 def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
@@ -233,6 +262,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
 
     plans = _slice_plans(events)
     gates = _slice_gate_rows(events)
+    surface_map = _slice_surface_map(events)
     total = max(len(plans), slice_total_hint, 1)
 
     slices_out: list[dict[str, Any]] = []
@@ -262,6 +292,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
             total=total,
             status=status,
             tests_passed=tests_passed if isinstance(tests_passed, bool) else None,
+            surface_id=surface_map.get(sid),
         )
         bullets = pytest_bullets(test_output) if test_output else []
         if status == "passed" and not bullets:
@@ -274,6 +305,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
                 "index": idx,
                 "status": status,
                 "headline": headline,
+                "surface_id": surface_map.get(sid),
                 "rationale": plan.get("rationale") or "",
                 "target_paths": plan.get("target_paths") or [],
                 "test_summary": {

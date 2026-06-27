@@ -45,6 +45,19 @@ export function launchEvalPlainSummary(scorecard) {
   return parts.join(" · ");
 }
 
+export const SURFACE_PLAIN = {
+  api: "API",
+  web: "Web UI",
+  infra: "Infra",
+  contract: "Contract",
+};
+
+export function plainSurfaceLabel(surfaceId) {
+  const raw = String(surfaceId || "").trim().toLowerCase();
+  if (!raw) return "";
+  return SURFACE_PLAIN[raw] || raw.toUpperCase();
+}
+
 export const ARCHETYPE_PRESETS = {
   safe_coding: {
     workflow_profile: "safe_coding",

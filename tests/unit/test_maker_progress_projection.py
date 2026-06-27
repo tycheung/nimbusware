@@ -164,3 +164,66 @@ def test_maker_progress_role_cost_summary() -> None:
     ]
     body = maker_progress_from_events(events)
     assert body.get("role_cost_summary", {}).get("token_total") == 280
+
+
+def test_maker_progress_surface_aware_slice_headlines() -> None:
+    from pathlib import Path
+
+    from nimbusware_env import find_repo_root
+    from nimbusware_orchestrator.backlog_generator import (
+        emit_backlog_generated,
+        generate_heuristic_backlog,
+    )
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+
+    repo = find_repo_root(start=Path(__file__).resolve().parents[1])
+    orch, store = make_dev_orchestrator(repo)
+    run_id = orch.create_run("campaign_fullstack")
+    backlog = generate_heuristic_backlog(
+        str(run_id),
+        requirements={
+            "prompt": "Build a todo app",
+            "stack_manifest": {
+                "surfaces": ["api", "web"],
+                "stacks": {"api": "fastapi_python", "web": "react_vite"},
+                "confirmed": True,
+            },
+        },
+        max_slices=6,
+    )
+    emit_backlog_generated(store, run_id, backlog)
+    web_slice = next(
+        sl.slice_id
+        for epic in backlog.epics
+        for feature in epic.features
+        for sl in feature.slices
+        if sl.surface_id == "web"
+    )
+    rows = list(store.list_run_events(str(run_id)))
+    rows.extend(
+        [
+            {
+                "event_type": "stage.started",
+                "payload": {"stage_name": "slice.plan"},
+                "metadata": {
+                    "slice_plan": True,
+                    "slice_id": web_slice,
+                    "rationale": "Web UI",
+                    "target_paths": ["web/"],
+                },
+            },
+            {
+                "event_type": "stage.passed",
+                "payload": {"stage_name": "slice.gate"},
+                "metadata": {
+                    "slice_id": web_slice,
+                    "slice_gate_verdict": "PASS",
+                    "tests_passed": True,
+                },
+            },
+        ],
+    )
+    body = maker_progress_from_events(rows)
+    web_row = next(s for s in body["slices"] if s["slice_id"] == web_slice)
+    assert "Web UI slice" in web_row["headline"]
+    assert web_row.get("surface_id") == "web"

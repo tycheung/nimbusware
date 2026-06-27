@@ -1,4 +1,5 @@
 import { toast, apiJson } from "../../api-client.js";
+import { plainSurfaceLabel } from "../../plain-language.js";
 import { formatGateSummary } from "../../gate-summary.js";
 import { resolveRunId } from "../../session-hub.js";
 import { renderGateSummaryBanner, renderGateFailSteps } from "./findings-gates.js";
@@ -275,7 +276,8 @@ export function renderProgressBody(body) {
     list.replaceChildren();
     for (const s of body.slices || []) {
       const li = document.createElement("li");
-      li.textContent = `${s.headline || s.slice_id} — ${s.status || s.state || ""}`;
+      const surface = s.surface_id ? `${plainSurfaceLabel(s.surface_id)} · ` : "";
+      li.textContent = `${surface}${s.headline || s.slice_id} — ${s.status || s.state || ""}`;
       list.appendChild(li);
     }
   }
