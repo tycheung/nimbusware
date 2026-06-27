@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from agent_core.models.backlog import DeliveryBacklog, SliceStatus
+from agent_core.models.backlog import DeliveryBacklog
 from nimbusware_maker.stack_manifest import manifest_from_requirements
 
 

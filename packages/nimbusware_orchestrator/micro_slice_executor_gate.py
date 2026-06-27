@@ -132,8 +132,8 @@ def finish_micro_slice_gate_chain(
 
     contract_required = str(active_plan.surface_id or "") == "contract"
     if not contract_required:
-        from nimbusware_orchestrator.backlog_generator import _requirements_from_rows
         from nimbusware_maker.stack_manifest import manifest_from_requirements
+        from nimbusware_orchestrator.backlog_generator import _requirements_from_rows
 
         manifest = manifest_from_requirements(_requirements_from_rows(rows))
         if manifest is not None:

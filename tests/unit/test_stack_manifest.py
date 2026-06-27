@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from nimbusware_env import find_repo_root
 from nimbusware_maker.stack_manifest import (
     freeze_manifest,
