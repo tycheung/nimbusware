@@ -31,6 +31,9 @@ def build_requirements_artifact(
     *,
     business_prompt: str,
     clarifications: list[dict[str, str]] | None = None,
+    scope_discovery: dict[str, Any] | None = None,
+    recommend_for_me: bool = False,
+    stack_manifest: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     prompt = business_prompt.strip()
     if not prompt:
@@ -51,11 +54,18 @@ def build_requirements_artifact(
                 "answer": answer,
             },
         )
-    return {
+    artifact: dict[str, Any] = {
         "business_prompt": prompt,
         "clarifications": cleaned,
         "frozen_at": datetime.now(timezone.utc).isoformat(),
     }
+    if scope_discovery is not None:
+        artifact["scope_discovery"] = scope_discovery
+    if recommend_for_me:
+        artifact["recommend_for_me"] = True
+    if stack_manifest is not None:
+        artifact["stack_manifest"] = stack_manifest
+    return artifact
 
 
 def plan_summary_from_requirements(requirements: dict[str, Any] | None) -> str:

@@ -34,6 +34,9 @@ class ClarificationAnswerBody(BaseModel):
 class RunRequirementsBody(BaseModel):
     business_prompt: str = Field(min_length=1, max_length=8000)
     clarifications: list[ClarificationAnswerBody] = Field(default_factory=list, max_length=10)
+    scope_discovery: dict[str, Any] | None = None
+    recommend_for_me: bool = False
+    stack_manifest: dict[str, Any] | None = None
 
 
 class PatchContextBody(BaseModel):
@@ -168,6 +171,9 @@ def create_run(
                     clarifications=[
                         c.model_dump(mode="json") for c in body.requirements.clarifications
                     ],
+                    scope_discovery=body.requirements.scope_discovery,
+                    recommend_for_me=body.requirements.recommend_for_me,
+                    stack_manifest=body.requirements.stack_manifest,
                 )
                 if body.requirements is not None
                 else None

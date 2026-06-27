@@ -10,7 +10,7 @@ from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.runs.create import RunRequirementsBody
-from nimbusware_maker.intent import build_requirements_artifact
+from nimbusware_api.routes.chat_common import build_requirements_from_body, enforce_discovery_gate
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
@@ -21,7 +21,7 @@ class CreateCampaignBody(BaseModel):
     project_id: str = Field(min_length=1, max_length=36)
     requirements: RunRequirementsBody
     autonomous: bool = True
-    workflow_profile: str = Field(default="campaign_micro_slice", min_length=1)
+    workflow_profile: str = Field(default="campaign_fullstack", min_length=1)
     autopilot_profile_id: str | None = Field(default=None, max_length=120)
     enforcement_profile_id: str | None = Field(default=None, max_length=120)
 
@@ -47,6 +47,8 @@ def create_campaign(
             detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
         )
     assert_project_accessible(project)
+    requirements = build_requirements_from_body(body.requirements)
+    enforce_discovery_gate(requirements, workflow_profile=body.workflow_profile)
     if orch.active_campaigns_for_project(str(project_uuid)) >= 1:
         raise HTTPException(
             status_code=429,
@@ -62,12 +64,7 @@ def create_campaign(
             project_name=project.name,
             project_workspace_path=project.workspace_path,
             project_template=project.template,
-            requirements=build_requirements_artifact(
-                business_prompt=body.requirements.business_prompt,
-                clarifications=[
-                    c.model_dump(mode="json") for c in body.requirements.clarifications
-                ],
-            ),
+            requirements=requirements,
             autonomous=body.autonomous,
         )
         ws = None

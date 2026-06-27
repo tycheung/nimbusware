@@ -10,6 +10,7 @@ from nimbusware_api.routes.chat_common import (
     StartChatSessionBody,
     StartChatSessionResponse,
     chat_http_error,
+    enforce_discovery_gate,
     maybe_apply_chat_replay_alignment,
     patch_context_payload,
     requirements_payload,
@@ -78,6 +79,8 @@ def start_chat_session(
             status_code=422,
             detail=problem("invalid_request", "requirements or prior chat message required"),
         )
+
+    enforce_discovery_gate(requirements, workflow_profile=profile)
 
     path_attachments = last_user.payload.get("attachments") if last_user else None
     patch_context = (
