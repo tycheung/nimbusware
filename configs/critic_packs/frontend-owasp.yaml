@@ -1,0 +1,4 @@
+id: frontend-owasp
+domain: security
+blocking_authority: advisory
+description: Frontend OWASP-oriented checks for web surface slices

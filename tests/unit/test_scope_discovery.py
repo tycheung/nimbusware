@@ -64,6 +64,15 @@ def test_discovery_gate_allows_recommend_for_me() -> None:
     assert ok is True
 
 
+def test_discovery_gate_applies_to_safe_coding_campaign_fullstack() -> None:
+    ok, detail = discovery_complete_for_start(
+        {"business_prompt": "Build a todo app"},
+        workflow_profile="safe_coding_campaign_fullstack",
+    )
+    assert ok is False
+    assert detail
+
+
 def test_discovery_gate_allows_micro_slice_profile() -> None:
     ok, _ = discovery_complete_for_start(
         {"business_prompt": "Build a todo app"},

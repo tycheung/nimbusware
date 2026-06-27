@@ -27,7 +27,7 @@ def test_campaign_profile_narrowed_uses_micro_slice() -> None:
 
 
 def test_campaign_profile_fullstack_default() -> None:
-    assert campaign_profile_for_archetype(archetype="safe_coding") == "campaign_fullstack"
+    assert campaign_profile_for_archetype(archetype="safe_coding") == "safe_coding_campaign_fullstack"
     assert campaign_profile_for_archetype(setup_bundle="enterprise") == "campaign_fullstack"
 
 

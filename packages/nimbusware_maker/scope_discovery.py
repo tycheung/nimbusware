@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import Any
 
 from nimbusware_maker.archetype_surface_defaults import apply_fleet_surface_policy
+from nimbusware_maker.archetype_workflow import FULLSTACK_CAMPAIGN_PROFILES
 
 SCOPE_QUESTIONS: tuple[dict[str, str], ...] = (
     {
@@ -195,7 +196,7 @@ def discovery_complete_for_start(
     *,
     workflow_profile: str,
 ) -> tuple[bool, str | None]:
-    if workflow_profile != "campaign_fullstack":
+    if workflow_profile not in FULLSTACK_CAMPAIGN_PROFILES:
         return True, None
     if not isinstance(requirements, dict):
         return False, "requirements required for full-stack campaign"

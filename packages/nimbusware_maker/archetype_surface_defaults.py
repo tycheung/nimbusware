@@ -61,17 +61,11 @@ def manifest_for_archetype(
     return apply_fleet_surface_policy(manifest, fleet_policy)
 
 
-def campaign_profile_for_archetype(
-    *,
-    setup_bundle: str = "default",
-    archetype: str | None = None,
-    scope_narrowed: bool = False,
-) -> str:
-    if scope_narrowed:
-        return "campaign_micro_slice"
-    arch = (archetype or "").strip().lower().replace("-", "_")
-    if arch in {"safe_coding", "a1"}:
-        return "campaign_fullstack"
-    if (setup_bundle or "").strip().lower() == "enterprise":
-        return "campaign_fullstack"
-    return "campaign_fullstack"
+from nimbusware_maker.archetype_workflow import campaign_profile_for_archetype
+
+__all__ = [
+    "apply_fleet_surface_policy",
+    "campaign_profile_for_archetype",
+    "default_surfaces_for_archetype",
+    "manifest_for_archetype",
+]

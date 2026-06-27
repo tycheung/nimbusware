@@ -359,7 +359,13 @@ def resolve_workflow_profile(
 ) -> str:
     profile = (body.workflow_profile or "").strip()
     if profile:
-        return profile
+        from nimbusware_maker.archetype_workflow import resolve_start_workflow_profile
+
+        remapped = resolve_start_workflow_profile(profile, work_type=work_type.value)
+        if remapped:
+            return remapped
+        if not (work_type == WorkType.CAMPAIGN and profile == "micro_slice"):
+            return profile
     if last_classification:
         profile = str(last_classification.get("suggested_profile") or "").strip()
     if profile:

@@ -1,0 +1,108 @@
+# Safe Coding full-stack campaign: campaign driver + approval gates + industry critics.
+workflow_profile: safe_coding_campaign_fullstack
+
+campaign:
+  enabled: true
+  autonomous_default: true
+  driver:
+    tick_idle_seconds: 2
+    max_consecutive_failures: 5
+
+backlog:
+  generator: heuristic
+  max_slices: 500
+  require_backlog_approval: false
+
+slice:
+  enabled: true
+  max_files: 3
+  max_loc: 120
+  allowed_globs:
+    - "**/*.py"
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.html"
+    - "**/package.json"
+  e2e:
+    enabled: true
+
+dev_env:
+  enabled: true
+  human_fidelity:
+    enabled: true
+  ui_controller:
+    enabled: true
+    required: true
+
+launch_test:
+  enabled: true
+
+maintenance:
+  refactor_every_n_slices: 5
+  architecture_every_n_slices: 10
+  refactor_inserts_fix_slices: true
+  architecture_can_revise_backlog: true
+
+completion:
+  require_project_tests_pass: true
+  require_all_must_have_features: true
+  deep_eval_every_n_slices: 20
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: slice.contract
+    depends_on: [slice.test]
+  - stage_name: launch_test.plan
+    depends_on: [slice.contract]
+  - stage_name: launch_test.write
+    depends_on: [launch_test.plan]
+  - stage_name: launch_test.critique
+    depends_on: [launch_test.write]
+  - stage_name: slice.e2e
+    depends_on: [launch_test.critique]
+  - stage_name: dev_env.human_fidelity
+    depends_on: [slice.e2e]
+  - stage_name: slice.gate
+    depends_on: [dev_env.human_fidelity]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+  critic_pack_id: default-security
+  industry_critic_pack_ids:
+    - fintech-api
+    - healthcare-api
+    - frontend-owasp
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: true
+  persona_id: default
+
+maker_approval:
+  enabled: true
+
+theater:
+  enabled: true
+  max_message_chars: 1200
+  show_evidence_links: true
+  llm_summary: false
+
+memory:
+  retrieval_enabled: true
+  index_contribution: true
+  retrieval_k: 5
+  excerpt_max_chars: 2000
+  embedding_mode: deterministic
