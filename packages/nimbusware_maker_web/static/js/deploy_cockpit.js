@@ -98,15 +98,34 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   }
 
   if (urlsEl) {
-    const bits = [];
-    if (state?.apiUrl) bits.push(`API: ${state.apiUrl}`);
-    if (state?.webUrl) bits.push(`Web: ${state.webUrl}`);
-    if (bits.length) {
+    urlsEl.replaceChildren();
+    const links = [];
+    if (state?.apiUrl) {
+      const a = document.createElement("a");
+      a.href = state.apiUrl;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = `API: ${state.apiUrl}`;
+      a.dataset.testid = `maker-deploy-live-api-${scope}`;
+      links.push(a);
+    }
+    if (state?.webUrl) {
+      const a = document.createElement("a");
+      a.href = state.webUrl;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = `Web: ${state.webUrl}`;
+      a.dataset.testid = `maker-deploy-live-web-${scope}`;
+      links.push(a);
+    }
+    if (links.length) {
       urlsEl.hidden = false;
-      urlsEl.textContent = bits.join(" · ");
+      for (let i = 0; i < links.length; i += 1) {
+        if (i) urlsEl.append(" · ");
+        urlsEl.append(links[i]);
+      }
     } else {
       urlsEl.hidden = true;
-      urlsEl.textContent = "";
     }
   }
 

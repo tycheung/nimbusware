@@ -1,4 +1,5 @@
 import { apiJson } from "../api-client.js";
+import { deployStateFromTimeline } from "../deploy_cockpit.js";
 import { appendTheaterLine } from "../theater-renderer.js";
 import { loadRunCardAgents } from "./chat_agents_ui.js";
 import { workTypeLabel } from "./chat_thread_ui.js";
@@ -49,24 +50,46 @@ export async function refreshChatRunPreview(card, runId) {
     card.insertBefore(strip, theater);
   }
   try {
-    const st = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`);
-    const url = previewUrlFromDevEnvStatus(st);
+    const [st, timeline] = await Promise.all([
+      apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`),
+      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`).catch(() => ({ events: [] })),
+    ]);
+    const deploy = deployStateFromTimeline(timeline.events || []);
     strip.replaceChildren();
-    if (!url) {
-      strip.textContent = st.active ? "Preview warming up…" : "";
-      strip.hidden = !st.active;
+    const parts = [];
+    const url = previewUrlFromDevEnvStatus(st);
+    if (url) {
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.textContent = "Open preview";
+      link.dataset.testid = "maker-chat-open-preview";
+      parts.push(link);
+    } else if (st.active) {
+      const warming = document.createElement("span");
+      warming.textContent = "Preview warming up…";
+      parts.push(warming);
+    }
+    for (const [label, liveUrl, testId] of [
+      ["Live API", deploy.apiUrl, "maker-chat-live-api"],
+      ["Live web", deploy.webUrl, "maker-chat-live-web"],
+    ]) {
+      if (!liveUrl) continue;
+      if (parts.length) parts.push(document.createTextNode(" · "));
+      const link = document.createElement("a");
+      link.href = liveUrl;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.textContent = label;
+      link.dataset.testid = testId;
+      parts.push(link);
+    }
+    if (!parts.length) {
+      strip.hidden = true;
       return;
     }
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.textContent = "Open preview";
-    link.dataset.testid = "maker-chat-open-preview";
-    const status = document.createElement("span");
-    status.className = "muted";
-    status.textContent = ` · ${url}`;
-    strip.append(link, status);
+    for (const node of parts) strip.append(node);
     strip.hidden = false;
   } catch {
     strip.hidden = true;
