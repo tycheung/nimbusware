@@ -581,6 +581,22 @@ body.mobile-mode #theater-list {
   border-left: 4px solid #9ca3af;
 }
 
+.deploy-cockpit {
+  margin: 0.75rem 0;
+}
+
+.deploy-cockpit [data-state="passed"] {
+  color: #166534;
+}
+
+.deploy-cockpit [data-state="failed"] {
+  color: #991b1b;
+}
+
+.deploy-cockpit [data-state="running"] {
+  color: #1d4ed8;
+}
+
 .plan-stack {
   font-size: 0.75rem;
   margin-left: 0.35rem;

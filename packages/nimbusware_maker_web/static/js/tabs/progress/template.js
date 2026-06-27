@@ -2,6 +2,7 @@
 import { autopilotRibbonHtml } from "../../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../../enforcement-ribbon.js";
 import { interjectionRibbonHtml } from "../../interjection-ribbon.js";
+import { deployCockpitHtml } from "../../deploy_cockpit.js";
 
 const ENFORCEMENT_RIBBON = enforcementRibbonHtml({ rootId: "enforcement-ribbon" });
 const AUTOPILOT_RIBBON = autopilotRibbonHtml({ rootId: "autopilot-ribbon" });
@@ -45,6 +46,7 @@ export const PROGRESS_MOUNT_HTML = `
           <button type="button" id="dev-env-regression-btn" data-testid="maker-dev-env-regression">Run regression</button>
         </div>
       </section>
+      ${deployCockpitHtml()}
       ${INTERJECTION_RIBBON}
       ${ENFORCEMENT_RIBBON}
       ${AUTOPILOT_RIBBON}

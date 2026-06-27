@@ -4,6 +4,7 @@ import { formatGateSummary } from "../gate-summary.js";
 import { renderPendingCards } from "./review_cards_ui.js";
 import { wireReviewGitPanel } from "./review_git_ui.js";
 import { wireReviewAdvancedPanel } from "./review_advanced_ui.js";
+import { deployCockpitHtml, wireDeployCockpit } from "../deploy_cockpit.js";
 
 export async function mountReview(root) {
   root.innerHTML = `
@@ -32,6 +33,7 @@ export async function mountReview(root) {
       <button type="button" id="rev-run-launch-eval" data-testid="maker-review-run-launch-eval">Run launch check</button>
       <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
+    ${deployCockpitHtml({ scope: "review" })}
     <section id="rev-git-panel" class="panel mobile-advanced" data-testid="maker-review-git-panel">
       <h3>Git &amp; pull request</h3>
       <p id="rev-git-status" class="muted"></p>
@@ -137,6 +139,7 @@ export async function mountReview(root) {
   void git.loadGitStatus();
   const initialId = await currentRunId();
   if (initialId) {
+    wireDeployCockpit(initialId, { scope: "review" });
     loadPending().catch(() => {});
   }
 }

@@ -13,6 +13,7 @@ import {
   renderIntegratorRibbon,
   wireIntegratorRibbon,
 } from "./progress/integrator-ribbon.js";
+import { wireDeployCockpit } from "../deploy_cockpit.js";
 import { renderContextArtifacts, renderMemoryInfluence } from "./progress/context-panels.js";
 
 let theaterHandle = null;
@@ -53,6 +54,7 @@ export async function mountProgress(root) {
   wireMobilePushPanel();
   wireIntegratorRibbon();
   void renderIntegratorRibbon(id);
+  wireDeployCockpit(id, { scope: "progress" });
   wireOperatorRibbons(id);
 
   async function enrichAndRenderProgress(body) {
