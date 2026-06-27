@@ -11,7 +11,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Build | `static/js/tabs/build.js` | `POST /campaigns` (banner redirects operators to Chat for new work) |
 | Plan | `static/js/tabs/plan.js` | `/campaigns/{id}/backlog`, run timeline for `slice.contract` gate |
 | Review | `review.js` + `review_*_ui.js`, `deploy_cockpit.js` | maker pending, deploy cockpit (validate + approve), git/PR/CI status, scorecard |
-| Progress | `static/js/tabs/progress.js` + `progress/*`, `deploy_cockpit.js` | theater SSE, findings workspace (severity filter), deploy cockpit, ribbons |
+| Progress | `static/js/tabs/progress.js` + `progress/*`, `deploy_cockpit.js` | theater SSE (severity + evidence), findings filter, completion cockpit + auto launch check, deploy cockpit, ribbons |
 | Models | `models.js` + `models_local_ui.js`, `models_ollama_ui.js`, `models_*_ui.js` | `/platform/hardware`, `/platform/models/catalog-info`, Ollama pull |
 | Settings | `settings.js` + `settings_shell_html.js`, `settings_governor_ui.js`, `settings_deploy_ui.js`, `settings_solo_discipline_ui.js`, `settings_*_ui.js` | `/settings/me`, hardware profile, **Run launch check**, **deploy connection labels**, **solo discipline hat**, **collab toggle** (`/platform/collab-settings`) |
 | Onboarding (wizard) | `static/js/tabs/wizard.js` | `/platform/onboarding` (first-run; run creation is on **Build** or **Chat**) |

@@ -40,7 +40,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 
 ## Progress & Review
 
-- Theater SSE: `GET /v1/runs/{id}/theater`, `/theater/stream`, `/theater/export`
+- Theater SSE: `GET /v1/runs/{id}/theater`, `/theater/stream`, `/theater/export` — structured lines with severity borders and **Evidence** toggles (same as Chat run cards)
 - Maker progress: `GET /v1/runs/{id}/maker-progress`, SSE with `?simple=true`
 - Memory influence: `GET /v1/runs/{id}/memory-influence`
 - Research: `GET /v1/runs/{id}/research`, POST approve/reject
@@ -58,6 +58,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
 - **Deploy cockpit** — Progress and Review show CI/plan/approval from run timeline; **Run Terraform validate** posts stages; **Approve deploy** records `deploy.approved`; Settings syncs deploy labels with `GET/PUT /v1/platform/deploy/credentials`
 - **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
+- **Completion cockpit** — plain-language terminal banner when campaigns finish; auto **launch check** on terminal runs; per-surface launch summary chips
 - **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run
 - **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, and enforcement depth clamps for enterprise bundles
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`

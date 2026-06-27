@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 156
+  total_buttons: 157
   clicked: 37
   visible_only: 7
-  unwired: 112
-  click_ratio: 0.2372
+  unwired: 113
+  click_ratio: 0.2357
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -409,6 +409,12 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
   label: Run launch check
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-completion-terminal
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-context-artifact
