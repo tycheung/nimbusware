@@ -7,6 +7,8 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/v1/platform/deploy/terraform-validate` | `fmt` / `validate` / `plan` in workspace; optional `run_id` emits timeline stages |
+| POST | `/v1/platform/deploy/approve` | Record operator approval (`deploy.approved` on run timeline) |
+| POST | `/v1/platform/deploy/apply` | `terraform apply` after approval (or `deploy_hands_off` autopilot profile); plan-only skip when credentials empty |
 | GET/PUT | `/v1/platform/deploy/credentials` | Per-user labels: `aws_profile`, `github_repo`, `workflow_path` |
 | GET | `/v1/platform/deploy/github-workflow-template` | Copy-ready `.github/workflows/nimbusware-deploy.yml` |
 
@@ -17,7 +19,9 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 
 ## Maker UI
 
-- **Progress / Review** deploy cockpit — **Run Terraform validate**, CI status from `terraform.*` / `ci.*` timeline stages
+- **Progress / Review** deploy cockpit — **Run Terraform validate**, **Approve deploy**, **Apply deploy** (gated on approval), CI status from timeline stages
 - **Settings → Deploy connections** — sync labels with vault API
 
-Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Record operator approval with `POST /v1/platform/deploy/approve` (emits `deploy.approved` on the run timeline; wired in the deploy cockpit).
+Autopilot profiles `deploy_guided` (requires manual approval) and `deploy_hands_off` (level ≥ 9, no `stop_before_deploy_apply`) control whether apply may auto-record approval.
+
+Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Apply without approval returns **403** (`deploy_approval_required`).

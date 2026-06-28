@@ -121,4 +121,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-Default CI runs **~3187** unit tests under the default pytest marker (plus Playwright specs); full collection is **~4000** tests. CI enforces prune-comments, explainer-export lint, workflow-explainer init sync, archetype-fit, gate-comprehension, and collab-LLM audit gates (`scripts/ci/run_*_ci_gate.py`; LOC budget **100,000** non-blank Python lines in `packages/` per `scripts/ci/loc_baseline.json`).
+Default CI runs **~3191** unit tests under the default pytest marker (plus Playwright specs); full collection is **~4000** tests. CI enforces prune-comments, explainer-export lint, workflow-explainer init sync, archetype-fit, gate-comprehension, and collab-LLM audit gates (`scripts/ci/run_*_ci_gate.py`; LOC budget **100,000** non-blank Python lines in `packages/` per `scripts/ci/loc_baseline.json`).
