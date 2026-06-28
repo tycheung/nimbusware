@@ -29,6 +29,9 @@ See [docs/ide-bridge.md](../../docs/ide-bridge.md) for Cursor MCP settings. Requ
 | `nimbusware_pause_campaign` | `POST /v1/campaigns/{campaign_id}/pause` |
 | `nimbusware_resume_campaign` | `POST /v1/campaigns/{campaign_id}/resume` |
 | `nimbusware_backlog_summary` | `GET /v1/campaigns/{campaign_id}/backlog` |
+| `nimbusware_swap_role_model` | `POST /v1/runs/{run_id}/model-bindings/swap` |
+| `nimbusware_set_discipline` | `PUT /v1/users/me/discipline-profile` |
+| `nimbusware_update_agent_overlay` | `PUT /v1/users/me/agent-overlays/{discipline}` |
 | `nimbusware_chat_graph` | `GET /v1/chat/sessions/{id}/graph` |
 | `nimbusware_chat_fork` | `POST /v1/chat/sessions/{id}/fork` |
 | `nimbusware_chat_select_branch` | `PUT /v1/chat/sessions/{id}/active-leaf` |

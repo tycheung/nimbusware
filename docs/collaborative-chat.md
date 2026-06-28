@@ -40,7 +40,7 @@ Legacy: set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loo
 
 Each participant can wear a **discipline** (PM, architect, frontend, backend, QA, DevOps) mapped to agent taxonomy keys. The join flow shows a discipline picker; invites can suggest a discipline via template or `recommended_discipline`. Chat `@` mentions route targeted feedback to the run interjection queue when a session has an active run, and append **routed feedback** lines in the thread (`Alice → frontend_writer: …`). Per-user expertise bullets: `GET/PUT /v1/users/me/participant-context`. Per-discipline **agent overlays** (prompt extensions) save via Settings **My agent overlays** or `GET/PUT /v1/users/me/agent-overlays/{discipline}` and merge into slice prompts when that user claims the matching role; each save bumps a per-discipline **version** and appends `collab.agent_overlay.updated` to `.nimbusware/platform/collab_audit.jsonl`. Only one active claim per role per run — a second claim returns **409** and Chat shows **Taken** on the role chip.
 
-Catalog: `configs/collab/disciplines.yaml`. Per-user default discipline: `configs/collab/users/{user_id}.yaml`. Agent overlays: `configs/collab/users/{user_id}_agent_overlays.yaml`.
+Catalog: `configs/collab/disciplines.yaml`. Per-user default discipline: `configs/collab/users/{user_id}.yaml`. Agent overlays: `configs/collab/users/{user_id}_agent_overlays.yaml`. IDE clients can set discipline and overlays via MCP `nimbusware_set_discipline` and `nimbusware_update_agent_overlay` — see [ide-bridge.md](ide-bridge.md).
 
 ## Individual deployment
 
