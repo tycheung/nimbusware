@@ -227,7 +227,9 @@ def post_deploy_rollback(
     if deploy_rollback_passed_from_events(rows):
         raise HTTPException(
             status_code=403,
-            detail=problem("deploy_rollback_already_recorded", "Rollback already completed for this run"),
+            detail=problem(
+                "deploy_rollback_already_recorded", "Rollback already completed for this run"
+            ),
         )
     if not deploy_approved_from_events(rows):
         raise HTTPException(

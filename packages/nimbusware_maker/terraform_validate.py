@@ -202,7 +202,9 @@ def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
 RollbackMode = Literal["destroy", "previous"]
 
 
-def rollback_workspace_terraform(workspace: Path, *, mode: RollbackMode = "destroy") -> dict[str, Any]:
+def rollback_workspace_terraform(
+    workspace: Path, *, mode: RollbackMode = "destroy"
+) -> dict[str, Any]:
     root, tf_files = _terraform_root(workspace)
     if not tf_files:
         return {

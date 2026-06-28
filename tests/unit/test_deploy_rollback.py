@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from nimbusware_api.app import app
 from nimbusware_maker.deploy_pipeline_events import (
     deploy_rollback_passed_from_events,
-    emit_deploy_apply_stages,
     emit_deploy_rollback_stages,
 )
 from nimbusware_maker.terraform_validate import rollback_workspace_terraform
