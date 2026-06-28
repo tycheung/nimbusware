@@ -16,6 +16,7 @@ from nimbusware_maker.collab_disciplines import (
 
 COLLAB_AGENT_OVERLAY_UPDATED = "collab.agent_overlay.updated"
 
+
 def _path(repo_root: Path, user_id: str) -> Path:
     return repo_root / "configs" / "collab" / "users" / f"{user_id.strip()}_agent_overlays.yaml"
 
