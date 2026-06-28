@@ -29,4 +29,6 @@ Autopilot profiles `deploy_guided` (requires manual approval) and `deploy_hands_
 
 Apply, smoke, and rollback pass `TF_VAR_environment` / `NIMBUSWARE_DEPLOY_ENV` to Terraform subprocesses. The cockpit and Settings expose the environment selector; stack manifests may freeze `deploy_environment` at scope confirm.
 
+When `deploy` is in the frozen stack manifest, campaign **completion_eval** requires a successful `deploy.smoke` timeline stage before the run may finalize as PASS.
+
 Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Apply without approval returns **403** (`deploy_approval_required`).

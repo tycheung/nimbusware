@@ -178,6 +178,16 @@ def deploy_apply_passed_from_events(rows: list[dict[str, Any]]) -> bool:
     return False
 
 
+def deploy_smoke_passed_from_events(rows: list[dict[str, Any]]) -> bool:
+    for row in reversed(rows):
+        if row.get("event_type") != EventType.STAGE_PASSED.value:
+            continue
+        payload = row.get("payload")
+        if isinstance(payload, dict) and payload.get("stage_name") == "deploy.smoke":
+            return True
+    return False
+
+
 def deploy_rollback_passed_from_events(rows: list[dict[str, Any]]) -> bool:
     for row in reversed(rows):
         if row.get("event_type") != EventType.STAGE_PASSED.value:

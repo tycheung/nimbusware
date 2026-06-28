@@ -125,6 +125,21 @@ def _manifest_surfaces_satisfied(
     return not missing, missing
 
 
+def _deploy_completion_satisfied(
+    rows: list[dict[str, Any]],
+    requirements: dict[str, Any] | None,
+) -> tuple[bool, list[str]]:
+    from nimbusware_maker.deploy_pipeline_events import deploy_smoke_passed_from_events
+    from nimbusware_maker.stack_manifest import manifest_from_requirements
+
+    manifest = manifest_from_requirements(requirements)
+    if manifest is None or "deploy" not in manifest.surfaces:
+        return True, []
+    if deploy_smoke_passed_from_events(rows):
+        return True, []
+    return False, ["deploy_smoke_not_passed"]
+
+
 def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
     """Tiered completion: slice terminal state plus workflow completion policy."""
     policy = _completion_policy_from_rows(rows)
@@ -177,6 +192,12 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
         )
         if not surfaces_ok:
             blocking.extend(surface_gaps)
+        deploy_ok, deploy_gaps = _deploy_completion_satisfied(
+            rows,
+            _requirements_from_rows(rows),
+        )
+        if not deploy_ok:
+            blocking.extend(deploy_gaps)
         if not _deep_eval_due(completed, policy.deep_eval_every_n_slices):
             blocking.append("deep_eval_cadence_pending")
         from nimbusware_orchestrator.factory_cadence import factory_blocks_campaign_pass
