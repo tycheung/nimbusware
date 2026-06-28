@@ -111,9 +111,7 @@ def mesh_assign_parallel_stages(
             agent_role=tax,
         )
         overlay = (
-            prompt_extension_for_taxonomy_key(executor, tax, repo_root=root)
-            if executor
-            else ""
+            prompt_extension_for_taxonomy_key(executor, tax, repo_root=root) if executor else ""
         )
         queue.enqueue(
             run_id=run_id,
