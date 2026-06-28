@@ -110,7 +110,7 @@ def credential_scope_labels(creds: dict[str, Any]) -> list[str]:
     return scopes
 
 
-def default_enterprise_deploy_policy():
+def default_enterprise_deploy_policy() -> Any:
     from nimbusware_orchestrator.fleet_deploy_policy import (
         DEFAULT_ENTERPRISE_DEPLOY_TARGETS,
         FleetDeployPolicy,
