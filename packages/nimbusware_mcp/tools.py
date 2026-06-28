@@ -547,7 +547,7 @@ def _call_update_agent_overlay(arguments: dict[str, Any]) -> dict[str, Any]:
     if not discipline:
         raise ValueError("discipline is required")
     if arguments.get("clear"):
-        body = {"prompt_extension": None, "custom_agent_id": None}
+        body: dict[str, Any] = {"prompt_extension": None, "custom_agent_id": None}
     else:
         body = {}
         if "prompt_extension" in arguments:
