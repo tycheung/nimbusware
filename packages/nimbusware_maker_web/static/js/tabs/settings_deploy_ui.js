@@ -38,6 +38,14 @@ export function deploySettingsSectionHtml() {
           <input type="text" id="settings-deploy-workflow" data-testid="maker-settings-deploy-workflow"
             placeholder=".github/workflows/deploy.yml" autocomplete="off" />
         </label>
+        <label>
+          Default deploy environment
+          <select id="settings-deploy-environment" data-testid="maker-settings-deploy-environment">
+            <option value="dev">dev</option>
+            <option value="staging">staging</option>
+            <option value="prod">prod</option>
+          </select>
+        </label>
         <button type="submit" class="secondary" data-testid="maker-settings-deploy-save">Save deploy labels</button>
       </form>
       <p id="settings-deploy-hint" class="muted" data-testid="maker-settings-deploy-hint"></p>
@@ -51,6 +59,7 @@ export async function wireDeploySettingsPanel(root) {
   const aws = root.querySelector("#settings-deploy-aws");
   const github = root.querySelector("#settings-deploy-github");
   const workflow = root.querySelector("#settings-deploy-workflow");
+  const environment = root.querySelector("#settings-deploy-environment");
   const hint = root.querySelector("#settings-deploy-hint");
 
   let stored = readStored();
@@ -66,6 +75,7 @@ export async function wireDeploySettingsPanel(root) {
   else if (github && stored.github) github.value = stored.github;
   if (workflow && stored.workflow_path) workflow.value = stored.workflow_path;
   else if (workflow && stored.workflow) workflow.value = stored.workflow;
+  if (environment && stored.deploy_environment) environment.value = stored.deploy_environment;
   if (hint && (stored.aws_profile || stored.aws || stored.github_repo || stored.github)) {
     hint.textContent = "Labels saved — copy GitHub workflow from Deploy cockpit or GET /platform/deploy/github-workflow-template.";
   }
@@ -76,6 +86,7 @@ export async function wireDeploySettingsPanel(root) {
       aws: aws?.value?.trim() || "",
       github: github?.value?.trim() || "",
       workflow: workflow?.value?.trim() || "",
+      deploy_environment: environment?.value || "dev",
     };
     writeStored(payload);
     try {
@@ -86,6 +97,7 @@ export async function wireDeploySettingsPanel(root) {
           aws_profile: payload.aws,
           github_repo: payload.github,
           workflow_path: payload.workflow,
+          deploy_environment: payload.deploy_environment,
         }),
       });
     } catch {

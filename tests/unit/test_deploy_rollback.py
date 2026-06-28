@@ -71,7 +71,7 @@ def test_deploy_rollback_after_apply(client: TestClient, monkeypatch: pytest.Mon
     )
     monkeypatch.setattr(
         "nimbusware_api.routes.platform_deploy.apply_workspace_terraform",
-        lambda _ws: {"status": "passed", "detail": "ok"},
+        lambda _ws, **_: {"status": "passed", "detail": "ok"},
     )
     monkeypatch.setattr(
         "nimbusware_api.routes.platform_deploy.rollback_workspace_terraform",

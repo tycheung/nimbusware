@@ -11,6 +11,10 @@ from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_maker.deploy_environments import (
+    deploy_environment_catalog,
+    resolve_deploy_environment,
+)
 from nimbusware_maker.deploy_credential_vault import (
     load_deploy_credentials,
     save_deploy_credentials,
@@ -26,6 +30,7 @@ from nimbusware_maker.deploy_pipeline_events import (
     emit_deploy_smoke_stages,
     emit_terraform_validate_stages,
     live_urls_from_events,
+    manifest_from_events,
 )
 from nimbusware_maker.deploy_smoke import run_deploy_smoke
 from nimbusware_maker.terraform_validate import (
@@ -41,12 +46,14 @@ router = APIRouter(tags=["platform"])
 class TerraformValidateBody(BaseModel):
     workspace_path: str = Field(min_length=1, max_length=2000)
     run_id: str | None = Field(default=None, max_length=36)
+    deploy_environment: str | None = Field(default=None, max_length=32)
 
 
 class DeployCredentialsBody(BaseModel):
     aws_profile: str | None = Field(default=None, max_length=200)
     github_repo: str | None = Field(default=None, max_length=200)
     workflow_path: str | None = Field(default=None, max_length=500)
+    deploy_environment: str | None = Field(default=None, max_length=32)
 
 
 class DeployApproveBody(BaseModel):
@@ -56,6 +63,7 @@ class DeployApproveBody(BaseModel):
 class DeployApplyBody(BaseModel):
     run_id: str = Field(min_length=36, max_length=36)
     workspace_path: str = Field(min_length=1, max_length=2000)
+    deploy_environment: str | None = Field(default=None, max_length=32)
 
 
 class DeploySmokeBody(BaseModel):
@@ -69,6 +77,31 @@ class DeployRollbackBody(BaseModel):
     run_id: str = Field(min_length=36, max_length=36)
     workspace_path: str = Field(min_length=1, max_length=2000)
     mode: RollbackMode = "destroy"
+    deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+def _resolved_deploy_environment(
+    *,
+    explicit: str | None,
+    creds: dict[str, Any],
+    rows: list[dict[str, Any]],
+) -> str:
+    try:
+        return resolve_deploy_environment(
+            explicit=explicit,
+            credentials=creds,
+            manifest_raw=manifest_from_events(rows),
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+@router.get("/platform/deploy/environments")
+def get_deploy_environments() -> dict[str, Any]:
+    return deploy_environment_catalog()
 
 
 @router.post("/platform/deploy/approve")
@@ -129,10 +162,16 @@ def post_deploy_apply(
         emit_deploy_approved(store, rid)
     uid = str(user.user_id) if user is not None else maker_user_id_str(request)
     creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    deploy_env = _resolved_deploy_environment(
+        explicit=body.deploy_environment,
+        creds=creds,
+        rows=rows,
+    )
     if not creds.get("aws_profile") and not creds.get("github_repo"):
         result = {
             "status": "skipped",
             "detail": "No deploy credentials configured — plan-only lane",
+            "deploy_environment": deploy_env,
         }
         emit_deploy_apply_stages(store, rid, result)
         return result
@@ -140,7 +179,7 @@ def post_deploy_apply(
     if not ws.is_absolute():
         ws = (orch.repo_root / ws).resolve()
     try:
-        result = apply_workspace_terraform(ws)
+        result = apply_workspace_terraform(ws, deploy_environment=deploy_env)
     except OSError as exc:
         raise HTTPException(
             status_code=422,
@@ -238,11 +277,17 @@ def post_deploy_rollback(
         )
     uid = str(user.user_id) if user is not None else maker_user_id_str(request)
     creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    deploy_env = _resolved_deploy_environment(
+        explicit=body.deploy_environment,
+        creds=creds,
+        rows=rows,
+    )
     if not creds.get("aws_profile") and not creds.get("github_repo"):
         result = {
             "status": "skipped",
             "detail": "No deploy credentials configured — plan-only lane",
             "rollback_mode": body.mode,
+            "deploy_environment": deploy_env,
         }
         emit_deploy_rollback_stages(store, rid, result)
         return result
@@ -250,7 +295,7 @@ def post_deploy_rollback(
     if not ws.is_absolute():
         ws = (orch.repo_root / ws).resolve()
     try:
-        result = rollback_workspace_terraform(ws, mode=body.mode)
+        result = rollback_workspace_terraform(ws, mode=body.mode, deploy_environment=deploy_env)
     except OSError as exc:
         raise HTTPException(
             status_code=422,
@@ -269,8 +314,16 @@ def post_terraform_validate(
     ws = Path(body.workspace_path.strip())
     if not ws.is_absolute():
         ws = (orch.repo_root / ws).resolve()
+    deploy_env = body.deploy_environment
+    if body.run_id and not deploy_env:
+        try:
+            rid = UUID(body.run_id.strip())
+            rows = store.list_run_events(str(rid))
+            deploy_env = _resolved_deploy_environment(explicit=None, creds={}, rows=rows)
+        except ValueError:
+            pass
     try:
-        result = validate_workspace_terraform(ws)
+        result = validate_workspace_terraform(ws, deploy_environment=deploy_env)
     except OSError as exc:
         raise HTTPException(
             status_code=422,
@@ -321,6 +374,7 @@ def put_deploy_credentials(
             aws_profile=body.aws_profile,
             github_repo=body.github_repo,
             workflow_path=body.workflow_path,
+            deploy_environment=body.deploy_environment,
             repo_root=orch.repo_root,
         )
     except ValueError as exc:

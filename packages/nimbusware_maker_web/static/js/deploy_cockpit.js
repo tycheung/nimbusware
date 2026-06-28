@@ -10,6 +10,7 @@ export function deployStateFromTimeline(events) {
   let deployApplied = false;
   let deploySmokePassed = false;
   let deployRolledBack = false;
+  let deployEnvironment = "dev";
   let apiUrl = "";
   let webUrl = "";
 
@@ -17,6 +18,7 @@ export function deployStateFromTimeline(events) {
     const meta = ev.metadata || {};
     if (!apiUrl && meta.api_url) apiUrl = String(meta.api_url);
     if (!webUrl && meta.web_url) webUrl = String(meta.web_url);
+    if (meta.deploy_environment) deployEnvironment = String(meta.deploy_environment);
     const urls = meta.live_urls;
     if (urls && typeof urls === "object") {
       if (!apiUrl && urls.api) apiUrl = String(urls.api);
@@ -68,6 +70,7 @@ export function deployStateFromTimeline(events) {
     deployApplied,
     deploySmokePassed,
     deployRolledBack,
+    deployEnvironment,
     apiUrl,
     webUrl,
   };
@@ -81,7 +84,16 @@ export function deployCockpitHtml({ scope = "progress" } = {}) {
       <p class="muted deploy-cockpit-ci" data-testid="maker-deploy-ci-status-${scope}">CI: not started</p>
       <p class="muted deploy-cockpit-plan" data-testid="maker-deploy-plan-artifact-${scope}" hidden></p>
       <p class="muted deploy-cockpit-urls" data-testid="maker-deploy-live-urls-${scope}" hidden></p>
+      <p class="muted deploy-cockpit-env" data-testid="maker-deploy-env-label-${scope}"></p>
       <div class="actions">
+        <label class="deploy-env-picker">
+          Environment
+          <select class="deploy-environment-select" data-deploy-scope="${scope}" data-testid="maker-deploy-environment-${scope}">
+            <option value="dev">dev</option>
+            <option value="staging">staging</option>
+            <option value="prod">prod</option>
+          </select>
+        </label>
         <button type="button" class="deploy-validate-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-validate-${scope}">
           Run Terraform validate
         </button>
@@ -117,6 +129,8 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   const applyBtn = root.querySelector(".deploy-apply-btn");
   const smokeBtn = root.querySelector(".deploy-smoke-btn");
   const rollbackBtn = root.querySelector(".deploy-rollback-btn");
+  const envSelect = root.querySelector(".deploy-environment-select");
+  const envLabel = root.querySelector(".deploy-cockpit-env");
 
   const status = state?.ciStatus || "not_started";
   if (ciEl) {
@@ -166,6 +180,14 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
     }
   }
 
+  if (envSelect && state?.deployEnvironment) {
+    envSelect.value = state.deployEnvironment;
+  }
+  if (envLabel) {
+    envLabel.textContent = state?.deployEnvironment
+      ? `Deploy environment: ${state.deployEnvironment}`
+      : "";
+  }
   if (approveBtn) {
     const canApprove = status === "passed" && state?.planArtifact && !state?.deployApproved;
     approveBtn.disabled = !canApprove;
@@ -211,6 +233,19 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
   const root = cockpitRoot(scope);
   if (!root) return;
   let ws = workspacePath;
+  let defaultEnv = "dev";
+  try {
+    const catalog = await apiJson("/platform/deploy/environments");
+    if (catalog?.default) defaultEnv = String(catalog.default);
+  } catch {
+    /* optional */
+  }
+  try {
+    const creds = await apiJson("/platform/deploy/credentials");
+    if (creds?.deploy_environment) defaultEnv = String(creds.deploy_environment);
+  } catch {
+    /* optional unsigned */
+  }
   if (!ws && runId) {
     try {
       const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=20`);
@@ -226,6 +261,9 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
     }
   }
   const refresh = () => refreshDeployCockpit(runId, { scope });
+  const envSelect = root.querySelector(".deploy-environment-select");
+  if (envSelect && defaultEnv) envSelect.value = defaultEnv;
+  const selectedEnv = () => envSelect?.value || defaultEnv;
   root.querySelector(".deploy-cockpit-refresh")?.addEventListener("click", refresh);
   root.querySelector(".deploy-validate-btn")?.addEventListener("click", async () => {
     if (!ws) {
@@ -233,7 +271,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       return;
     }
     try {
-      const body = { workspace_path: ws };
+      const body = { workspace_path: ws, deploy_environment: selectedEnv() };
       if (runId) body.run_id = runId;
       const result = await apiJson("/platform/deploy/terraform-validate", {
         method: "POST",
@@ -276,7 +314,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       const result = await apiJson("/platform/deploy/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ run_id: runId, workspace_path: ws }),
+        body: JSON.stringify({ run_id: runId, workspace_path: ws, deploy_environment: selectedEnv() }),
       });
       toast(`Deploy apply: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
@@ -314,7 +352,12 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       const result = await apiJson("/platform/deploy/rollback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ run_id: runId, workspace_path: ws, mode: "destroy" }),
+        body: JSON.stringify({
+          run_id: runId,
+          workspace_path: ws,
+          mode: "destroy",
+          deploy_environment: selectedEnv(),
+        }),
       });
       toast(`Deploy rollback: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();

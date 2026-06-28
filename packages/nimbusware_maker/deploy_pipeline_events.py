@@ -153,6 +153,21 @@ def live_urls_from_events(rows: list[dict[str, Any]]) -> dict[str, str]:
     return out
 
 
+def manifest_from_events(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    for row in rows:
+        if row.get("event_type") != EventType.RUN_CREATED.value:
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            continue
+        req = meta.get("requirements")
+        if isinstance(req, dict):
+            raw = req.get("stack_manifest")
+            if isinstance(raw, dict):
+                return raw
+    return {}
+
+
 def deploy_apply_passed_from_events(rows: list[dict[str, Any]]) -> bool:
     for row in reversed(rows):
         if row.get("event_type") != EventType.STAGE_PASSED.value:
@@ -187,6 +202,8 @@ def emit_deploy_rollback_stages(
         "deploy": {"kind": "terraform_rollback"},
         "rollback_mode": result.get("rollback_mode"),
     }
+    if result.get("deploy_environment"):
+        meta["deploy_environment"] = result["deploy_environment"]
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,
@@ -313,6 +330,8 @@ def emit_deploy_apply_stages(
     for key in ("api_url", "web_url", "live_urls"):
         if result.get(key):
             meta[key] = result[key]
+    if result.get("deploy_environment"):
+        meta["deploy_environment"] = result["deploy_environment"]
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,

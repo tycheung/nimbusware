@@ -154,6 +154,8 @@ def _manifest_from_answers(answers: dict[str, str]) -> dict[str, Any]:
         "hosting": hosting,
         "recommended": False,
     }
+    if "cloud" in hosting.lower() or "aws" in hosting.lower():
+        manifest["deploy_environment"] = "dev"
     return apply_fleet_surface_policy(manifest, None)
 
 

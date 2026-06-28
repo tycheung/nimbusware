@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -12,7 +13,19 @@ def _terraform_files(workspace: Path) -> list[Path]:
     return sorted(workspace.rglob("*.tf"))
 
 
-def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
+def _terraform_subprocess_env(deploy_environment: str | None = None) -> dict[str, str]:
+    env = os.environ.copy()
+    if deploy_environment:
+        env["TF_VAR_environment"] = deploy_environment
+        env["NIMBUSWARE_DEPLOY_ENV"] = deploy_environment
+    return env
+
+
+def validate_workspace_terraform(
+    workspace: Path,
+    *,
+    deploy_environment: str | None = None,
+) -> dict[str, Any]:
     ws = workspace.resolve()
     tf_files = _terraform_files(ws)
     if not tf_files:
@@ -38,12 +51,14 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
             root = candidate
             break
 
+    tf_env = _terraform_subprocess_env(deploy_environment)
     fmt = subprocess.run(
         [terraform, "fmt", "-check", "-recursive", str(root)],
         capture_output=True,
         text=True,
         cwd=root,
         check=False,
+        env=tf_env,
     )
     if fmt.returncode != 0:
         return {
@@ -60,6 +75,7 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
         text=True,
         cwd=root,
         check=False,
+        env=tf_env,
     )
     if init.returncode != 0:
         return {
@@ -76,6 +92,7 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
         text=True,
         cwd=root,
         check=False,
+        env=tf_env,
     )
     if validate.returncode != 0:
         return {
@@ -92,6 +109,7 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
         text=True,
         cwd=root,
         check=False,
+        env=tf_env,
     )
     plan_ok = plan.returncode == 0
     plan_path = root / ".nimbusware" / "terraform.plan.txt"
@@ -106,6 +124,7 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
         "files_checked": len(tf_files),
         "plan_artifact": str(plan_path.relative_to(ws)) if plan_ok else "",
         "stderr": "" if plan_ok else (plan.stderr or plan.stdout or "")[:2000],
+        "deploy_environment": deploy_environment or "",
     }
 
 
@@ -137,7 +156,11 @@ def _snapshot_terraform_state(root: Path, workspace: Path) -> str:
         return str(backup)
 
 
-def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
+def apply_workspace_terraform(
+    workspace: Path,
+    *,
+    deploy_environment: str | None = None,
+) -> dict[str, Any]:
     root, tf_files = _terraform_root(workspace)
     if not tf_files:
         return {
@@ -153,12 +176,14 @@ def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
             "terraform_available": False,
         }
     snapshot_ref = _snapshot_terraform_state(root, workspace)
+    tf_env = _terraform_subprocess_env(deploy_environment)
     apply = subprocess.run(
         [terraform, "apply", "-auto-approve", "-input=false", "-no-color"],
         capture_output=True,
         text=True,
         cwd=root,
         check=False,
+        env=tf_env,
     )
     ok = apply.returncode == 0
     live_urls: dict[str, str] = {}
@@ -169,6 +194,7 @@ def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
             text=True,
             cwd=root,
             check=False,
+            env=tf_env,
         )
         if outputs.returncode == 0 and outputs.stdout.strip():
             try:
@@ -195,6 +221,7 @@ def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
         "terraform_available": True,
         "stderr": "" if ok else (apply.stderr or apply.stdout or "")[:2000],
         "state_snapshot": snapshot_ref,
+        "deploy_environment": deploy_environment or "",
         **meta,
     }
 
@@ -203,7 +230,10 @@ RollbackMode = Literal["destroy", "previous"]
 
 
 def rollback_workspace_terraform(
-    workspace: Path, *, mode: RollbackMode = "destroy"
+    workspace: Path,
+    *,
+    mode: RollbackMode = "destroy",
+    deploy_environment: str | None = None,
 ) -> dict[str, Any]:
     root, tf_files = _terraform_root(workspace)
     if not tf_files:
@@ -236,12 +266,14 @@ def rollback_workspace_terraform(
         cmd = [terraform, "destroy", "-auto-approve", "-input=false", "-no-color"]
         detail_ok = "terraform destroy ok"
         detail_fail = "terraform destroy failed"
-    proc = subprocess.run(cmd, capture_output=True, text=True, cwd=root, check=False)
+    tf_env = _terraform_subprocess_env(deploy_environment)
+    proc = subprocess.run(cmd, capture_output=True, text=True, cwd=root, check=False, env=tf_env)
     ok = proc.returncode == 0
     return {
         "status": "passed" if ok else "failed",
         "detail": detail_ok if ok else detail_fail,
         "terraform_available": True,
         "rollback_mode": mode,
+        "deploy_environment": deploy_environment or "",
         "stderr": "" if ok else (proc.stderr or proc.stdout or "")[:2000],
     }

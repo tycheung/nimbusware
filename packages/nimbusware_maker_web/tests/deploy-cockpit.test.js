@@ -16,6 +16,8 @@ describe("deploy cockpit module", () => {
     expect(deployJs).toContain("maker-deploy-apply-");
     expect(deployJs).toContain("maker-deploy-smoke-");
     expect(deployJs).toContain("maker-deploy-rollback-");
+    expect(deployJs).toContain("maker-deploy-environment-");
+    expect(deployJs).toContain("/platform/deploy/environments");
     expect(deployJs).toContain("deploy.approved");
     expect(deployJs).toContain("/platform/deploy/apply");
     expect(deployJs).toContain("/platform/deploy/smoke");
@@ -36,6 +38,6 @@ describe("deploy cockpit module", () => {
 
   it("settings deploy section stores local labels", () => {
     expect(settingsDeployJs).toContain("maker-settings-deploy");
-    expect(settingsDeployJs).toContain("maker_deploy_connections");
+    expect(settingsDeployJs).toContain("maker-settings-deploy-environment");
   });
 });

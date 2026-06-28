@@ -3,7 +3,12 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from nimbusware_maker.deploy_environments import (
+    DEFAULT_DEPLOY_ENVIRONMENT,
+    normalize_deploy_environment,
+)
 
 
 class StackManifest(BaseModel):
@@ -17,6 +22,12 @@ class StackManifest(BaseModel):
     frozen_at: str | None = None
     confirmed: bool = False
     discovery_summary: dict[str, str] = Field(default_factory=dict)
+    deploy_environment: str = DEFAULT_DEPLOY_ENVIRONMENT
+
+    @field_validator("deploy_environment")
+    @classmethod
+    def _validate_deploy_environment(cls, value: str) -> str:
+        return normalize_deploy_environment(value)
 
 
 def manifest_from_requirements(requirements: dict[str, Any] | None) -> StackManifest | None:
@@ -50,6 +61,9 @@ def parse_stack_manifest(raw: dict[str, Any]) -> StackManifest:
         frozen_at=str(raw.get("frozen_at") or "").strip() or None,
         confirmed=bool(raw.get("confirmed")),
         discovery_summary=summary,
+        deploy_environment=normalize_deploy_environment(
+            str(raw.get("deploy_environment") or DEFAULT_DEPLOY_ENVIRONMENT)
+        ),
     )
 
 

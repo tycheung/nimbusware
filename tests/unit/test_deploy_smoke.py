@@ -89,7 +89,7 @@ def test_deploy_smoke_after_apply(client: TestClient, monkeypatch: pytest.Monkey
     )
     monkeypatch.setattr(
         "nimbusware_api.routes.platform_deploy.apply_workspace_terraform",
-        lambda _ws: {
+        lambda _ws, **_: {
             "status": "passed",
             "detail": "ok",
             "api_url": "https://api.test",
