@@ -62,19 +62,19 @@ def test_deploy_rollback_after_apply(client: TestClient, monkeypatch: pytest.Mon
     run_id = created.json()["run_id"]
     client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.maker_user_id_str",
+        "nimbusware_api.routes.platform_deploy_mutations.maker_user_id_str",
         lambda _req: "deploy-test-user",
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.load_deploy_credentials",
+        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "dev"},
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.apply_workspace_terraform",
+        "nimbusware_api.routes.platform_deploy_mutations.apply_workspace_terraform",
         lambda _ws, **_: {"status": "passed", "detail": "ok"},
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.rollback_workspace_terraform",
+        "nimbusware_api.routes.platform_deploy_mutations.rollback_workspace_terraform",
         lambda _ws, **_: {"status": "passed", "detail": "destroy ok", "rollback_mode": "destroy"},
     )
     client.post(

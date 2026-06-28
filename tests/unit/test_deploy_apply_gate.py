@@ -78,7 +78,7 @@ def test_deploy_apply_skips_without_credentials(client: TestClient, monkeypatch,
     approve = client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
     assert approve.status_code == 200, approve.text
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.load_deploy_credentials",
+        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "", "github_repo": ""},
     )
     ws = tmp_path / "infra"
@@ -112,7 +112,7 @@ def test_deploy_apply_denied_when_target_not_allowed(
         lambda *_a, **_k: tmp_path,
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.load_deploy_credentials",
+        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "prod", "github_repo": ""},
     )
 

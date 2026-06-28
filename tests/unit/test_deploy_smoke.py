@@ -80,15 +80,15 @@ def test_deploy_smoke_after_apply(client: TestClient, monkeypatch: pytest.Monkey
     approve = client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
     assert approve.status_code == 200
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.maker_user_id_str",
+        "nimbusware_api.routes.platform_deploy_mutations.maker_user_id_str",
         lambda _req: "deploy-test-user",
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.load_deploy_credentials",
+        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "dev"},
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.apply_workspace_terraform",
+        "nimbusware_api.routes.platform_deploy_mutations.apply_workspace_terraform",
         lambda _ws, **_: {
             "status": "passed",
             "detail": "ok",
@@ -96,7 +96,7 @@ def test_deploy_smoke_after_apply(client: TestClient, monkeypatch: pytest.Monkey
         },
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy.run_deploy_smoke",
+        "nimbusware_api.routes.platform_deploy_mutations.run_deploy_smoke",
         lambda **_: {"status": "passed", "detail": "1/1 checks passed", "checks": []},
     )
     apply = client.post(

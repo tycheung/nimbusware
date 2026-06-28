@@ -2,12 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from nimbusware_orchestrator.fleet_deploy_policy import (
-    DEFAULT_ENTERPRISE_DEPLOY_TARGETS,
-    FleetDeployPolicy,
-    tenant_deploy_policy,
-)
-
 DEPLOY_STACK_TO_TARGET: dict[str, str] = {
     "terraform_aws_ecs": "aws-ecs",
     "terraform_aws_static": "aws-static-site",
@@ -45,6 +39,8 @@ def allowed_deploy_targets_for_tenant(
     bundle = (setup_bundle or "").strip().lower()
     if bundle and bundle != "enterprise":
         return []
+    from nimbusware_orchestrator.fleet_deploy_policy import tenant_deploy_policy
+
     policy = tenant_deploy_policy(tenant_slug, repo_root=repo_root)
     return list(policy.allowed_deploy_targets)
 
@@ -114,7 +110,12 @@ def credential_scope_labels(creds: dict[str, Any]) -> list[str]:
     return scopes
 
 
-def default_enterprise_deploy_policy() -> FleetDeployPolicy:
+def default_enterprise_deploy_policy():
+    from nimbusware_orchestrator.fleet_deploy_policy import (
+        DEFAULT_ENTERPRISE_DEPLOY_TARGETS,
+        FleetDeployPolicy,
+    )
+
     return FleetDeployPolicy(
         tenant_slug="default",
         allowed_deploy_targets=DEFAULT_ENTERPRISE_DEPLOY_TARGETS,
