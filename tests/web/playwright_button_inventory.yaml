@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 160
+  total_buttons: 162
   clicked: 38
-  visible_only: 8
-  unwired: 114
-  click_ratio: 0.2375
+  visible_only: 9
+  unwired: 115
+  click_ratio: 0.2346
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -274,7 +274,8 @@ buttons:
   source: packages/nimbusware_maker_web/static/js/chat_mention_ui.js
   label: (dynamic)
   clicked_in: []
-  visible_only_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_collab_discipline_journey.spec.ts
 - test_id: maker-chat-model-drawer-btn
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
@@ -439,28 +440,28 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
-- test_id: maker-deploy-approve-${scope}
-  app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
-  label: Approve deploy
-  clicked_in: []
-  visible_only_in: []
 - test_id: maker-deploy-apply-${scope}
   app: maker
   source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
   label: Apply deploy
   clicked_in: []
   visible_only_in: []
-- test_id: maker-deploy-smoke-${scope}
+- test_id: maker-deploy-approve-${scope}
   app: maker
   source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
-  label: Run smoke test
+  label: Approve deploy
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-refresh-${scope}
   app: maker
   source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
   label: Refresh
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-smoke-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Run smoke test
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-validate-${scope}

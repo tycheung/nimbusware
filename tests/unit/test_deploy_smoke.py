@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -23,9 +22,18 @@ def test_run_deploy_smoke_skips_without_urls() -> None:
 
 def test_run_deploy_smoke_http_pass(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeResp:
-        status_code = 200
+        status = 200
 
-    monkeypatch.setattr(httpx, "get", lambda *_a, **_k: FakeResp())
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_a):
+            return False
+
+    monkeypatch.setattr(
+        "nimbusware_maker.deploy_smoke.urlopen",
+        lambda *_a, **_k: FakeResp(),
+    )
     result = run_deploy_smoke(api_url="https://api.example.com", web_url="https://app.example.com")
     assert result["status"] == "passed"
     assert len(result["checks"]) == 2

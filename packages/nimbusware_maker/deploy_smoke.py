@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
-
-import httpx
+from urllib.request import Request, urlopen
 
 _API_PATHS = ("/health", "/docs", "/openapi.json", "/")
 _WEB_PATHS = ("/",)
@@ -20,15 +20,25 @@ def _probe_url(
     for path in paths:
         target = urljoin(base, path.lstrip("/"))
         try:
-            resp = httpx.get(target, timeout=timeout_seconds, follow_redirects=True)
-            if resp.status_code < 400:
+            req = Request(target, method="GET")
+            with urlopen(req, timeout=timeout_seconds) as resp:
+                code = int(getattr(resp, "status", 200) or 200)
+                if code < 400:
+                    return {
+                        "status": "passed",
+                        "detail": f"HTTP {code} at {target}",
+                        "url": target,
+                    }
+                last_error = f"HTTP {code} at {target}"
+        except HTTPError as exc:
+            if exc.code < 400:
                 return {
                     "status": "passed",
-                    "detail": f"HTTP {resp.status_code} at {target}",
+                    "detail": f"HTTP {exc.code} at {target}",
                     "url": target,
                 }
-            last_error = f"HTTP {resp.status_code} at {target}"
-        except httpx.HTTPError as exc:
+            last_error = f"HTTP {exc.code} at {target}"
+        except (URLError, OSError, ValueError) as exc:
             last_error = str(exc)
     return {"status": "failed", "detail": last_error or "request failed", "url": base}
 
