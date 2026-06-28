@@ -89,3 +89,45 @@ def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
         "performance_critique",
         "network_resilience_critique",
     }
+
+
+def test_mesh_pipeline_hook_includes_agent_overlay_in_payload(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    from nimbusware_maker.user_agent_overlay import save_user_agent_overlay
+
+    repo = tmp_path
+    (repo / "configs" / "collab").mkdir(parents=True)
+    (repo / "configs" / "collab" / "disciplines.yaml").write_text(
+        """
+disciplines:
+  - id: backend
+    display_name: Backend
+    taxonomy_key: backend_writer
+""",
+        encoding="utf-8",
+    )
+    save_user_agent_overlay(
+        "claimer-1",
+        "backend",
+        prompt_extension="Prefer thin handlers on mesh workers.",
+        repo_root=repo,
+    )
+    monkeypatch.setattr("nimbusware_env.find_repo_root", lambda: repo)
+    sid = uuid4()
+    run_id = uuid4()
+    n1 = uuid4()
+    mesh_assign_parallel_stages(
+        run_id=run_id,
+        stage_names=["implementation"],
+        session_id=sid,
+        workload_distribution="auto_share",
+        node_ids=[n1],
+        role_claims={"backend_writer": "claimer-1"},
+        node_users={n1: "claimer-1"},
+        workspace=repo,
+    )
+    units = get_work_unit_queue().list_units(run_id=run_id)
+    assert len(units) == 1
+    assert units[0].payload.get("agent_overlay_prompt") == "Prefer thin handlers on mesh workers."

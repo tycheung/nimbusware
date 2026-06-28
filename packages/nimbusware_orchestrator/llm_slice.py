@@ -68,7 +68,12 @@ def _custom_agent_prompt_from_rows(rows: list[dict[str, Any]]) -> str:
         repo_root=find_repo_root(),
     )
     if addon:
-        return f"{base}\n\n{addon}"
+        base = f"{base}\n\n{addon}"
+    from nimbusware_orchestrator.collab_mesh_context import mesh_agent_overlay_prompt
+
+    mesh_addon = mesh_agent_overlay_prompt().strip()
+    if mesh_addon and mesh_addon not in base:
+        base = f"{base}\n\n{mesh_addon}"
     return base
 
 

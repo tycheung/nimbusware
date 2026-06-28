@@ -327,6 +327,7 @@ def execute_mesh_stage_on_worker(rec: WorkUnitRecord) -> dict[str, Any]:
         set_mesh_binding_context(
             participant_overrides=overrides,
             actor_user_id=str(rec.executor_user_id or ""),
+            agent_overlay_prompt=str(payload.get("agent_overlay_prompt") or ""),
         )
         orch = _mesh_orchestrator(workspace)
         before_ids = baseline_event_ids(orch._store, rec.run_id)

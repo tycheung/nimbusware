@@ -29,6 +29,7 @@ def _mesh_enqueue_payload(
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
     binding_hint: dict[str, str] | None = None,
+    agent_overlay_prompt: str | None = None,
 ) -> dict[str, str | bool]:
     payload: dict[str, str | bool] = {
         "node_id": str(node_id),
@@ -46,6 +47,9 @@ def _mesh_enqueue_payload(
         payload["binding_hint_provider_id"] = binding_hint.get("provider_id", "")
         payload["binding_hint_model_id"] = binding_hint.get("model_id", "")
         payload["binding_hint_connection_id"] = binding_hint.get("connection_id", "")
+    overlay = str(agent_overlay_prompt or "").strip()
+    if overlay:
+        payload["agent_overlay_prompt"] = overlay[:2000]
     return payload
 
 
@@ -91,8 +95,11 @@ def mesh_assign_parallel_stages(
     if session_id is None or workload_distribution == "host_only":
         return assignments
     queue = get_work_unit_queue()
+    from nimbusware_env import find_repo_root
+    from nimbusware_maker.user_agent_overlay import prompt_extension_for_taxonomy_key
     from nimbusware_orchestrator.collab_mesh_bindings import executor_binding_hint
 
+    root = find_repo_root()
     for stage_name, node_id in assignments.items():
         if node_id is None:
             continue
@@ -102,6 +109,11 @@ def mesh_assign_parallel_stages(
             session_metadata,
             executor_user_id=executor,
             agent_role=tax,
+        )
+        overlay = (
+            prompt_extension_for_taxonomy_key(executor, tax, repo_root=root)
+            if executor
+            else ""
         )
         queue.enqueue(
             run_id=run_id,
@@ -115,6 +127,7 @@ def mesh_assign_parallel_stages(
                 workspace=workspace,
                 workflow_profile=workflow_profile,
                 binding_hint=hint,
+                agent_overlay_prompt=overlay or None,
             ),
         )
     return assignments
