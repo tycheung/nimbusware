@@ -34,7 +34,16 @@ def fleet_governance_summary(
             setup_bundle=bundle,
         ),
         "discovery_required_fields": _discovery_required_fields(tenant_slug, bundle),
+        "deploy_approval_chain": _deploy_approval_chain(tenant_slug, bundle),
     }
+
+
+def _deploy_approval_chain(tenant_slug: str | None, bundle: str) -> str:
+    if bundle != "enterprise":
+        return "maker_only"
+    from nimbusware_orchestrator.fleet_deploy_approval_policy import tenant_deploy_approval_policy
+
+    return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
 
 
 def _discovery_required_fields(tenant_slug: str | None, bundle: str) -> list[str]:

@@ -21,6 +21,7 @@ from nimbusware_api.routes.platform_deploy_support import (
     enforce_credential_scopes,
     enforce_manifest_deploy_target,
     resolved_deploy_environment,
+    deploy_approval_chain_for_tenant,
 )
 from nimbusware_api.user import maker_user_id_str
 from nimbusware_maker.deploy_ci_events import emit_ci_workflow_stages
@@ -35,6 +36,7 @@ from nimbusware_maker.deploy_credential_vault import (
 from nimbusware_maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,
     deploy_apply_passed_from_events,
+    deploy_apply_ready,
     deploy_approved_from_events,
     deploy_rollback_passed_from_events,
     emit_deploy_apply_stages,
@@ -81,19 +83,24 @@ def post_deploy_apply(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
         )
-    if not deploy_approved_from_events(rows):
+    tenant_slug, setup_bundle = deploy_policy_context()
+    approval_chain = deploy_approval_chain_for_tenant(tenant_slug, setup_bundle)
+    if not deploy_apply_ready(rows, deploy_approval_chain=approval_chain):
         from nimbusware_orchestrator.autopilot_profiles import latest_autopilot_block_from_rows
 
         block = latest_autopilot_block_from_rows(rows)
         if not autopilot_may_auto_approve_deploy(block):
+            code = "deploy_dual_control_pending" if approval_chain == "dual_control" else "deploy_approval_required"
+            msg = (
+                "Fleet admin dual-control approval required before apply"
+                if approval_chain == "dual_control"
+                else "Record deploy approval before apply (or use deploy_hands_off autopilot profile)"
+            )
             raise HTTPException(
                 status_code=403,
-                detail=problem(
-                    "deploy_approval_required",
-                    "Record deploy approval before apply (or use deploy_hands_off autopilot profile)",
-                ),
+                detail=problem(code, msg),
             )
-        emit_deploy_approved(store, rid)
+        emit_deploy_approved(store, rid, approval_kind="autopilot")
     uid = str(user.user_id) if user is not None else maker_user_id_str(request)
     tenant_slug, setup_bundle = deploy_policy_context()
     enforce_manifest_deploy_target(rows, tenant_slug=tenant_slug, setup_bundle=setup_bundle)

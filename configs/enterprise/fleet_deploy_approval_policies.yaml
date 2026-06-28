@@ -1,0 +1,6 @@
+version: 1
+tenants:
+  default:
+    deploy_approval_chain: maker_only
+  regulated:
+    deploy_approval_chain: dual_control

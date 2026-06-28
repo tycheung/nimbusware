@@ -8,17 +8,27 @@ from fastapi import APIRouter, HTTPException, Request
 
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes.auth import AuthUserDep
+from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.routes.platform_deploy_models import (
     DeployApproveBody,
     TerraformValidateBody,
 )
 from nimbusware_api.routes.platform_deploy_mutations import router as mutations_router
-from nimbusware_api.routes.platform_deploy_support import resolved_deploy_environment
+from nimbusware_api.routes.platform_deploy_support import (
+    deploy_approval_chain_for_tenant,
+    deploy_policy_context,
+    resolved_deploy_environment,
+)
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_iam.context import get_auth_context
+from nimbusware_maker.deploy_approval_enforcement import (
+    resolve_deploy_approver_context,
+    user_may_record_deploy_approval,
+)
 from nimbusware_maker.deploy_credential_vault import load_deploy_credentials
 from nimbusware_maker.deploy_environments import deploy_environment_catalog
 from nimbusware_maker.deploy_pipeline_events import (
+    deploy_apply_ready,
     emit_deploy_approved,
     emit_terraform_validate_stages,
 )
@@ -36,7 +46,9 @@ def get_deploy_environments() -> dict[str, Any]:
 @router.post("/platform/deploy/approve")
 def post_deploy_approve(
     body: DeployApproveBody,
+    request: Request,
     store: StoreDep,
+    user: OptionalUserDep,
 ) -> dict[str, str]:
     try:
         rid = UUID(body.run_id.strip())
@@ -51,8 +63,33 @@ def post_deploy_approve(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
         )
-    emit_deploy_approved(store, rid)
-    return {"run_id": str(rid), "status": "approved"}
+    tenant_slug, setup_bundle = deploy_policy_context()
+    chain = deploy_approval_chain_for_tenant(tenant_slug, setup_bundle)
+    ctx = get_auth_context()
+    scopes = ctx.api_scopes if ctx is not None else ()
+    uid, is_admin, _ = resolve_deploy_approver_context(user, api_scopes=scopes)
+    if not uid:
+        uid = maker_user_id_str(request) or None
+    ok, detail, kind = user_may_record_deploy_approval(
+        user_id=uid,
+        is_fleet_admin=is_admin,
+        session_role=None,
+        chain=chain,
+        rows=rows,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_approval_denied", detail or "not authorized to approve deploy"),
+        )
+    emit_deploy_approved(store, rid, approver_user_id=uid, approval_kind=kind)
+    status = "approved"
+    if chain == "dual_control" and not deploy_apply_ready(
+        store.list_run_events(str(rid)),
+        deploy_approval_chain=chain,
+    ):
+        status = "partial"
+    return {"run_id": str(rid), "status": status, "approval_kind": kind}
 
 
 @router.post("/platform/deploy/terraform-validate")

@@ -16,6 +16,9 @@ from nimbusware_api.routes.enterprise.fleet_critic_reliability import (
     router as fleet_critic_reliability_router,
 )
 from nimbusware_api.routes.enterprise.fleet_deploy import router as fleet_deploy_router
+from nimbusware_api.routes.enterprise.fleet_deploy_approval import (
+    router as fleet_deploy_approval_router,
+)
 from nimbusware_api.routes.enterprise.fleet_discovery import router as fleet_discovery_router
 from nimbusware_api.routes.enterprise.fleet_enforcement import router as fleet_enforcement_router
 from nimbusware_api.routes.enterprise.fleet_learnings import router as fleet_learnings_router
@@ -69,6 +72,7 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_slice_router)
     router.include_router(fleet_commit_router)
     router.include_router(fleet_deploy_router)
+    router.include_router(fleet_deploy_approval_router)
     router.include_router(fleet_discovery_router)
     router.include_router(fleet_critic_reliability_router)
     router.include_router(enterprise_audit_export_router)
