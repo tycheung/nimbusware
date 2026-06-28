@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +14,7 @@ from nimbusware_maker.collab_disciplines import (
     taxonomy_keys_for_discipline,
 )
 
+COLLAB_AGENT_OVERLAY_UPDATED = "collab.agent_overlay.updated"
 
 def _path(repo_root: Path, user_id: str) -> Path:
     return repo_root / "configs" / "collab" / "users" / f"{user_id.strip()}_agent_overlays.yaml"
@@ -49,6 +52,9 @@ def load_user_agent_overlays(
             entry["prompt_extension"] = ext[:2000]
         if agent_id:
             entry["custom_agent_id"] = agent_id[:120]
+        ver = row.get("version")
+        if isinstance(ver, int) and ver > 0:
+            entry["version"] = ver
         cleaned[discipline] = entry
     return {"user_id": uid, "overlays": cleaned}
 
@@ -74,8 +80,13 @@ def save_user_agent_overlay(
     agent_id = str(custom_agent_id or "").strip()
     if not ext and not agent_id:
         overlays.pop(normalized, None)
+        version = 0
+        cleared = True
     else:
-        row: dict[str, Any] = {}
+        prev = overlays.get(normalized) or {}
+        version = int(prev.get("version") or 0) + 1
+        cleared = False
+        row: dict[str, Any] = {"version": version}
         if ext:
             row["prompt_extension"] = ext[:2000]
         if agent_id:
@@ -90,6 +101,22 @@ def save_user_agent_overlay(
         )
     elif path.is_file():
         path.unlink()
+    ap = root / ".nimbusware/platform/collab_audit.jsonl"
+    ap.parent.mkdir(parents=True, exist_ok=True)
+    ap.open("a", encoding="utf-8").write(
+        json.dumps(
+            {
+                "event_type": COLLAB_AGENT_OVERLAY_UPDATED,
+                "occurred_at": datetime.now(timezone.utc).isoformat(),
+                "user_id": uid,
+                "discipline": normalized,
+                "version": version,
+                "cleared": cleared,
+            },
+            separators=(",", ":"),
+        )
+        + "\n"
+    )
     return {"user_id": uid, "overlays": overlays}
 
 

@@ -32,6 +32,20 @@ disciplines:
     )
     body = load_user_agent_overlays("user-1", repo_root=repo)
     assert body["overlays"]["backend"]["prompt_extension"] == "Prefer FastAPI idioms."
+    assert body["overlays"]["backend"]["version"] == 1
+    save_user_agent_overlay(
+        "user-1",
+        "backend",
+        prompt_extension="Prefer thin handlers.",
+        repo_root=repo,
+    )
+    body2 = load_user_agent_overlays("user-1", repo_root=repo)
+    assert body2["overlays"]["backend"]["version"] == 2
+    audit = repo / ".nimbusware/platform/collab_audit.jsonl"
+    lines = audit.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 2
+    assert '"event_type":"collab.agent_overlay.updated"' in lines[-1]
+    assert '"version":2' in lines[-1]
 
 
 def test_prompt_extension_for_taxonomy_key(tmp_path: Path) -> None:

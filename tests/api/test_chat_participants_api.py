@@ -199,6 +199,7 @@ def test_agent_overlay_get_and_put(
     )
     assert saved.status_code == 200
     assert saved.json()["overlays"]["backend"]["prompt_extension"] == "Keep handlers thin."
+    assert saved.json()["overlays"]["backend"]["version"] == 1
 
     again = client.get("/v1/users/me/agent-overlays")
     assert again.json()["overlays"]["backend"]["prompt_extension"] == "Keep handlers thin."
