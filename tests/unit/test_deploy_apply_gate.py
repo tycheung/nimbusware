@@ -92,3 +92,51 @@ def test_deploy_apply_skips_without_credentials(client: TestClient, monkeypatch,
     timeline = client.get(f"/v1/runs/{run_id}/timeline?limit=50")
     events = timeline.json().get("events") or []
     assert any(ev.get("payload", {}).get("stage_name") == "deploy.apply" for ev in events)
+
+
+def test_deploy_apply_denied_when_target_not_allowed(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    policy_path = tmp_path / "configs" / "enterprise" / "fleet_deploy_policies.yaml"
+    policy_path.parent.mkdir(parents=True)
+    policy_path.write_text(
+        "version: 1\ntenants:\n  default:\n    allowed_deploy_targets:\n      - github-actions\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.fleet_deploy_policy.find_repo_root",
+        lambda *_a, **_k: tmp_path,
+    )
+    monkeypatch.setattr(
+        "nimbusware_api.routes.platform_deploy.load_deploy_credentials",
+        lambda *_a, **_k: {"aws_profile": "prod", "github_repo": ""},
+    )
+
+    created = client.post(
+        "/v1/runs",
+        json={
+            "workflow_profile": "campaign_fullstack",
+            "requirements": {
+                "business_prompt": "Deploy todo app",
+                "stack_manifest": {
+                    "surfaces": ["deploy"],
+                    "stacks": {"deploy": "terraform_aws_ecs"},
+                    "confirmed": True,
+                },
+            },
+        },
+    )
+    assert created.status_code == 200, created.text
+    run_id = created.json()["run_id"]
+    approve = client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
+    assert approve.status_code == 200, approve.text
+    resp = client.post(
+        "/v1/platform/deploy/apply",
+        json={"run_id": run_id, "workspace_path": str(tmp_path / "infra")},
+    )
+    assert resp.status_code == 403, resp.text
+    assert resp.json()["code"] == "deploy_target_denied"

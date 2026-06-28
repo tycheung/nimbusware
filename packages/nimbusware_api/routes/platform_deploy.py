@@ -11,6 +11,12 @@ from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_env.env_flags import env_str
+from nimbusware_iam.context import get_auth_context
+from nimbusware_maker.deploy_credential_audit import (
+    audit_credentials_updated,
+    audit_credentials_used,
+)
 from nimbusware_maker.deploy_credential_vault import (
     load_deploy_credentials,
     save_deploy_credentials,
@@ -18,6 +24,13 @@ from nimbusware_maker.deploy_credential_vault import (
 from nimbusware_maker.deploy_environments import (
     deploy_environment_catalog,
     resolve_deploy_environment,
+)
+from nimbusware_maker.deploy_target_enforcement import (
+    credential_scope_labels,
+    deploy_target_from_credentials,
+    deploy_target_from_manifest,
+    validate_credential_scopes,
+    validate_manifest_deploy_target,
 )
 from nimbusware_maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,
@@ -99,6 +112,49 @@ def _resolved_deploy_environment(
         ) from exc
 
 
+def _deploy_policy_context() -> tuple[str | None, str]:
+    ctx = get_auth_context()
+    tenant_slug = ctx.tenant_slug if ctx is not None else None
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
+    return tenant_slug, setup_bundle
+
+
+def _enforce_manifest_deploy_target(
+    rows: list[dict[str, Any]],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_manifest_deploy_target(
+        manifest_from_events(rows),
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_target_denied", detail or "deploy target not allowed"),
+        )
+
+
+def _enforce_credential_scopes(
+    creds: dict[str, Any],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_credential_scopes(
+        creds,
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_credential_scope_denied", detail or "credential scope denied"),
+        )
+
+
 @router.get("/platform/deploy/environments")
 def get_deploy_environments() -> dict[str, Any]:
     return deploy_environment_catalog()
@@ -161,7 +217,10 @@ def post_deploy_apply(
             )
         emit_deploy_approved(store, rid)
     uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    tenant_slug, setup_bundle = _deploy_policy_context()
+    _enforce_manifest_deploy_target(rows, tenant_slug=tenant_slug, setup_bundle=setup_bundle)
     creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    _enforce_credential_scopes(creds, tenant_slug=tenant_slug, setup_bundle=setup_bundle)
     deploy_env = _resolved_deploy_environment(
         explicit=body.deploy_environment,
         creds=creds,
@@ -175,6 +234,16 @@ def post_deploy_apply(
         }
         emit_deploy_apply_stages(store, rid, result)
         return result
+    audit_credentials_used(
+        user_id=uid,
+        run_id=str(rid),
+        action="apply",
+        tenant_slug=tenant_slug,
+        deploy_target=deploy_target_from_manifest(manifest_from_events(rows))
+        or deploy_target_from_credentials(creds),
+        scopes=credential_scope_labels(creds),
+        repo_root=orch.repo_root,
+    )
     ws = Path(body.workspace_path.strip())
     if not ws.is_absolute():
         ws = (orch.repo_root / ws).resolve()
@@ -276,7 +345,9 @@ def post_deploy_rollback(
             detail=problem("deploy_approval_required", "Record deploy approval before rollback"),
         )
     uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    tenant_slug, setup_bundle = _deploy_policy_context()
     creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    _enforce_credential_scopes(creds, tenant_slug=tenant_slug, setup_bundle=setup_bundle)
     deploy_env = _resolved_deploy_environment(
         explicit=body.deploy_environment,
         creds=creds,
@@ -291,6 +362,16 @@ def post_deploy_rollback(
         }
         emit_deploy_rollback_stages(store, rid, result)
         return result
+    audit_credentials_used(
+        user_id=uid,
+        run_id=str(rid),
+        action="rollback",
+        tenant_slug=tenant_slug,
+        deploy_target=deploy_target_from_manifest(manifest_from_events(rows))
+        or deploy_target_from_credentials(creds),
+        scopes=credential_scope_labels(creds),
+        repo_root=orch.repo_root,
+    )
     ws = Path(body.workspace_path.strip())
     if not ws.is_absolute():
         ws = (orch.repo_root / ws).resolve()
@@ -369,7 +450,17 @@ def put_deploy_credentials(
             detail=problem("unauthorized", "user identity required"),
         )
     try:
-        return save_deploy_credentials(
+        tenant_slug, setup_bundle = _deploy_policy_context()
+        candidate = {
+            "aws_profile": str(body.aws_profile or "").strip(),
+            "github_repo": str(body.github_repo or "").strip(),
+        }
+        _enforce_credential_scopes(
+            candidate,
+            tenant_slug=tenant_slug,
+            setup_bundle=setup_bundle,
+        )
+        saved = save_deploy_credentials(
             uid,
             aws_profile=body.aws_profile,
             github_repo=body.github_repo,
@@ -377,6 +468,14 @@ def put_deploy_credentials(
             deploy_environment=body.deploy_environment,
             repo_root=orch.repo_root,
         )
+        audit_credentials_updated(
+            user_id=uid,
+            tenant_slug=tenant_slug,
+            scopes=credential_scope_labels(saved),
+            deploy_target=deploy_target_from_credentials(saved),
+            repo_root=orch.repo_root,
+        )
+        return saved
     except ValueError as exc:
         raise HTTPException(
             status_code=422,

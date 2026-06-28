@@ -1,0 +1,7 @@
+version: 1
+tenants:
+  default:
+    allowed_deploy_targets:
+      - aws-ecs
+      - aws-static-site
+      - github-actions
