@@ -13,16 +13,26 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 | POST | `/v1/platform/deploy/rollback` | Guarded `terraform destroy` or restore pre-apply state snapshot (`mode`: `destroy` \| `previous`); requires `deploy.approved` + successful `deploy.apply` |
 | GET | `/v1/platform/deploy/environments` | Allowed deploy targets: `dev`, `staging`, `prod` |
 | GET/PUT | `/v1/platform/deploy/credentials` | Per-user labels: `aws_profile`, `github_repo`, `workflow_path`, `deploy_environment` |
+| POST | `/v1/platform/deploy/ci-poll` | Poll latest GitHub Actions run via `gh` CLI; emits `ci.workflow` timeline stages when configured |
 | GET | `/v1/platform/deploy/github-workflow-template` | Copy-ready `.github/workflows/nimbusware-deploy.yml` |
+
+## Enterprise fleet policy
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET/PUT | `/v1/enterprise/tenants/{ref}/deploy-policy` | Tenant allowlist for deploy targets (`aws-ecs`, `aws-static-site`, `github-actions`) |
+
+Apply and credential save enforce the tenant allowlist when `NIMBUSWARE_SETUP_BUNDLE=enterprise`. Credential updates and deploy apply/rollback append hashed audit rows to `.nimbusware/platform/deploy_audit.jsonl` (no secret material).
 
 ## Storage
 
 - Credential labels: `configs/deploy/users/{user_id}.yaml`
+- Fleet deploy allowlist: `configs/enterprise/fleet_deploy_policies.yaml`
 - Workflow template: `configs/deploy/github_actions_nimbusware.yaml`
 
 ## Maker UI
 
-- **Progress / Review** deploy cockpit — **Run Terraform validate**, **Approve deploy**, **Apply deploy**, **Run smoke test**, **Rollback deploy** (destroy or previous state), CI status from timeline stages
+- **Progress / Review** deploy cockpit — **Run Terraform validate**, **Approve deploy**, **Apply deploy**, **Run smoke test**, **Rollback deploy** (destroy or previous state), CI status from timeline stages; refresh polls GitHub Actions when `github_repo` is configured
 - **Settings → Deploy connections** — sync labels with vault API
 
 Autopilot profiles `deploy_guided` (requires manual approval) and `deploy_hands_off` (level ≥ 9, no `stop_before_deploy_apply`) control whether apply may auto-record approval.

@@ -27,6 +27,8 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped index + canonical sync |
 | Fleet learnings | `GET /v1/enterprise/fleet-learnings/search` — learnings markdown across tenant project workspaces |
 | Fleet commit policy | `GET/PUT /v1/enterprise/tenants/{ref}/commit-policy` — auto-commit and message regex |
+| Fleet deploy policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-policy` — allowed deploy targets per tenant |
+| Deploy credential audit | Hashed events in `.nimbusware/platform/deploy_audit.jsonl` on credential save and deploy apply/rollback |
 | Tenant collab/model policy | Postgres `tenant_policy` namespace per tenant slug |
 | Compliance summary | `GET /v1/enterprise/compliance/summary` — retention, IAM counts, fleet policy coverage |
 | Config propagation | Postgres `LISTEN/NOTIFY` + `config.document.updated` invalidation |
