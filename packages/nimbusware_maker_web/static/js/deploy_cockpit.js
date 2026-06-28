@@ -219,9 +219,20 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   }
 }
 
-export async function refreshDeployCockpit(runId, { scope = "progress" } = {}) {
+export async function refreshDeployCockpit(runId, { scope = "progress", pollCi = false } = {}) {
   if (!runId || !cockpitRoot(scope)) return;
   try {
+    if (pollCi) {
+      try {
+        await apiJson("/platform/deploy/ci-poll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ run_id: runId }),
+        });
+      } catch {
+        /* optional when gh or credentials unavailable */
+      }
+    }
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=150`);
     renderDeployCockpit(deployStateFromTimeline(timeline.events || []), { scope });
   } catch {
@@ -234,6 +245,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
   if (!root) return;
   let ws = workspacePath;
   let defaultEnv = "dev";
+  let githubRepo = "";
   try {
     const catalog = await apiJson("/platform/deploy/environments");
     if (catalog?.default) defaultEnv = String(catalog.default);
@@ -243,6 +255,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
   try {
     const creds = await apiJson("/platform/deploy/credentials");
     if (creds?.deploy_environment) defaultEnv = String(creds.deploy_environment);
+    if (creds?.github_repo) githubRepo = String(creds.github_repo);
   } catch {
     /* optional unsigned */
   }
@@ -260,7 +273,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       /* optional */
     }
   }
-  const refresh = () => refreshDeployCockpit(runId, { scope });
+  const refresh = () => refreshDeployCockpit(runId, { scope, pollCi: Boolean(githubRepo) });
   const envSelect = root.querySelector(".deploy-environment-select");
   if (envSelect && defaultEnv) envSelect.value = defaultEnv;
   const selectedEnv = () => envSelect?.value || defaultEnv;

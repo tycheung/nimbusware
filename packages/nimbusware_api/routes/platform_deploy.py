@@ -41,11 +41,14 @@ from nimbusware_maker.deploy_pipeline_events import (
     emit_deploy_approved,
     emit_deploy_rollback_stages,
     emit_deploy_smoke_stages,
+    emit_ci_workflow_stages,
     emit_terraform_validate_stages,
     live_urls_from_events,
     manifest_from_events,
 )
 from nimbusware_maker.deploy_smoke import run_deploy_smoke
+from nimbusware_maker.github_workflow_poll import poll_github_workflow_run
+from nimbusware_orchestrator.git_outputs import run_branch_name
 from nimbusware_maker.terraform_validate import (
     RollbackMode,
     apply_workspace_terraform,
@@ -91,6 +94,11 @@ class DeployRollbackBody(BaseModel):
     workspace_path: str = Field(min_length=1, max_length=2000)
     mode: RollbackMode = "destroy"
     deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+class DeployCiPollBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    branch: str | None = Field(default=None, max_length=200)
 
 
 def _resolved_deploy_environment(
@@ -383,6 +391,44 @@ def post_deploy_rollback(
             detail=problem("invalid_request", str(exc)),
         ) from exc
     emit_deploy_rollback_stages(store, rid, result)
+    return result
+
+
+@router.post("/platform/deploy/ci-poll")
+def post_deploy_ci_poll(
+    body: DeployCiPollBody,
+    request: Request,
+    orch: OrchDep,
+    store: StoreDep,
+    user: OptionalUserDep,
+) -> dict[str, Any]:
+    try:
+        rid = UUID(body.run_id.strip())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "run_id must be a UUID"),
+        ) from exc
+    rows = store.list_run_events(str(rid))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
+        )
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    github_repo = str(creds.get("github_repo") or "").strip()
+    if not github_repo:
+        result = {"status": "skipped", "detail": "No GitHub repo configured for workflow polling"}
+        return result
+    branch = (body.branch or run_branch_name(rid)).strip()
+    result = poll_github_workflow_run(
+        github_repo=github_repo,
+        workflow_path=str(creds.get("workflow_path") or "").strip(),
+        branch=branch,
+    )
+    if result.get("status") in {"passed", "failed", "running"}:
+        emit_ci_workflow_stages(store, rid, result)
     return result
 
 

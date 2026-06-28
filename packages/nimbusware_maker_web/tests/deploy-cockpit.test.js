@@ -22,14 +22,15 @@ describe("deploy cockpit module", () => {
     expect(deployJs).toContain("/platform/deploy/apply");
     expect(deployJs).toContain("/platform/deploy/smoke");
     expect(deployJs).toContain("/platform/deploy/rollback");
+    expect(deployJs).toContain("/platform/deploy/ci-poll");
   });
 
   it("detects CI pass and plan artifact from timeline", () => {
     const state = deployStateFromTimeline([
       {
         event_type: "stage.passed",
-        payload: { stage_name: "ci.plan" },
-        metadata: { detail: "terraform plan ok", plan_artifact: "plan.tfplan" },
+        payload: { stage_name: "ci.workflow" },
+        metadata: { detail: "Nimbusware CI · completed · success", plan_artifact: "plan.tfplan" },
       },
     ]);
     expect(state.ciStatus).toBe("passed");
