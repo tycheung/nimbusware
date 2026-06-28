@@ -39,7 +39,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [collaborative-chat-threat-model.md](collaborative-chat-threat-model.md) | Collab security model |
 | [conversation-library.md](conversation-library.md) | Folders, groups, tags, ACL |
 | [compute-mesh.md](compute-mesh.md) | Distributed compute nodes |
-| [ide-bridge.md](ide-bridge.md) | MCP IDE bridge |
+| [ide-bridge.md](ide-bridge.md) | MCP IDE bridge + VS Code scope card / `@` routing / deploy links |
 
 ## Operators & enterprise
 

@@ -86,7 +86,9 @@ def test_mesh_overlay_appended_without_dropping_custom_agent() -> None:
             },
         },
     ]
-    set_mesh_binding_context(participant_overrides=None, agent_overlay_prompt="Prefer thin handlers.")
+    set_mesh_binding_context(
+        participant_overrides=None, agent_overlay_prompt="Prefer thin handlers."
+    )
     try:
         prompt = _custom_agent_prompt_from_rows(rows)
     finally:
