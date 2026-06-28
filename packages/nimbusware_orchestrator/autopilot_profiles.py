@@ -25,6 +25,7 @@ CHECKPOINT_CATALOG = (
     "stop_on_gate_fail",
     "stop_before_factory_complete",
     "stop_at_terminal_review",
+    "stop_before_deploy_apply",
 )
 
 

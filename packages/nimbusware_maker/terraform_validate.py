@@ -107,3 +107,76 @@ def validate_workspace_terraform(workspace: Path) -> dict[str, Any]:
         "plan_artifact": str(plan_path.relative_to(ws)) if plan_ok else "",
         "stderr": "" if plan_ok else (plan.stderr or plan.stdout or "")[:2000],
     }
+
+
+def _terraform_root(workspace: Path) -> tuple[Path, list[Path]]:
+    ws = workspace.resolve()
+    tf_files = _terraform_files(ws)
+    if not tf_files:
+        return ws, []
+    root = ws
+    for candidate in {f.parent for f in tf_files}:
+        if (candidate / "main.tf").is_file() or (candidate / "versions.tf").is_file():
+            root = candidate
+            break
+    return root, tf_files
+
+
+def apply_workspace_terraform(workspace: Path) -> dict[str, Any]:
+    root, tf_files = _terraform_root(workspace)
+    if not tf_files:
+        return {
+            "status": "skipped",
+            "detail": "No .tf files in workspace",
+            "terraform_available": shutil.which("terraform") is not None,
+        }
+    terraform = shutil.which("terraform")
+    if terraform is None:
+        return {
+            "status": "failed",
+            "detail": "terraform CLI not found on PATH",
+            "terraform_available": False,
+        }
+    apply = subprocess.run(
+        [terraform, "apply", "-auto-approve", "-input=false", "-no-color"],
+        capture_output=True,
+        text=True,
+        cwd=root,
+        check=False,
+    )
+    ok = apply.returncode == 0
+    live_urls: dict[str, str] = {}
+    if ok:
+        outputs = subprocess.run(
+            [terraform, "output", "-json"],
+            capture_output=True,
+            text=True,
+            cwd=root,
+            check=False,
+        )
+        if outputs.returncode == 0 and outputs.stdout.strip():
+            try:
+                import json
+
+                parsed = json.loads(outputs.stdout)
+                if isinstance(parsed, dict):
+                    for key in ("api_url", "web_url"):
+                        raw = parsed.get(key)
+                        if isinstance(raw, dict) and raw.get("value"):
+                            live_urls[key] = str(raw["value"])
+            except json.JSONDecodeError:
+                pass
+    meta: dict[str, Any] = {}
+    if live_urls:
+        meta["live_urls"] = live_urls
+        if live_urls.get("api_url"):
+            meta["api_url"] = live_urls["api_url"]
+        if live_urls.get("web_url"):
+            meta["web_url"] = live_urls["web_url"]
+    return {
+        "status": "passed" if ok else "failed",
+        "detail": "terraform apply ok" if ok else "terraform apply failed",
+        "terraform_available": True,
+        "stderr": "" if ok else (apply.stderr or apply.stdout or "")[:2000],
+        **meta,
+    }

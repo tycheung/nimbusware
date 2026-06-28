@@ -13,7 +13,9 @@ describe("deploy cockpit module", () => {
   it("exports timeline parser and cockpit test ids", () => {
     expect(deployJs).toContain("data-deploy-scope");
     expect(deployJs).toContain("maker-deploy-approve-");
+    expect(deployJs).toContain("maker-deploy-apply-");
     expect(deployJs).toContain("deploy.approved");
+    expect(deployJs).toContain("/platform/deploy/apply");
   });
 
   it("detects CI pass and plan artifact from timeline", () => {

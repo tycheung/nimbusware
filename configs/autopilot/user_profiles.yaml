@@ -13,9 +13,13 @@ profiles:
 - profile_id: pw-profile
   name: PW Profile
   level: 5
+  checkpoints: []
+- profile_id: deploy_guided
+  name: Deploy guided
+  level: 5
   checkpoints:
-  - stop_at_terminal_review
-  - stop_before_factory_complete
-  - stop_on_dev_env_regression_fail
-  - stop_on_gate_fail
-  - stop_on_ui_regression_fail
+  - stop_before_deploy_apply
+- profile_id: deploy_hands_off
+  name: Deploy hands off
+  level: 9
+  checkpoints: []

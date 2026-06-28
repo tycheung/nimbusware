@@ -7,6 +7,7 @@ export function deployStateFromTimeline(events) {
   let ciDetail = "No CI workflow events yet";
   let planArtifact = "";
   let deployApproved = false;
+  let deployApplied = false;
   let apiUrl = "";
   let webUrl = "";
 
@@ -29,6 +30,10 @@ export function deployStateFromTimeline(events) {
       deployApproved = ev.event_type === "stage.passed";
       continue;
     }
+    if (lower === "deploy.apply") {
+      deployApplied = ev.event_type === "stage.passed";
+      continue;
+    }
     if (!CI_STAGE_PREFIXES.some((p) => lower.startsWith(p))) continue;
     if (ev.event_type === "stage.passed") {
       ciStatus = "passed";
@@ -45,7 +50,7 @@ export function deployStateFromTimeline(events) {
     if (ciStatus !== "not_started") break;
   }
 
-  return { ciStatus, ciDetail, planArtifact, deployApproved, apiUrl, webUrl };
+  return { ciStatus, ciDetail, planArtifact, deployApproved, deployApplied, apiUrl, webUrl };
 }
 
 export function deployCockpitHtml({ scope = "progress" } = {}) {
@@ -62,6 +67,9 @@ export function deployCockpitHtml({ scope = "progress" } = {}) {
         </button>
         <button type="button" class="deploy-approve-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-approve-${scope}" disabled>
           Approve deploy
+        </button>
+        <button type="button" class="deploy-apply-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-apply-${scope}" disabled>
+          Apply deploy
         </button>
         <button type="button" class="deploy-cockpit-refresh" data-deploy-scope="${scope}" data-testid="maker-deploy-refresh-${scope}">Refresh</button>
         <a href="#/settings" data-testid="maker-deploy-settings-link-${scope}">Deploy connections</a>
@@ -80,6 +88,7 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   const planEl = root.querySelector(".deploy-cockpit-plan");
   const urlsEl = root.querySelector(".deploy-cockpit-urls");
   const approveBtn = root.querySelector(".deploy-approve-btn");
+  const applyBtn = root.querySelector(".deploy-apply-btn");
 
   const status = state?.ciStatus || "not_started";
   if (ciEl) {
@@ -135,6 +144,13 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
     approveBtn.title = canApprove
       ? "Record deploy approval for this run"
       : "Requires passing CI plan artifact (configure in Settings → Deploy connections)";
+  }
+  if (applyBtn) {
+    const canApply = Boolean(state?.deployApproved) && !state?.deployApplied;
+    applyBtn.disabled = !canApply;
+    applyBtn.title = canApply
+      ? "Run terraform apply after approval"
+      : "Requires deploy approval and configured credentials";
   }
 }
 
@@ -199,6 +215,27 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         body: JSON.stringify({ run_id: runId }),
       });
       toast("Deploy approval recorded on run timeline", "success");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  root.querySelector(".deploy-apply-btn")?.addEventListener("click", async () => {
+    if (!runId) {
+      toast("No active run for deploy apply", "info");
+      return;
+    }
+    if (!ws) {
+      toast("Workspace path unavailable for this run", "info");
+      return;
+    }
+    try {
+      const result = await apiJson("/platform/deploy/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: runId, workspace_path: ws }),
+      });
+      toast(`Deploy apply: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
       toast(String(e.message || e), "error");
