@@ -145,7 +145,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3035 unit tests in the default job / 3886 collected, ≥75% line coverage; packages LOC baseline **96,077** via `scripts/ci/loc_baseline.json`; module size guards cover orchestrator, API, memory, projections (≤450 lines) and console (≤400); see `tests/README.md`).
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3196 unit tests in the default job / ~4000 collected, ≥75% line coverage; packages LOC baseline **100,564** via `scripts/ci/loc_baseline.json`; module size guards cover orchestrator, API, memory, projections (≤450 lines) and console (≤400); see `tests/README.md`).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).
 
