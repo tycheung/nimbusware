@@ -17,11 +17,15 @@ from nimbusware_maker.deploy_credential_vault import (
 )
 from nimbusware_maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,
+    deploy_apply_passed_from_events,
     deploy_approved_from_events,
     emit_deploy_apply_stages,
     emit_deploy_approved,
+    emit_deploy_smoke_stages,
     emit_terraform_validate_stages,
+    live_urls_from_events,
 )
+from nimbusware_maker.deploy_smoke import run_deploy_smoke
 from nimbusware_maker.terraform_validate import (
     apply_workspace_terraform,
     validate_workspace_terraform,
@@ -48,6 +52,13 @@ class DeployApproveBody(BaseModel):
 class DeployApplyBody(BaseModel):
     run_id: str = Field(min_length=36, max_length=36)
     workspace_path: str = Field(min_length=1, max_length=2000)
+
+
+class DeploySmokeBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    api_url: str | None = Field(default=None, max_length=2000)
+    web_url: str | None = Field(default=None, max_length=2000)
+    use_playwright: bool = False
 
 
 @router.post("/platform/deploy/approve")
@@ -126,6 +137,51 @@ def post_deploy_apply(
             detail=problem("invalid_request", str(exc)),
         ) from exc
     emit_deploy_apply_stages(store, rid, result)
+    if result.get("status") == "passed" and (result.get("api_url") or result.get("web_url")):
+        smoke = run_deploy_smoke(
+            api_url=str(result["api_url"]) if result.get("api_url") else None,
+            web_url=str(result["web_url"]) if result.get("web_url") else None,
+        )
+        emit_deploy_smoke_stages(store, rid, smoke)
+        result["smoke"] = smoke
+    return result
+
+
+@router.post("/platform/deploy/smoke")
+def post_deploy_smoke(
+    body: DeploySmokeBody,
+    store: StoreDep,
+) -> dict[str, Any]:
+    try:
+        rid = UUID(body.run_id.strip())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "run_id must be a UUID"),
+        ) from exc
+    rows = store.list_run_events(str(rid))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
+        )
+    if not deploy_apply_passed_from_events(rows):
+        raise HTTPException(
+            status_code=403,
+            detail=problem(
+                "deploy_apply_required",
+                "Record a successful deploy apply before smoke tests",
+            ),
+        )
+    urls = live_urls_from_events(rows)
+    api_url = (body.api_url or urls.get("api_url") or "").strip() or None
+    web_url = (body.web_url or urls.get("web_url") or "").strip() or None
+    result = run_deploy_smoke(
+        api_url=api_url,
+        web_url=web_url,
+        use_playwright=body.use_playwright,
+    )
+    emit_deploy_smoke_stages(store, rid, result)
     return result
 
 

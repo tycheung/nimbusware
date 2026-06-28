@@ -122,6 +122,110 @@ def autopilot_may_auto_approve_deploy(autopilot_block: dict[str, Any] | None) ->
     return int(autopilot_block.get("level") or 0) >= 9
 
 
+def live_urls_from_events(rows: list[dict[str, Any]]) -> dict[str, str]:
+    api_url = ""
+    web_url = ""
+    for row in reversed(rows):
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            continue
+        if not api_url and meta.get("api_url"):
+            api_url = str(meta["api_url"])
+        if not web_url and meta.get("web_url"):
+            web_url = str(meta["web_url"])
+        urls = meta.get("live_urls")
+        if isinstance(urls, dict):
+            if not api_url and urls.get("api_url"):
+                api_url = str(urls["api_url"])
+            if not web_url and urls.get("web_url"):
+                web_url = str(urls["web_url"])
+            if not api_url and urls.get("api"):
+                api_url = str(urls["api"])
+            if not web_url and urls.get("web"):
+                web_url = str(urls["web"])
+        if api_url and web_url:
+            break
+    out: dict[str, str] = {}
+    if api_url:
+        out["api_url"] = api_url
+    if web_url:
+        out["web_url"] = web_url
+    return out
+
+
+def deploy_apply_passed_from_events(rows: list[dict[str, Any]]) -> bool:
+    for row in reversed(rows):
+        if row.get("event_type") != EventType.STAGE_PASSED.value:
+            continue
+        payload = row.get("payload")
+        if isinstance(payload, dict) and payload.get("stage_name") == "deploy.apply":
+            return True
+    return False
+
+
+def emit_deploy_smoke_stages(
+    store: Any,
+    run_id: UUID | str,
+    result: dict[str, Any],
+) -> None:
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    status = str(result.get("status") or "failed")
+    detail = str(result.get("detail") or "")
+    now = datetime.now(timezone.utc)
+    meta: dict[str, Any] = {"detail": detail, "deploy": {"kind": "smoke"}}
+    for key in ("api_url", "web_url", "checks"):
+        if result.get(key):
+            meta[key] = result[key]
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=now,
+            metadata=meta,
+            payload=StageStartedPayload(stage_name="deploy.smoke", attempt=1),
+        ),
+    )
+    if status == "skipped":
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=now,
+                metadata={**meta, "detail": detail or "smoke skipped"},
+                payload=StagePassedPayload(stage_name="deploy.smoke", duration_ms=0),
+            ),
+        )
+        return
+    if status == "passed":
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=now,
+                metadata=meta,
+                payload=StagePassedPayload(stage_name="deploy.smoke", duration_ms=0),
+            ),
+        )
+        return
+    store.append(
+        StageFailedEvent(
+            event_type=EventType.STAGE_FAILED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=now,
+            metadata=meta,
+            payload=StageFailedPayload(
+                stage_name="deploy.smoke",
+                reason_code="deploy_smoke_failed",
+                message=detail[:500],
+            ),
+        ),
+    )
+
+
 def emit_deploy_apply_stages(
     store: Any,
     run_id: UUID | str,

@@ -445,6 +445,18 @@ buttons:
   label: Approve deploy
   clicked_in: []
   visible_only_in: []
+- test_id: maker-deploy-apply-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Apply deploy
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-smoke-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Run smoke test
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-deploy-refresh-${scope}
   app: maker
   source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js

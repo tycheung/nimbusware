@@ -8,6 +8,7 @@ export function deployStateFromTimeline(events) {
   let planArtifact = "";
   let deployApproved = false;
   let deployApplied = false;
+  let deploySmokePassed = false;
   let apiUrl = "";
   let webUrl = "";
 
@@ -34,6 +35,10 @@ export function deployStateFromTimeline(events) {
       deployApplied = ev.event_type === "stage.passed";
       continue;
     }
+    if (lower === "deploy.smoke") {
+      if (ev.event_type === "stage.passed") deploySmokePassed = true;
+      continue;
+    }
     if (!CI_STAGE_PREFIXES.some((p) => lower.startsWith(p))) continue;
     if (ev.event_type === "stage.passed") {
       ciStatus = "passed";
@@ -50,7 +55,7 @@ export function deployStateFromTimeline(events) {
     if (ciStatus !== "not_started") break;
   }
 
-  return { ciStatus, ciDetail, planArtifact, deployApproved, deployApplied, apiUrl, webUrl };
+  return { ciStatus, ciDetail, planArtifact, deployApproved, deployApplied, deploySmokePassed, apiUrl, webUrl };
 }
 
 export function deployCockpitHtml({ scope = "progress" } = {}) {
@@ -71,6 +76,9 @@ export function deployCockpitHtml({ scope = "progress" } = {}) {
         <button type="button" class="deploy-apply-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-apply-${scope}" disabled>
           Apply deploy
         </button>
+        <button type="button" class="deploy-smoke-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-smoke-${scope}" disabled>
+          Run smoke test
+        </button>
         <button type="button" class="deploy-cockpit-refresh" data-deploy-scope="${scope}" data-testid="maker-deploy-refresh-${scope}">Refresh</button>
         <a href="#/settings" data-testid="maker-deploy-settings-link-${scope}">Deploy connections</a>
       </div>
@@ -89,6 +97,7 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   const urlsEl = root.querySelector(".deploy-cockpit-urls");
   const approveBtn = root.querySelector(".deploy-approve-btn");
   const applyBtn = root.querySelector(".deploy-apply-btn");
+  const smokeBtn = root.querySelector(".deploy-smoke-btn");
 
   const status = state?.ciStatus || "not_started";
   if (ciEl) {
@@ -151,6 +160,14 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
     applyBtn.title = canApply
       ? "Run terraform apply after approval"
       : "Requires deploy approval and configured credentials";
+  }
+  if (smokeBtn) {
+    const hasUrls = Boolean(state?.apiUrl || state?.webUrl);
+    const canSmoke = Boolean(state?.deployApplied) && hasUrls && !state?.deploySmokePassed;
+    smokeBtn.disabled = !canSmoke;
+    smokeBtn.title = canSmoke
+      ? "HTTP checks against live deploy URLs"
+      : "Requires successful apply with live URLs";
   }
 }
 
@@ -236,6 +253,23 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         body: JSON.stringify({ run_id: runId, workspace_path: ws }),
       });
       toast(`Deploy apply: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  root.querySelector(".deploy-smoke-btn")?.addEventListener("click", async () => {
+    if (!runId) {
+      toast("No active run for deploy smoke", "info");
+      return;
+    }
+    try {
+      const result = await apiJson("/platform/deploy/smoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: runId }),
+      });
+      toast(`Deploy smoke: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
       toast(String(e.message || e), "error");

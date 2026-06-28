@@ -14,8 +14,10 @@ describe("deploy cockpit module", () => {
     expect(deployJs).toContain("data-deploy-scope");
     expect(deployJs).toContain("maker-deploy-approve-");
     expect(deployJs).toContain("maker-deploy-apply-");
+    expect(deployJs).toContain("maker-deploy-smoke-");
     expect(deployJs).toContain("deploy.approved");
     expect(deployJs).toContain("/platform/deploy/apply");
+    expect(deployJs).toContain("/platform/deploy/smoke");
   });
 
   it("detects CI pass and plan artifact from timeline", () => {
