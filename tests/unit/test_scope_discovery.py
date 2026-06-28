@@ -64,6 +64,44 @@ def test_discovery_gate_allows_recommend_for_me() -> None:
     assert ok is True
 
 
+def test_discovery_gate_blocks_enterprise_required_fields(monkeypatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
+    ok, detail = discovery_complete_for_start(
+        {
+            "business_prompt": "Build a todo app",
+            "scope_discovery": {
+                "discovery_complete": True,
+                "answers": {"client_form": "Web app"},
+            },
+        },
+        workflow_profile="campaign_fullstack",
+        tenant_slug="regulated",
+    )
+    assert ok is False
+    assert detail
+    assert "hosting" in detail
+
+
+def test_discovery_gate_allows_enterprise_when_required_fields_answered(monkeypatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
+    ok, _ = discovery_complete_for_start(
+        {
+            "business_prompt": "Build a todo app",
+            "scope_discovery": {
+                "discovery_complete": True,
+                "answers": {
+                    "client_form": "Web app",
+                    "hosting": "AWS",
+                    "data_residency": "US only",
+                },
+            },
+        },
+        workflow_profile="campaign_fullstack",
+        tenant_slug="regulated",
+    )
+    assert ok is True
+
+
 def test_discovery_gate_applies_to_safe_coding_campaign_fullstack() -> None:
     ok, detail = discovery_complete_for_start(
         {"business_prompt": "Build a todo app"},

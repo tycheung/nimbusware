@@ -33,4 +33,13 @@ def fleet_governance_summary(
             tenant_slug,
             setup_bundle=bundle,
         ),
+        "discovery_required_fields": _discovery_required_fields(tenant_slug, bundle),
     }
+
+
+def _discovery_required_fields(tenant_slug: str | None, bundle: str) -> list[str]:
+    if bundle != "enterprise":
+        return []
+    from nimbusware_orchestrator.fleet_discovery_policy import tenant_discovery_policy
+
+    return list(tenant_discovery_policy(tenant_slug).discovery_required_fields)

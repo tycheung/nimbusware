@@ -39,6 +39,16 @@ export async function mountEnterpriseGovernancePanel(root) {
       allow.textContent = `Allowed deploy targets: ${targets.join(", ")}`;
       card.appendChild(allow);
     }
+    const required = Array.isArray(gov.discovery_required_fields)
+      ? gov.discovery_required_fields
+      : [];
+    if (required.length) {
+      const req = document.createElement("p");
+      req.className = "muted";
+      req.dataset.testid = "maker-home-discovery-required";
+      req.textContent = `Required discovery fields: ${required.join(", ")}`;
+      card.appendChild(req);
+    }
     mount.appendChild(card);
   } catch {
     mount.replaceChildren();

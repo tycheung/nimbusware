@@ -1,0 +1,8 @@
+version: 1
+tenants:
+  default:
+    discovery_required_fields: []
+  regulated:
+    discovery_required_fields:
+      - hosting
+      - data_residency

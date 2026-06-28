@@ -76,7 +76,13 @@ def scope_analyze(business_prompt: str) -> dict[str, Any]:
     }
 
 
-def scope_discover(business_prompt: str) -> dict[str, Any]:
+def scope_discover(
+    business_prompt: str,
+    *,
+    discovery_required_fields: tuple[str, ...] | list[str] | None = None,
+) -> dict[str, Any]:
+    from nimbusware_maker.discovery_required_fields import questions_for_required_fields
+
     analysis = scope_analyze(business_prompt)
     if analysis["scope_narrowed"]:
         return {
@@ -85,10 +91,17 @@ def scope_discover(business_prompt: str) -> dict[str, Any]:
             "questions_emitted": [],
             "answers": {},
         }
+    questions = [dict(q) for q in SCOPE_QUESTIONS]
+    extra = questions_for_required_fields(discovery_required_fields or ())
+    seen = {q["id"] for q in questions}
+    for item in extra:
+        if item["id"] not in seen:
+            questions.append(item)
+            seen.add(item["id"])
     return {
         **analysis,
         "discovery_complete": False,
-        "questions_emitted": [dict(q) for q in SCOPE_QUESTIONS],
+        "questions_emitted": questions,
         "answers": {},
     }
 
@@ -197,20 +210,45 @@ def discovery_complete_for_start(
     requirements: dict[str, Any] | None,
     *,
     workflow_profile: str,
+    tenant_slug: str | None = None,
+    setup_bundle: str | None = None,
 ) -> tuple[bool, str | None]:
     if workflow_profile not in FULLSTACK_CAMPAIGN_PROFILES:
         return True, None
     if not isinstance(requirements, dict):
         return False, "requirements required for full-stack campaign"
     if requirements.get("recommend_for_me"):
+        scope_ok = True
+    else:
+        scope = requirements.get("scope_discovery")
+        if isinstance(scope, dict) and scope.get("discovery_complete"):
+            scope_ok = True
+        else:
+            prompt = str(requirements.get("business_prompt") or "")
+            scope_ok = scope_narrowed_to_backend_only(prompt)
+    if not scope_ok:
+        return False, "Complete scope discovery or choose Recommend for me before starting"
+
+    from nimbusware_env.env_flags import env_str
+    from nimbusware_maker.discovery_required_fields import (
+        discovery_answers_from_requirements,
+        missing_required_discovery_fields,
+    )
+
+    bundle = (setup_bundle or env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default").lower()
+    if bundle != "enterprise":
         return True, None
-    scope = requirements.get("scope_discovery")
-    if isinstance(scope, dict) and scope.get("discovery_complete"):
+    from nimbusware_orchestrator.fleet_discovery_policy import tenant_discovery_policy
+
+    policy = tenant_discovery_policy(tenant_slug)
+    if not policy.discovery_required_fields:
         return True, None
-    prompt = str(requirements.get("business_prompt") or "")
-    if scope_narrowed_to_backend_only(prompt):
-        return True, None
-    return False, "Complete scope discovery or choose Recommend for me before starting"
+    answers = discovery_answers_from_requirements(requirements)
+    missing = missing_required_discovery_fields(answers, policy.discovery_required_fields)
+    if missing:
+        joined = ", ".join(missing)
+        return False, f"Answer required discovery fields before starting: {joined}"
+    return True, None
 
 
 def scope_confirm(state: dict[str, Any]) -> dict[str, Any]:

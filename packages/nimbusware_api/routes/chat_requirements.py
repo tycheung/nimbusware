@@ -37,10 +37,20 @@ def enforce_discovery_gate(
     requirements: dict[str, Any] | None,
     *,
     workflow_profile: str,
+    tenant_slug: str | None = None,
+    setup_bundle: str | None = None,
 ) -> None:
+    from nimbusware_env.env_flags import env_str
+    from nimbusware_iam.context import get_auth_context
+
+    ctx = get_auth_context()
+    slug = tenant_slug or (ctx.tenant_slug if ctx is not None else None)
+    bundle = setup_bundle or env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     ok, detail = discovery_complete_for_start(
         requirements,
         workflow_profile=workflow_profile,
+        tenant_slug=slug,
+        setup_bundle=bundle,
     )
     if ok:
         return
