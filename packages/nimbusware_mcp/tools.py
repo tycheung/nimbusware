@@ -335,6 +335,34 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "required": ["run_id", "agent_role", "provider_id", "model_id"],
         },
     },
+    {
+        "name": "nimbusware_set_discipline",
+        "description": "Set default collab discipline hat (pm, architect, frontend, backend, qa, devops).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "discipline": {
+                    "type": "string",
+                    "description": "Discipline id, or empty string to clear.",
+                },
+            },
+            "required": ["discipline"],
+        },
+    },
+    {
+        "name": "nimbusware_update_agent_overlay",
+        "description": "Save per-discipline agent prompt overlay for the current user.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "discipline": {"type": "string"},
+                "prompt_extension": {"type": "string"},
+                "custom_agent_id": {"type": "string"},
+                "clear": {"type": "boolean"},
+            },
+            "required": ["discipline"],
+        },
+    },
 ]
 
 
@@ -344,6 +372,10 @@ def _text_result(payload: Any) -> dict[str, Any]:
 
 
 def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    if name == "nimbusware_set_discipline":
+        return _call_set_discipline(arguments)
+    if name == "nimbusware_update_agent_overlay":
+        return _call_update_agent_overlay(arguments)
     if name == "nimbusware_classify_intent":
         return _call_classify_tool(arguments)
     if name in ("nimbusware_patch", "nimbusware_patch_from_selection"):
@@ -500,6 +532,35 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             ),
         )
     raise ValueError(f"unknown tool: {name}")
+
+
+def _call_set_discipline(arguments: dict[str, Any]) -> dict[str, Any]:
+    discipline = str(arguments.get("discipline") or "").strip()
+    body: dict[str, Any] = {"default_discipline": discipline or None}
+    resp = put_response("/users/me/discipline-profile", body)
+    payload = resp.json()
+    return _text_result(payload if isinstance(payload, dict) else {"data": payload})
+
+
+def _call_update_agent_overlay(arguments: dict[str, Any]) -> dict[str, Any]:
+    discipline = str(arguments.get("discipline") or "").strip()
+    if not discipline:
+        raise ValueError("discipline is required")
+    if arguments.get("clear"):
+        body = {"prompt_extension": None, "custom_agent_id": None}
+    else:
+        body = {}
+        if "prompt_extension" in arguments:
+            ext = str(arguments.get("prompt_extension") or "").strip()
+            body["prompt_extension"] = ext or None
+        if "custom_agent_id" in arguments:
+            agent_id = str(arguments.get("custom_agent_id") or "").strip()
+            body["custom_agent_id"] = agent_id or None
+        if not body:
+            raise ValueError("prompt_extension, custom_agent_id, or clear is required")
+    resp = put_response(f"/users/me/agent-overlays/{discipline}", body)
+    payload = resp.json()
+    return _text_result(payload if isinstance(payload, dict) else {"data": payload})
 
 
 def _call_classify_tool(arguments: dict[str, Any]) -> dict[str, Any]:

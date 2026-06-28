@@ -40,6 +40,8 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_replay_from",
         "nimbusware_launch_eval",
         "nimbusware_swap_role_model",
+        "nimbusware_set_discipline",
+        "nimbusware_update_agent_overlay",
     }
 
 
@@ -236,3 +238,52 @@ def test_nimbusware_chat_select_branch(mock_put: Any) -> None:
 def test_unknown_tool_raises() -> None:
     with pytest.raises(ValueError, match="unknown tool"):
         call_tool("nope", {"run_id": "x"})
+
+
+@patch("nimbusware_mcp.tools.put_response")
+def test_nimbusware_set_discipline(mock_put: Any) -> None:
+    mock_resp = mock_put.return_value
+    mock_resp.json.return_value = {"user_id": "u1", "default_discipline": "backend"}
+    out = call_tool("nimbusware_set_discipline", {"discipline": "backend"})
+    mock_put.assert_called_once_with(
+        "/users/me/discipline-profile",
+        {"default_discipline": "backend"},
+    )
+    assert "backend" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.put_response")
+def test_nimbusware_set_discipline_clear(mock_put: Any) -> None:
+    mock_resp = mock_put.return_value
+    mock_resp.json.return_value = {"user_id": "u1", "default_discipline": None}
+    call_tool("nimbusware_set_discipline", {"discipline": ""})
+    mock_put.assert_called_once_with("/users/me/discipline-profile", {"default_discipline": None})
+
+
+@patch("nimbusware_mcp.tools.put_response")
+def test_nimbusware_update_agent_overlay(mock_put: Any) -> None:
+    mock_resp = mock_put.return_value
+    mock_resp.json.return_value = {
+        "user_id": "u1",
+        "overlays": {"backend": {"prompt_extension": "thin handlers", "version": 1}},
+    }
+    out = call_tool(
+        "nimbusware_update_agent_overlay",
+        {"discipline": "backend", "prompt_extension": "thin handlers"},
+    )
+    mock_put.assert_called_once_with(
+        "/users/me/agent-overlays/backend",
+        {"prompt_extension": "thin handlers"},
+    )
+    assert "thin handlers" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.put_response")
+def test_nimbusware_update_agent_overlay_clear(mock_put: Any) -> None:
+    mock_resp = mock_put.return_value
+    mock_resp.json.return_value = {"user_id": "u1", "overlays": {}}
+    call_tool("nimbusware_update_agent_overlay", {"discipline": "backend", "clear": True})
+    mock_put.assert_called_once_with(
+        "/users/me/agent-overlays/backend",
+        {"prompt_extension": None, "custom_agent_id": None},
+    )
