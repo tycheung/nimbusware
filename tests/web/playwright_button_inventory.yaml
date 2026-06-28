@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 163
+  total_buttons: 164
   clicked: 38
   visible_only: 9
-  unwired: 116
-  click_ratio: 0.2331
+  unwired: 117
+  click_ratio: 0.2317
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -606,6 +606,12 @@ buttons:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-home-deploy-allowlist
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-home-discovery-required
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
   label: (dynamic)

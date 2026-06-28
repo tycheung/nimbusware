@@ -11,8 +11,8 @@ from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from nimbusware_orchestrator.fleet_discovery_policy import (
-    FleetDiscoveryPolicy,
     VALID_DISCOVERY_FIELD_IDS,
+    FleetDiscoveryPolicy,
     load_fleet_discovery_policies,
     save_fleet_discovery_policies,
     tenant_discovery_policy,

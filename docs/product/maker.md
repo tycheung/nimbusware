@@ -60,7 +60,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
 - **Completion cockpit** — plain-language terminal banner when campaigns finish; auto **launch check** on terminal runs; per-surface launch summary chips
 - **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run
-- **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery, default surfaces, allowed deploy targets, and enforcement depth clamps for enterprise bundles
+- **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery fields, default surfaces, allowed deploy targets, and enforcement depth clamps for enterprise bundles; tenant admins edit discovery/deploy policy via `GET/PUT /v1/enterprise/tenants/{ref}/discovery-policy` and deploy-policy
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled
 

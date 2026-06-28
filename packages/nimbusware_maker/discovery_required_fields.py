@@ -33,7 +33,9 @@ def missing_required_discovery_fields(
     return missing
 
 
-def questions_for_required_fields(required_fields: tuple[str, ...] | list[str]) -> list[dict[str, str]]:
+def questions_for_required_fields(
+    required_fields: tuple[str, ...] | list[str],
+) -> list[dict[str, str]]:
     from nimbusware_maker.scope_discovery import SCOPE_QUESTIONS
 
     known = {q["id"]: q["question"] for q in SCOPE_QUESTIONS}
