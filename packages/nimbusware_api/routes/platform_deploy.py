@@ -19,15 +19,19 @@ from nimbusware_maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,
     deploy_apply_passed_from_events,
     deploy_approved_from_events,
+    deploy_rollback_passed_from_events,
     emit_deploy_apply_stages,
     emit_deploy_approved,
+    emit_deploy_rollback_stages,
     emit_deploy_smoke_stages,
     emit_terraform_validate_stages,
     live_urls_from_events,
 )
 from nimbusware_maker.deploy_smoke import run_deploy_smoke
 from nimbusware_maker.terraform_validate import (
+    RollbackMode,
     apply_workspace_terraform,
+    rollback_workspace_terraform,
     validate_workspace_terraform,
 )
 
@@ -59,6 +63,12 @@ class DeploySmokeBody(BaseModel):
     api_url: str | None = Field(default=None, max_length=2000)
     web_url: str | None = Field(default=None, max_length=2000)
     use_playwright: bool = False
+
+
+class DeployRollbackBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    workspace_path: str = Field(min_length=1, max_length=2000)
+    mode: RollbackMode = "destroy"
 
 
 @router.post("/platform/deploy/approve")
@@ -182,6 +192,69 @@ def post_deploy_smoke(
         use_playwright=body.use_playwright,
     )
     emit_deploy_smoke_stages(store, rid, result)
+    return result
+
+
+@router.post("/platform/deploy/rollback")
+def post_deploy_rollback(
+    body: DeployRollbackBody,
+    request: Request,
+    orch: OrchDep,
+    store: StoreDep,
+    user: OptionalUserDep,
+) -> dict[str, Any]:
+    try:
+        rid = UUID(body.run_id.strip())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "run_id must be a UUID"),
+        ) from exc
+    rows = store.list_run_events(str(rid))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(rid)}),
+        )
+    if not deploy_apply_passed_from_events(rows):
+        raise HTTPException(
+            status_code=403,
+            detail=problem(
+                "deploy_apply_required",
+                "Record a successful deploy apply before rollback",
+            ),
+        )
+    if deploy_rollback_passed_from_events(rows):
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_rollback_already_recorded", "Rollback already completed for this run"),
+        )
+    if not deploy_approved_from_events(rows):
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_approval_required", "Record deploy approval before rollback"),
+        )
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    creds = load_deploy_credentials(uid, repo_root=orch.repo_root) if uid else {}
+    if not creds.get("aws_profile") and not creds.get("github_repo"):
+        result = {
+            "status": "skipped",
+            "detail": "No deploy credentials configured — plan-only lane",
+            "rollback_mode": body.mode,
+        }
+        emit_deploy_rollback_stages(store, rid, result)
+        return result
+    ws = Path(body.workspace_path.strip())
+    if not ws.is_absolute():
+        ws = (orch.repo_root / ws).resolve()
+    try:
+        result = rollback_workspace_terraform(ws, mode=body.mode)
+    except OSError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+    emit_deploy_rollback_stages(store, rid, result)
     return result
 
 

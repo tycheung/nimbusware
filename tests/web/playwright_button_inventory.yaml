@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 162
+  total_buttons: 163
   clicked: 38
   visible_only: 9
-  unwired: 115
-  click_ratio: 0.2346
+  unwired: 116
+  click_ratio: 0.2331
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -456,6 +456,12 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
   label: Refresh
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-deploy-rollback-${scope}
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  label: Rollback deploy
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-smoke-${scope}

@@ -9,6 +9,7 @@ export function deployStateFromTimeline(events) {
   let deployApproved = false;
   let deployApplied = false;
   let deploySmokePassed = false;
+  let deployRolledBack = false;
   let apiUrl = "";
   let webUrl = "";
 
@@ -39,6 +40,10 @@ export function deployStateFromTimeline(events) {
       if (ev.event_type === "stage.passed") deploySmokePassed = true;
       continue;
     }
+    if (lower === "deploy.rollback") {
+      if (ev.event_type === "stage.passed") deployRolledBack = true;
+      continue;
+    }
     if (!CI_STAGE_PREFIXES.some((p) => lower.startsWith(p))) continue;
     if (ev.event_type === "stage.passed") {
       ciStatus = "passed";
@@ -55,7 +60,17 @@ export function deployStateFromTimeline(events) {
     if (ciStatus !== "not_started") break;
   }
 
-  return { ciStatus, ciDetail, planArtifact, deployApproved, deployApplied, deploySmokePassed, apiUrl, webUrl };
+  return {
+    ciStatus,
+    ciDetail,
+    planArtifact,
+    deployApproved,
+    deployApplied,
+    deploySmokePassed,
+    deployRolledBack,
+    apiUrl,
+    webUrl,
+  };
 }
 
 export function deployCockpitHtml({ scope = "progress" } = {}) {
@@ -79,6 +94,9 @@ export function deployCockpitHtml({ scope = "progress" } = {}) {
         <button type="button" class="deploy-smoke-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-smoke-${scope}" disabled>
           Run smoke test
         </button>
+        <button type="button" class="deploy-rollback-btn" data-deploy-scope="${scope}" data-testid="maker-deploy-rollback-${scope}" disabled>
+          Rollback deploy
+        </button>
         <button type="button" class="deploy-cockpit-refresh" data-deploy-scope="${scope}" data-testid="maker-deploy-refresh-${scope}">Refresh</button>
         <a href="#/settings" data-testid="maker-deploy-settings-link-${scope}">Deploy connections</a>
       </div>
@@ -98,6 +116,7 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
   const approveBtn = root.querySelector(".deploy-approve-btn");
   const applyBtn = root.querySelector(".deploy-apply-btn");
   const smokeBtn = root.querySelector(".deploy-smoke-btn");
+  const rollbackBtn = root.querySelector(".deploy-rollback-btn");
 
   const status = state?.ciStatus || "not_started";
   if (ciEl) {
@@ -168,6 +187,13 @@ export function renderDeployCockpit(state, { scope = "progress" } = {}) {
     smokeBtn.title = canSmoke
       ? "HTTP checks against live deploy URLs"
       : "Requires successful apply with live URLs";
+  }
+  if (rollbackBtn) {
+    const canRollback = Boolean(state?.deployApplied) && !state?.deployRolledBack;
+    rollbackBtn.disabled = !canRollback;
+    rollbackBtn.title = canRollback
+      ? "Destroy deployed infrastructure or restore pre-apply state"
+      : "Requires successful apply and no prior rollback";
   }
 }
 
@@ -270,6 +296,27 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         body: JSON.stringify({ run_id: runId }),
       });
       toast(`Deploy smoke: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  root.querySelector(".deploy-rollback-btn")?.addEventListener("click", async () => {
+    if (!runId) {
+      toast("No active run for deploy rollback", "info");
+      return;
+    }
+    if (!ws) {
+      toast("Workspace path unavailable for this run", "info");
+      return;
+    }
+    try {
+      const result = await apiJson("/platform/deploy/rollback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: runId, workspace_path: ws, mode: "destroy" }),
+      });
+      toast(`Deploy rollback: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
       toast(String(e.message || e), "error");

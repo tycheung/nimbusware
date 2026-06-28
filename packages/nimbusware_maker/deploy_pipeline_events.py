@@ -163,6 +163,80 @@ def deploy_apply_passed_from_events(rows: list[dict[str, Any]]) -> bool:
     return False
 
 
+def deploy_rollback_passed_from_events(rows: list[dict[str, Any]]) -> bool:
+    for row in reversed(rows):
+        if row.get("event_type") != EventType.STAGE_PASSED.value:
+            continue
+        payload = row.get("payload")
+        if isinstance(payload, dict) and payload.get("stage_name") == "deploy.rollback":
+            return True
+    return False
+
+
+def emit_deploy_rollback_stages(
+    store: Any,
+    run_id: UUID | str,
+    result: dict[str, Any],
+) -> None:
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    status = str(result.get("status") or "failed")
+    detail = str(result.get("detail") or "")
+    now = datetime.now(timezone.utc)
+    meta: dict[str, Any] = {
+        "detail": detail,
+        "deploy": {"kind": "terraform_rollback"},
+        "rollback_mode": result.get("rollback_mode"),
+    }
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=now,
+            metadata=meta,
+            payload=StageStartedPayload(stage_name="deploy.rollback", attempt=1),
+        ),
+    )
+    if status == "skipped":
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=now,
+                metadata={**meta, "detail": detail or "rollback skipped"},
+                payload=StagePassedPayload(stage_name="deploy.rollback", duration_ms=0),
+            ),
+        )
+        return
+    if status == "passed":
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=now,
+                metadata=meta,
+                payload=StagePassedPayload(stage_name="deploy.rollback", duration_ms=0),
+            ),
+        )
+        return
+    store.append(
+        StageFailedEvent(
+            event_type=EventType.STAGE_FAILED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=now,
+            metadata={**meta, "stderr": result.get("stderr", "")},
+            payload=StageFailedPayload(
+                stage_name="deploy.rollback",
+                reason_code="deploy_rollback_failed",
+                message=detail[:500],
+            ),
+        ),
+    )
+
+
 def emit_deploy_smoke_stages(
     store: Any,
     run_id: UUID | str,
