@@ -98,7 +98,16 @@ Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies p
 
 ## Status bar extension (optional add-on)
 
-[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**. It complements MCP; it does **not** replace MCP tools for patch/classify/interject flows.
+[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes:
+
+| Command | Behavior |
+|---------|----------|
+| **Open Maker Progress** | Browser deep link to Progress theater |
+| **Show Scope Card** | `POST /v1/chat/scope/recommend` from editor selection → manifest approval webview (fo2312 parity) |
+| **Preview @ Discipline Routes** | Local `@frontend` / `@qa` / alias parsing; optional `nimbusware.soloDiscipline` hat (fo2316 parity) |
+| **Open Deploy Links** | API/web URLs from run timeline + deploy cockpit link (fo2306) |
+
+It complements MCP; it does **not** replace MCP tools for patch/classify/interject flows.
 
 ### Install from source
 

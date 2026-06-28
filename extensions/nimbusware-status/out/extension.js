@@ -36,9 +36,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+const deploy_links_1 = require("./deploy_links");
+const discipline_routes_1 = require("./discipline_routes");
+const scope_card_1 = require("./scope_card");
 let pollTimer;
-async function fetchRunStatus(apiBase, runId) {
-    const url = `${apiBase.replace(/\/$/, "")}/runs/${runId}`;
+function apiBase() {
+    return String(vscode.workspace.getConfiguration("nimbusware").get("apiBase") || "http://127.0.0.1:8765/v1");
+}
+function activeRunId() {
+    return String(vscode.workspace.getConfiguration("nimbusware").get("activeRunId") || "").trim();
+}
+function soloHat() {
+    return String(vscode.workspace.getConfiguration("nimbusware").get("soloDiscipline") || "").trim();
+}
+async function fetchRunStatus(apiBaseUrl, runId) {
+    const url = `${apiBaseUrl.replace(/\/$/, "")}/runs/${runId}`;
     const resp = await fetch(url);
     if (!resp.ok) {
         return `run ${runId.slice(0, 8)}… (HTTP ${resp.status})`;
@@ -48,21 +60,41 @@ async function fetchRunStatus(apiBase, runId) {
     const gate = body.gate_summary ? ` · ${body.gate_summary}` : "";
     return `Nimbusware ${runId.slice(0, 8)}… ${status}${gate}`;
 }
+async function fetchRunTimeline(apiBaseUrl, runId) {
+    const url = `${apiBaseUrl.replace(/\/$/, "")}/runs/${runId}/timeline`;
+    const resp = await fetch(url);
+    if (!resp.ok) {
+        throw new Error(`timeline HTTP ${resp.status}`);
+    }
+    const body = (await resp.json());
+    return body.events || [];
+}
+async function promptTextFromEditor() {
+    const editor = vscode.window.activeTextEditor;
+    const selected = editor?.document.getText(editor.selection).trim();
+    if (selected) {
+        return selected;
+    }
+    const input = await vscode.window.showInputBox({
+        prompt: "Enter a business prompt or message with @discipline mentions",
+        placeHolder: "Build a todo app with API and web UI",
+    });
+    return input?.trim() || undefined;
+}
 function activate(context) {
     const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 90);
     item.command = "nimbusware.openMakerProgress";
     context.subscriptions.push(item);
     const refresh = async () => {
-        const cfg = vscode.workspace.getConfiguration("nimbusware");
-        const runId = String(cfg.get("activeRunId") || "").trim();
-        const apiBase = String(cfg.get("apiBase") || "http://127.0.0.1:8765/v1");
+        const runId = activeRunId();
+        const base = apiBase();
         if (!runId) {
             item.hide();
             return;
         }
         try {
-            item.text = await fetchRunStatus(apiBase, runId);
-            item.tooltip = "Open Maker Progress";
+            item.text = await fetchRunStatus(base, runId);
+            item.tooltip = "Open Maker Progress (click)";
             item.show();
         }
         catch {
@@ -71,11 +103,78 @@ function activate(context) {
         }
     };
     context.subscriptions.push(vscode.commands.registerCommand("nimbusware.openMakerProgress", () => {
-        const cfg = vscode.workspace.getConfiguration("nimbusware");
-        const runId = String(cfg.get("activeRunId") || "").trim();
-        const base = String(cfg.get("apiBase") || "http://127.0.0.1:8765/v1").replace(/\/v1$/, "");
+        const runId = activeRunId();
+        const base = apiBase().replace(/\/v1$/, "");
         const url = runId ? `${base}/v1/maker/app/#/progress?run_id=${runId}` : `${base}/v1/maker/app/`;
         vscode.env.openExternal(vscode.Uri.parse(url));
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("nimbusware.showScopeCard", async () => {
+        const text = await promptTextFromEditor();
+        if (!text) {
+            return;
+        }
+        try {
+            const scope = await (0, scope_card_1.fetchScopeRecommend)(apiBase(), text);
+            await (0, scope_card_1.showScopeCard)(scope);
+        }
+        catch (err) {
+            void vscode.window.showErrorMessage(`Scope card failed: ${String(err)}`);
+        }
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("nimbusware.previewDisciplineRoutes", async () => {
+        const text = await promptTextFromEditor();
+        if (!text) {
+            return;
+        }
+        const routes = (0, discipline_routes_1.disciplineRoutes)(text, soloHat() || undefined);
+        if (!routes.length) {
+            void vscode.window.showInformationMessage("No @discipline mentions and no solo hat configured.");
+            return;
+        }
+        const lines = routes.map((r) => `${r.discipline} → ${r.taxonomy_key} (${r.source})`);
+        const pick = await vscode.window.showQuickPick(lines, {
+            title: "Discipline routes (parity with Maker @ routing)",
+            canPickMany: true,
+        });
+        if (pick?.length) {
+            void vscode.window.showInformationMessage(pick.join("; "));
+        }
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand("nimbusware.openDeployLinks", async () => {
+        const runId = activeRunId();
+        if (!runId) {
+            void vscode.window.showWarningMessage("Set nimbusware.activeRunId to open deploy links.");
+            return;
+        }
+        try {
+            const events = await fetchRunTimeline(apiBase(), runId);
+            const links = (0, deploy_links_1.deployLinksFromTimeline)(events);
+            const choices = [];
+            if (links.apiUrl)
+                choices.push(`API: ${links.apiUrl}`);
+            if (links.webUrl)
+                choices.push(`Web: ${links.webUrl}`);
+            choices.push(`Open Maker deploy cockpit`);
+            const picked = await vscode.window.showQuickPick(choices, {
+                title: `Deploy (${links.ciStatus}) — ${links.ciDetail}`,
+            });
+            if (!picked) {
+                return;
+            }
+            if (picked.startsWith("API:")) {
+                vscode.env.openExternal(vscode.Uri.parse(links.apiUrl));
+            }
+            else if (picked.startsWith("Web:")) {
+                vscode.env.openExternal(vscode.Uri.parse(links.webUrl));
+            }
+            else {
+                const base = apiBase().replace(/\/v1$/, "");
+                vscode.env.openExternal(vscode.Uri.parse(`${base}/v1/maker/app/#/progress?run_id=${runId}`));
+            }
+        }
+        catch (err) {
+            void vscode.window.showErrorMessage(`Deploy links failed: ${String(err)}`);
+        }
     }));
     void refresh();
     pollTimer = setInterval(() => void refresh(), 15000);

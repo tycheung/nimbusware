@@ -15,9 +15,14 @@ def test_nimbusware_status_extension_manifest() -> None:
     assert "nimbusware.openMakerProgress" in {
         c["command"] for c in data.get("contributes", {}).get("commands", [])
     }
+    commands = {c["command"] for c in data.get("contributes", {}).get("commands", [])}
+    assert "nimbusware.showScopeCard" in commands
+    assert "nimbusware.previewDisciplineRoutes" in commands
+    assert "nimbusware.openDeployLinks" in commands
     props = data.get("contributes", {}).get("configuration", {}).get("properties", {})
     assert "nimbusware.activeRunId" in props
     assert "nimbusware.apiBase" in props
+    assert "nimbusware.soloDiscipline" in props
     scripts = data.get("scripts", {})
     assert "package" in scripts
     assert "publish:marketplace" in scripts

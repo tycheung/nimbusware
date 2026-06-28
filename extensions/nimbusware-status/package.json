@@ -1,7 +1,7 @@
 {
   "name": "nimbusware-status",
   "displayName": "Nimbusware Run Status",
-  "description": "Read-only status bar chip for active Nimbusware runs",
+  "description": "Read-only status bar, scope card, @ discipline routing, and deploy links for Nimbusware runs",
   "version": "0.1.0",
   "publisher": "nimbusware",
   "license": "GPL-3.0-or-later",
@@ -25,6 +25,18 @@
       {
         "command": "nimbusware.openMakerProgress",
         "title": "Nimbusware: Open Maker Progress"
+      },
+      {
+        "command": "nimbusware.showScopeCard",
+        "title": "Nimbusware: Show Scope Card"
+      },
+      {
+        "command": "nimbusware.previewDisciplineRoutes",
+        "title": "Nimbusware: Preview @ Discipline Routes"
+      },
+      {
+        "command": "nimbusware.openDeployLinks",
+        "title": "Nimbusware: Open Deploy Links"
       }
     ],
     "configuration": {
@@ -39,6 +51,11 @@
           "type": "string",
           "default": "",
           "description": "Active run id shown in the status bar"
+        },
+        "nimbusware.soloDiscipline": {
+          "type": "string",
+          "default": "",
+          "description": "Solo hat discipline id (pm, frontend, backend, qa, …) when message has no @mentions"
         }
       }
     }

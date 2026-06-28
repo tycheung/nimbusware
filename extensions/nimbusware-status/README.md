@@ -1,11 +1,11 @@
 # Nimbusware Run Status
 
-Read-only VS Code / Cursor status bar chip for an active Nimbusware run. Polls `GET /v1/runs/{id}` and opens Maker Progress in the browser.
+Read-only VS Code / Cursor extension: status bar run chip, scope manifest card, `@` discipline routing preview, and deploy deep links. Complements MCP ([docs/ide-bridge.md](../../docs/ide-bridge.md)).
 
 ## Requirements
 
 - Nimbusware API running locally or on your network
-- A run id from Maker or Admin
+- A run id from Maker or Admin (for status bar and deploy links)
 
 ## Settings
 
@@ -13,10 +13,14 @@ Read-only VS Code / Cursor status bar chip for an active Nimbusware run. Polls `
 |---------|---------|---------|
 | `nimbusware.apiBase` | `http://127.0.0.1:8765/v1` | API base URL |
 | `nimbusware.activeRunId` | *(empty)* | Run id shown in the status bar |
+| `nimbusware.soloDiscipline` | *(empty)* | Solo hat (`pm`, `frontend`, `backend`, …) when previewing routes without `@` mentions |
 
 ## Commands
 
 - **Nimbusware: Open Maker Progress** — opens `/v1/maker/app/#/progress?run_id=…` for the active run
+- **Nimbusware: Show Scope Card** — `POST /v1/chat/scope/recommend` from editor selection; human-readable manifest approval card
+- **Nimbusware: Preview @ Discipline Routes** — parse `@frontend`, `@qa`, aliases (`@fe`, `@be`); parity with Maker collab routing
+- **Nimbusware: Open Deploy Links** — live API/web URLs from run timeline + Maker deploy cockpit
 
 ## Install from source
 
