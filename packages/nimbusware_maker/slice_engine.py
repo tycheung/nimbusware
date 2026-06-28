@@ -8,6 +8,7 @@ from nimbusware_orchestrator.micro_slice_executor import (
     _emit_slice_stage,
     _plan_one_slice,
     _resolve_slice_block,
+    resolve_slice_block_for_plan,
     _run_slice_verify_and_test,
 )
 from nimbusware_orchestrator.slice import (
@@ -30,6 +31,7 @@ __all__ = [
     "_execute_slice_implement_llm",
     "_plan_one_slice",
     "_resolve_slice_block",
+    "resolve_slice_block_for_plan",
     "_run_slice_verify_and_test",
     "apply_slice_file_edits",
     "check_slice_diff_budget",

@@ -26,6 +26,8 @@ class StackDefinition:
     allowed_globs: tuple[str, ...]
     verify_commands: tuple[tuple[str, ...], ...]
     launch_framework_id: str | None = None
+    max_files: int | None = None
+    max_loc: int | None = None
 
 
 def _parse_stack_doc(doc: dict[str, Any]) -> StackDefinition | None:
@@ -49,6 +51,10 @@ def _parse_stack_doc(doc: dict[str, Any]) -> StackDefinition | None:
                 if cmd:
                     verify.append(cmd)
     launch_id = str(doc.get("launch_framework_id") or "").strip() or None
+    max_files_raw = doc.get("max_files")
+    max_loc_raw = doc.get("max_loc")
+    max_files = int(max_files_raw) if max_files_raw is not None else None
+    max_loc = int(max_loc_raw) if max_loc_raw is not None else None
     return StackDefinition(
         stack_id=stack_id,
         surface=surface,
@@ -58,6 +64,8 @@ def _parse_stack_doc(doc: dict[str, Any]) -> StackDefinition | None:
         allowed_globs=globs,
         verify_commands=tuple(verify),
         launch_framework_id=launch_id,
+        max_files=max_files,
+        max_loc=max_loc,
     )
 
 

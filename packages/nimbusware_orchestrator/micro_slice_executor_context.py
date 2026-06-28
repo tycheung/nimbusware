@@ -11,6 +11,7 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
+from agent_core.slice_plan import SlicePlan
 from nimbusware_orchestrator.micro_slice_run_context import micro_slice_effective_from_rows
 from nimbusware_orchestrator.workflow_micro_slice import (
     MicroSliceWorkflowBlock,
@@ -66,6 +67,26 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
         allowed_globs=block.allowed_globs,
         e2e_enabled=bool(ms.get("e2e_enabled", block.e2e_enabled)),
         e2e_command=block.e2e_command,
+    )
+
+
+def resolve_slice_block_for_plan(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    plan: SlicePlan | None,
+) -> MicroSliceWorkflowBlock:
+    from nimbusware_orchestrator.slice_interjection import _project_from_run_rows
+    from nimbusware_orchestrator.stack_diff_budget import merge_stack_diff_budget
+
+    block = _resolve_slice_block(orch, run_id)
+    if plan is None:
+        return block
+    rows = orch._store.list_run_events(str(run_id))
+    return merge_stack_diff_budget(
+        block,
+        plan,
+        repo_root=orch.repo_root,
+        manifest=_project_from_run_rows(rows),
     )
 
 

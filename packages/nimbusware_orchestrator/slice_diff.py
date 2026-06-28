@@ -186,4 +186,6 @@ def subdivide_slice_plan(
         rationale=(f"{plan.rationale} [replan {replan_attempt}: {budget.message}]").strip(),
         target_paths=tuple(new_paths),
         acceptance_criteria=plan.acceptance_criteria,
+        surface_id=plan.surface_id,
+        stack_id=plan.stack_id,
     )

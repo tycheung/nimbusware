@@ -10,3 +10,5 @@ allowed_globs:
 verify_commands:
   - ["npm", "test"]
 launch_framework_id: null
+max_files: 5
+max_loc: 200

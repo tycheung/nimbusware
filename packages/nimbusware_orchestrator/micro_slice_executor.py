@@ -41,6 +41,7 @@ if TYPE_CHECKING:
 from nimbusware_orchestrator.micro_slice_executor_context import (
     _emit_slice_stage,
     _resolve_slice_block,
+    resolve_slice_block_for_plan,
 )
 from nimbusware_orchestrator.micro_slice_executor_gate import finish_micro_slice_gate_chain
 
@@ -58,7 +59,6 @@ def execute_single_micro_slice(
     from nimbusware_maker.workspace import resolve_run_workspace
 
     ws = resolve_run_workspace(rows, override=workspace)
-    block = _resolve_slice_block(orch, run_id)
     base = orch._base_cfg()
     runtime = base.get("runtime") or {}
     timeout = float(runtime.get("request_timeout_seconds", 120))
@@ -136,6 +136,7 @@ def execute_single_micro_slice(
     duration_ms = 0
 
     while True:
+        block = resolve_slice_block_for_plan(orch, run_id, active_plan)
         orch.record_micro_slice_plan(run_id, active_plan)
 
         started = time.perf_counter()
@@ -318,6 +319,7 @@ __all__ = [
     "_emit_slice_stage",
     "_plan_one_slice",
     "_resolve_slice_block",
+    "resolve_slice_block_for_plan",
     "_run_slice_verify_and_test",
     "execute_micro_slice_pass",
     "execute_single_micro_slice",

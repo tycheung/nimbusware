@@ -24,6 +24,7 @@ from nimbusware_maker.slice_engine import (
     _emit_slice_stage,
     _execute_slice_critique_llm,
     _resolve_slice_block,
+    resolve_slice_block_for_plan,
     _run_slice_verify_and_test,
     apply_slice_file_edits,
     check_slice_diff_budget,
@@ -43,7 +44,7 @@ def complete_slice_after_implement(
     *,
     duration_ms: int = 0,
 ) -> Any:
-    block = _resolve_slice_block(orch, run_id)
+    block = resolve_slice_block_for_plan(orch, run_id, plan)
     runtime = orch._base_cfg().get("runtime") or {}
     timeout = float(runtime.get("request_timeout_seconds", 120))
 

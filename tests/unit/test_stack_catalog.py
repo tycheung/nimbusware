@@ -18,6 +18,8 @@ def test_load_stack_catalog_has_core_stacks() -> None:
     assert "react_vite" in catalog
     assert catalog["fastapi_python"].surface == "api"
     assert catalog["react_vite"].surface == "web"
+    assert catalog["react_vite"].max_files == 4
+    assert catalog["fastapi_python"].max_loc == 200
 
 
 def test_resolve_manifest_stacks() -> None:

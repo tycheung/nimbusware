@@ -12,3 +12,5 @@ allowed_globs:
 verify_commands:
   - ["npm", "run", "build"]
 launch_framework_id: react_vite
+max_files: 4
+max_loc: 160
