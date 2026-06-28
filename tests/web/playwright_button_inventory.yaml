@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 164
+  total_buttons: 169
   clicked: 38
   visible_only: 9
-  unwired: 117
-  click_ratio: 0.2317
+  unwired: 122
+  click_ratio: 0.2249
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -605,6 +605,12 @@ buttons:
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
+- test_id: maker-home-compliance-summary
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-home-deploy-allowlist
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
@@ -771,6 +777,30 @@ buttons:
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
+  visible_only_in: []
+- test_id: maker-review-commit-chip-ticket
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-commit-chips
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-commit-policy
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-commit-preview
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  label: (dynamic)
+  clicked_in: []
   visible_only_in: []
 - test_id: maker-review-copy-branch
   app: maker

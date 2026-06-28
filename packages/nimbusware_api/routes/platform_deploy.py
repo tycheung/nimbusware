@@ -27,11 +27,11 @@ from nimbusware_maker.deploy_approval_enforcement import (
 )
 from nimbusware_maker.deploy_credential_vault import load_deploy_credentials
 from nimbusware_maker.deploy_environments import deploy_environment_catalog
-from nimbusware_maker.deploy_pipeline_events import (
+from nimbusware_maker.deploy_approval_events import (
     deploy_apply_ready,
     emit_deploy_approved,
-    emit_terraform_validate_stages,
 )
+from nimbusware_maker.deploy_pipeline_events import emit_terraform_validate_stages
 from nimbusware_maker.terraform_validate import validate_workspace_terraform
 
 router = APIRouter(tags=["platform"])

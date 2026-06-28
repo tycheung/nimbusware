@@ -17,11 +17,11 @@ from nimbusware_api.routes.platform_deploy_models import (
     DeploySmokeBody,
 )
 from nimbusware_api.routes.platform_deploy_support import (
+    deploy_approval_chain_for_tenant,
     deploy_policy_context,
     enforce_credential_scopes,
     enforce_manifest_deploy_target,
     resolved_deploy_environment,
-    deploy_approval_chain_for_tenant,
 )
 from nimbusware_api.user import maker_user_id_str
 from nimbusware_maker.deploy_ci_events import emit_ci_workflow_stages
@@ -33,14 +33,16 @@ from nimbusware_maker.deploy_credential_vault import (
     load_deploy_credentials,
     save_deploy_credentials,
 )
-from nimbusware_maker.deploy_pipeline_events import (
+from nimbusware_maker.deploy_approval_events import (
     autopilot_may_auto_approve_deploy,
-    deploy_apply_passed_from_events,
     deploy_apply_ready,
     deploy_approved_from_events,
+    emit_deploy_approved,
+)
+from nimbusware_maker.deploy_pipeline_events import (
+    deploy_apply_passed_from_events,
     deploy_rollback_passed_from_events,
     emit_deploy_apply_stages,
-    emit_deploy_approved,
     emit_deploy_rollback_stages,
     emit_deploy_smoke_stages,
     live_urls_from_events,
@@ -90,7 +92,11 @@ def post_deploy_apply(
 
         block = latest_autopilot_block_from_rows(rows)
         if not autopilot_may_auto_approve_deploy(block):
-            code = "deploy_dual_control_pending" if approval_chain == "dual_control" else "deploy_approval_required"
+            code = (
+                "deploy_dual_control_pending"
+                if approval_chain == "dual_control"
+                else "deploy_approval_required"
+            )
             msg = (
                 "Fleet admin dual-control approval required before apply"
                 if approval_chain == "dual_control"

@@ -32,7 +32,10 @@ def test_binding_preflight_report_shape() -> None:
 
 
 def test_binding_preflight_manifest_surfaces() -> None:
-    manifest = {"surfaces": ["api", "web"], "stacks": {"api": "fastapi_python", "web": "react_vite"}}
+    manifest = {
+        "surfaces": ["api", "web"],
+        "stacks": {"api": "fastapi_python", "web": "react_vite"},
+    }
     report = build_binding_preflight_report(
         REPO,
         work_type="factory",

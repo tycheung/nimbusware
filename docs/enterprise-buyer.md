@@ -28,6 +28,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Fleet learnings | `GET /v1/enterprise/fleet-learnings/search` — learnings markdown across tenant project workspaces |
 | Fleet commit policy | `GET/PUT /v1/enterprise/tenants/{ref}/commit-policy` — auto-commit and message regex |
 | Fleet deploy policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-policy` — allowed deploy targets per tenant |
+| Fleet deploy approval policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-approval-policy` — `maker_only`, `session_admin`, or `dual_control` before apply |
 | Fleet discovery policy | `GET/PUT /v1/enterprise/tenants/{ref}/discovery-policy` — required discovery fields (`hosting`, `data_residency`, etc.) before full-stack campaign start |
 | Deploy credential audit | Hashed events in `.nimbusware/platform/deploy_audit.jsonl` on credential save and deploy apply/rollback |
 | Tenant collab/model policy | Postgres `tenant_policy` namespace per tenant slug |

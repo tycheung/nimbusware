@@ -8,6 +8,7 @@ import yaml
 from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator.llm.providers import provider_for_preset
 from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
+from nimbusware_orchestrator.stack_catalog import writer_role_for_surface
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 _STAGE_ROLE_MAP: dict[str, str] = {
@@ -110,9 +111,6 @@ def _inference_mode_label(mode: str) -> str:
     if mode == "local-only":
         return "Local-only inference (Ollama)"
     return "Degraded inference — some roles lack reachable providers"
-
-
-from nimbusware_orchestrator.stack_catalog import writer_role_for_surface
 
 
 def roles_for_stack_manifest(manifest: dict[str, Any] | None) -> list[str]:

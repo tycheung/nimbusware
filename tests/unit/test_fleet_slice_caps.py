@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from nimbusware_orchestrator.binding_preflight import (
-    build_binding_preflight_report,
     roles_for_stack_manifest,
     surface_stage_map,
 )

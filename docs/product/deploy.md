@@ -21,13 +21,16 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET/PUT | `/v1/enterprise/tenants/{ref}/deploy-policy` | Tenant allowlist for deploy targets (`aws-ecs`, `aws-static-site`, `github-actions`) |
+| GET/PUT | `/v1/enterprise/tenants/{ref}/deploy-approval-policy` | Approval chain: `maker_only`, `session_admin`, or `dual_control` (maker + fleet admin) |
 
-Apply and credential save enforce the tenant allowlist when `NIMBUSWARE_SETUP_BUNDLE=enterprise`. Credential updates and deploy apply/rollback append hashed audit rows to `.nimbusware/platform/deploy_audit.jsonl` (no secret material).
+Apply and credential save enforce the tenant allowlist when `NIMBUSWARE_SETUP_BUNDLE=enterprise`. **Dual-control** tenants require two timeline approvals (maker, then fleet admin with `maker_admin` scope) before apply; partial approval returns `status: partial` from the approve API. Credential updates and deploy apply/rollback append hashed audit rows to `.nimbusware/platform/deploy_audit.jsonl` (no secret material).
 
 ## Storage
 
 - Credential labels: `configs/deploy/users/{user_id}.yaml`
 - Fleet deploy allowlist: `configs/enterprise/fleet_deploy_policies.yaml`
+- Fleet deploy approval chain: `configs/enterprise/fleet_deploy_approval_policies.yaml`
+- Fleet slice caps: `configs/enterprise/fleet_slice_policies.yaml` (clamps slice budgets for enterprise tenants)
 - Workflow template: `configs/deploy/github_actions_nimbusware.yaml`
 
 ## Maker UI
@@ -41,4 +44,4 @@ Apply, smoke, and rollback pass `TF_VAR_environment` / `NIMBUSWARE_DEPLOY_ENV` t
 
 When `deploy` is in the frozen stack manifest, campaign **completion_eval** requires a successful `deploy.smoke` timeline stage before the run may finalize as PASS.
 
-Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Apply without approval returns **403** (`deploy_approval_required`).
+Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Apply without sufficient approval returns **403** (`deploy_approval_required` or `deploy_dual_control_pending`).

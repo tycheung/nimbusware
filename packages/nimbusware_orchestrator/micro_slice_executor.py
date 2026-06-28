@@ -223,17 +223,17 @@ def execute_single_micro_slice(
             break
 
         replan_meta: dict[str, Any] = {
-                "slice_id": active_plan.slice_id,
-                "next_slice_id": subdivided.slice_id,
-                "replan_attempt": replan_attempt + 1,
-                "budget_message": budget.message,
-                "diff_stats": {
-                    "file_count": len(stats.changed_files),
-                    "loc_added": stats.loc_added,
-                    "loc_removed": stats.loc_removed,
-                    "source": stats.source,
-                },
-            }
+            "slice_id": active_plan.slice_id,
+            "next_slice_id": subdivided.slice_id,
+            "replan_attempt": replan_attempt + 1,
+            "budget_message": budget.message,
+            "diff_stats": {
+                "file_count": len(stats.changed_files),
+                "loc_added": stats.loc_added,
+                "loc_removed": stats.loc_removed,
+                "source": stats.source,
+            },
+        }
         ms_eff = micro_slice_effective_from_rows(rows)
         if isinstance(ms_eff, dict) and ms_eff.get("fleet_cap_active"):
             from nimbusware_orchestrator.fleet_slice_caps import fleet_replan_metadata

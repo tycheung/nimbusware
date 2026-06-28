@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
 from nimbusware_api.app import app
-from nimbusware_maker.deploy_pipeline_events import (
+from nimbusware_maker.deploy_approval_events import (
     autopilot_may_auto_approve_deploy,
     deploy_approved_from_events,
     emit_deploy_approved,
