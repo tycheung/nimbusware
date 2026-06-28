@@ -199,6 +199,9 @@ def _union_handoff_summaries(
         next_steps=right.next_steps or left.next_steps,
         read_files=tuple(dict.fromkeys((*left.read_files, *right.read_files))),
         modified_files=tuple(dict.fromkeys((*left.modified_files, *right.modified_files))),
+        surface_id=right.surface_id or left.surface_id,
+        stack_id=right.stack_id or left.stack_id,
+        contract_ref=right.contract_ref or left.contract_ref,
     )
 
 

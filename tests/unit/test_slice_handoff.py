@@ -7,6 +7,7 @@ from nimbusware_orchestrator.slice_handoff import (
     build_slice_handoff_summary,
     handoff_markdown_capped,
     latest_handoff_from_events,
+    resolve_slice_contract_ref,
 )
 
 
@@ -77,3 +78,33 @@ def test_latest_handoff_from_events() -> None:
     got = latest_handoff_from_events(events)
     assert got is not None
     assert got.goal == "g"
+
+
+def test_handoff_includes_surface_and_contract_refs() -> None:
+    plan = parse_slice_plan(
+        {
+            "slice_id": "slice-web",
+            "target_paths": ["frontend/App.tsx"],
+            "rationale": "web slice",
+            "surface_id": "web",
+            "stack_id": "react_vite",
+        },
+    )
+    summary = build_slice_handoff_summary(plan, gate=_gate(True, slice_id="slice-web"))
+    assert summary.surface_id == "web"
+    assert summary.stack_id == "react_vite"
+    assert summary.contract_ref == "stack:react_vite"
+    md = handoff_markdown_capped(summary)
+    assert "## Surface" in md
+    assert "react_vite" in md
+
+
+def test_resolve_contract_surface_ref() -> None:
+    plan = parse_slice_plan(
+        {
+            "slice_id": "slice-contract",
+            "target_paths": ["openapi.yaml"],
+            "surface_id": "contract",
+        },
+    )
+    assert resolve_slice_contract_ref(plan) == "openapi:pending"

@@ -1,11 +1,35 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from agent_core.context_budget import truncate_for_llm_history
 from agent_core.models.slice_handoff import SliceHandoffSummary
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
+
+
+def resolve_slice_contract_ref(
+    plan: SlicePlan,
+    *,
+    repo_root: Path | None = None,
+) -> str | None:
+    surface = str(plan.surface_id or "").strip().lower()
+    if surface == "contract":
+        from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.slice_contract import run_slice_contract_check
+
+        root = repo_root or find_repo_root()
+        result = run_slice_contract_check(root, require_openapi=True)
+        if result.passed and result.detail.strip():
+            return result.detail.strip()
+        return "openapi:pending"
+    stack = str(plan.stack_id or "").strip()
+    if stack:
+        return f"stack:{stack}"
+    if surface:
+        return f"surface:{surface}"
+    return None
 
 
 def nimbusware_handoff_max_chars(default: int = 4000) -> int:
@@ -22,6 +46,7 @@ def build_slice_handoff_summary(
     paths_touched: tuple[str, ...] = (),
     diff_stat: str = "",
     campaign_goal: str = "",
+    repo_root: Path | None = None,
 ) -> SliceHandoffSummary:
     goal = campaign_goal.strip() or (prior.goal if prior else plan.rationale)
     progress = list(prior.progress) if prior else []
@@ -60,6 +85,10 @@ def build_slice_handoff_summary(
         next_steps=tuple(next_steps),
         read_files=tuple(read_files[-30:]),
         modified_files=tuple(modified[-30:]),
+        surface_id=plan.surface_id or (prior.surface_id if prior else None),
+        stack_id=plan.stack_id or (prior.stack_id if prior else None),
+        contract_ref=resolve_slice_contract_ref(plan, repo_root=repo_root)
+        or (prior.contract_ref if prior else None),
     )
 
 

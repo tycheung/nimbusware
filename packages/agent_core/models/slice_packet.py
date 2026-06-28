@@ -19,6 +19,9 @@ class SliceContextPacket(BaseModel):
     memory_excerpt: str = ""
     repo_map_excerpt: str = ""
     handoff_summary: str = ""
+    surface_id: str | None = None
+    stack_id: str | None = None
+    contract_ref: str | None = None
 
     def capped(self, *, max_chars: int) -> SliceContextPacket:
         if max_chars <= 0:
@@ -38,6 +41,9 @@ class SliceContextPacket(BaseModel):
             memory_excerpt=_truncate(self.memory_excerpt, mem_cap),
             repo_map_excerpt=_truncate(self.repo_map_excerpt, repo_cap),
             handoff_summary=_truncate(self.handoff_summary, handoff_cap),
+            surface_id=self.surface_id,
+            stack_id=self.stack_id,
+            contract_ref=self.contract_ref,
         )
 
     def char_count(self) -> int:
@@ -51,6 +57,9 @@ class SliceContextPacket(BaseModel):
             + len(self.memory_excerpt)
             + len(self.repo_map_excerpt)
             + len(self.handoff_summary)
+            + len(self.surface_id or "")
+            + len(self.stack_id or "")
+            + len(self.contract_ref or "")
         )
 
 

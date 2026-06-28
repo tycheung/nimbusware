@@ -12,6 +12,9 @@ class SliceHandoffSummary(BaseModel):
     next_steps: tuple[str, ...] = ()
     read_files: tuple[str, ...] = ()
     modified_files: tuple[str, ...] = ()
+    surface_id: str | None = None
+    stack_id: str | None = None
+    contract_ref: str | None = None
 
     def render_markdown(self) -> str:
         lines = ["## Goal", self.goal or "(none)", "", "## Progress"]
@@ -29,6 +32,14 @@ class SliceHandoffSummary(BaseModel):
             lines.extend(f"- {n}" for n in self.next_steps)
         else:
             lines.append("- (none)")
+        if self.surface_id or self.stack_id or self.contract_ref:
+            lines.extend(["", "## Surface"])
+            if self.surface_id:
+                lines.append(f"- surface: {self.surface_id}")
+            if self.stack_id:
+                lines.append(f"- stack: {self.stack_id}")
+            if self.contract_ref:
+                lines.append(f"- contract: {self.contract_ref}")
         lines.append("")
         lines.append("<read-files>")
         lines.extend(self.read_files)

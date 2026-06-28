@@ -48,3 +48,18 @@ def test_packet_includes_handoff_summary() -> None:
         max_chars=3000,
     )
     assert "campaign" in packet.handoff_summary
+
+
+def test_packet_includes_surface_refs() -> None:
+    plan = parse_slice_plan(
+        {
+            "slice_id": "s-surf",
+            "target_paths": ["frontend/App.tsx"],
+            "surface_id": "web",
+            "stack_id": "react_vite",
+        },
+    )
+    packet = build_slice_context_packet(plan, max_chars=3000)
+    assert packet.surface_id == "web"
+    assert packet.stack_id == "react_vite"
+    assert packet.contract_ref == "stack:react_vite"

@@ -153,6 +153,7 @@ class MicroSliceMixin:
             gate=gate,
             paths_touched=tuple(p.target_paths),
             diff_stat=diff_stat,
+            repo_root=self._repo_root,
         )
         handoff_md = handoff_markdown_capped(handoff)
         packet = build_slice_context_packet(

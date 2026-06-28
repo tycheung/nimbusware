@@ -10,6 +10,7 @@ from nimbusware_env.env_flags import (
 )
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
+from nimbusware_orchestrator.slice_handoff import resolve_slice_contract_ref
 
 
 def default_packet_max_chars() -> int:
@@ -63,6 +64,9 @@ def build_slice_context_packet(
         memory_excerpt=memory_excerpt,
         repo_map_excerpt=repo_excerpt,
         handoff_summary=handoff_summary,
+        surface_id=plan.surface_id,
+        stack_id=plan.stack_id,
+        contract_ref=resolve_slice_contract_ref(plan, repo_root=repo_root),
     )
     cap = max_chars if max_chars is not None else default_packet_max_chars()
     return packet.capped(max_chars=cap)
