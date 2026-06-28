@@ -102,6 +102,15 @@ def maybe_route_collab_message(
         actor_user_id=str(actor_user_id) if actor_user_id is not None else None,
         participant_discipline=participant_discipline,
     )
+    from nimbusware_orchestrator.surface_interjection_routing import enqueue_surface_steers
+
+    surface_routes = enqueue_surface_steers(
+        store,
+        run_id=session.run_id,
+        message=message,
+        routed_from_user_id=str(actor_user_id) if actor_user_id is not None else None,
+    )
+    routes.extend(surface_routes)
     append_routed_feedback_turns(
         chat_store,
         collab_store,

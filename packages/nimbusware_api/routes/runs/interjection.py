@@ -101,6 +101,22 @@ def post_interjection_enqueue(
         else InterjectionPriority.NEXT
     )
     q = queue_for_run(str(run_id))
+    from nimbusware_orchestrator.surface_interjection_routing import (
+        enqueue_surface_steers,
+        surface_steer_routes,
+    )
+
+    routes = surface_steer_routes(body.message)
+    mention_only = bool(routes) and all(r.get("source") == "mention" for r in routes)
+    if mention_only:
+        actor = actor_user_id(request, user)
+        enqueue_surface_steers(
+            store,
+            run_id=run_id,
+            message=body.message,
+            routed_from_user_id=str(actor) if actor is not None else None,
+        )
+        return InterjectionQueueResponse(run_id=str(run_id), queue=q.to_dict())
     item = q.enqueue(
         body.message,
         priority=priority,

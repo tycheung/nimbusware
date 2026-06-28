@@ -19,17 +19,25 @@ from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_parse_interjection_prefixes() -> None:
-    msg, flags = parse_interjection_prefix("[patch] fix auth test")
+    msg, flags, surface = parse_interjection_prefix("[patch] fix auth test")
     assert msg == "fix auth test"
     assert flags["patch_from_chat"] is True
+    assert surface is None
 
-    msg2, flags2 = parse_interjection_prefix("[steer] prefer smaller diff")
+    msg2, flags2, surface2 = parse_interjection_prefix("[steer] prefer smaller diff")
     assert msg2 == "prefer smaller diff"
     assert flags2["steer_from_chat"] is True
+    assert surface2 is None
 
-    msg3, flags3 = parse_interjection_prefix("[skip] defer this slice")
+    msg3, flags3, surface3 = parse_interjection_prefix("[skip] defer this slice")
     assert msg3 == "defer this slice"
     assert flags3["skip_slice"] is True
+    assert surface3 is None
+
+    msg4, flags4, surface4 = parse_interjection_prefix("[steer:web] tighten login flow")
+    assert msg4 == "tighten login flow"
+    assert flags4["steer_from_chat"] is True
+    assert surface4 == "web"
 
 
 def test_enqueue_sets_prefix_flags() -> None:
@@ -43,6 +51,11 @@ def test_enqueue_sets_prefix_flags() -> None:
     steer = q.enqueue("[steer] use pathlib", priority=InterjectionPriority.LAST)
     assert steer.steer_from_chat is True
     assert steer.message == "use pathlib"
+
+    surface_steer = q.enqueue("[steer:api] add pagination", priority=InterjectionPriority.NEXT)
+    assert surface_steer.steer_from_chat is True
+    assert surface_steer.surface_id == "api"
+    assert surface_steer.message == "add pagination"
 
 
 def test_process_interjection_cycle_aggregates_flags() -> None:

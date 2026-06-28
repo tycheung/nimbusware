@@ -72,6 +72,7 @@ def execute_single_micro_slice(
     from nimbusware_orchestrator.slice_interjection import (
         _infer_patch_target_paths,
         apply_interjection_to_plan,
+        apply_surface_steer_to_plan,
         gate_result_for_force_break,
         gate_result_for_skip_slice,
         handle_build_from_chat_interjection,
@@ -79,6 +80,7 @@ def execute_single_micro_slice(
         handle_skip_slice_interjection,
         process_interjection_cycle,
         steer_excerpt_from_cycle,
+        _project_from_run_rows,
     )
 
     profile = autopilot_profile_from_rows(rows)
@@ -113,6 +115,12 @@ def execute_single_micro_slice(
         budget_feedback=budget_feedback,
     )
     active_plan = apply_interjection_to_plan(active_plan, interjection)
+    active_plan = apply_surface_steer_to_plan(
+        active_plan,
+        interjection,
+        manifest=_project_from_run_rows(rows),
+        repo_root=orch.repo_root,
+    )
     effective_backlog_slice_id = backlog_slice_id
     if patch_backlog_id:
         patch_msgs = [i.message for i in interjection.items if i.patch_from_chat]

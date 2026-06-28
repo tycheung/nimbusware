@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -57,6 +58,7 @@ def emit_interjection_enqueued(
                     "build_from_chat": item.build_from_chat,
                     "discipline": item.discipline,
                     "taxonomy_key": item.taxonomy_key,
+                    "surface_id": item.surface_id,
                     "routed_from_user_id": item.routed_from_user_id,
                 },
             },
@@ -216,8 +218,46 @@ def process_interjection_cycle(store: Any, run_id: UUID | str) -> InterjectionCy
 
 
 def steer_excerpt_from_cycle(cycle: InterjectionCycle) -> str:
-    lines = [i.message for i in cycle.items if i.steer_from_chat and i.message.strip()]
+    lines: list[str] = []
+    for item in cycle.items:
+        if item.steer_from_chat and item.message.strip():
+            prefix = f"[{item.surface_id}] " if item.surface_id else ""
+            lines.append(f"{prefix}{item.message.strip()}")
     return "\n".join(lines)[:4000]
+
+
+def apply_surface_steer_to_plan(
+    plan: SlicePlan,
+    cycle: InterjectionCycle,
+    *,
+    manifest: dict[str, Any] | None = None,
+    repo_root: Path | None = None,
+) -> SlicePlan:
+    surface_id: str | None = None
+    for item in reversed(cycle.items):
+        if item.steer_from_chat and item.surface_id:
+            surface_id = item.surface_id
+            break
+    if not surface_id:
+        return plan
+    stack_id = plan.stack_id
+    if manifest and not stack_id:
+        from nimbusware_orchestrator.stack_catalog import stack_for_surface
+
+        stack = stack_for_surface(manifest, surface_id, repo_root=repo_root)
+        if stack is not None:
+            stack_id = stack.stack_id
+    rationale = plan.rationale
+    if surface_id != plan.surface_id:
+        rationale = f"{plan.rationale}\n\nSurface steer: active surface → {surface_id}".strip()
+    return SlicePlan(
+        slice_id=plan.slice_id,
+        rationale=rationale[:4000],
+        target_paths=plan.target_paths,
+        acceptance_criteria=plan.acceptance_criteria,
+        surface_id=surface_id,
+        stack_id=stack_id or plan.stack_id,
+    )
 
 
 def _infer_patch_target_paths(prompt: str, rows: list[dict[str, Any]]) -> tuple[str, ...]:
@@ -357,6 +397,8 @@ def apply_interjection_to_plan(plan: SlicePlan, cycle: InterjectionCycle) -> Sli
         target_paths=plan.target_paths,
         rationale=rationale[:4000],
         acceptance_criteria=plan.acceptance_criteria,
+        surface_id=plan.surface_id,
+        stack_id=plan.stack_id,
     )
 
 
