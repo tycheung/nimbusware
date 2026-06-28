@@ -1,8 +1,27 @@
 import { apiJson, toast } from "../api-client.js";
 import { deployStateFromTimeline } from "../deploy_cockpit.js";
+import { mountReviewCommitPolicyPanel } from "./review_commit_ui.js";
 
 export function wireReviewGitPanel(root, { currentRunId }) {
+  let commitPolicyMounted = false;
+
+  async function ensureCommitPolicyPanel() {
+    if (commitPolicyMounted) return;
+    try {
+      const readiness = await apiJson("/platform/readiness");
+      if (readiness.setup_bundle !== "enterprise") return;
+      const policy = await apiJson("/enterprise/tenants/default/commit-policy").catch(() => ({}));
+      mountReviewCommitPolicyPanel(root, {
+        setupBundle: readiness.setup_bundle,
+        messageRegex: policy.message_regex || "",
+      });
+      commitPolicyMounted = true;
+    } catch {
+      /* optional enterprise panel */
+    }
+  }
   async function loadGitStatus() {
+    await ensureCommitPolicyPanel();
     const id = await currentRunId();
     if (!id) return;
     const auditLink = root.querySelector("#rev-audit-export");
