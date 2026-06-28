@@ -20,10 +20,13 @@ def test_normalize_deploy_environment() -> None:
 
 def test_resolve_deploy_environment_priority() -> None:
     assert resolve_deploy_environment(explicit="prod") == "prod"
-    assert resolve_deploy_environment(
-        credentials={"deploy_environment": "staging"},
-        manifest_raw={"deploy_environment": "prod"},
-    ) == "staging"
+    assert (
+        resolve_deploy_environment(
+            credentials={"deploy_environment": "staging"},
+            manifest_raw={"deploy_environment": "prod"},
+        )
+        == "staging"
+    )
     assert resolve_deploy_environment(manifest_raw={"deploy_environment": "prod"}) == "prod"
     assert resolve_deploy_environment() == DEFAULT_DEPLOY_ENVIRONMENT
 

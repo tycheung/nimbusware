@@ -11,13 +11,13 @@ from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.user import maker_user_id_str
-from nimbusware_maker.deploy_environments import (
-    deploy_environment_catalog,
-    resolve_deploy_environment,
-)
 from nimbusware_maker.deploy_credential_vault import (
     load_deploy_credentials,
     save_deploy_credentials,
+)
+from nimbusware_maker.deploy_environments import (
+    deploy_environment_catalog,
+    resolve_deploy_environment,
 )
 from nimbusware_maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,

@@ -11,7 +11,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Home** | Readiness, hardware strip, intents, full-stack demo prompts |
 | **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
-| **Progress** | SSE theater (Evidence toggle per line), maker-progress with surface-aware slice headlines, deploy cockpit (validate, approve, apply, smoke), findings panel, operator ribbons |
+| **Progress** | SSE theater (Evidence toggle per line), maker-progress with surface-aware slice headlines, deploy cockpit (validate, approve, apply, smoke, rollback, environment selector), findings panel, operator ribbons |
 | **Review** | Research approve/reject, slice approval, deploy cockpit + git/PR panel, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), active slice highlight, maintenance countdown, contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
@@ -56,7 +56,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Enforcement depth slider** — `GET/PUT /v1/runs/{id}/enforcement`; presets in `configs/enforcement/presets.yaml`; saved profiles in `configs/enforcement/user_profiles.yaml`; level 10 = workspace CI parity + terminal `enforcement.gate` (ADR [026](../adr/026-enforcement-depth-slider.md)). Progress tab shows `enforcement_status` chip; Build/Campaign start honor Settings default profile.
 - **Enterprise enforcement policy** — Admin Fleet page + `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy` clamps tenant min/max depth
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes with chip picker in Progress and Chat; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
-- **Deploy cockpit** — Progress and Review show CI/plan/approval from run timeline; **Run Terraform validate** posts stages; **Approve deploy** records `deploy.approved`; **Apply deploy** runs gated `terraform apply` (snapshots state before apply); **Run smoke test** hits live API/web URLs; **Rollback deploy** runs destroy or previous-state restore; Settings syncs deploy labels with `GET/PUT /v1/platform/deploy/credentials`
+- **Deploy cockpit** — Progress and Review show CI/plan/approval from run timeline; **Run Terraform validate** posts stages; **Approve deploy** records `deploy.approved`; **Apply deploy** runs gated `terraform apply` (snapshots state before apply); **Run smoke test** hits live API/web URLs; **Rollback deploy** runs destroy or previous-state restore; environment selector (`dev` / `staging` / `prod`) passes `TF_VAR_environment` to Terraform; Settings syncs deploy labels with `GET/PUT /v1/platform/deploy/credentials`. Campaigns with `deploy` in the frozen manifest require a successful `deploy.smoke` stage before **completion_eval** may PASS ([deploy.md](deploy.md)).
 - **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
 - **Completion cockpit** — plain-language terminal banner when campaigns finish; auto **launch check** on terminal runs; per-surface launch summary chips
 - **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run

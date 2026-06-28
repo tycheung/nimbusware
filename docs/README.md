@@ -33,7 +33,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [model-hub.md](model-hub.md) | Model Hub, API connections vault |
 | [install-profiles.md](install-profiles.md) | Recommended vs barebones install |
 | [hybrid-routing-migration.md](hybrid-routing-migration.md) | Legacy routing → resolver shim |
-| [product/deploy.md](product/deploy.md) | Terraform validate, apply gate, smoke tests, rollback, deploy credentials |
+| [product/deploy.md](product/deploy.md) | Terraform validate, apply gate, smoke tests, rollback, environment matrix, deploy credentials |
 | [product/mobile.md](product/mobile.md) | Mobile native surface (deferred; web-first) |
 | [collaborative-chat.md](collaborative-chat.md) | Multi-participant chat sessions, disciplines, `@` routing |
 | [collaborative-chat-threat-model.md](collaborative-chat-threat-model.md) | Collab security model |
