@@ -31,7 +31,17 @@ def test_binding_preflight_report_shape() -> None:
     assert report["inference_mode_label"]
 
 
-def test_cloud_only_when_no_local_roles_and_all_reachable() -> None:
+def test_binding_preflight_manifest_surfaces() -> None:
+    manifest = {"surfaces": ["api", "web"], "stacks": {"api": "fastapi_python", "web": "react_vite"}}
+    report = build_binding_preflight_report(
+        REPO,
+        work_type="factory",
+        probe=False,
+        stack_manifest=manifest,
+    )
+    assert report.get("surface_stage_map") == {"api": "backend_writer", "web": "frontend_writer"}
+    role_names = {row["agent_role"] for row in report["roles"]}
+    assert "frontend_writer" in role_names
     report = {
         "ollama_required": False,
         "roles_without_provider": [],

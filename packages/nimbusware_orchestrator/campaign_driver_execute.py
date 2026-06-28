@@ -108,6 +108,11 @@ def _execute_campaign_slices(
             workload_distribution=workload,
             node_ids=node_ids,
             workspace=workspace,
+            surface_by_slice={
+                sel.slice.slice_id: str(sel.slice.surface_id or "")
+                for sel in selected_list
+                if str(sel.slice.surface_id or "").strip()
+            },
         )
 
     remote_by_slice = {

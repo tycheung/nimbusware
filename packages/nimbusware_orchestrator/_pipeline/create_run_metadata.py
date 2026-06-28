@@ -167,6 +167,19 @@ def build_run_created_metadata(
     if ms_block.enabled:
         ms_max_files = slice_budget.max_files
         ms_max_loc = slice_budget.max_loc
+    fleet_cap_active = False
+    if ms_block.enabled:
+        from nimbusware_env.env_flags import env_str
+        from nimbusware_iam.context import get_auth_context
+        from nimbusware_orchestrator.fleet_slice_caps import clamp_slice_budget
+
+        ctx = get_auth_context()
+        ms_max_files, ms_max_loc, fleet_cap_active = clamp_slice_budget(
+            ms_max_files,
+            ms_max_loc,
+            tenant_slug=ctx.tenant_slug if ctx is not None else None,
+            setup_bundle=env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default",
+        )
     critic_pack_effective = resolve_critic_pack_for_workflow(
         repo_root, workflow_profile, config_materializer=mat
     )
@@ -222,6 +235,7 @@ def build_run_created_metadata(
             "budget_preset": slice_budget.name,
             "replan_max": slice_budget.replan_max,
             "one_at_a_time": campaign_block.enabled,
+            **({"fleet_cap_active": True} if fleet_cap_active else {}),
         },
         **({"campaign_effective": campaign_meta} if campaign_meta else {}),
         **(

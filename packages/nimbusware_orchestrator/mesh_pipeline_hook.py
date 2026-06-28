@@ -30,6 +30,7 @@ def _mesh_enqueue_payload(
     workflow_profile: str | None = None,
     binding_hint: dict[str, str] | None = None,
     agent_overlay_prompt: str | None = None,
+    surface_id: str | None = None,
 ) -> dict[str, str | bool]:
     payload: dict[str, str | bool] = {
         "node_id": str(node_id),
@@ -42,6 +43,9 @@ def _mesh_enqueue_payload(
     taxonomy = _WRITER_STAGE_TAXONOMY.get(stage_name)
     if taxonomy is not None:
         payload["taxonomy_key"] = taxonomy
+    sid = str(surface_id or "").strip()
+    if sid:
+        payload["surface_id"] = sid
     if binding_hint:
         payload["binding_hint_provider_kind"] = binding_hint.get("provider_kind", "")
         payload["binding_hint_provider_id"] = binding_hint.get("provider_id", "")
@@ -75,6 +79,7 @@ def mesh_assign_parallel_stages(
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
     session_metadata: dict[str, Any] | None = None,
+    surface_by_slice: dict[str, str] | None = None,
 ) -> dict[str, UUID | None]:
     sched = get_mesh_scheduler()
     sched.set_mode(workload_distribution or "host_only")
@@ -113,6 +118,10 @@ def mesh_assign_parallel_stages(
         overlay = (
             prompt_extension_for_taxonomy_key(executor, tax, repo_root=root) if executor else ""
         )
+        surface_id: str | None = None
+        if surface_by_slice and stage_name.startswith("campaign.slice:"):
+            slice_id = stage_name.split(":", 1)[1]
+            surface_id = surface_by_slice.get(slice_id)
         queue.enqueue(
             run_id=run_id,
             session_id=session_id,
@@ -126,6 +135,7 @@ def mesh_assign_parallel_stages(
                 workflow_profile=workflow_profile,
                 binding_hint=hint,
                 agent_overlay_prompt=overlay or None,
+                surface_id=surface_id,
             ),
         )
     return assignments
@@ -161,6 +171,7 @@ def mesh_assign_campaign_slices(
     node_ids: list[UUID],
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
+    surface_by_slice: dict[str, str] | None = None,
 ) -> dict[str, UUID | None]:
     stage_names = [f"campaign.slice:{sid}" for sid in slice_ids]
     raw = mesh_assign_parallel_stages(
@@ -172,6 +183,7 @@ def mesh_assign_campaign_slices(
         parallel_group="campaign_slices",
         workspace=workspace,
         workflow_profile=workflow_profile,
+        surface_by_slice=surface_by_slice,
     )
     return {sid: raw.get(f"campaign.slice:{sid}") for sid in slice_ids}
 

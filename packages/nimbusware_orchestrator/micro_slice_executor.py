@@ -20,6 +20,7 @@ from nimbusware_orchestrator.micro_slice_plan import (
     plan_one_slice as _plan_one_slice,
 )
 from nimbusware_orchestrator.micro_slice_run_context import (
+    micro_slice_effective_from_rows,
     slice_replan_max_for_run,
 )
 from nimbusware_orchestrator.micro_slice_verify import (
@@ -221,11 +222,7 @@ def execute_single_micro_slice(
         if subdivided is None:
             break
 
-        _emit_slice_stage(
-            orch,
-            run_id,
-            "slice.replan",
-            metadata={
+        replan_meta: dict[str, Any] = {
                 "slice_id": active_plan.slice_id,
                 "next_slice_id": subdivided.slice_id,
                 "replan_attempt": replan_attempt + 1,
@@ -236,7 +233,17 @@ def execute_single_micro_slice(
                     "loc_removed": stats.loc_removed,
                     "source": stats.source,
                 },
-            },
+            }
+        ms_eff = micro_slice_effective_from_rows(rows)
+        if isinstance(ms_eff, dict) and ms_eff.get("fleet_cap_active"):
+            from nimbusware_orchestrator.fleet_slice_caps import fleet_replan_metadata
+
+            replan_meta.update(fleet_replan_metadata(fleet_cap_active=True))
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.replan",
+            metadata=replan_meta,
         )
         active_plan = subdivided
         budget_feedback = budget.message

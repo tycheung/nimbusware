@@ -112,6 +112,36 @@ def _inference_mode_label(mode: str) -> str:
     return "Degraded inference — some roles lack reachable providers"
 
 
+from nimbusware_orchestrator.stack_catalog import writer_role_for_surface
+
+
+def roles_for_stack_manifest(manifest: dict[str, Any] | None) -> list[str]:
+    if not isinstance(manifest, dict):
+        return []
+    surfaces_raw = manifest.get("surfaces")
+    if not isinstance(surfaces_raw, list):
+        return []
+    roles: set[str] = {"planner", "test_writer", "security_critic"}
+    for item in surfaces_raw:
+        sid = str(item).strip().lower()
+        if sid:
+            roles.add(writer_role_for_surface(sid))
+    if "deploy" in {str(s).strip().lower() for s in surfaces_raw}:
+        roles.add("infra_writer")
+    return sorted(roles)
+
+
+def surface_stage_map(manifest: dict[str, Any] | None) -> dict[str, str]:
+    if not isinstance(manifest, dict):
+        return {}
+    out: dict[str, str] = {}
+    for item in manifest.get("surfaces") or []:
+        sid = str(item).strip().lower()
+        if sid:
+            out[sid] = writer_role_for_surface(sid)
+    return out
+
+
 def build_binding_preflight_report(
     repo_root: Path,
     *,
@@ -119,8 +149,10 @@ def build_binding_preflight_report(
     work_type: str | None = None,
     materializer: Any | None = None,
     probe: bool = True,
+    stack_manifest: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    roles = active_roles_for_context(
+    manifest_roles = roles_for_stack_manifest(stack_manifest) if stack_manifest else []
+    roles = manifest_roles or active_roles_for_context(
         repo_root,
         workflow_profile=workflow_profile,
         work_type=work_type,
@@ -202,6 +234,8 @@ def build_binding_preflight_report(
         "inference_mode_label": _inference_mode_label(inference_mode),
         "workflow_profile": workflow_profile,
         "work_type": work_type,
+        "surface_stage_map": surface_stage_map(stack_manifest),
+        "stack_manifest_surfaces": list(surface_stage_map(stack_manifest).keys()),
     }
 
 

@@ -46,10 +46,23 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
     ms = micro_slice_effective_from_rows(rows)
     if not ms:
         return block
+    max_files = int(ms.get("max_files", block.max_files))
+    max_loc = int(ms.get("max_loc", block.max_loc))
+    from nimbusware_env.env_flags import env_str
+    from nimbusware_iam.context import get_auth_context
+    from nimbusware_orchestrator.fleet_slice_caps import clamp_slice_budget
+
+    ctx = get_auth_context()
+    max_files, max_loc, _ = clamp_slice_budget(
+        max_files,
+        max_loc,
+        tenant_slug=ctx.tenant_slug if ctx is not None else None,
+        setup_bundle=env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default",
+    )
     return MicroSliceWorkflowBlock(
         enabled=True,
-        max_files=int(ms.get("max_files", block.max_files)),
-        max_loc=int(ms.get("max_loc", block.max_loc)),
+        max_files=max_files,
+        max_loc=max_loc,
         allowed_globs=block.allowed_globs,
         e2e_enabled=bool(ms.get("e2e_enabled", block.e2e_enabled)),
         e2e_command=block.e2e_command,
