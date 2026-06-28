@@ -59,12 +59,12 @@ def _pick_round_robin(ready: list[SelectedSlice], backlog: DeliveryBacklog) -> S
     )
 
 
-def _select_with_extra_passed(
+def _ready_slices(
     backlog: DeliveryBacklog,
-    extra_passed: set[str],
-) -> SelectedSlice | None:
+    extra_passed: set[str] | None = None,
+) -> list[SelectedSlice]:
     graph = backlog_dependency_graph(backlog)
-    passed = _passed_ids(backlog) | extra_passed
+    passed = _passed_ids(backlog) | (extra_passed or set())
     ready: list[SelectedSlice] = []
     blocked: set[str] = set()
     for epic in backlog.epics:
@@ -87,6 +87,48 @@ def _select_with_extra_passed(
                             slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
                         ),
                     )
+    return ready
+
+
+def _pick_round_robin_batch(
+    ready: list[SelectedSlice],
+    backlog: DeliveryBacklog,
+    max_n: int,
+) -> list[SelectedSlice]:
+    if max_n <= 0 or not ready:
+        return []
+    if len(ready) <= max_n:
+        return list(ready)
+    counts = dict(_surface_pass_counts(backlog))
+    by_surface: dict[str, list[SelectedSlice]] = {}
+    for sel in ready:
+        surf = str(sel.slice.surface_id or "").strip() or "_none"
+        by_surface.setdefault(surf, []).append(sel)
+    for items in by_surface.values():
+        items.sort(key=lambda sel: sel.slice.slice_id)
+    out: list[SelectedSlice] = []
+    while len(out) < max_n:
+        candidates: list[tuple[int, str]] = []
+        for surf, items in by_surface.items():
+            if items:
+                key = surf if surf != "_none" else ""
+                candidates.append((counts.get(key, 0), surf))
+        if not candidates:
+            break
+        _, pick_surf = min(candidates, key=lambda x: (x[0], x[1]))
+        sel = by_surface[pick_surf].pop(0)
+        out.append(sel)
+        sid = str(sel.slice.surface_id or "").strip()
+        if sid:
+            counts[sid] = counts.get(sid, 0) + 1
+    return out
+
+
+def _select_with_extra_passed(
+    backlog: DeliveryBacklog,
+    extra_passed: set[str],
+) -> SelectedSlice | None:
+    ready = _ready_slices(backlog, extra_passed)
     return _pick_round_robin(ready, backlog)
 
 
@@ -98,33 +140,8 @@ def select_next_slices(backlog: DeliveryBacklog, max_n: int) -> list[SelectedSli
     if max_n <= 1:
         one = select_next_slice(backlog)
         return [one] if one is not None else []
-    graph = backlog_dependency_graph(backlog)
-    passed = _passed_ids(backlog)
-    blocked: set[str] = set()
-    for epic in backlog.epics:
-        for feature in epic.features:
-            for sl in feature.slices:
-                if sl.status in (SliceStatus.FAILED, SliceStatus.DEFERRED, SliceStatus.IN_FLIGHT):
-                    blocked.add(sl.slice_id)
-
-    out: list[SelectedSlice] = []
-    for epic in backlog.epics:
-        for feature in epic.features:
-            for sl in feature.slices:
-                if sl.status != SliceStatus.PENDING:
-                    continue
-                if sl.slice_id in blocked:
-                    continue
-                deps = graph.get(sl.slice_id, ())
-                if all(dep in passed for dep in deps):
-                    out.append(
-                        SelectedSlice(
-                            slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
-                        ),
-                    )
-                    if len(out) >= max_n:
-                        return out
-    return out
+    ready = _ready_slices(backlog)
+    return _pick_round_robin_batch(ready, backlog, max_n)
 
 
 def all_slices_terminal(backlog: DeliveryBacklog) -> bool:

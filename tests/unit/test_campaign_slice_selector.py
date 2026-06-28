@@ -129,3 +129,66 @@ def test_select_next_slice_round_robin_surfaces() -> None:
     assert selected is not None
     assert selected.slice.slice_id == "slice-web-a"
     assert selected.slice.surface_id == "web"
+
+
+def test_select_next_slices_prefers_distinct_surfaces() -> None:
+    backlog = DeliveryBacklog(
+        campaign_id="run-par-surfaces",
+        epics=(
+            BacklogEpic(
+                epic_id="epic-par",
+                title="Parallel surfaces",
+                status=EpicStatus.IN_PROGRESS,
+                features=(
+                    BacklogFeature(
+                        feature_id="feat-par",
+                        title="Surfaces",
+                        acceptance_criteria=("Both surfaces ship",),
+                        slices=(
+                            BacklogSlice(
+                                slice_id="slice-api-1",
+                                status=SliceStatus.PENDING,
+                                target_paths=("backend/",),
+                                depends_on=(),
+                                estimated_loc=50,
+                                rationale="API 1",
+                                surface_id="api",
+                            ),
+                            BacklogSlice(
+                                slice_id="slice-api-2",
+                                status=SliceStatus.PENDING,
+                                target_paths=("backend/",),
+                                depends_on=(),
+                                estimated_loc=50,
+                                rationale="API 2",
+                                surface_id="api",
+                            ),
+                            BacklogSlice(
+                                slice_id="slice-web-1",
+                                status=SliceStatus.PENDING,
+                                target_paths=("frontend/",),
+                                depends_on=(),
+                                estimated_loc=50,
+                                rationale="Web 1",
+                                surface_id="web",
+                            ),
+                            BacklogSlice(
+                                slice_id="slice-web-2",
+                                status=SliceStatus.PENDING,
+                                target_paths=("frontend/",),
+                                depends_on=(),
+                                estimated_loc=50,
+                                rationale="Web 2",
+                                surface_id="web",
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        metadata=BacklogMetadata(generator_mode="heuristic", total_slices_planned=4),
+    )
+    batch = select_next_slices(backlog, 2)
+    assert len(batch) == 2
+    surfaces = {sel.slice.surface_id for sel in batch}
+    assert surfaces == {"api", "web"}
