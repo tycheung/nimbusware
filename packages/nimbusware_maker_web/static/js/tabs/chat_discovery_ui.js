@@ -199,9 +199,24 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
   for (const q of state.questions_emitted || []) {
     const block = document.createElement("div");
     block.className = "chat-discovery-question";
+    const labelRow = document.createElement("div");
+    labelRow.className = "chat-discovery-question-label";
     const label = document.createElement("p");
     label.textContent = q.question;
-    block.appendChild(label);
+    labelRow.appendChild(label);
+    if (q.hint) {
+      const explain = document.createElement("button");
+      explain.type = "button";
+      explain.className = "linkish discovery-explain-btn";
+      explain.textContent = "Explain";
+      explain.title = q.hint;
+      explain.dataset.testid = `maker-chat-discovery-explain-${q.id}`;
+      explain.addEventListener("click", () => {
+        toast(q.hint, "info");
+      });
+      labelRow.appendChild(explain);
+    }
+    block.appendChild(labelRow);
     const chips = document.createElement("div");
     chips.className = "actions chat-action-chips";
     for (const chipLabel of ANSWER_CHIPS[q.id] || ["Answer…"]) {

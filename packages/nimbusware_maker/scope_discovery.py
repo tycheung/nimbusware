@@ -10,18 +10,22 @@ SCOPE_QUESTIONS: tuple[dict[str, str], ...] = (
     {
         "id": "client_form",
         "question": "Which client should we build first (web app, mobile, or both)?",
+        "hint": "Web app is the default full-stack path; mobile is deferred to a web-first PWA.",
     },
     {
         "id": "backend_stack",
         "question": "Any backend stack preference (Python/FastAPI, Node, Go, or no preference)?",
+        "hint": "FastAPI is the default catalog stack; Node suits existing JS backends.",
     },
     {
         "id": "frontend_stack",
         "question": "Any frontend preference (React, Vue, or no preference)?",
+        "hint": "React + Vite is the default; Vue is available when your team prefers it.",
     },
     {
         "id": "hosting",
         "question": "Where should this run (local only, cloud, or decide later)?",
+        "hint": "Local only keeps dev env on your machine; cloud unlocks deploy cockpit later.",
     },
 )
 

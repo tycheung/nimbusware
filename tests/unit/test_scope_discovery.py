@@ -22,6 +22,13 @@ def test_scope_discover_emits_questions() -> None:
     assert state["surfaces_likely"] == ["api", "web"]
 
 
+def test_scope_discover_questions_include_hints() -> None:
+    state = scope_discover("Build a todo app")
+    by_id = {q["id"]: q for q in state["questions_emitted"]}
+    assert "hint" in by_id["client_form"]
+    assert "Web app" in by_id["client_form"]["hint"]
+
+
 def test_scope_discover_skips_questions_when_narrowed() -> None:
     state = scope_discover("Build a REST API, backend only")
     assert state["discovery_complete"] is True
