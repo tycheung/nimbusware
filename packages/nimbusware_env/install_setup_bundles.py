@@ -57,6 +57,24 @@ def bundle_edition(bundle: dict[str, Any]) -> str:
     )
 
 
+def bundle_config(bundle: dict[str, Any]) -> dict[str, Any]:
+    config = bundle.get("config")
+    return config if isinstance(config, dict) else {}
+
+
+def archetype_subchoice_config(bundle: dict[str, Any], archetype: str) -> dict[str, Any]:
+    subchoices = bundle_config(bundle).get("maker_archetype_subchoices")
+    if not isinstance(subchoices, dict):
+        return {}
+    row = subchoices.get(str(archetype or "").strip())
+    return dict(row) if isinstance(row, dict) else {}
+
+
+def bundle_maker_defaults(bundle: dict[str, Any]) -> dict[str, Any]:
+    defaults = bundle_config(bundle).get("maker_defaults")
+    return dict(defaults) if isinstance(defaults, dict) else {}
+
+
 def apply_setup_bundle_env(
     repo_root: Path,
     bundle_id: str,
