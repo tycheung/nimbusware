@@ -18,6 +18,9 @@ export function writeSoloDiscipline(value) {
   const val = String(value || "").trim();
   if (val) localStorage.setItem(STORAGE_KEY, val);
   else localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(
+    new CustomEvent("maker-solo-discipline-changed", { detail: { value: val } }),
+  );
 }
 
 export function soloDisciplineSectionHtml() {

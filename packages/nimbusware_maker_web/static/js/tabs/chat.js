@@ -24,12 +24,14 @@ import {
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
 import { wireChatMentionAutocomplete } from "../chat_mention_ui.js";
+import { mountSoloHatChips } from "./chat_solo_hat_ui.js";
 
 export async function mountChat(root) {
   root.innerHTML = chatLayoutHtml();
 
   wireFollowLiveToggle(root);
   mountAutopilotLadderHint(root);
+  mountSoloHatChips(root);
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#chat-project-select");

@@ -43,6 +43,13 @@ export function chatLayoutHtml() {
                 .join("")}
             </select>
           </label>
+          <div
+            id="chat-solo-hat-chips"
+            class="actions chat-action-chips chat-solo-hat-chips"
+            data-testid="maker-chat-solo-hat-chips"
+            role="group"
+            aria-label="Solo discipline hat"
+          ></div>
           <label>Message
             <textarea name="message" id="chat-message" rows="4" required
               data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature… Use @frontend, @backend, …"></textarea>

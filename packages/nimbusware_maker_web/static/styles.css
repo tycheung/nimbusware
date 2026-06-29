@@ -783,6 +783,26 @@ body.mobile-mode #theater-list {
   gap: 0.5rem;
 }
 
+.chat-solo-hat-chips {
+  margin: 0.35rem 0 0.5rem;
+  align-items: center;
+}
+
+.chat-solo-hat-caption {
+  font-size: 0.85rem;
+  margin-right: 0.25rem;
+}
+
+.chat-solo-hat-chip.active {
+  border-color: var(--accent, #3b82f6);
+  background: color-mix(in srgb, var(--accent, #3b82f6) 12%, transparent);
+}
+
+.chat-solo-hat-clear {
+  font-size: 0.85rem;
+  margin-left: 0.25rem;
+}
+
 .chat-turn-actions {
   display: block;
   margin-top: 0.25rem;
