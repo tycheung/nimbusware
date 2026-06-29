@@ -55,7 +55,9 @@ def put_tenant_collab_policy(
         "write_may_start_runs": body.write_may_start_runs,
         "default_join_discipline": body.default_join_discipline,
         "default_agent_overlays": {
-            str(k): str(v)[:2000] for k, v in (body.default_agent_overlays or {}).items() if str(k).strip()
+            str(k): str(v)[:2000]
+            for k, v in (body.default_agent_overlays or {}).items()
+            if str(k).strip()
         },
     }
     saved = save_tenant_collab_policy(slug, doc)

@@ -49,7 +49,10 @@ def seed_tenant_agent_overlay_on_join(
     ext = tenant_default_agent_overlay(tenant_slug, discipline)
     if not ext or not discipline:
         return False
-    from nimbusware_maker.user_agent_overlay import load_user_agent_overlays, save_user_agent_overlay
+    from nimbusware_maker.user_agent_overlay import (
+        load_user_agent_overlays,
+        save_user_agent_overlay,
+    )
 
     uid = str(user_id)
     existing = load_user_agent_overlays(uid, repo_root=repo_root)

@@ -4,7 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
 from nimbusware_api.errors import problem
@@ -111,8 +111,12 @@ def post_session_scope_publish(
     meta = dict(session.metadata or {}) if session else {}
     return ScopePendingResponse(
         session_id=str(session_id),
-        scope_pending=meta.get("scope_pending") if isinstance(meta.get("scope_pending"), dict) else None,
-        scope_approved=meta.get("scope_approved") if isinstance(meta.get("scope_approved"), dict) else None,
+        scope_pending=meta.get("scope_pending")
+        if isinstance(meta.get("scope_pending"), dict)
+        else None,
+        scope_approved=meta.get("scope_approved")
+        if isinstance(meta.get("scope_approved"), dict)
+        else None,
     )
 
 

@@ -21,3 +21,5 @@ Prerequisites from the v1.5 program:
 ## Operator guidance
 
 Use Maker in the mobile browser for field review. Theater, Plan, and Progress tabs are responsive; dedicated native shells are not required for core workflows.
+
+**Manager mode:** append `?manager=1` (or `?mobile=1&manager=1`) to the Maker URL for a read-only PWA with Progress, Scope (manifest approval), and Review tabs. Team leads share scope via **Share for manager** in Chat discovery; managers open `#/scope?session_id=<uuid>`.

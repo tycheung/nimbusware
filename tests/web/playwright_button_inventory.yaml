@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 170
-  clicked: 38
+  total_buttons: 174
+  clicked: 39
   visible_only: 9
-  unwired: 123
-  click_ratio: 0.2235
+  unwired: 126
+  click_ratio: 0.2241
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -378,6 +378,12 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-scope-share-manager
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-solo-hat-none
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js
@@ -735,6 +741,25 @@ buttons:
 - test_id: maker-learnings-ribbon-prominent
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-manager-scope-approve
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
+  label: Approve manifest
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-manager-scope-load
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
+  label: Load pending
+  clicked_in:
+  - tests/e2e/web/maker_button_clicks.spec.ts
+  visible_only_in: []
+- test_id: maker-manager-scope-plain
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

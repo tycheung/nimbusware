@@ -39,6 +39,9 @@ def test_maker_web_mobile_css_and_tabs() -> None:
     assert "MOBILE_TABS" in shell_js
     assert "mobileMode" in shell_js
     assert "detectMobileMode" in shell_js
+    assert "detectManagerMode" in shell_js
+    manager_js = (_STATIC / "js" / "tabs" / "manager_scope_ui.js").read_text(encoding="utf-8")
+    assert "maker-manager-scope-approve" in manager_js
     assert "serviceWorker" in shell_js
     assert "maybeEnableMobilePush" in shell_js
     assert "maybeRegisterPushSubscription" in shell_js

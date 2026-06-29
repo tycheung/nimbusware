@@ -80,7 +80,9 @@ def _parallel_slice_count_for_run(run_id: UUID, store: Any | None = None) -> int
     return 2
 
 
-def _select_slices_for_tick(run_id: UUID, backlog: Any, store: Any | None = None) -> list[SelectedSlice]:
+def _select_slices_for_tick(
+    run_id: UUID, backlog: Any, store: Any | None = None
+) -> list[SelectedSlice]:
     parallel = _parallel_slice_count_for_run(run_id, store=store)
     if parallel <= 1:
         one = select_next_slice(backlog)

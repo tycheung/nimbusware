@@ -11,7 +11,9 @@ def _meta(session: Any) -> dict[str, Any]:
     return dict(raw) if isinstance(raw, dict) else {}
 
 
-def publish_scope_pending(chat_store: Any, session_id: UUID, scope_state: dict[str, Any]) -> dict[str, Any]:
+def publish_scope_pending(
+    chat_store: Any, session_id: UUID, scope_state: dict[str, Any]
+) -> dict[str, Any]:
     session = chat_store.get_session(session_id)
     if session is None:
         raise KeyError("chat_session_not_found")

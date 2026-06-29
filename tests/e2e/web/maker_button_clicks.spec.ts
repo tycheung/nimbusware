@@ -212,3 +212,11 @@ test("progress integrator refresh fetches catalog candidates", async ({ page, re
   const refreshResp = await refreshPromise;
   expect(refreshResp.ok()).toBeTruthy();
 });
+
+test("manager scope panel load button is clickable", async ({ page }) => {
+  await page.goto("/v1/maker/app/?manager=1#/scope");
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/scope");
+  await expect(page.getByTestId("maker-manager-scope-load")).toBeVisible({ timeout: 15_000 });
+  await page.getByTestId("maker-manager-scope-load").click();
+});
