@@ -25,6 +25,7 @@ import {
 } from "./chat_theater_ui.js";
 import { wireChatMentionAutocomplete } from "../chat_mention_ui.js";
 import { mountSoloHatChips } from "./chat_solo_hat_ui.js";
+import { mountSoloHatCoachHint } from "./chat_solo_hat_coach_ui.js";
 
 export async function mountChat(root) {
   root.innerHTML = chatLayoutHtml();
@@ -32,6 +33,7 @@ export async function mountChat(root) {
   wireFollowLiveToggle(root);
   mountAutopilotLadderHint(root);
   mountSoloHatChips(root);
+  mountSoloHatCoachHint(root);
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#chat-project-select");

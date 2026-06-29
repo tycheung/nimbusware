@@ -10,6 +10,10 @@ const hatChipsJs = readFileSync(
   resolve(import.meta.dirname, "../static/js/tabs/chat_solo_hat_ui.js"),
   "utf8",
 );
+const coachJs = readFileSync(
+  resolve(import.meta.dirname, "../static/js/tabs/chat_solo_hat_coach_ui.js"),
+  "utf8",
+);
 const chatShellJs = readFileSync(
   resolve(import.meta.dirname, "../static/js/tabs/chat_shell_html.js"),
   "utf8",
@@ -29,6 +33,12 @@ describe("solo discipline and invite templates", () => {
     expect(chatShellJs).toContain("maker-chat-solo-hat-chips");
     expect(hatChipsJs).toContain("maker-chat-solo-hat-${hat.id}");
     expect(hatChipsJs).toContain("maker-solo-discipline-changed");
+  });
+
+  it("engineer archetype gets dismissible solo hat coach hint", () => {
+    expect(coachJs).toContain("maker-chat-solo-hat-coach");
+    expect(coachJs).toContain("maker_solo_hat_coach_dismissed");
+    expect(coachJs).toContain('archetypeSubchoice() !== "engineer"');
   });
 
   it("invite modal exposes roster templates", () => {

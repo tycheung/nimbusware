@@ -4,6 +4,7 @@ maker:
   maker-chat-start: tests/e2e/web/maker_chat_patch.spec.ts
   maker-chat-accept-chip: tests/e2e/web/maker_chat_patch.spec.ts
   maker-chat-autopilot-hint-dismiss: tests/e2e/web/maker_chat_patch.spec.ts
+  maker-chat-solo-hat-coach-dismiss: tests/e2e/web/maker_solo_hat_coach.spec.ts
   maker-chat-override-chip-campaign: tests/e2e/web/maker_chat_override.spec.ts
   maker-chat-escalate-campaign: tests/e2e/web/maker_chat_escalation.spec.ts
   maker-chat-escalate-slice: tests/e2e/web/maker_playwright_extended.spec.ts

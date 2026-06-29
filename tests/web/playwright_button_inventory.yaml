@@ -384,6 +384,20 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-solo-hat-coach
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_solo_hat_coach.spec.ts
+- test_id: maker-chat-solo-hat-coach-dismiss
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js
+  label: (dynamic)
+  clicked_in:
+  - tests/e2e/web/maker_solo_hat_coach.spec.ts
+  visible_only_in: []
 - test_id: maker-chat-solo-hat-none
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js

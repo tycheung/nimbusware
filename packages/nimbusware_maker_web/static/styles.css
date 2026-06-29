@@ -836,6 +836,12 @@ body.mobile-mode #theater-list {
   margin-left: 0.25rem;
 }
 
+.chat-solo-hat-coach {
+  margin: 0.35rem 0 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--accent, #3b82f6);
+}
+
 .chat-turn-actions {
   display: block;
   margin-top: 0.25rem;
