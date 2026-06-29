@@ -13,8 +13,14 @@ from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.permissions import require_session_participant
 from nimbusware_env.env_flags import nimbusware_collab_enabled
+from nimbusware_maker.collab_discipline_routing import enqueue_collab_discipline_routes
+from nimbusware_maker.collab_disciplines import parse_discipline_mentions
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
 from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
+from nimbusware_orchestrator.surface_interjection_routing import (
+    enqueue_surface_steers,
+    surface_steer_routes,
+)
 
 router = APIRouter()
 
@@ -101,12 +107,6 @@ def post_interjection_enqueue(
         else InterjectionPriority.NEXT
     )
     q = queue_for_run(str(run_id))
-    from nimbusware_maker.collab_disciplines import parse_discipline_mentions
-    from nimbusware_maker.collab_discipline_routing import enqueue_collab_discipline_routes
-    from nimbusware_orchestrator.surface_interjection_routing import (
-        enqueue_surface_steers,
-        surface_steer_routes,
-    )
 
     if parse_discipline_mentions(body.message):
         actor = actor_user_id(request, user)

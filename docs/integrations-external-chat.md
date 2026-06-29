@@ -46,18 +46,21 @@ Forward **operator commands** from Slack, Teams, or other tools via webhook:
 }
 ```
 
+Use a stable `session_id` per Slack channel or Teams thread so `/run`, `@qa …`, and `/status` share the same active run.
+
 Response includes `reply` (operator chat handler output) and `last_run_id` when a run was started.
 
 ### Steering an active run
 
-After `/run` (or a natural-language start), send interjection prefixes on the same webhook session:
+After `/run` (or a natural-language start), send interjection prefixes on the same webhook session (`session_id` persists `last_run_id` across requests):
 
-| Prefix | Effect |
+| Prefix / pattern | Effect |
 |--------|--------|
 | `[patch]` | Head patch slice from chat |
 | `[steer]` | Volatile guidance on next slice plan |
 | `[skip]` | Defer current backlog slice |
 | `[build]` | Promote to campaign from chat |
+| `@frontend`, `@backend`, `@qa`, … | Route to discipline-targeted interjection queue (same as Maker Chat `@` routing) |
 
 `/status` returns pending interjection queue depth plus a micro-slice timeline summary for
 `last_run_id`.
