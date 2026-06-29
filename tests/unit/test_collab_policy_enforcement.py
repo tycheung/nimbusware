@@ -61,7 +61,8 @@ def test_assert_link_join_allowed_skips_on_individual_bundle(tmp_path, monkeypat
         "nimbusware_maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
-    assert_link_join_allowed(tenant_slug=None) is None
+    result = assert_link_join_allowed(tenant_slug=None)
+    assert result is None
 
 
 def test_assert_participant_capacity_enforces_limit(tmp_path, monkeypatch) -> None:

@@ -24,10 +24,12 @@ def effective_collab_policy(tenant_slug: str | None) -> dict[str, Any]:
 
 def max_session_participants(tenant_slug: str | None) -> int:
     raw = effective_collab_policy(tenant_slug).get("max_session_participants")
-    try:
-        cap = int(raw)
-    except (TypeError, ValueError):
-        cap = 20
+    cap = 20
+    if raw is not None:
+        try:
+            cap = int(raw)
+        except (TypeError, ValueError):
+            cap = 20
     return max(1, min(cap, 500))
 
 

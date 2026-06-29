@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 178
-  clicked: 40
-  visible_only: 10
+  total_buttons: 180
+  clicked: 41
+  visible_only: 11
   unwired: 128
-  click_ratio: 0.2247
+  click_ratio: 0.2278
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
