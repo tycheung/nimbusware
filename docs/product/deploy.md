@@ -6,6 +6,7 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 
 | Method | Path | Purpose |
 |--------|------|---------|
+| GET | `/v1/platform/deploy/audit` | List deploy audit rows for optional `run_id` (hashed user refs; no secrets) |
 | POST | `/v1/platform/deploy/terraform-validate` | `fmt` / `validate` / `plan` in workspace; optional `run_id` emits timeline stages |
 | POST | `/v1/platform/deploy/approve` | Record operator approval (`deploy.approved` on run timeline) |
 | POST | `/v1/platform/deploy/apply` | `terraform apply` after approval (or `deploy_hands_off` autopilot profile); plan-only skip when credentials empty; auto-runs HTTP smoke when live URLs are returned |
@@ -20,6 +21,7 @@ Operators wire cloud deploy through Terraform validation, GitHub Actions, and pe
 
 | Method | Path | Purpose |
 |--------|------|---------|
+| GET/PUT | `/v1/enterprise/audit-policy` | Tenant legal hold + redaction patterns (Admin Fleet toggle; blocks event-store purge) |
 | GET/PUT | `/v1/enterprise/tenants/{ref}/deploy-policy` | Tenant allowlist for deploy targets (`aws-ecs`, `aws-static-site`, `github-actions`) |
 | GET/PUT | `/v1/enterprise/tenants/{ref}/deploy-approval-policy` | Approval chain: `maker_only`, `session_admin`, or `dual_control` (maker + fleet admin) |
 
@@ -36,6 +38,7 @@ Apply and credential save enforce the tenant allowlist when `NIMBUSWARE_SETUP_BU
 ## Maker UI
 
 - **Progress / Review** deploy cockpit — **Run Terraform validate**, **Approve deploy**, **Apply deploy**, **Run smoke test**, **Rollback deploy** (destroy or previous state), CI status from timeline stages; refresh polls GitHub Actions when `github_repo` is configured
+- **Review deploy audit** — timeline of credential updates and apply/rollback actions for the active run (hashed user refs)
 - **Settings → Deploy connections** — sync labels with vault API
 
 Autopilot profiles `deploy_guided` (requires manual approval) and `deploy_hands_off` (level ≥ 9, no `stop_before_deploy_apply`) control whether apply may auto-record approval.

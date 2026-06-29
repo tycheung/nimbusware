@@ -35,6 +35,8 @@ After UI changes: `cd packages/nimbusware_admin_ui && npm ci && npm run build`
 - Ollama SLI + preflight aggregate
 - Redis worker health, hardware fleet tiers, rescan
 - Cross-tenant gate comparison with CSV export
+- **Compliance summary** — gate pass rate, slice histogram, IAM/event counts
+- **Audit retention policy** — legal-hold toggle (`GET/PUT /v1/enterprise/audit-policy`) blocks `purge_event_store_retention.py` for the tenant
 
 Preflight history remains on the **Preflight** tab.
 

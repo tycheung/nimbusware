@@ -23,7 +23,7 @@ Before sharing audit bundles outside the tenant boundary, redact or omit:
 - `payload` fields from chat or interjection events when exporting for support tickets
 - Scraper artifact URLs that embed credentials
 
-Legal hold blocks purge via `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD`. IAM-scoped deferrals remain Enterprise Lane D work.
+Legal hold blocks purge via `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD` or tenant `audit-policy.legal_hold` (Admin Fleet toggle; `GET/PUT /v1/enterprise/audit-policy`). IAM-scoped deferrals remain Enterprise Lane D work.
 
 ## Purge helper
 
@@ -33,6 +33,7 @@ Legal hold blocks purge via `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD`. IAM-scoped defe
 |-----|--------|
 | `NIMBUSWARE_EVENT_STORE_RETENTION_DAYS` | Retention window; `0` or unset disables purge reporting |
 | `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD` | Truthy blocks purge (script exits before counting or deleting) |
+| Tenant `audit-policy.legal_hold` | When Postgres config is enabled, Fleet legal-hold toggle blocks purge for that tenant |
 | `NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE` | Must be `1` for `--execute` to run `DELETE` via `nimbusware_store.purge.purge_events_before` |
 
 Append-only triggers on `event_store` still reject `DELETE` until an operator removes or bypasses `prevent_event_store_mutation()`.

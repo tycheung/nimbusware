@@ -12,7 +12,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Chat** (default) | Classify intent → scope discovery (full-stack) → start run or campaign |
 | **Build** | Redirects to Chat; campaign mode uses `campaign_fullstack` with recommend-for-me |
 | **Progress** | SSE theater (Evidence toggle per line), maker-progress with surface-aware slice headlines, deploy cockpit (validate, approve, apply, smoke, rollback, environment selector), findings panel, operator ribbons |
-| **Review** | Research approve/reject, slice approval, deploy cockpit + git/PR panel, factory evidence, audit export |
+| **Review** | Research approve/reject, slice approval, deploy cockpit + **deploy audit timeline**, git/PR panel, factory evidence, audit export |
 | **Plan** | Campaign backlog tree with surface badges (API/Web/Infra/Contract), active slice highlight, maintenance countdown, contract gate card, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
 | **Settings** | Hardware, Ollama, autopilot, enforcement depth, hybrid routing, deploy credential vault sync, solo discipline hat, **My agent overlays** editor, collab toggle |
@@ -34,7 +34,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Manager PWA:** `?manager=1` mobile mode — Progress/Review watch + **Scope** tab approves manifests shared via `POST /chat/sessions/{id}/scope/publish`
 - **Tenant join defaults:** Enterprise collab policy suggests `default_join_discipline` and seeds `default_agent_overlays` on join (join preview shows overlay hint)
 - **Start gate:** full-stack campaigns require completed discovery, confirmed manifest, or **Recommend for me** (backend-only phrasing skips to `campaign_micro_slice`)
-- Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
+- Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips); **contract gate** card when `slice.contract` stages appear on the run timeline (same status as Plan tab)
 - **Open preview** link on active run cards when dev environment session is live; **Live API / Live web** links when deploy timeline includes URLs (`GET /runs/{id}/dev-env/status`, run timeline metadata)
 - Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
@@ -63,6 +63,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Findings workspace** — blocking findings by default; toggle **Show all severities** for full gate output; interject/widen actions on blockers
 - **Completion cockpit** — plain-language terminal banner when campaigns finish (Safe Coding archetype uses softer “passed automated checks” copy); auto **launch check** on terminal runs; per-surface launch summary chips
 - **Review git panel** — branch, PR URL, PR status, and deploy CI timeline status from the same run
+- **Review deploy audit** — `GET /v1/platform/deploy/audit?run_id=` loads hashed credential/apply events from `.nimbusware/platform/deploy_audit.jsonl` for the active run
 - **Enterprise Home** — `GET /v1/platform/fleet-governance` surfaces mandatory discovery fields, deploy approval chain, default surfaces, allowed deploy targets, and enforcement depth clamps; `GET /v1/enterprise/compliance/summary` loads gate pass rate and fleet policy counts in the compliance widget
 - **Review commit policy** — enterprise Review git panel shows conventional-commit and ticket-id chips when fleet commit policy applies (`GET /v1/enterprise/tenants/{ref}/commit-policy`)
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
