@@ -1,0 +1,8 @@
+version: 1
+tenants:
+  default:
+    allowed_stacks: {}
+  regulated:
+    allowed_stacks:
+      api: fastapi_python
+      web: react_vite

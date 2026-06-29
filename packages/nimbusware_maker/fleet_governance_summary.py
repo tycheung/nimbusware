@@ -35,7 +35,17 @@ def fleet_governance_summary(
         ),
         "discovery_required_fields": _discovery_required_fields(tenant_slug, bundle),
         "deploy_approval_chain": _deploy_approval_chain(tenant_slug, bundle),
+        "allowed_stacks": _allowed_stacks(tenant_slug, bundle),
     }
+
+
+def _allowed_stacks(tenant_slug: str | None, bundle: str) -> dict[str, str]:
+    if bundle != "enterprise":
+        return {}
+    from nimbusware_orchestrator.fleet_stack_policy import tenant_stack_policy
+
+    policy = tenant_stack_policy(tenant_slug)
+    return dict(policy.allowed_stacks)
 
 
 def _deploy_approval_chain(tenant_slug: str | None, bundle: str) -> str:

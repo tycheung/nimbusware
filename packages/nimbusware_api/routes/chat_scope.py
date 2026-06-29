@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from nimbusware_env.env_flags import env_str
+from nimbusware_iam.context import get_auth_context
 from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
 from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
 from nimbusware_maker.scope_discovery import (
@@ -16,6 +17,13 @@ from nimbusware_maker.scope_discovery import (
 )
 
 router = APIRouter(tags=["maker"])
+
+
+def _tenant_slug_from_auth() -> str | None:
+    ctx = get_auth_context()
+    if ctx is None:
+        return None
+    return ctx.tenant_slug
 
 
 class ScopeDiscoverBody(BaseModel):
@@ -60,6 +68,7 @@ def post_scope_gather(body: ScopeGatherBody) -> ScopeDiscoverResponse:
         body.state,
         [a.model_dump(mode="json") for a in body.answers],
         recommend_for_me_flag=recommend,
+        tenant_slug=_tenant_slug_from_auth(),
     )
     return ScopeDiscoverResponse(scope=gathered)
 
@@ -73,10 +82,11 @@ class ScopeRecommendBody(BaseModel):
 def post_scope_recommend(body: ScopeRecommendBody) -> ScopeDiscoverResponse:
     setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     state = scope_discover(body.business_prompt)
-    recommended = recommend_for_me(state)
+    recommended = recommend_for_me(state, tenant_slug=_tenant_slug_from_auth())
     manifest = manifest_for_archetype(
         setup_bundle=setup_bundle,
         archetype=body.archetype,
+        tenant_slug=_tenant_slug_from_auth(),
     )
     recommended["stack_manifest"] = manifest
     from nimbusware_maker.scope_discovery import attach_discovery_summary
@@ -91,7 +101,7 @@ class ScopeConfirmBody(BaseModel):
 @router.post("/scope/confirm", response_model=ScopeDiscoverResponse)
 def post_scope_confirm(body: ScopeConfirmBody) -> ScopeDiscoverResponse:
     try:
-        confirmed = scope_confirm(body.state)
+        confirmed = scope_confirm(body.state, tenant_slug=_tenant_slug_from_auth())
     except ValueError as exc:
         from fastapi import HTTPException
 

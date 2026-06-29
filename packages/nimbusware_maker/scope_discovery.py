@@ -116,6 +116,7 @@ def recommend_for_me(
     setup_bundle: str = "default",
     archetype: str | None = None,
     fleet_policy: dict[str, Any] | None = None,
+    tenant_slug: str | None = None,
 ) -> dict[str, Any]:
     from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
 
@@ -124,6 +125,7 @@ def recommend_for_me(
         setup_bundle=setup_bundle,
         archetype=archetype,
         fleet_policy=fleet_policy,
+        tenant_slug=tenant_slug,
     )
     base["stack_manifest"] = manifest
     base["discovery_complete"] = True
@@ -148,7 +150,11 @@ def _answers_sufficient(answers: dict[str, str]) -> bool:
     return bool(str(answers.get("client_form") or "").strip())
 
 
-def _manifest_from_answers(answers: dict[str, str]) -> dict[str, Any]:
+def _manifest_from_answers(
+    answers: dict[str, str],
+    *,
+    tenant_slug: str | None = None,
+) -> dict[str, Any]:
     if _is_recommend_answer(answers):
         return deepcopy(DEFAULT_MANIFEST)
     client = str(answers.get("client_form") or "").lower()
@@ -173,7 +179,10 @@ def _manifest_from_answers(answers: dict[str, str]) -> dict[str, Any]:
     }
     if "cloud" in hosting.lower() or "aws" in hosting.lower():
         manifest["deploy_environment"] = "dev"
-    return apply_fleet_surface_policy(manifest, None)
+    from nimbusware_maker.archetype_surface_defaults import _apply_regulated_stack_guard
+
+    manifest = apply_fleet_surface_policy(manifest, None)
+    return _apply_regulated_stack_guard(manifest, tenant_slug)
 
 
 def scope_gather(
@@ -181,6 +190,7 @@ def scope_gather(
     answers: list[dict[str, str]] | None = None,
     *,
     recommend_for_me_flag: bool = False,
+    tenant_slug: str | None = None,
 ) -> dict[str, Any]:
     out = deepcopy(state)
     merged = dict(out.get("answers") or {})
@@ -194,7 +204,9 @@ def scope_gather(
     out["answers"] = merged
 
     if recommend_for_me_flag or _is_recommend_answer(merged):
-        return attach_discovery_summary(recommend_for_me(out))
+        return attach_discovery_summary(
+            recommend_for_me(out, tenant_slug=tenant_slug),
+        )
 
     if out.get("scope_narrowed"):
         out["discovery_complete"] = True
@@ -203,7 +215,7 @@ def scope_gather(
 
     if _answers_sufficient(merged):
         out["discovery_complete"] = True
-        out["stack_manifest"] = _manifest_from_answers(merged)
+        out["stack_manifest"] = _manifest_from_answers(merged, tenant_slug=tenant_slug)
     else:
         out["discovery_complete"] = False
         out["stack_manifest"] = None
@@ -255,7 +267,7 @@ def discovery_complete_for_start(
     return True, None
 
 
-def scope_confirm(state: dict[str, Any]) -> dict[str, Any]:
+def scope_confirm(state: dict[str, Any], *, tenant_slug: str | None = None) -> dict[str, Any]:
     from nimbusware_maker.stack_manifest import freeze_manifest, validate_frozen_manifest
 
     manifest_raw = state.get("stack_manifest")
@@ -263,7 +275,7 @@ def scope_confirm(state: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("stack_manifest required")
     answers = state.get("answers") if isinstance(state.get("answers"), dict) else {}
     frozen = freeze_manifest(manifest_raw, answers=answers, confirmed=True)
-    errors = validate_frozen_manifest(frozen)
+    errors = validate_frozen_manifest(frozen, tenant_slug=tenant_slug)
     if errors:
         raise ValueError("; ".join(errors))
     out = deepcopy(state)

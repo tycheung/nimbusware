@@ -54,6 +54,49 @@ def test_scope_gather_with_client_form() -> None:
     assert "web" in gathered["stack_manifest"]["surfaces"]
 
 
+def test_recommend_for_me_applies_regulated_stack_guard(tmp_path, monkeypatch) -> None:
+    path = tmp_path / "configs" / "enterprise" / "fleet_stack_policies.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        "version: 1\ntenants:\n  regulated:\n    allowed_stacks:\n      api: fastapi_python\n      web: react_vite\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.fleet_stack_policy.find_repo_root",
+        lambda: tmp_path,
+    )
+    state = scope_discover("Build a todo app")
+    recommended = recommend_for_me(state, tenant_slug="regulated")
+    assert recommended["stack_manifest"]["stacks"]["api"] == "fastapi_python"
+    assert recommended["stack_manifest"]["stacks"]["web"] == "react_vite"
+
+
+def test_manifest_from_answers_clamps_backend_stack_for_regulated_tenant(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    path = tmp_path / "configs" / "enterprise" / "fleet_stack_policies.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        "version: 1\ntenants:\n  regulated:\n    allowed_stacks:\n      api: fastapi_python\n      web: react_vite\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.fleet_stack_policy.find_repo_root",
+        lambda: tmp_path,
+    )
+    state = scope_discover("Build a todo app")
+    gathered = scope_gather(
+        state,
+        [
+            {"question_id": "client_form", "answer": "Web app"},
+            {"question_id": "backend_stack", "answer": "Node express"},
+        ],
+        tenant_slug="regulated",
+    )
+    assert gathered["stack_manifest"]["stacks"]["api"] == "fastapi_python"
+
+
 def test_discovery_gate_blocks_fullstack_without_scope() -> None:
     ok, detail = discovery_complete_for_start(
         {"business_prompt": "Build a todo app"},

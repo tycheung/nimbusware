@@ -54,13 +54,24 @@ def manifest_for_archetype(
     setup_bundle: str = "default",
     archetype: str | None = None,
     fleet_policy: dict[str, Any] | None = None,
+    tenant_slug: str | None = None,
 ) -> dict[str, Any]:
     manifest = deepcopy(_DEFAULT_MANIFEST)
     manifest["surfaces"] = default_surfaces_for_archetype(
         setup_bundle=setup_bundle,
         archetype=archetype,
     )
-    return apply_fleet_surface_policy(manifest, fleet_policy)
+    manifest = apply_fleet_surface_policy(manifest, fleet_policy)
+    return _apply_regulated_stack_guard(manifest, tenant_slug)
+
+
+def _apply_regulated_stack_guard(
+    manifest: dict[str, Any],
+    tenant_slug: str | None,
+) -> dict[str, Any]:
+    from nimbusware_orchestrator.fleet_stack_policy import apply_regulated_stack_guard
+
+    return apply_regulated_stack_guard(manifest, tenant_slug)
 
 
 __all__ = [

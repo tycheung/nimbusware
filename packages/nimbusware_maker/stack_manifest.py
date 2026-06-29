@@ -99,12 +99,28 @@ def validate_frozen_manifest(
     manifest: StackManifest,
     *,
     repo_root: Any | None = None,
+    tenant_slug: str | None = None,
 ) -> list[str]:
-    from nimbusware_orchestrator.stack_catalog import load_stack_catalog, resolve_manifest_stacks
+    from nimbusware_orchestrator.fleet_stack_policy import tenant_stack_policy
 
     errors: list[str] = []
     if not manifest.surfaces:
         errors.append("manifest has no surfaces")
+    stack_policy = tenant_stack_policy(tenant_slug, repo_root=repo_root)
+    if stack_policy.restricts_stacks():
+        for surface in manifest.surfaces:
+            allowed = stack_policy.allowed_stacks.get(surface)
+            if allowed is None:
+                errors.append(f"surface {surface!r} not allowed by tenant stack policy")
+                continue
+            chosen = manifest.stacks.get(surface)
+            if chosen and chosen != allowed:
+                errors.append(
+                    f"stack {chosen!r} for surface {surface!r} "
+                    f"not allowed (tenant requires {allowed!r})",
+                )
+    from nimbusware_orchestrator.stack_catalog import load_stack_catalog, resolve_manifest_stacks
+
     catalog = load_stack_catalog(repo_root)
     for surface in manifest.surfaces:
         stack_id = manifest.stacks.get(surface)
