@@ -26,13 +26,13 @@ def main() -> int:
     args = parser.parse_args()
 
     from nimbusware_store.retention_policy import (
-        legal_hold_enabled,
+        purge_blocked_by_legal_hold,
         purge_eligible_before,
         purge_execute_enabled,
     )
 
-    if legal_hold_enabled():
-        print("Legal hold active (NIMBUSWARE_EVENT_STORE_LEGAL_HOLD); purge skipped")
+    if purge_blocked_by_legal_hold():
+        print("Legal hold active (env or tenant audit policy); purge skipped")
         return 0
 
     cutoff = purge_eligible_before()

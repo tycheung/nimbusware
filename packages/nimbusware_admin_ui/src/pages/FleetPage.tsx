@@ -68,6 +68,9 @@ export function FleetPage() {
   >([]);
   const [error, setError] = useState("");
   const [compliance, setCompliance] = useState<Record<string, unknown> | null>(null);
+  const [legalHold, setLegalHold] = useState(false);
+  const [auditPolicyBusy, setAuditPolicyBusy] = useState(false);
+  const [auditPolicyCaption, setAuditPolicyCaption] = useState("");
 
   const loadDashboard = useCallback(() => {
     if (!enterpriseApiKey()) {
@@ -119,6 +122,58 @@ export function FleetPage() {
   useEffect(() => {
     loadCompliance();
   }, [loadCompliance]);
+
+  const loadAuditPolicy = useCallback(() => {
+    if (!enterpriseApiKey()) {
+      setAuditPolicyCaption("");
+      return;
+    }
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || "default";
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    apiJsonEnterprise<{ legal_hold?: boolean }>(
+      `/enterprise/audit-policy?tenant_slug=${encodeURIComponent(slug)}`,
+      { headers: { "X-Nimbusware-Api-Key": key } },
+    )
+      .then((body) => {
+        setLegalHold(Boolean(body.legal_hold));
+        setAuditPolicyCaption(`Audit policy for ${slug}`);
+      })
+      .catch(() => setAuditPolicyCaption(""));
+  }, [tenantId, tenants]);
+
+  useEffect(() => {
+    loadAuditPolicy();
+  }, [loadAuditPolicy]);
+
+  const saveLegalHold = async (enabled: boolean) => {
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || "default";
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    setAuditPolicyBusy(true);
+    try {
+      await apiJsonEnterprise(
+        `/enterprise/audit-policy?tenant_slug=${encodeURIComponent(slug)}`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Nimbusware-Api-Key": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ legal_hold: enabled, redaction_patterns: [] }),
+        },
+      );
+      setLegalHold(enabled);
+      setAuditPolicyCaption(
+        enabled
+          ? `Legal hold ON for ${slug} — event-store purge is blocked`
+          : `Legal hold OFF for ${slug}`,
+      );
+      loadCompliance();
+    } catch (e) {
+      setError(String((e as Error).message || e));
+    } finally {
+      setAuditPolicyBusy(false);
+    }
+  };
 
   const loadAutopilotPolicy = useCallback(() => {
     if (!enterpriseApiKey() || !tenantId) {
@@ -428,6 +483,23 @@ export function FleetPage() {
               </tr>
             </tbody>
           </table>
+          <section class="panel" data-testid="admin-fleet-audit-policy">
+            <h4>Audit retention policy</h4>
+            {auditPolicyCaption ? <p class="muted">{auditPolicyCaption}</p> : null}
+            <label data-testid="admin-fleet-legal-hold-toggle">
+              <input
+                type="checkbox"
+                checked={legalHold}
+                disabled={auditPolicyBusy}
+                onChange={(ev) => void saveLegalHold((ev.target as HTMLInputElement).checked)}
+              />
+              Legal hold — block event-store purge for this tenant
+            </label>
+            <p class="muted">
+              When enabled, <code>purge_event_store_retention.py</code> skips deletes. Env{" "}
+              <code>NIMBUSWARE_EVENT_STORE_LEGAL_HOLD=1</code> also blocks purge globally.
+            </p>
+          </section>
         </section>
       ) : null}
       {dashboard ? (
