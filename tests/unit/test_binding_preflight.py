@@ -50,3 +50,23 @@ def test_binding_preflight_manifest_surfaces() -> None:
         "roles_without_provider": [],
     }
     assert cloud_only_roles_satisfied(report) is True
+
+
+def test_binding_preflight_manifest_deploy_includes_infra_writer() -> None:
+    manifest = {
+        "surfaces": ["api", "web", "deploy"],
+        "stacks": {"api": "fastapi_python", "web": "react_vite"},
+    }
+    report = build_binding_preflight_report(
+        REPO,
+        work_type="factory",
+        probe=False,
+        stack_manifest=manifest,
+    )
+    assert report.get("surface_stage_map") == {
+        "api": "backend_writer",
+        "web": "frontend_writer",
+        "deploy": "infra_writer",
+    }
+    role_names = {row["agent_role"] for row in report["roles"]}
+    assert "infra_writer" in role_names

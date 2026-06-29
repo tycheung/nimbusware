@@ -25,6 +25,11 @@ def test_fullstack_multi_taxonomy() -> None:
     assert keys == ("frontend_writer", "backend_writer")
 
 
+def test_devops_multi_taxonomy() -> None:
+    keys = taxonomy_keys_for_discipline("devops")
+    assert keys == ("integration_adapter_writer", "infra_writer")
+
+
 def test_discipline_routes_from_mentions() -> None:
     routes = discipline_routes("@qa verify checkout")
     assert routes[0]["discipline"] == "qa"

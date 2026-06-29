@@ -44,3 +44,5 @@ def test_stack_for_surface() -> None:
 def test_writer_role_for_surface() -> None:
     assert writer_role_for_surface("web") == "frontend_writer"
     assert writer_role_for_surface("api") == "backend_writer"
+    assert writer_role_for_surface("deploy") == "infra_writer"
+    assert writer_role_for_surface("infra") == "integration_adapter_writer"

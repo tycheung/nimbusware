@@ -16,7 +16,7 @@ def test_db_registry_matches_yaml_seed() -> None:
     seed_config_from_repo(root, store)
     mat = ConfigMaterializer(root, store=store, use_db=True)
     db_reg = mat.get_role_registry()
-    for key in ("planner", "backend_writer", "test_writer"):
+    for key in ("planner", "backend_writer", "test_writer", "infra_writer"):
         assert yaml_reg.resolve(key) == db_reg.resolve(key)
     assert yaml_reg.yaml_version == db_reg.yaml_version
 
