@@ -70,6 +70,7 @@ def _handle_command(text: str, state: ChatState) -> str | None:
         return (
             "Commands:\n- /run [profile|auto]\n- /timeline\n- /status\n- /agent <id>\n"
             "Steer an active run with [patch], [steer], [skip], or [build] prefixes.\n"
+            "Route to a discipline with @frontend, @backend, @qa, … when a run is active.\n"
             "Describe a change in plain language for intent classification."
         )
     if cmd == "/status":
@@ -96,6 +97,8 @@ def _handle_command(text: str, state: ChatState) -> str | None:
             if not state.last_run_id:
                 return "No active run — use `/run` first, then send steering messages."
             return _enqueue_steering(state.last_run_id, stripped)
+    if state.last_run_id and _message_has_routable_mentions(stripped):
+        return _enqueue_steering(state.last_run_id, stripped)
     low = text.strip().lower()
     if low.startswith("start run") or ("micro_slice" in low and ("start" in low or "run" in low)):
         return _start_run("micro_slice", state)
@@ -104,6 +107,13 @@ def _handle_command(text: str, state: ChatState) -> str | None:
             return "No run yet. Try `/run micro_slice`."
         return _fetch_timeline_summary(state.last_run_id)
     return None
+
+
+def _message_has_routable_mentions(message: str) -> bool:
+    from nimbusware_maker.collab_disciplines import parse_discipline_mentions
+    from nimbusware_orchestrator.surface_interjection_routing import parse_surface_mentions
+
+    return bool(parse_discipline_mentions(message) or parse_surface_mentions(message))
 
 
 def _start_run(workflow_profile: str, state: ChatState) -> str:

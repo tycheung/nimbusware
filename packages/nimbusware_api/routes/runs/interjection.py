@@ -101,10 +101,23 @@ def post_interjection_enqueue(
         else InterjectionPriority.NEXT
     )
     q = queue_for_run(str(run_id))
+    from nimbusware_maker.collab_disciplines import parse_discipline_mentions
+    from nimbusware_maker.collab_discipline_routing import enqueue_collab_discipline_routes
     from nimbusware_orchestrator.surface_interjection_routing import (
         enqueue_surface_steers,
         surface_steer_routes,
     )
+
+    if parse_discipline_mentions(body.message):
+        actor = actor_user_id(request, user)
+        routes = enqueue_collab_discipline_routes(
+            store,
+            run_id=run_id,
+            message=body.message,
+            actor_user_id=str(actor) if actor is not None else None,
+        )
+        if routes:
+            return InterjectionQueueResponse(run_id=str(run_id), queue=q.to_dict())
 
     routes = surface_steer_routes(body.message)
     mention_only = bool(routes) and all(r.get("source") == "mention" for r in routes)

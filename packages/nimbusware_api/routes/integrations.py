@@ -13,6 +13,8 @@ from nimbusware_console.operator_chat_core import ChatState, process_user_messag
 
 router = APIRouter(prefix="/integrations", tags=["admin"])
 
+_webhook_sessions: dict[str, ChatState] = {}
+
 
 class ExternalChatWebhookBody(BaseModel):
     text: str = Field(min_length=1, max_length=8000)
@@ -44,6 +46,7 @@ def external_chat_capabilities(_admin: AdminDep) -> dict[str, str]:
         "in_product_chat": "Maker #/chat, Admin operator chat, MCP nimbusware-mcp",
         "supported_commands": "/run, /timeline, /status, /agent, /help",
         "steering_prefixes": "[patch], [steer], [skip], [build]",
+        "mention_routing": "@frontend, @backend, @qa, … on active run (session_id persists last_run_id)",
     }
 
 
@@ -68,7 +71,8 @@ def external_chat_webhook(
     else:
         require_admin_token(x_nimbusware_admin_token)
 
-    state = ChatState()
+    key = body.session_id.strip()[:128] or "external"
+    state = _webhook_sessions.setdefault(key, ChatState())
     reply = process_user_message(body.text, state)
     return ExternalChatWebhookResponse(
         reply=reply,
