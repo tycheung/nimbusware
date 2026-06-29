@@ -4,6 +4,7 @@ import { formatGateSummary } from "../gate-summary.js";
 import { renderPendingCards } from "./review_cards_ui.js";
 import { wireReviewGitPanel } from "./review_git_ui.js";
 import { wireReviewAdvancedPanel } from "./review_advanced_ui.js";
+import { mountReviewDeployAuditPanel } from "./review_deploy_audit_ui.js";
 import { deployCockpitHtml, wireDeployCockpit } from "../deploy_cockpit.js";
 
 export async function mountReview(root) {
@@ -34,6 +35,14 @@ export async function mountReview(root) {
       <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
     ${deployCockpitHtml({ scope: "review" })}
+    <section id="rev-deploy-audit" class="panel" data-testid="maker-review-deploy-audit" hidden>
+      <h3>Deploy audit</h3>
+      <p class="muted">Credential updates and apply/rollback actions for this run (hashed user refs only).</p>
+      <button type="button" id="rev-load-deploy-audit" data-testid="maker-review-deploy-audit-refresh">
+        Refresh audit timeline
+      </button>
+      <div data-testid="maker-review-deploy-audit-list"></div>
+    </section>
     <section id="rev-git-panel" class="panel mobile-advanced" data-testid="maker-review-git-panel">
       <h3>Git &amp; pull request</h3>
       <p id="rev-git-status" class="muted"></p>
@@ -76,6 +85,7 @@ export async function mountReview(root) {
 
   const git = wireReviewGitPanel(root, { currentRunId });
   wireReviewAdvancedPanel(root, { currentRunId });
+  mountReviewDeployAuditPanel(root, { currentRunId });
 
   async function loadPending() {
     const id = await currentRunId();

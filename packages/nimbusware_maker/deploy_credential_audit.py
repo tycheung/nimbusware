@@ -4,6 +4,7 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from nimbusware_env import find_repo_root
 
@@ -16,6 +17,35 @@ def _audit_path(repo_root: Path | None = None) -> Path:
 def _user_ref(user_id: str) -> str:
     digest = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
     return digest[:16]
+
+
+def list_deploy_audit_events(
+    *,
+    run_id: str = "",
+    limit: int = 50,
+    repo_root: Path | None = None,
+) -> list[dict[str, Any]]:
+    path = _audit_path(repo_root)
+    if not path.is_file():
+        return []
+    cap = max(1, min(200, int(limit)))
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            row = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(row, dict):
+            continue
+        if run_id and str(row.get("run_id") or "") != run_id:
+            continue
+        rows.append(row)
+    if len(rows) > cap:
+        rows = rows[-cap:]
+    return rows
 
 
 def append_deploy_audit_event(

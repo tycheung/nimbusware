@@ -29,6 +29,7 @@ from nimbusware_maker.deploy_approval_events import (
     deploy_apply_ready,
     emit_deploy_approved,
 )
+from nimbusware_maker.deploy_credential_audit import list_deploy_audit_events
 from nimbusware_maker.deploy_credential_vault import load_deploy_credentials
 from nimbusware_maker.deploy_environments import deploy_environment_catalog
 from nimbusware_maker.deploy_pipeline_events import emit_terraform_validate_stages
@@ -140,6 +141,35 @@ def get_deploy_credentials(
             detail=problem("unauthorized", "user identity required"),
         )
     return load_deploy_credentials(uid, repo_root=orch.repo_root)
+
+
+@router.get("/platform/deploy/audit")
+def get_deploy_audit(
+    orch: OrchDep,
+    user: AuthUserDep,
+    run_id: str = "",
+    limit: int = 50,
+) -> dict[str, Any]:
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    rid = run_id.strip()
+    if rid:
+        try:
+            UUID(rid)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=problem("invalid_request", "run_id must be a UUID"),
+            ) from exc
+    events = list_deploy_audit_events(
+        run_id=rid,
+        limit=limit,
+        repo_root=orch.repo_root,
+    )
+    return {"events": events, "run_id": rid or None, "count": len(events)}
 
 
 @router.get("/platform/deploy/github-workflow-template")
