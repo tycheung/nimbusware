@@ -203,7 +203,7 @@ def add_session_participant(
     user: OptionalUserDep,
 ) -> ParticipantResponse:
     _require_collab()
-    _session_or_404(chat_store, session_id)
+    session = _session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,
@@ -223,6 +223,24 @@ def add_session_participant(
         raise HTTPException(
             status_code=422,
             detail=problem("invalid_request", "user_id must be a UUID"),
+        ) from exc
+    tenant_slug = _tenant_slug_for_session(session)
+    from nimbusware_maker.collab_policy_enforcement import (
+        CollabPolicyViolation,
+        assert_participant_capacity,
+    )
+
+    try:
+        assert_participant_capacity(
+            collab_store,
+            session_id,
+            tenant_slug=tenant_slug,
+            user_id=target,
+        )
+    except CollabPolicyViolation as exc:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("collab_policy_violation", str(exc)),
         ) from exc
     try:
         row = collab_store.add_participant(
@@ -331,6 +349,25 @@ def join_chat_session(
         )
     session = _session_or_404(chat_store, invite.session_id)
     tenant_slug = _tenant_slug_for_session(session)
+    from nimbusware_maker.collab_policy_enforcement import (
+        CollabPolicyViolation,
+        assert_link_join_allowed,
+        assert_participant_capacity,
+    )
+
+    try:
+        assert_link_join_allowed(tenant_slug=tenant_slug)
+        assert_participant_capacity(
+            collab_store,
+            invite.session_id,
+            tenant_slug=tenant_slug,
+            user_id=user.user_id,
+        )
+    except CollabPolicyViolation as exc:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("collab_policy_violation", str(exc)),
+        ) from exc
     discipline = _resolve_join_discipline(
         body_discipline=body.user_discipline,
         invite_discipline=invite.recommended_discipline,
