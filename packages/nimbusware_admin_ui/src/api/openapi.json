@@ -43973,6 +43973,177 @@
         }
       }
     },
+    "/v1/platform/invite-templates": {
+      "get": {
+        "tags": [
+          "user",
+          "platform",
+          "platform"
+        ],
+        "summary": "Get Invite Templates",
+        "operationId": "get_invite_templates_v1_platform_invite_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Invite Templates V1 Platform Invite Templates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error (``code``, ``message``, optional ``details``)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "title": "Code"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "Message"
+                    },
+                    "details": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Details"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "title": "Problem",
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "title": "Code"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "Message"
+                    },
+                    "details": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Details"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "title": "Problem",
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Uncaught server fault (``code`` is typically ``internal_error``)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "title": "Code"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "Message"
+                    },
+                    "details": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Details"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "title": "Problem",
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "title": "Code"
+                    },
+                    "message": {
+                      "type": "string",
+                      "title": "Message"
+                    },
+                    "details": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Details"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "title": "Problem",
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/users/me/discipline-profile": {
       "get": {
         "tags": [

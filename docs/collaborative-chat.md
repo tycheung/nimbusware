@@ -31,6 +31,7 @@ Legacy: set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loo
 | POST | `/v1/chat/join` | Redeem invite token (optional `user_discipline`) |
 | PUT | `/v1/chat/sessions/{id}/participants/me/discipline` | Update your discipline in this session |
 | GET | `/v1/platform/collab-disciplines` | Discipline catalog (`configs/collab/disciplines.yaml`) |
+| GET | `/v1/platform/invite-templates` | Invite roster templates (`configs/collab/invite_templates.yaml`) |
 | GET/PUT | `/v1/users/me/discipline-profile` | Default discipline when joining sessions |
 | GET/PUT | `/v1/users/me/participant-context` | Expertise bullets (fo2186) shown on roster |
 | GET/PUT | `/v1/users/me/agent-overlays/{discipline}` | Per-discipline prompt extensions merged when roles are claimed |

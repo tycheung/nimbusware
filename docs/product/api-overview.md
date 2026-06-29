@@ -23,7 +23,7 @@ All routes are under `/v1`. OpenAPI groups operations as **user** (Maker) or **a
 | **Dev environment** | `GET/POST /runs/{id}/dev-env/*` | User |
 | **Platform** | edition, readiness, hardware, analytics | User |
 | **Deploy** | `POST /platform/deploy/terraform-validate`, `GET/PUT /platform/deploy/credentials`, `POST /platform/deploy/approve`, workflow template | User |
-| **Collab** | `/platform/collab-settings`, `/platform/collab-disciplines`, `GET/PUT /users/me/discipline-profile`, `GET/PUT /users/me/participant-context` | User |
+| **Collab** | `/platform/collab-settings`, `/platform/collab-disciplines`, `/platform/invite-templates`, `GET/PUT /users/me/discipline-profile`, `GET/PUT /users/me/participant-context` | User |
 | **Projects** | `GET/POST/PATCH /projects` (User); `DELETE` (Admin) | Mixed |
 | **Bundles** | search (User); catalog edit (Admin) | Mixed |
 | **Personas** | shelf read (User); CRUD (Admin) | Mixed |
