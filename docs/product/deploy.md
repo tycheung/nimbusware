@@ -47,4 +47,8 @@ Apply, smoke, and rollback pass `TF_VAR_environment` / `NIMBUSWARE_DEPLOY_ENV` t
 
 When `deploy` is in the frozen stack manifest, campaign **completion_eval** requires a successful `deploy.smoke` timeline stage before the run may finalize as PASS.
 
+## Agent roles
+
+Full-stack campaigns with a `deploy` surface register **`infra_writer`** in `configs/roles.yaml` and map it via `stack_catalog.writer_role_for_surface("deploy")`. Binding preflight (`binding_preflight.py`) includes `infra_writer` in `roles` and `surface_stage_map` when the manifest lists `deploy`. Collab **`@devops`** routes to both `integration_adapter_writer` and `infra_writer` (`configs/collab/disciplines.yaml`). Critique pairings pair `infra_writer` with product, domain, and security critics.
+
 Live `terraform apply` and hosted smoke tests require operator secrets (Admin API connections or CI environment). Apply without sufficient approval returns **403** (`deploy_approval_required` or `deploy_dual_control_pending`).
