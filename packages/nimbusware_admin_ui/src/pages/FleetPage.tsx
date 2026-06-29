@@ -71,6 +71,14 @@ export function FleetPage() {
   const [legalHold, setLegalHold] = useState(false);
   const [auditPolicyBusy, setAuditPolicyBusy] = useState(false);
   const [auditPolicyCaption, setAuditPolicyCaption] = useState("");
+  const [allowExternalCollab, setAllowExternalCollab] = useState(false);
+  const [maxParticipants, setMaxParticipants] = useState(20);
+  const [collabPolicyCaption, setCollabPolicyCaption] = useState("");
+  const [collabPolicyBusy, setCollabPolicyBusy] = useState(false);
+  const [allowedApiStack, setAllowedApiStack] = useState("");
+  const [allowedWebStack, setAllowedWebStack] = useState("");
+  const [stackPolicyCaption, setStackPolicyCaption] = useState("");
+  const [stackPolicyBusy, setStackPolicyBusy] = useState(false);
 
   const loadDashboard = useCallback(() => {
     if (!enterpriseApiKey()) {
@@ -172,6 +180,106 @@ export function FleetPage() {
       setError(String((e as Error).message || e));
     } finally {
       setAuditPolicyBusy(false);
+    }
+  };
+
+  const tenantSlug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || "default";
+
+  const loadCollabPolicy = useCallback(() => {
+    if (!enterpriseApiKey() || !tenantId) {
+      setCollabPolicyCaption("");
+      return;
+    }
+    const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    apiJsonEnterprise<{ allow_external_collaborators?: boolean; max_session_participants?: number }>(
+      `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/collab-policy`,
+      { headers: { "X-Nimbusware-Api-Key": key } },
+    )
+      .then((body) => {
+        setAllowExternalCollab(Boolean(body.allow_external_collaborators));
+        setMaxParticipants(body.max_session_participants ?? 20);
+        setCollabPolicyCaption(`Collab guest policy for ${tenantSlug}`);
+      })
+      .catch(() => setCollabPolicyCaption(""));
+  }, [tenantId, tenantSlug]);
+
+  useEffect(() => {
+    loadCollabPolicy();
+  }, [loadCollabPolicy]);
+
+  const saveCollabPolicy = async () => {
+    const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    setCollabPolicyBusy(true);
+    try {
+      await apiJsonEnterprise(`/enterprise/tenants/${encodeURIComponent(tenantSlug)}/collab-policy`, {
+        method: "PUT",
+        headers: {
+          "X-Nimbusware-Api-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          allow_external_collaborators: allowExternalCollab,
+          max_session_participants: maxParticipants,
+          host_transfer_consent_hours: 24,
+          default_invite_role: "session_read",
+          write_may_start_runs: false,
+        }),
+      });
+      setCollabPolicyCaption(
+        allowExternalCollab
+          ? `External link joins allowed for ${tenantSlug}`
+          : `Directory-only guests for ${tenantSlug}`,
+      );
+    } catch (e) {
+      setError(String((e as Error).message || e));
+    } finally {
+      setCollabPolicyBusy(false);
+    }
+  };
+
+  const loadStackPolicy = useCallback(() => {
+    if (!enterpriseApiKey() || !tenantId) {
+      setStackPolicyCaption("");
+      return;
+    }
+    const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    apiJsonEnterprise<{ allowed_stacks?: Record<string, string> }>(
+      `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/stack-policy`,
+      { headers: { "X-Nimbusware-Api-Key": key } },
+    )
+      .then((body) => {
+        const stacks = body.allowed_stacks || {};
+        setAllowedApiStack(stacks.api || "");
+        setAllowedWebStack(stacks.web || "");
+        setStackPolicyCaption(`Regulated stack policy for ${tenantSlug}`);
+      })
+      .catch(() => setStackPolicyCaption(""));
+  }, [tenantId, tenantSlug]);
+
+  useEffect(() => {
+    loadStackPolicy();
+  }, [loadStackPolicy]);
+
+  const saveStackPolicy = async () => {
+    const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    setStackPolicyBusy(true);
+    try {
+      const allowed_stacks: Record<string, string> = {};
+      if (allowedApiStack.trim()) allowed_stacks.api = allowedApiStack.trim();
+      if (allowedWebStack.trim()) allowed_stacks.web = allowedWebStack.trim();
+      await apiJsonEnterprise(`/enterprise/tenants/${encodeURIComponent(tenantSlug)}/stack-policy`, {
+        method: "PUT",
+        headers: {
+          "X-Nimbusware-Api-Key": key,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ allowed_stacks }),
+      });
+      setStackPolicyCaption(`Saved stack allowlist for ${tenantSlug}`);
+    } catch (e) {
+      setError(String((e as Error).message || e));
+    } finally {
+      setStackPolicyBusy(false);
     }
   };
 
@@ -498,6 +606,84 @@ export function FleetPage() {
             <p class="muted">
               When enabled, <code>purge_event_store_retention.py</code> skips deletes. Env{" "}
               <code>NIMBUSWARE_EVENT_STORE_LEGAL_HOLD=1</code> also blocks purge globally.
+            </p>
+          </section>
+          <section class="panel" data-testid="admin-fleet-collab-policy">
+            <h4>Collab guest policy</h4>
+            {collabPolicyCaption ? <p class="muted">{collabPolicyCaption}</p> : null}
+            <label data-testid="admin-fleet-allow-external-toggle">
+              <input
+                type="checkbox"
+                checked={allowExternalCollab}
+                disabled={collabPolicyBusy || !tenantId}
+                onChange={(ev) => setAllowExternalCollab((ev.target as HTMLInputElement).checked)}
+              />
+              Allow external collaborators via invite link (ADR 023)
+            </label>
+            <label>
+              Max session participants{" "}
+              <input
+                type="number"
+                min={1}
+                max={500}
+                value={maxParticipants}
+                disabled={!tenantId}
+                onInput={(e) =>
+                  setMaxParticipants(Number((e.target as HTMLInputElement).value) || 1)
+                }
+                data-testid="admin-fleet-max-participants"
+              />
+            </label>
+            <button
+              type="button"
+              class="secondary"
+              disabled={collabPolicyBusy || !tenantId}
+              onClick={() => void saveCollabPolicy()}
+              data-testid="admin-fleet-save-collab-policy"
+            >
+              Save collab policy
+            </button>
+            <p class="muted">
+              When external guests are disabled, users must be added from the org directory; token
+              link joins return 403.
+            </p>
+          </section>
+          <section class="panel" data-testid="admin-fleet-stack-policy">
+            <h4>Regulated stack allowlist</h4>
+            {stackPolicyCaption ? <p class="muted">{stackPolicyCaption}</p> : null}
+            <label>
+              API stack{" "}
+              <input
+                type="text"
+                value={allowedApiStack}
+                placeholder="fastapi_python"
+                disabled={!tenantId}
+                onInput={(e) => setAllowedApiStack((e.target as HTMLInputElement).value)}
+                data-testid="admin-fleet-stack-api"
+              />
+            </label>{" "}
+            <label>
+              Web stack{" "}
+              <input
+                type="text"
+                value={allowedWebStack}
+                placeholder="react_vite"
+                disabled={!tenantId}
+                onInput={(e) => setAllowedWebStack((e.target as HTMLInputElement).value)}
+                data-testid="admin-fleet-stack-web"
+              />
+            </label>{" "}
+            <button
+              type="button"
+              class="secondary"
+              disabled={stackPolicyBusy || !tenantId}
+              onClick={() => void saveStackPolicy()}
+              data-testid="admin-fleet-save-stack-policy"
+            >
+              Save stack policy
+            </button>
+            <p class="muted">
+              Discovery recommendations clamp to these stacks for the selected tenant (fo2344).
             </p>
           </section>
         </section>
