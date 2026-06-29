@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 174
-  clicked: 39
-  visible_only: 9
-  unwired: 126
-  click_ratio: 0.2241
+  total_buttons: 178
+  clicked: 40
+  visible_only: 10
+  unwired: 128
+  click_ratio: 0.2247
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -839,6 +839,32 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-review-deploy-audit-empty
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_deploy_audit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-deploy-audit-refresh
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  label: Refresh audit timeline
+  clicked_in:
+  - tests/e2e/web/maker_button_clicks.spec.ts
+  visible_only_in: []
+- test_id: maker-review-deploy-audit-row
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_deploy_audit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-review-deploy-audit-rows
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/review_deploy_audit_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_button_clicks.spec.ts
 - test_id: maker-review-factory-evidence-load
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/review.js

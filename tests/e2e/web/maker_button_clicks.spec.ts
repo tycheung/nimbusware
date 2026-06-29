@@ -220,3 +220,38 @@ test("manager scope panel load button is clickable", async ({ page }) => {
   await expect(page.getByTestId("maker-manager-scope-load")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("maker-manager-scope-load").click();
 });
+
+test("review deploy audit refresh loads timeline", async ({ page, request }) => {
+  const runId = await seedRun(request);
+  await page.route(`**/v1/platform/deploy/audit**`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        run_id: runId,
+        count: 1,
+        events: [
+          {
+            event: "deploy.apply",
+            occurred_at: "2026-06-29T12:00:00+00:00",
+            user_ref: "abc123",
+            run_id: runId,
+            detail: "apply ok",
+          },
+        ],
+      }),
+    }),
+  );
+  await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/review`);
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/review");
+  await expect(page.getByTestId("maker-review-deploy-audit-refresh")).toBeVisible({
+    timeout: 15_000,
+  });
+  const auditPromise = page.waitForResponse(
+    (resp) => resp.url().includes("/v1/platform/deploy/audit") && resp.request().method() === "GET",
+  );
+  await page.getByTestId("maker-review-deploy-audit-refresh").click();
+  const auditResp = await auditPromise;
+  expect(auditResp.ok()).toBeTruthy();
+  await expect(page.getByTestId("maker-review-deploy-audit-rows")).toBeVisible();
+});

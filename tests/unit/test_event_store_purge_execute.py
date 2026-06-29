@@ -58,6 +58,10 @@ def test_purge_script_dry_run(
         "nimbusware_store.retention_policy.purge_eligible_before",
         lambda *, now=None: cutoff,
     )
+    monkeypatch.setattr(
+        "nimbusware_store.retention_policy.purge_blocked_by_legal_hold",
+        lambda tenant_slug="default": False,
+    )
 
     conn = MagicMock()
     cursor = MagicMock()

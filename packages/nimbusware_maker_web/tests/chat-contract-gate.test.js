@@ -14,8 +14,10 @@ const contractGate = readFileSync(
 describe("chat run card contract gate", () => {
   it("renders slice.contract gate card in run cards from timeline", () => {
     expect(chatRunCard).toContain("contractGateFromTimeline");
-    expect(chatRunCard).toContain("maker-chat-contract-gate");
+    expect(chatRunCard).toContain("contractGateCardHtml");
+    expect(chatRunCard).toContain('testIdPrefix: "maker-chat"');
     expect(chatRunCard).toContain("refreshChatContractGate");
+    expect(contractGate).toContain("-contract-gate");
     expect(contractGate).toContain("slice.contract");
   });
 });

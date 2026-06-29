@@ -37,10 +37,12 @@ maker:
   maker-guided-start-quick: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-compact-save-artifact: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-plan-refresh: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-review-deploy-audit-refresh: tests/e2e/web/maker_button_clicks.spec.ts
   maker-accessible-compute-trigger: tests/e2e/web/maker_accessible_compute.spec.ts
 admin:
   admin-chat-accept-chip: tests/e2e/web/admin_operator_chat.spec.ts
   admin-fleet-rescan-btn: tests/e2e/web/admin_fleet_hardware.spec.ts
+  admin-fleet-legal-hold-toggle: tests/e2e/web/admin_fleet_hardware.spec.ts
 role_buttons:
   - name: Compact all
     within_testid: maker-compact-toolbar
