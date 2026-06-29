@@ -64,6 +64,7 @@ class InviteResponse(BaseModel):
 class JoinPreviewResponse(BaseModel):
     role: str
     recommended_discipline: str | None = None
+    suggested_agent_overlay: str | None = None
 
 
 class JoinResponse(BaseModel):
@@ -88,18 +89,42 @@ def _resolve_join_discipline(
     body_discipline: str | None,
     invite_discipline: str | None,
     user_id: UUID,
+    tenant_slug: str | None = None,
 ) -> str | None:
     for candidate in (body_discipline, invite_discipline):
         normalized = _normalize_discipline_or_none(candidate)
         if normalized:
             return normalized
+    from nimbusware_maker.tenant_collab_defaults import tenant_default_join_discipline
+
+    tenant_hat = tenant_default_join_discipline(tenant_slug)
+    if tenant_hat:
+        return tenant_hat
     profile = load_user_discipline_profile(str(user_id))
     return profile.get("default_discipline")
+
+
+def _tenant_slug_for_session(session: Any) -> str | None:
+    tenant_id = getattr(session, "tenant_id", None)
+    if tenant_id is None:
+        return None
+    try:
+        from nimbusware_env.env_flags import nimbusware_database_url
+        from nimbusware_iam.store import build_iam_store
+
+        iam = build_iam_store(nimbusware_database_url())
+        tenant = iam.get_tenant(UUID(str(tenant_id)))
+        if tenant is not None:
+            return str(getattr(tenant, "slug", "") or "").strip() or None
+    except Exception:
+        return None
+    return None
 
 
 @router.get("/join-preview", response_model=JoinPreviewResponse)
 def preview_chat_join(
     token: str,
+    chat_store: ChatStoreDep,
     collab_store: CollabStoreDep,
 ) -> JoinPreviewResponse:
     _require_collab()
@@ -109,9 +134,25 @@ def preview_chat_join(
             status_code=404,
             detail=problem("invite_invalid", "invite token invalid or expired"),
         )
+    discipline = _normalize_discipline_or_none(invite.recommended_discipline)
+    tenant_slug = None
+    try:
+        session = chat_store.get_session(invite.session_id)
+        if session is not None:
+            tenant_slug = _tenant_slug_for_session(session)
+            if not discipline:
+                from nimbusware_maker.tenant_collab_defaults import tenant_default_join_discipline
+
+                discipline = tenant_default_join_discipline(tenant_slug)
+    except Exception:
+        pass
+    from nimbusware_maker.tenant_collab_defaults import tenant_default_agent_overlay
+
+    overlay = tenant_default_agent_overlay(tenant_slug, discipline)
     return JoinPreviewResponse(
         role=invite.role,
-        recommended_discipline=invite.recommended_discipline,
+        recommended_discipline=discipline or invite.recommended_discipline,
+        suggested_agent_overlay=overlay,
     )
 
 
@@ -289,16 +330,25 @@ def join_chat_session(
             detail=problem("invite_invalid", "invite token invalid or expired"),
         )
     session = _session_or_404(chat_store, invite.session_id)
+    tenant_slug = _tenant_slug_for_session(session)
     discipline = _resolve_join_discipline(
         body_discipline=body.user_discipline,
         invite_discipline=invite.recommended_discipline,
         user_id=user.user_id,
+        tenant_slug=tenant_slug,
     )
     collab_store.add_participant(
         session_id=invite.session_id,
         user_id=user.user_id,
         role=invite.role,
         user_discipline=discipline,
+    )
+    from nimbusware_maker.tenant_collab_defaults import seed_tenant_agent_overlay_on_join
+
+    seed_tenant_agent_overlay_on_join(
+        user.user_id,
+        discipline,
+        tenant_slug=tenant_slug,
     )
     return JoinResponse(
         session_id=str(session.session_id),

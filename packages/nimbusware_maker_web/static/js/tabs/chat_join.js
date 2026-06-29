@@ -72,7 +72,7 @@ export async function mountChatJoin(root) {
     return;
   }
 
-  try {
+    try {
     const preview = await apiJson(`/chat/join-preview?token=${encodeURIComponent(token)}`);
     const hint = root.querySelector("#chat-join-invite-hint");
     if (hint) {
@@ -81,6 +81,9 @@ export async function mountChatJoin(root) {
       if (preview.recommended_discipline) {
         parts.push(`suggested discipline: ${preview.recommended_discipline}`);
         if (disciplineSelect) disciplineSelect.value = preview.recommended_discipline;
+      }
+      if (preview.suggested_agent_overlay) {
+        parts.push("team overlay suggested");
       }
       hint.textContent = parts.join(" · ");
       hint.hidden = false;

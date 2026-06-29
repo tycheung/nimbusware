@@ -23,6 +23,8 @@ class TenantCollabPolicyBody(BaseModel):
     host_transfer_consent_hours: int = Field(default=24, ge=1, le=168)
     default_invite_role: str = Field(default="session_read", max_length=32)
     write_may_start_runs: bool = False
+    default_join_discipline: str | None = Field(default=None, max_length=32)
+    default_agent_overlays: dict[str, str] = Field(default_factory=dict)
 
 
 @router.get("/tenants/{tenant_ref}/collab-policy")
@@ -51,6 +53,10 @@ def put_tenant_collab_policy(
         "host_transfer_consent_hours": body.host_transfer_consent_hours,
         "default_invite_role": body.default_invite_role,
         "write_may_start_runs": body.write_may_start_runs,
+        "default_join_discipline": body.default_join_discipline,
+        "default_agent_overlays": {
+            str(k): str(v)[:2000] for k, v in (body.default_agent_overlays or {}).items() if str(k).strip()
+        },
     }
     saved = save_tenant_collab_policy(slug, doc)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="tenant_collab")
