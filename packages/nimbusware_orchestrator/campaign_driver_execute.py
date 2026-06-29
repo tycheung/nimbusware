@@ -57,20 +57,31 @@ def _parallel_slice_count() -> int:
     return max(1, resolve_int("NIMBUSWARE_CAMPAIGN_PARALLEL_SLICES", default=1))
 
 
-def _parallel_slice_count_for_run(run_id: UUID) -> int:
+def _parallel_slice_count_for_run(run_id: UUID, store: Any | None = None) -> int:
     base = _parallel_slice_count()
     if base > 1:
         return base
     from nimbusware_orchestrator.mesh_pipeline_hook import resolve_mesh_context_for_run
 
     session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
-    if session_id is not None and (node_ids or workload != "host_only"):
-        return 2
-    return base
+    if session_id is None or workload == "host_only" or len(node_ids) < 2:
+        return 1
+    if store is not None:
+        try:
+            from nimbusware_auth.store import build_collab_store, build_user_store
+            from nimbusware_env.env_flags import nimbusware_database_url
+            from nimbusware_orchestrator.collab_parallel_slices import collab_mesh_parallel_count
+
+            url = nimbusware_database_url()
+            collab = build_collab_store(url, build_user_store(url))
+            return collab_mesh_parallel_count(run_id, store=store, collab_store=collab)
+        except Exception:
+            pass
+    return 2
 
 
-def _select_slices_for_tick(run_id: UUID, backlog: Any) -> list[SelectedSlice]:
-    parallel = _parallel_slice_count_for_run(run_id)
+def _select_slices_for_tick(run_id: UUID, backlog: Any, store: Any | None = None) -> list[SelectedSlice]:
+    parallel = _parallel_slice_count_for_run(run_id, store=store)
     if parallel <= 1:
         one = select_next_slice(backlog)
         return [one] if one is not None else []

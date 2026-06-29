@@ -248,7 +248,7 @@ def campaign_driver_tick(
             message=eval_result.rationale,
         )
 
-    selected_list = _select_slices_for_tick(run_id, backlog)
+    selected_list = _select_slices_for_tick(run_id, backlog, store=orch.store)
     if not selected_list:
         return CampaignTickResult(
             state=CampaignDriverState.ASSESSING,
