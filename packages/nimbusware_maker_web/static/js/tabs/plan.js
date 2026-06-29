@@ -1,6 +1,9 @@
 import { apiJson } from "../api-client.js";
+import { contractGateFromTimeline, contractGateCardHtml } from "../contract_gate_ui.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
+
+export { contractGateFromTimeline };
 
 const SLICE_STATUS_CLASS = {
   passed: "slice-badge--passed",
@@ -33,32 +36,8 @@ function sliceBadge(status) {
   return `<span class="slice-badge ${cls}" data-testid="maker-plan-slice-badge">${raw}</span>`;
 }
 
-export function contractGateFromTimeline(events) {
-  let state = "pending";
-  let detail = "Contract gate not run yet";
-  for (const ev of events || []) {
-    if (ev.event_type !== "stage.passed" && ev.event_type !== "stage.failed") continue;
-    const stage = String(ev.payload?.stage_name || "");
-    if (stage !== "slice.contract") continue;
-    state = ev.event_type === "stage.passed" ? "passed" : "failed";
-    detail =
-      ev.metadata?.detail ||
-      ev.payload?.detail ||
-      ev.payload?.message ||
-      (state === "passed" ? "Contract artifacts verified" : "Contract check failed");
-    break;
-  }
-  return { state, detail };
-}
-
 function contractGateCard(gate) {
-  const state = gate?.state || "pending";
-  const detail = gate?.detail || "";
-  return `<section class="plan-contract-gate panel" data-testid="maker-plan-contract-gate" data-state="${state}">
-    <h4>Contract gate</h4>
-    <p class="plan-contract-status" data-testid="maker-plan-contract-status">${state}</p>
-    ${detail ? `<p class="muted plan-contract-detail" data-testid="maker-plan-contract-detail">${detail}</p>` : ""}
-  </section>`;
+  return contractGateCardHtml(gate, { testIdPrefix: "maker-plan" });
 }
 
 function maintenanceCountdownHtml(campaignProgress) {

@@ -639,6 +639,20 @@ body.mobile-mode #theater-list {
   border-left: 4px solid #9ca3af;
 }
 
+.deploy-audit-timeline {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.deploy-audit-timeline li {
+  margin: 0.35rem 0;
+  font-size: 0.9rem;
+}
+
+.chat-run-card__contract-gate {
+  margin: 0.5rem 0;
+}
+
 .deploy-cockpit {
   margin: 0.75rem 0;
 }

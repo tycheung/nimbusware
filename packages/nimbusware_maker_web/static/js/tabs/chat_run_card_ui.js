@@ -1,4 +1,5 @@
 import { apiJson } from "../api-client.js";
+import { contractGateFromTimeline, contractGateCardHtml } from "../contract_gate_ui.js";
 import { deployStateFromTimeline } from "../deploy_cockpit.js";
 import { appendTheaterLine } from "../theater-renderer.js";
 import { loadRunCardAgents } from "./chat_agents_ui.js";
@@ -39,6 +40,23 @@ export function previewUrlFromDevEnvStatus(body) {
   return trimmed || null;
 }
 
+function refreshChatContractGate(card, events) {
+  if (!card) return;
+  let gateEl = card.querySelector(".chat-run-card__contract-gate");
+  const gate = contractGateFromTimeline(events);
+  if (gate.state === "pending" && !gate.detail) {
+    gateEl?.remove();
+    return;
+  }
+  if (!gateEl) {
+    gateEl = document.createElement("div");
+    gateEl.className = "chat-run-card__contract-gate";
+    const theater = card.querySelector(".chat-run-card__theater");
+    card.insertBefore(gateEl, theater);
+  }
+  gateEl.innerHTML = contractGateCardHtml(gate, { testIdPrefix: "maker-chat" });
+}
+
 export async function refreshChatRunPreview(card, runId) {
   if (!card || !runId) return;
   let strip = card.querySelector(".chat-run-card__preview");
@@ -54,7 +72,9 @@ export async function refreshChatRunPreview(card, runId) {
       apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`),
       apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`).catch(() => ({ events: [] })),
     ]);
-    const deploy = deployStateFromTimeline(timeline.events || []);
+    const events = timeline.events || [];
+    refreshChatContractGate(card, events);
+    const deploy = deployStateFromTimeline(events);
     strip.replaceChildren();
     const parts = [];
     const url = previewUrlFromDevEnvStatus(st);
