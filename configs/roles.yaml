@@ -76,3 +76,6 @@ roles:
   - taxonomy_key: interaction_critic
     role_id: "19191919-1919-4919-8919-191919191901"
     display_name: Interaction Critic
+  - taxonomy_key: infra_writer
+    role_id: "1e1e1e1e-1e1e-4e1e-8e1e-1e1e1e1e1e01"
+    display_name: Infra Writer

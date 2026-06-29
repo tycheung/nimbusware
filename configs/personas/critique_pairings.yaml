@@ -37,6 +37,10 @@ pairings:
   integration_adapter_writer:
     - product_reference_critic
     - domain_critic
+  infra_writer:
+    - product_reference_critic
+    - domain_critic
+    - security_critic
   agent_evaluator:
     - persona_coverage_critic
     - agent_evaluator_critic
