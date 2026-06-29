@@ -98,6 +98,91 @@ test("admin fleet rescan button refreshes hardware rows", async ({ page }) => {
   await expect(page.getByRole("cell", { name: "worker-new" })).toBeVisible({ timeout: 10_000 });
 });
 
+test("admin fleet collab guest policy saves tenant policy", async ({ page }) => {
+  let allowExternal = false;
+  await page.route("**/v1/admin/app/bootstrap.json", async (route) => {
+    const body = await route.fetch().then((r) => r.json());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...body,
+        edition: "enterprise",
+        features: { ...(body.features || {}), enterprise_fleet_ui: true },
+      }),
+    });
+  });
+  await page.route("**/v1/enterprise/tenants", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        tenants: [{ tenant_id: "t-reg", slug: "regulated", display_name: "Regulated" }],
+      }),
+    }),
+  );
+  await page.route("**/v1/admin/ui/enterprise/fleet-dashboard**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ hardware_rows: [], export_json: "{}" }),
+    }),
+  );
+  await page.route("**/v1/enterprise/compliance/summary**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ audit_policy: { legal_hold: false } }),
+    }),
+  );
+  await page.route("**/v1/enterprise/audit-policy**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ legal_hold: false, redaction_patterns: [] }),
+    }),
+  );
+  await page.route("**/v1/enterprise/tenants/regulated/collab-policy**", async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          allow_external_collaborators: allowExternal,
+          max_session_participants: 8,
+        }),
+      });
+      return;
+    }
+    if (route.request().method() === "PUT") {
+      const body = route.request().postDataJSON() as { allow_external_collaborators?: boolean };
+      allowExternal = Boolean(body.allow_external_collaborators);
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, policy: { allow_external_collaborators: allowExternal } }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+  await page.route("**/v1/enterprise/tenants/regulated/stack-policy**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ allowed_stacks: { api: "fastapi_python", web: "react_vite" } }),
+    }),
+  );
+
+  await page.addInitScript((token) => {
+    sessionStorage.setItem("nimbusware_admin_token", token);
+    sessionStorage.setItem("nimbusware_enterprise_api_key", "pw-enterprise-test-key");
+  }, adminToken);
+  await page.goto("/v1/admin/app/fleet");
+  await page.getByTestId("admin-fleet-tenant-select").selectOption("t-reg");
+  await expect(page.getByTestId("admin-fleet-collab-policy")).toBeVisible({ timeout: 15_000 });
+  const putPromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes("/collab-policy") && resp.request().method() === "PUT",
+  );
+  await page.getByTestId("admin-fleet-allow-external-toggle").click();
+  await page.getByTestId("admin-fleet-save-collab-policy").click();
+  const putResp = await putPromise;
+  expect(putResp.ok()).toBeTruthy();
+});
+
 test("admin fleet legal hold toggle saves audit policy", async ({ page }) => {
   let legalHold = false;
   await page.route("**/v1/admin/app/bootstrap.json", async (route) => {
