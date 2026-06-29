@@ -72,6 +72,7 @@ _ROLE_STAGE_MAP: dict[str, str] = {
     "backend_writer": "implement",
     "security_critic": "critique",
     "frontend_writer": "implement",
+    "infra_writer": "implement",
 }
 
 

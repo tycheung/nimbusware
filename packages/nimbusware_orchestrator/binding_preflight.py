@@ -124,8 +124,6 @@ def roles_for_stack_manifest(manifest: dict[str, Any] | None) -> list[str]:
         sid = str(item).strip().lower()
         if sid:
             roles.add(writer_role_for_surface(sid))
-    if "deploy" in {str(s).strip().lower() for s in surfaces_raw}:
-        roles.add("infra_writer")
     return sorted(roles)
 
 

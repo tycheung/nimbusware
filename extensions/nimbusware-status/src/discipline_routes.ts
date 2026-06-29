@@ -6,7 +6,7 @@ const DISCIPLINES: Record<string, { taxonomy: string | string[]; aliases: string
   frontend: { taxonomy: "frontend_writer", aliases: ["fe", "ui"] },
   backend: { taxonomy: "backend_writer", aliases: ["be", "api"] },
   qa: { taxonomy: "test_writer", aliases: ["test", "quality"] },
-  devops: { taxonomy: "integration_adapter_writer", aliases: ["ops", "infra"] },
+  devops: { taxonomy: ["integration_adapter_writer", "infra_writer"], aliases: ["ops", "infra"] },
   fullstack: { taxonomy: ["frontend_writer", "backend_writer"], aliases: ["fs"] },
 };
 

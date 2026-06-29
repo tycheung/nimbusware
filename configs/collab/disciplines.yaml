@@ -22,7 +22,7 @@ disciplines:
     aliases: [test, quality]
   - id: devops
     display_name: DevOps
-    taxonomy_key: integration_adapter_writer
+    taxonomy_keys: [integration_adapter_writer, infra_writer]
     aliases: [ops, infra]
   - id: fullstack
     display_name: Full stack

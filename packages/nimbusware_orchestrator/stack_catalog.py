@@ -12,6 +12,7 @@ _SURFACE_WRITER = {
     "api": "backend_writer",
     "web": "frontend_writer",
     "infra": "integration_adapter_writer",
+    "deploy": "infra_writer",
     "contract": "planner",
 }
 
