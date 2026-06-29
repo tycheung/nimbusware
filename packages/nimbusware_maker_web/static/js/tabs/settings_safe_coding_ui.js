@@ -1,12 +1,6 @@
 import { apiJson, toast } from "../api-client.js";
 import { isSafeCodingUx } from "../safe-coding-ux.js";
 
-const PACK_OPTIONS = [
-  { id: "", label: "(none)" },
-  { id: "fintech-api", label: "Fintech API" },
-  { id: "healthcare-api", label: "Healthcare API" },
-];
-
 export async function wireSafeCodingSettingsPanel(root) {
   const host = root.querySelector("#settings-safe-coding-panel");
   if (!host || !isSafeCodingUx()) return;
@@ -14,11 +8,21 @@ export async function wireSafeCodingSettingsPanel(root) {
   const select = host.querySelector("#settings-industry-critic-pack");
   if (!select) return;
   select.replaceChildren();
-  for (const opt of PACK_OPTIONS) {
-    const el = document.createElement("option");
-    el.value = opt.id;
-    el.textContent = opt.label;
-    select.appendChild(el);
+  const none = document.createElement("option");
+  none.value = "";
+  none.textContent = "(none)";
+  select.appendChild(none);
+  try {
+    const catalog = await apiJson("/platform/industry-critic-packs");
+    for (const pack of catalog.packs || []) {
+      const el = document.createElement("option");
+      el.value = pack.id;
+      el.textContent = pack.label || pack.id;
+      if (pack.domain) el.title = pack.domain;
+      select.appendChild(el);
+    }
+  } catch {
+    /* optional */
   }
   try {
     const body = await apiJson("/platform/safe-coding-preferences");

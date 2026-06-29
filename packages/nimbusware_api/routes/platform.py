@@ -28,6 +28,7 @@ from nimbusware_maker.playwright_bootstrap import (
 )
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace_readiness import assess_workspace_readiness
+from nimbusware_orchestrator.critic_pack_resolve import list_industry_critic_packs
 from nimbusware_orchestrator.user_operator_profiles import (
     load_user_industry_critic_pack_ids,
     save_user_industry_critic_pack_ids,
@@ -149,6 +150,16 @@ def put_optimizer_weights(
 ) -> dict[str, Any]:
     row = weights_store.put(user_id=user.user_id, weights=body.weights)
     return {"weights": row.weights, "updated_at": row.updated_at.isoformat()}
+
+
+@router.get("/platform/industry-critic-packs")
+def get_industry_critic_packs(orch: OrchDep) -> dict[str, Any]:
+    return {
+        "packs": list_industry_critic_packs(
+            orch.repo_root,
+            config_materializer=orch.config_materializer,
+        ),
+    }
 
 
 @router.get("/platform/safe-coding-preferences")

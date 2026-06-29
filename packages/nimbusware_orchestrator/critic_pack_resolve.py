@@ -92,3 +92,30 @@ def list_critic_pack_ids(
     if not root.is_dir():
         return []
     return sorted(p.stem for p in root.glob("*.yaml"))
+
+
+_INDUSTRY_SELECTOR_EXCLUDE = frozenset({"default-security", "frontend-owasp"})
+
+
+def list_industry_critic_packs(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> list[dict[str, str]]:
+    packs: list[dict[str, str]] = []
+    for pack_id in list_critic_pack_ids(repo_root, config_materializer=config_materializer):
+        if pack_id in _INDUSTRY_SELECTOR_EXCLUDE:
+            continue
+        pack = load_critic_pack(repo_root, pack_id, config_materializer=config_materializer)
+        if not pack:
+            continue
+        description = str(pack.get("description") or pack_id).strip()
+        label = description.split("—", 1)[0].strip() or pack_id
+        packs.append(
+            {
+                "id": pack_id,
+                "domain": str(pack.get("domain") or ""),
+                "label": label,
+            },
+        )
+    return packs

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from nimbusware_orchestrator.critic_pack_resolve import (
     critic_pack_id_from_workflow,
+    list_industry_critic_packs,
     load_critic_pack,
     resolve_critic_pack_for_workflow,
 )
@@ -43,3 +44,20 @@ def test_resolve_critic_pack_for_workflow(tmp_path: Path) -> None:
     assert resolved is not None
     assert resolved.get("resolved") is True
     assert resolved.get("domain") == "security"
+
+
+def test_list_industry_critic_packs_excludes_workflow_defaults(tmp_path: Path) -> None:
+    pack_dir = tmp_path / "configs" / "critic_packs"
+    pack_dir.mkdir(parents=True)
+    (pack_dir / "default-security.yaml").write_text(
+        "id: default-security\ndomain: security\ndescription: Default\n",
+        encoding="utf-8",
+    )
+    (pack_dir / "fintech-api.yaml").write_text(
+        "id: fintech-api\ndomain: fintech\ndescription: Fintech API pack\n",
+        encoding="utf-8",
+    )
+    packs = list_industry_critic_packs(tmp_path)
+    ids = {p["id"] for p in packs}
+    assert "fintech-api" in ids
+    assert "default-security" not in ids
