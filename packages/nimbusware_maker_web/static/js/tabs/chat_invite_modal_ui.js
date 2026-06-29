@@ -1,6 +1,6 @@
 import { apiJson } from "../api-client.js";
 
-export const INVITE_TEMPLATES = [
+export const DEFAULT_INVITE_TEMPLATES = [
   {
     id: "pair-devs-qa",
     label: "2 devs + QA",
@@ -14,6 +14,8 @@ export const INVITE_TEMPLATES = [
     disciplines: ["pm", "architect", "frontend", "backend", "qa"],
   },
 ];
+
+export const INVITE_TEMPLATES = DEFAULT_INVITE_TEMPLATES;
 
 export function closeInviteModal() {
   document.querySelector("[data-testid='maker-chat-invite-modal']")?.remove();
@@ -62,7 +64,23 @@ async function listGroups() {
   }
 }
 
+async function loadInviteTemplates() {
+  try {
+    const body = await apiJson("/platform/invite-templates");
+    const rows = Array.isArray(body?.templates) ? body.templates : [];
+    return rows.length ? rows : DEFAULT_INVITE_TEMPLATES;
+  } catch {
+    return DEFAULT_INVITE_TEMPLATES;
+  }
+}
+
 export function openInviteModal(root, sessionId) {
+  if (!sessionId) return;
+  void openInviteModalAsync(root, sessionId);
+}
+
+async function openInviteModalAsync(root, sessionId) {
+  const templates = await loadInviteTemplates();
   if (!sessionId) return;
   closeInviteModal();
   const overlay = document.createElement("div");
@@ -80,7 +98,7 @@ export function openInviteModal(root, sessionId) {
         <label>Invite template
           <select id="chat-invite-template" data-testid="maker-chat-invite-template">
             <option value="">Custom link</option>
-            ${INVITE_TEMPLATES.map((t) => `<option value="${t.id}">${t.label}</option>`).join("")}
+            ${templates.map((t) => `<option value="${t.id}">${t.label}</option>`).join("")}
           </select>
         </label>
         <p id="chat-invite-template-hint" class="muted" data-testid="maker-chat-invite-template-hint" hidden></p>
@@ -136,7 +154,7 @@ export function openInviteModal(root, sessionId) {
   const templateSelect = overlay.querySelector("#chat-invite-template");
   const templateHint = overlay.querySelector("#chat-invite-template-hint");
   templateSelect?.addEventListener("change", () => {
-    const tpl = INVITE_TEMPLATES.find((t) => t.id === templateSelect.value);
+    const tpl = templates.find((t) => t.id === templateSelect.value);
     if (!templateHint) return;
     if (!tpl) {
       templateHint.hidden = true;
@@ -153,7 +171,7 @@ export function openInviteModal(root, sessionId) {
   overlay.querySelector("#chat-invite-copy-link")?.addEventListener("click", async () => {
     const role = overlay.querySelector("#chat-invite-role-link")?.value || "session_read";
     const status = overlay.querySelector("#chat-invite-link-status");
-    const tpl = INVITE_TEMPLATES.find((t) => t.id === templateSelect?.value);
+    const tpl = templates.find((t) => t.id === templateSelect?.value);
     const recommended = tpl?.disciplines?.[0] || "";
     try {
       const url = await createInviteLink(sessionId, role, recommended);

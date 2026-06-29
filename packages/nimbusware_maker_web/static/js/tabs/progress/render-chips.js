@@ -1,6 +1,7 @@
 import { toast, apiJson } from "../../api-client.js";
 import { plainSurfaceLabel } from "../../plain-language.js";
 import { formatGateSummary } from "../../gate-summary.js";
+import { ARCHETYPE_SUBCHOICE_STORAGE_KEY } from "../../operator-default-profiles.js";
 import { resolveRunId } from "../../session-hub.js";
 import { renderGateSummaryBanner, renderGateFailSteps } from "./findings-gates.js";
 import {
@@ -162,14 +163,24 @@ export function renderCampaignControls(cp) {
   }
 }
 
+function isSafeCodingArchetype() {
+  return localStorage.getItem(ARCHETYPE_SUBCHOICE_STORAGE_KEY) === "safe_coding";
+}
+
 function completionHeadline(state, cp, completionPayload, gateSummary) {
   const verdict = String(completionPayload?.verdict || "").toUpperCase();
   const slices =
     cp?.slices_total != null ? ` · ${cp.slices_completed || 0}/${cp.slices_total} slices` : "";
   if (verdict === "PASS" || state === "completed") {
+    if (isSafeCodingArchetype()) {
+      return `Your app passed automated checks — review the summary before sharing${slices}`;
+    }
     return `Campaign complete — launch-ready${slices}`;
   }
   if (verdict === "FAIL" || state === "failed") {
+    if (isSafeCodingArchetype()) {
+      return `Build finished with issues — check gates and tests before retrying${slices}`;
+    }
     return `Campaign finished — needs attention${slices}`;
   }
   if (gateSummary && (state === "completed" || state === "failed")) {

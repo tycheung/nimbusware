@@ -1,0 +1,24 @@
+version: 1
+templates:
+  - id: pair-devs-qa
+    label: "2 devs + QA"
+    hint: "Invite frontend, backend, and QA reviewers"
+    disciplines:
+      - frontend
+      - backend
+      - qa
+  - id: full-team
+    label: Full team
+    hint: "PM, architect, frontend, backend, and QA"
+    disciplines:
+      - pm
+      - architect
+      - frontend
+      - backend
+      - qa
+  - id: security-review
+    label: Security review
+    hint: "Architect plus backend for Safe Coding security gates"
+    disciplines:
+      - architect
+      - backend
