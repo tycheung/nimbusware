@@ -37,6 +37,8 @@ After UI changes: `cd packages/nimbusware_admin_ui && npm ci && npm run build`
 - Cross-tenant gate comparison with CSV export
 - **Compliance summary** — gate pass rate, slice histogram, IAM/event counts
 - **Audit retention policy** — legal-hold toggle (`GET/PUT /v1/enterprise/audit-policy`) blocks `purge_event_store_retention.py` for the tenant
+- **Collab guest policy** — allow external invite-link guests + max participants (`GET/PUT /v1/enterprise/tenants/{ref}/collab-policy`)
+- **Regulated stack allowlist** — per-surface stack IDs for discovery recommendations (`GET/PUT /v1/enterprise/tenants/{ref}/stack-policy`)
 
 Preflight history remains on the **Preflight** tab.
 

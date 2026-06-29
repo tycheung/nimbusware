@@ -30,6 +30,8 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Fleet deploy policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-policy` — allowed deploy targets per tenant |
 | Fleet deploy approval policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-approval-policy` — `maker_only`, `session_admin`, or `dual_control` before apply |
 | Fleet discovery policy | `GET/PUT /v1/enterprise/tenants/{ref}/discovery-policy` — required discovery fields (`hosting`, `data_residency`, etc.) before full-stack campaign start |
+| Fleet stack policy | `GET/PUT /v1/enterprise/tenants/{ref}/stack-policy` — tenant-allowed stacks per surface; discovery recommendations clamp to allowlist |
+| Tenant collab guest policy | `GET/PUT /v1/enterprise/tenants/{ref}/collab-policy` — external invite-link guests; Admin Fleet panel |
 | Deploy credential audit | Hashed events in `.nimbusware/platform/deploy_audit.jsonl` on credential save and deploy apply/rollback |
 | Tenant collab/model policy | Postgres `tenant_policy` namespace per tenant slug |
 | Compliance summary | `GET /v1/enterprise/compliance/summary` — retention, IAM counts, fleet policy coverage |

@@ -65,7 +65,7 @@ Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{to
 
 ## Enterprise
 
-Use `GET /v1/enterprise/users?q=` for directory search. Tenant policy: `GET/PUT /v1/enterprise/collab-policy` (`allow_external_collaborators`, `max_session_participants`, `host_transfer_consent_hours`).
+Use `GET /v1/enterprise/users?q=` for directory search. Tenant policy: `GET/PUT /v1/enterprise/collab-policy` or per-tenant `GET/PUT /v1/enterprise/tenants/{ref}/collab-policy` (`allow_external_collaborators`, `max_session_participants`, `host_transfer_consent_hours`). Admin **Fleet** tab edits per-tenant collab guest policy; when `allow_external_collaborators` is false on enterprise bundles, invite-link joins return **403** (directory add still works).
 
 ## Conversation library (B8)
 
