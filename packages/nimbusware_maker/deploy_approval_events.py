@@ -6,7 +6,6 @@ from uuid import UUID, uuid4
 
 from agent_core.models import EventType, StagePassedEvent
 from agent_core.models.events_payloads import StagePassedPayload
-
 from nimbusware_maker.deploy_approval_enforcement import deploy_dual_control_satisfied
 
 

@@ -62,16 +62,38 @@ test("deploy cockpit refresh polls GitHub workflow CI status", async ({ page }) 
       }),
     }),
   );
+  await page.route(`**/v1/runs/${runId}/maker-progress**`, (route) => {
+    if (route.request().url().includes("/stream")) {
+      return route.fulfill({ contentType: "text/event-stream", body: "" });
+    }
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        run_id: runId,
+        status: "building",
+        current_headline: "Deploy pipeline",
+      }),
+    });
+  });
+  await page.route(`**/v1/runs/${runId}/findings**`, (route) =>
+    route.fulfill({ contentType: "application/json", body: JSON.stringify({ findings: [] }) }),
+  );
+  await page.route(`**/v1/runs/${runId}/theater/stream**`, (route) =>
+    route.fulfill({ contentType: "text/event-stream", body: "" }),
+  );
 
   await page.addInitScript((id) => {
-    localStorage.setItem("maker_current_run_id", id);
+    sessionStorage.setItem("maker_active_project_id", "deploy-ci-project");
+    sessionStorage.setItem(`maker_active_run_id:deploy-ci-project`, id);
   }, runId);
 
-  await page.goto("/v1/maker/app/");
+  await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/progress`);
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
   await activateMakerRoute(page, "/progress");
 
+  await expect(page.getByTestId("maker-deploy-cockpit-progress")).toBeVisible({ timeout: 15_000 });
   const ciStatus = page.getByTestId("maker-deploy-ci-status-progress");
+  await page.getByTestId("maker-deploy-refresh-progress").click();
   await expect(ciStatus).toContainText("CI: passed", { timeout: 15_000 });
   await expect(ciStatus).toContainText("Nimbusware CI");
 });

@@ -71,6 +71,7 @@ def execute_single_micro_slice(
     )
     from nimbusware_orchestrator.slice_interjection import (
         _infer_patch_target_paths,
+        _project_from_run_rows,
         apply_interjection_to_plan,
         apply_surface_steer_to_plan,
         gate_result_for_force_break,
@@ -80,7 +81,6 @@ def execute_single_micro_slice(
         handle_skip_slice_interjection,
         process_interjection_cycle,
         steer_excerpt_from_cycle,
-        _project_from_run_rows,
     )
 
     profile = autopilot_profile_from_rows(rows)

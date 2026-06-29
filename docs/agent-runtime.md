@@ -28,13 +28,13 @@ Configs: [`configs/workflows/`](../../configs/workflows/). Default: `micro_slice
 ## Notable subsystems
 
 - **Slice implement agent** — JIT tool loop (`read`, `edit`, `write`, `grep`, `shell`, optional `browser_act`)
-- **Cross-slice handoffs** — deterministic `slice.handoff` summaries
+- **Cross-slice handoffs** — deterministic `slice.handoff` summaries with `surface_id`, `stack_id`, and contract refs in handoff + context packets
 - **Campaign backlog** — heuristic decomposition from `business_prompt` (CRM/todo/API templates, repo paths) or optional LLM via `NIMBUSWARE_BACKLOG_GENERATOR_MODEL`
 - **Campaign compaction** — summarize older handoffs in long runs
 - **Factory scaffold** — PUT preview runtime, factory tiers, interaction surface map, PUT E2E flows
 - **Persistent dev env** — session supervisor, incremental regression, UI controller (ADRs [009](adr/009-persistent-dev-environment.md), [010](adr/010-ui-controller.md))
 - **Launch testing** — variable PUT flows, framework packs, human-fidelity checks (ADR [011](adr/011-human-fidelity-e2e.md))
-- **Operator interjection + autopilot** — trust slider 0–10, interjection queue (ADRs [013](adr/013-operator-interjection.md)–[015](adr/015-custom-autopilot-profiles.md))
+- **Operator interjection + autopilot** — trust slider 0–10, interjection queue with surface steers (`[steer:web]`, `@api`) (ADRs [013](adr/013-operator-interjection.md)–[015](adr/015-custom-autopilot-profiles.md))
 - **Enforcement depth** — second 0–10 axis for workspace verify/gate strictness; presets in `configs/enforcement/presets.yaml`, wired into `micro_slice_verify` and `slice.gate` via `enforcement_pipeline.py`; terminal `enforcement.gate` for level-10 parity; API `GET/PUT /v1/runs/{id}/enforcement`; enterprise fleet min/max via `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`; Maker Progress dual-slider (ADR [026](adr/026-enforcement-depth-slider.md))
 - **Code intelligence** — code graph (v2 bundle), entrypoint-aware orphans/route reachability, deterministic refactor patches (+ optional LLM patch when `refactor.llm_enabled`), improvement/resolution councils, variant arena (ADRs [016](adr/016-repo-exploration-variants.md)–[019](adr/019-debate-first-resolution.md))
 - **Preflight** — Ollama/model health at run start

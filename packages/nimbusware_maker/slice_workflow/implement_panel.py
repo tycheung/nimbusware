@@ -23,12 +23,11 @@ from nimbusware_maker.slice_engine import (
     _custom_agent_system_prompt,
     _emit_slice_stage,
     _execute_slice_critique_llm,
-    _resolve_slice_block,
-    resolve_slice_block_for_plan,
     _run_slice_verify_and_test,
     apply_slice_file_edits,
     check_slice_diff_budget,
     execute_slice_implement,
+    resolve_slice_block_for_plan,
     slice_implement_mode,
 )
 from nimbusware_maker.slice_workflow._shared import emit_maker_stage, plan_from_pending

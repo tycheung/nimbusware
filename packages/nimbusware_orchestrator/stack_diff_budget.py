@@ -24,7 +24,9 @@ def merge_stack_diff_budget(
         return block
     if stack.max_files is None and stack.max_loc is None:
         return block
-    max_files = min(block.max_files, stack.max_files) if stack.max_files is not None else block.max_files
+    max_files = (
+        min(block.max_files, stack.max_files) if stack.max_files is not None else block.max_files
+    )
     max_loc = min(block.max_loc, stack.max_loc) if stack.max_loc is not None else block.max_loc
     globs = stack.allowed_globs if stack.allowed_globs else block.allowed_globs
     return MicroSliceWorkflowBlock(
