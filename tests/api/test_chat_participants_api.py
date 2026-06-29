@@ -181,6 +181,38 @@ def test_admin_adds_write_participant(
     assert ok.status_code == 200
 
 
+def test_join_blocked_when_external_collaborators_disabled(
+    client: TestClient,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_collab(monkeypatch)
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
+    policy = tmp_path / "configs" / "collab_policy.yaml"
+    policy.parent.mkdir(parents=True)
+    policy.write_text("version: 1\nallow_external_collaborators: false\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        lambda: tmp_path,
+    )
+    _signup(client, "ent-host")
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post(
+        "/v1/chat/sessions",
+        json={"project_id": project_id},
+    ).json()["session_id"]
+    invite = client.post(
+        f"/v1/chat/sessions/{session_id}/invites",
+        json={"role": "session_read"},
+    )
+    token = invite.json()["join_url"].rsplit("/", 1)[-1]
+    client.post("/v1/auth/signout")
+    _signup(client, "ent-guest")
+    blocked = client.post("/v1/chat/join", json={"token": token})
+    assert blocked.status_code == 403
+    assert blocked.json()["code"] == "collab_policy_violation"
+
+
 def test_agent_overlay_get_and_put(
     client: TestClient,
     monkeypatch: pytest.MonkeyPatch,

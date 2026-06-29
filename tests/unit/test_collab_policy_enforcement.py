@@ -43,12 +43,25 @@ def test_assert_link_join_allowed_blocks_when_disabled(tmp_path, monkeypatch) ->
     policy = tmp_path / "configs" / "collab_policy.yaml"
     policy.parent.mkdir(parents=True)
     policy.write_text("version: 1\nallow_external_collaborators: false\n", encoding="utf-8")
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
     monkeypatch.setattr(
         "nimbusware_maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
     with pytest.raises(CollabPolicyViolation, match="external collaborators disabled"):
         assert_link_join_allowed(tenant_slug=None)
+
+
+def test_assert_link_join_allowed_skips_on_individual_bundle(tmp_path, monkeypatch) -> None:
+    policy = tmp_path / "configs" / "collab_policy.yaml"
+    policy.parent.mkdir(parents=True)
+    policy.write_text("version: 1\nallow_external_collaborators: false\n", encoding="utf-8")
+    monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "default")
+    monkeypatch.setattr(
+        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        lambda: tmp_path,
+    )
+    assert_link_join_allowed(tenant_slug=None) is None
 
 
 def test_assert_participant_capacity_enforces_limit(tmp_path, monkeypatch) -> None:

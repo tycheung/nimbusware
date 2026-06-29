@@ -62,6 +62,11 @@ def assert_participant_capacity(
 
 
 def assert_link_join_allowed(*, tenant_slug: str | None) -> None:
+    from nimbusware_env.env_flags import env_str
+
+    bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
+    if bundle != "enterprise":
+        return
     if external_collaborators_allowed(tenant_slug):
         return
     msg = "external collaborators disabled by tenant collab policy"
