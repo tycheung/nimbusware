@@ -63,7 +63,7 @@ async function confirmScopeState(state) {
   return body.scope;
 }
 
-function renderManifestPreview(mount, state, { onConfirmed } = {}) {
+function renderManifestPreview(mount, state, { onConfirmed, sessionId } = {}) {
   const manifest = state?.stack_manifest;
   if (!manifest) return;
   const card = document.createElement("article");
@@ -104,6 +104,30 @@ function renderManifestPreview(mount, state, { onConfirmed } = {}) {
       }
     });
     actions.appendChild(approve);
+    if (sessionId) {
+      const share = document.createElement("button");
+      share.type = "button";
+      share.className = "secondary";
+      share.textContent = "Share for manager";
+      share.title = "Publish manifest for manager approval on mobile PWA";
+      share.dataset.testid = "maker-chat-scope-share-manager";
+      share.addEventListener("click", async () => {
+        share.disabled = true;
+        try {
+          await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/scope/publish`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ state }),
+          });
+          toast("Shared for manager approval", "success");
+        } catch (e) {
+          toast(String(e.message || e), "error");
+        } finally {
+          share.disabled = false;
+        }
+      });
+      actions.appendChild(share);
+    }
     card.appendChild(actions);
   } else {
     const ok = document.createElement("p");
@@ -128,7 +152,7 @@ async function gatherScope(state, answers, { recommendForMe = false } = {}) {
   return body.scope;
 }
 
-export async function mountScopeDiscoveryIfNeeded(root, classification, message) {
+export async function mountScopeDiscoveryIfNeeded(root, classification, message, sessionId = "") {
   clearScopeDiscoveryState(root);
   if (!needsFullstackDiscovery(classification, message)) {
     return true;
@@ -153,6 +177,7 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
   if (state.discovery_complete) {
     root._scopeDiscoveryState = state;
     renderManifestPreview(mount, state, {
+      sessionId,
       onConfirmed: (confirmed) => {
         root._scopeDiscoveryState = confirmed;
       },
@@ -184,6 +209,7 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message)
       root._scopeDiscoveryState = currentState;
       mount.replaceChildren();
       renderManifestPreview(mount, currentState, {
+        sessionId,
         onConfirmed: (confirmed) => {
           root._scopeDiscoveryState = confirmed;
         },

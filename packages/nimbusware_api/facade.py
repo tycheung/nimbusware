@@ -17,6 +17,7 @@ from nimbusware_api.routes import (
     chat_host_transfer,
     chat_library,
     chat_participants,
+    chat_session_scope,
     chat_stream,
     compute,
     config_ops,
@@ -62,6 +63,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(chat_bindings.router)
     router.include_router(chat_compute.router)
     router.include_router(chat_participants.router)
+    router.include_router(chat_session_scope.router)
     router.include_router(chat_host_transfer.router)
     router.include_router(chat_library.router)
     router.include_router(chat_stream.router)

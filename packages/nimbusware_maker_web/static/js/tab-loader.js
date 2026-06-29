@@ -10,6 +10,8 @@ import { mountSettings } from "./tabs/settings.js";
 import { mountWizard } from "./tabs/wizard.js";
 import { apiJson } from "./api-client.js";
 
+import { mountManagerScope } from "./tabs/manager_scope_ui.js";
+
 const MOUNTERS = {
   "/chat": { el: "chat-mount", fn: mountChat },
   "/chat/join": { el: "chat-join-mount", fn: mountChatJoin },
@@ -18,6 +20,7 @@ const MOUNTERS = {
   "/plan": { el: "plan-mount", fn: mountPlan },
   "/review": { el: "review-mount", fn: mountReview },
   "/progress": { el: "progress-mount", fn: mountProgress },
+  "/scope": { el: "scope-mount", fn: mountManagerScope },
   "/models": { el: "models-mount", fn: mountModels },
   "/settings": { el: "settings-mount", fn: mountSettings },
 };

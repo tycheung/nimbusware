@@ -71,7 +71,12 @@
         </div>
         <div id="view-review" class="view" x-show="route === '/review'">
           <h2>Review</h2>
+          <p class="muted manager-readonly-hint" x-show="managerMode">Read-only manager view — approve slices from pending cards below.</p>
           <div id="review-mount"></div>
+        </div>
+        <div id="view-scope" class="view" x-show="route === '/scope'">
+          <h2>Scope</h2>
+          <div id="scope-mount"></div>
         </div>
         <input id="run-theater-run-id" type="hidden" aria-hidden="true" />
         <div id="view-progress" class="view" x-show="route === '/progress'">

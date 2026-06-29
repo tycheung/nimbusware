@@ -28,13 +28,27 @@ const MOBILE_TABS = [
   { id: "review", hash: "/review", label: "Review" },
 ];
 
-const MOBILE_ROUTES = new Set(["/progress", "/review"]);
+const MOBILE_ROUTES = new Set(["/progress", "/review", "/scope"]);
 
 export function detectMobileMode() {
   const params = new URLSearchParams(window.location.search);
   if (params.get("mobile") === "1") return true;
   return window.matchMedia("(max-width: 720px)").matches;
 }
+
+export function detectManagerMode() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("manager") === "1") return true;
+  return localStorage.getItem("maker_manager_mode") === "1";
+}
+
+const MANAGER_MOBILE_TABS = [
+  { id: "progress", hash: "/progress", label: "Progress" },
+  { id: "scope", hash: "/scope", label: "Scope" },
+  { id: "review", hash: "/review", label: "Review" },
+];
+
+const MANAGER_MOBILE_ROUTES = new Set(["/progress", "/scope", "/review"]);
 
 function parseRoute() {
   const hash = window.location.hash.replace(/^#/, "") || "/chat";
@@ -122,6 +136,7 @@ function makerShellFactory() {
   return {
     tabs: ALL_TABS,
     mobileMode: false,
+    managerMode: false,
     route: "/chat",
     statusText: "",
     toastMsg: "",
@@ -132,12 +147,20 @@ function makerShellFactory() {
     hideAdminConsole: false,
     init() {
       this.mobileMode = detectMobileMode();
-      if (this.mobileMode) {
+      this.managerMode = detectManagerMode();
+      if (this.mobileMode || this.managerMode) {
         document.body.classList.add("mobile-mode");
-        this.tabs = MOBILE_TABS;
+        if (this.managerMode) {
+          document.body.classList.add("manager-mode");
+          localStorage.setItem("maker_manager_mode", "1");
+          this.tabs = MANAGER_MOBILE_TABS;
+        } else {
+          this.tabs = MOBILE_TABS;
+        }
         const route = parseRoute();
-        if (!MOBILE_ROUTES.has(route)) {
-          window.location.hash = "#/progress";
+        const allowed = this.managerMode ? MANAGER_MOBILE_ROUTES : MOBILE_ROUTES;
+        if (!allowed.has(route)) {
+          window.location.hash = this.managerMode ? "#/scope" : "#/progress";
         }
       } else {
         this.tabs = ALL_TABS;

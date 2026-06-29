@@ -282,6 +282,25 @@ body.mobile-mode #compact-toolbar input[type="number"] {
   max-width: 3.5rem;
 }
 
+body.mobile-mode .manager-readonly-hint {
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+body.manager-mode .mobile-advanced,
+body.manager-mode #rev-actions .primary:not([data-testid="maker-review-refresh"]) {
+  display: none;
+}
+
+.manager-scope-panel label {
+  display: block;
+  margin: 0.75rem 0;
+}
+
+.manager-scope-card.hidden {
+  display: none;
+}
+
 body.mobile-mode #theater-list {
   max-height: 40vh;
   overflow-y: auto;

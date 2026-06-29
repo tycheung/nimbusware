@@ -222,7 +222,7 @@ export async function mountChat(root) {
           runStart(wt);
         },
       });
-      await mountScopeDiscoveryIfNeeded(root, classification, message);
+      await mountScopeDiscoveryIfNeeded(root, classification, message, sessionApi.getSessionId());
       const confidence = Number(classification.confidence ?? 1);
       if (confidence < 0.5) {
         toast("Low confidence — confirm work type before starting", "info");
