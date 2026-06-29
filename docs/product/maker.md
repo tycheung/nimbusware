@@ -28,7 +28,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Stack manifest:** confirmed manifest freezes surfaces (`api`, `web`) and stacks from `configs/stacks/`; per-stack diff budgets; Plan tab shows surface badges and `slice.contract` gate status
 - **Manifest approval:** Chat shows a plain-language “You are approving: web UI + REST API…” card with **Approve manifest** before campaign start
 - **Safe Coding campaigns:** archetype `safe_coding` routes greenfield builds to `safe_coding_campaign_fullstack` (campaign driver + approval gates + OWASP web critic pack); Settings industry critic pack selector lists packs from `GET /v1/platform/industry-critic-packs` and saves via `GET/PUT /v1/platform/safe-coding-preferences`
-- **Solo discipline hat:** Chat composer **Solo hat** chips (or Settings → **Solo discipline hat**) wear one role when working alone — routes feedback like `@frontend` into `solo_discipline_routes` on requirements
+- **Solo discipline hat:** Chat composer **Solo hat** chips (or Settings → **Solo discipline hat**) wear one role when working alone — routes feedback like `@frontend` into `solo_discipline_routes` on requirements; first-run **Wear multiple hats** coach hint for Engineer workspace (dismiss persists in browser storage)
 - **Collab disciplines:** join discipline picker, roster badges, `@` routing to interjection queue, routed-feedback thread lines; expertise bullets via `GET/PUT /v1/users/me/participant-context`; per-discipline agent overlays via Settings **My agent overlays** or `GET/PUT /v1/users/me/agent-overlays/{discipline}` (versioned; `collab.agent_overlay.updated` audit in `.nimbusware/platform/collab_audit.jsonl`) merged into slice prompts when roles are claimed; MCP `nimbusware_set_discipline` / `nimbusware_update_agent_overlay` and VS Code extension scope/`@` commands for IDE parity ([ide-bridge.md](../ide-bridge.md))
 - **Collab composer:** `@frontend`, `@backend`, `@qa`, `@architect`, `@pm`, `@devops` mention autocomplete in Chat; invite modal loads templates from `configs/collab/invite_templates.yaml` via `GET /v1/platform/invite-templates`; mesh campaigns parallelize surface slices when ≥2 participants hold role claims or disciplines
 - **Manager PWA:** `?manager=1` mobile mode — Progress/Review watch + **Scope** tab approves manifests shared via `POST /chat/sessions/{id}/scope/publish`
@@ -77,5 +77,11 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Collaborative chat** — `NIMBUSWARE_COLLAB_ENABLED=1`; [collaborative-chat.md](../collaborative-chat.md)
 - **Compute mesh** — [compute-mesh.md](../compute-mesh.md)
 - **Conversation library** — [conversation-library.md](../conversation-library.md)
+
+## Related docs
+
+- [journeys/README.md](journeys/README.md) — first full-stack app walkthrough per archetype
+- [safe-coding.md](safe-coding.md) — Safe Coding persona
+- [deploy.md](deploy.md) — deploy cockpit and audit timeline
 
 Default workflow profile: `micro_slice`. Chat projects may override via `default_workflow_profile`. Slice auto-advance on by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`).

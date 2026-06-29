@@ -57,5 +57,6 @@ Progress and Review show gate steps as short sentences (e.g. “Automated tests:
 ## Related docs
 
 - [maker.md](maker.md) — Maker tabs and operator ribbons
+- [journeys/safe-coding-first-app.md](journeys/safe-coding-first-app.md) — first full-stack app walkthrough
 - [install-profiles.md](../install-profiles.md) — default vs enterprise setup bundles
 - ADR [026](../adr/026-enforcement-depth-slider.md) — enforcement depth

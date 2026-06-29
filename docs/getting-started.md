@@ -69,6 +69,8 @@ After install, open **Maker Home** (`/v1/maker/app/#/home`):
 3. **Quick demo** — `poetry run nimbusware-run --quick` for in-memory store without Postgres.
 4. **Factory demos** — catalog cards deep-link Chat with `campaign_factory_zero_touch`.
 
+Per-archetype **first full-stack app** walkthroughs: [product/journeys/README.md](product/journeys/README.md).
+
 ## Docker Compose
 
 ```bash

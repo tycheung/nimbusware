@@ -7,7 +7,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Tab | Module | APIs |
 |-----|--------|------|
 | Home | `home.js` + `home_readiness_ui.js`, `home_enterprise_policy_ui.js`, `safe-coding-wizard.js` | `/platform/readiness`, `/platform/fleet-governance`, workspace scaffold/precommit, Playwright bootstrap |
-| Chat | `chat.js` + `chat_session_lifecycle.js`, `chat_shell_html.js`, `chat_solo_hat_ui.js`, `chat_run_card_ui.js`, `chat_collab_wiring.js`, `chat_model_drawer_ui.js`, `chat_invite_modal_ui.js`, `chat_mention_ui.js`, `chat_join.js`, `chat_*_ui.js` | `/chat/sessions`, classify/start, `@` routing, solo hat chips, scope publish for manager, join discipline picker, dev-env **Open preview** on run cards |
+| Chat | `chat.js` + `chat_session_lifecycle.js`, `chat_shell_html.js`, `chat_solo_hat_ui.js`, `chat_solo_hat_coach_ui.js`, `chat_run_card_ui.js`, `chat_collab_wiring.js`, `chat_model_drawer_ui.js`, `chat_invite_modal_ui.js`, `chat_mention_ui.js`, `chat_join.js`, `chat_*_ui.js` | `/chat/sessions`, classify/start, `@` routing, solo hat chips + first-run coach hint, scope publish for manager, join discipline picker, dev-env **Open preview** on run cards |
 | Scope (manager) | `manager_scope_ui.js` | `GET/POST /chat/sessions/{id}/scope/pending`, `/scope/approve` — mobile `#/scope?manager=1` |
 | Build | `static/js/tabs/build.js` | `POST /campaigns` (banner redirects operators to Chat for new work) |
 | Plan | `static/js/tabs/plan.js`, `contract_gate_ui.js` | `/campaigns/{id}/backlog`, `/runs/{id}/maker-progress` (active slice + maintenance), timeline for `slice.contract` gate (shared with Chat run cards) |

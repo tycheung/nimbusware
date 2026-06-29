@@ -18,9 +18,9 @@
 
 | Persona | Setup bundle | First-run choice | Docs |
 |---------|--------------|------------------|------|
-| **Safe Coding** | `default` | Safe Coding in Maker archetype picker | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
-| **Engineer workspace** | `default` | Engineer workspace in Maker (persists collab via Settings or archetype preset) | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
-| **Enterprise AI** | `enterprise` | (strict env applied at install) | [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
+| **Safe Coding** | `default` | Safe Coding in Maker archetype picker | [docs/product/safe-coding.md](docs/product/safe-coding.md), [journeys/safe-coding-first-app.md](docs/product/journeys/safe-coding-first-app.md) |
+| **Engineer workspace** | `default` | Engineer workspace in Maker (persists collab via Settings or archetype preset) | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md), [journeys/engineer-first-app.md](docs/product/journeys/engineer-first-app.md) |
+| **Enterprise AI** | `enterprise` | (strict env applied at install) | [docs/enterprise-buyer.md](docs/enterprise-buyer.md), [journeys/enterprise-first-app.md](docs/product/journeys/enterprise-first-app.md) |
 
 Install with `--setup-bundle default` or `--setup-bundle enterprise` (see [docs/install-profiles.md](docs/install-profiles.md)). The desktop launcher offers **Quick setup**, **Full setup** (default bundle), and **Enterprise setup**.
 
@@ -49,6 +49,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 |------------|------------|
 | Install, bootstrap, and run | [docs/getting-started.md](docs/getting-started.md) |
 | Use the Maker app | [docs/product/maker.md](docs/product/maker.md) |
+| First full-stack app (per persona) | [docs/product/journeys/README.md](docs/product/journeys/README.md) |
 | Model Hub (API keys + desktop subscriptions) | [docs/model-hub.md](docs/model-hub.md) |
 | Safe Coding persona | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
 | Install profiles & setup bundles | [docs/install-profiles.md](docs/install-profiles.md) |

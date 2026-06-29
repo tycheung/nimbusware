@@ -8,6 +8,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 |----------|----------|
 | [getting-started.md](getting-started.md) | Everyone — install, bootstrap, run, Docker |
 | [product/maker.md](product/maker.md) | Makers — Chat, Progress, Review, Model Hub |
+| [product/journeys/README.md](product/journeys/README.md) | Per-archetype “first full-stack app” walkthroughs (A1/A2/A3) |
 | [product/admin.md](product/admin.md) | Operators — Admin Console, fleet, metrics |
 | [product/editions.md](product/editions.md) | Individual vs Enterprise, auth scopes |
 | [product/api-overview.md](product/api-overview.md) | API route map (user vs admin) |

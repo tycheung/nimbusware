@@ -20,6 +20,7 @@ _TARGET_SCORE = 0.95
 _SAFE_CODING_STATIC: tuple[str, ...] = (
     "configs/workflows/safe_coding.yaml",
     "docs/product/safe-coding.md",
+    "docs/product/journeys/safe-coding-first-app.md",
     "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js",
     "packages/nimbusware_maker_web/static/js/safe-coding-ux.js",
     "packages/nimbusware_api/routes/platform.py",
@@ -36,6 +37,8 @@ _ENGINEER_STATIC: tuple[str, ...] = (
     "packages/nimbusware_orchestrator/collab_binding_resolver.py",
     "packages/nimbusware_api/routes/platform_collab_settings.py",
     "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
+    "packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js",
+    "docs/product/journeys/engineer-first-app.md",
     "configs/install/bundles/default.config.yaml",
     "packages/nimbusware_config/collab_settings_store.py",
 )
@@ -46,10 +49,12 @@ _ENGINEER_BEHAVIORAL: tuple[str, ...] = (
     "tests/api/test_collab_settings_api.py",
     "tests/api/test_collab_model_routing_api.py",
     "tests/e2e/web/collab_model_routing.spec.ts",
+    "tests/e2e/web/maker_solo_hat_coach.spec.ts",
 )
 
 _ENTERPRISE_STATIC: tuple[str, ...] = (
     "configs/install/bundles/enterprise.env.yaml",
+    "docs/product/journeys/enterprise-first-app.md",
     "packages/nimbusware_api/routes/enterprise/compliance.py",
     "packages/nimbusware_api/routes/enterprise/audit_export.py",
     "packages/nimbusware_api/routes/enterprise/audit_policy.py",
