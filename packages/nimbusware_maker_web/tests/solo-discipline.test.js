@@ -27,7 +27,7 @@ describe("solo discipline and invite templates", () => {
 
   it("chat composer exposes solo hat quick-switch chips", () => {
     expect(chatShellJs).toContain("maker-chat-solo-hat-chips");
-    expect(hatChipsJs).toContain("maker-chat-solo-hat-frontend");
+    expect(hatChipsJs).toContain("maker-chat-solo-hat-${hat.id}");
     expect(hatChipsJs).toContain("maker-solo-discipline-changed");
   });
 
