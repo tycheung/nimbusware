@@ -10,24 +10,6 @@ from agent_core.models import serialize_event_persistent, validate_event_dict
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
-from nimbusware_projections.builders import (
-    agent_evaluator_timeline_summary,
-    critic_matrix_live_timeline_summary,
-    gate_overridden_timeline_history,
-    gate_overridden_timeline_summary,
-    integrator_gate_timeline_delta,
-    integrator_gate_timeline_history,
-    parallel_writer_groups_timeline_summary,
-    persona_assignment_timeline_summary,
-    run_escalated_timeline_delta,
-    run_escalated_timeline_history,
-    scraper_fetch_timeline_summary,
-    security_scan_on_verify_timeline_history,
-    self_refinement_marker_timeline_history,
-    self_refinement_timeline_summary,
-    stage_graph_timeline_summary,
-    universal_critique_timeline_summary,
-)
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -50,6 +32,24 @@ from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
+)
+from nimbusware_projections.builders import (
+    agent_evaluator_timeline_summary,
+    critic_matrix_live_timeline_summary,
+    gate_overridden_timeline_history,
+    gate_overridden_timeline_summary,
+    integrator_gate_timeline_delta,
+    integrator_gate_timeline_history,
+    parallel_writer_groups_timeline_summary,
+    persona_assignment_timeline_summary,
+    run_escalated_timeline_delta,
+    run_escalated_timeline_history,
+    scraper_fetch_timeline_summary,
+    security_scan_on_verify_timeline_history,
+    self_refinement_marker_timeline_history,
+    self_refinement_timeline_summary,
+    stage_graph_timeline_summary,
+    universal_critique_timeline_summary,
 )
 from nimbusware_projections.run_summary import build_run_summary
 from nimbusware_store.protocol import serialized_event_from_row

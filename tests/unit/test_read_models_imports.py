@@ -13,7 +13,9 @@ def test_projection_builders_public_exports_match_runs_package() -> None:
 def test_timeline_helpers_importable_from_projections() -> None:
     from nimbusware_api.routes.runs.list_helpers import _decode_run_list_cursor
     from nimbusware_projections.builders.integrator_gate import integrator_gate_timeline_summary
-    from nimbusware_projections.builders.universal_critique import universal_critique_timeline_summary
+    from nimbusware_projections.builders.universal_critique import (
+        universal_critique_timeline_summary,
+    )
 
     assert integrator_gate_timeline_summary([]) is None
     assert universal_critique_timeline_summary([]) is None

@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_projections.builders.maker_progress import (
     maker_progress_from_events,
     strip_operator_fields,
 )
-from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 
 router = APIRouter()
 

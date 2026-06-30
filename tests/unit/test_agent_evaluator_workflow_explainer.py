@@ -1,8 +1,26 @@
 from __future__ import annotations
-import json
+
 from pathlib import Path
-from nimbusware_console.workflow_explainers.agent_evaluator import agent_evaluator_auto_create_env_gate_caption, agent_evaluator_auto_promote_env_gate_caption, agent_evaluator_env_gate_caption, agent_evaluator_explainer_export_json, agent_evaluator_explainer_table_rows, agent_evaluator_explainer_table_rows_csv, agent_evaluator_export_filename_slug, agent_evaluator_llm_evaluation_enabled_caption, agent_evaluator_persona_id_caption, agent_evaluator_workflow_explainer_operator_metrics, agent_evaluator_workflow_explainer_operator_metrics_caption, agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug, agent_evaluator_workflow_explainer_operator_metrics_export_json, agent_evaluator_workflow_explainer_operator_metrics_table_rows, agent_evaluator_workflow_explainer_payload, agent_evaluator_workflow_yaml_version_caption, agent_evaluator_would_emit_caption, agent_evaluator_yaml_key_present_caption, agent_evaluator_yaml_parsed_enabled_caption, agent_evaluator_yaml_raw_type_caption, agent_evaluator_yaml_true_bool_count_caption
+
+from nimbusware_console.workflow_explainers.agent_evaluator import (
+    agent_evaluator_auto_create_env_gate_caption,
+    agent_evaluator_auto_promote_env_gate_caption,
+    agent_evaluator_env_gate_caption,
+    agent_evaluator_llm_evaluation_enabled_caption,
+    agent_evaluator_persona_id_caption,
+    agent_evaluator_workflow_explainer_operator_metrics,
+    agent_evaluator_workflow_explainer_operator_metrics_caption,
+    agent_evaluator_workflow_explainer_operator_metrics_table_rows,
+    agent_evaluator_workflow_explainer_payload,
+    agent_evaluator_workflow_yaml_version_caption,
+    agent_evaluator_would_emit_caption,
+    agent_evaluator_yaml_key_present_caption,
+    agent_evaluator_yaml_parsed_enabled_caption,
+    agent_evaluator_yaml_raw_type_caption,
+    agent_evaluator_yaml_true_bool_count_caption,
+)
 from unit.composite_repo_fixtures import write_workflow_profile
+
 
 def test_agent_evaluator_env_gate_caption() -> None:
     cap_off = agent_evaluator_env_gate_caption({'NIMBUSWARE_AGENT_EVALUATOR': {'forces_off': True, 'raw': '0'}})
@@ -266,4 +284,4 @@ def test_agent_evaluator_workflow_explainer_operator_metrics_load_error() -> Non
     m = agent_evaluator_workflow_explainer_operator_metrics({'load_error': 'missing file'})
     assert m['load_error_present'] is True
     rows = agent_evaluator_workflow_explainer_operator_metrics_table_rows(m)
-    assert any((r['field'] == 'Load error' for r in rows))
+    assert any(r['field'] == 'Load error' for r in rows)

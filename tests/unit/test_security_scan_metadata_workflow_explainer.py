@@ -1,8 +1,23 @@
 from __future__ import annotations
-import json
+
 from pathlib import Path
-from nimbusware_console.workflow_explainers.security_scan_metadata import security_scan_metadata_effective_enabled_caption, security_scan_metadata_env_gate_caption, security_scan_metadata_explainer_export_json, security_scan_metadata_explainer_table_rows, security_scan_metadata_explainer_table_rows_csv, security_scan_metadata_export_filename_slug, security_scan_metadata_mapping_key_count_caption, security_scan_metadata_workflow_explainer_operator_metrics, security_scan_metadata_workflow_explainer_operator_metrics_caption, security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug, security_scan_metadata_workflow_explainer_operator_metrics_export_json, security_scan_metadata_workflow_explainer_payload, security_scan_metadata_workflow_yaml_file_bytes_caption, security_scan_metadata_workflow_yaml_relpath_caption, security_scan_metadata_workflow_yaml_string_key_count_caption, security_scan_metadata_workflow_yaml_version_caption, security_scan_metadata_yaml_effective_mismatch_caption, security_scan_metadata_yaml_raw_type_caption
+
+from nimbusware_console.workflow_explainers.security_scan_metadata import (
+    security_scan_metadata_effective_enabled_caption,
+    security_scan_metadata_env_gate_caption,
+    security_scan_metadata_mapping_key_count_caption,
+    security_scan_metadata_workflow_explainer_operator_metrics,
+    security_scan_metadata_workflow_explainer_operator_metrics_caption,
+    security_scan_metadata_workflow_explainer_payload,
+    security_scan_metadata_workflow_yaml_file_bytes_caption,
+    security_scan_metadata_workflow_yaml_relpath_caption,
+    security_scan_metadata_workflow_yaml_string_key_count_caption,
+    security_scan_metadata_workflow_yaml_version_caption,
+    security_scan_metadata_yaml_effective_mismatch_caption,
+    security_scan_metadata_yaml_raw_type_caption,
+)
 from unit.composite_repo_fixtures import write_workflow_profile
+
 
 def test_security_scan_metadata_workflow_yaml_relpath_caption(tmp_path: Path) -> None:
     write_workflow_profile(tmp_path, 'wf', 'version: 1\n')
@@ -198,7 +213,9 @@ def test_yaml_effective_mismatch_caption_none_when_aligned() -> None:
     assert security_scan_metadata_yaml_effective_mismatch_caption({'security_scan_metadata_yaml_parsed_bool_matches_effective': True}) is None
 
 def test_security_scan_metadata_operator_metrics_yaml_effective_mismatch() -> None:
-    from nimbusware_console.workflow_explainers.security_scan_metadata import security_scan_metadata_workflow_explainer_operator_metrics
+    from nimbusware_console.workflow_explainers.security_scan_metadata import (
+        security_scan_metadata_workflow_explainer_operator_metrics,
+    )
     payload = {'security_scan_metadata_yaml_parsed_bool_matches_effective': False, 'yaml_parsed_bool': True, 'effective_enabled': False}
     m = security_scan_metadata_workflow_explainer_operator_metrics(payload)
     assert m['yaml_effective_mismatch'] is True

@@ -10,12 +10,12 @@ from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
 from nimbusware_api.routes.runs.stream import _sse_pack
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_env.env_flags import nimbusware_collab_enabled
 from nimbusware_orchestrator.collab_output_redaction import redact_collab_output
 from nimbusware_projections.builders.chat_theater import build_theater_messages_for_profile
+from nimbusware_projections.builders.run_theater import build_run_theater_messages
 from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 
 router = APIRouter()

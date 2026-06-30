@@ -1,10 +1,34 @@
 from __future__ import annotations
-import json
+
 from pathlib import Path
+
 import pytest
-from nimbusware_console.universal_critique_timeline_display import universal_critique_snapshot_from_compare_paste
-from nimbusware_console.workflow_explainers.universal_critique import universal_critique_default_enabled_caption, universal_critique_enabled_stages_caption, universal_critique_env_override_deltas, universal_critique_env_override_summary_caption, universal_critique_explainer_export_json, universal_critique_explainer_table_rows, universal_critique_explainer_table_rows_csv, universal_critique_export_filename_slug, universal_critique_workflow_explainer_operator_metrics, universal_critique_workflow_explainer_operator_metrics_caption, universal_critique_workflow_explainer_operator_metrics_export_filename_slug, universal_critique_workflow_explainer_operator_metrics_export_json, universal_critique_workflow_explainer_operator_metrics_table_rows, universal_critique_workflow_explainer_payload, universal_critique_workflow_vs_timeline_rows, universal_critique_workflow_yaml_bytes_caption, universal_critique_workflow_yaml_relpath_caption, universal_critique_yaml_enabled_bucket_caption, universal_critique_yaml_present_caption, universal_critique_yaml_stage_keys_caption, universal_critique_yaml_top_level_enabled_false_count_caption, universal_critique_yaml_top_level_enabled_true_count_caption, universal_critique_yaml_top_level_list_child_count_caption, universal_critique_yaml_top_level_mapping_child_count_caption, universal_critique_yaml_top_level_nonempty_count_caption
+
+from nimbusware_console.universal_critique_timeline_display import (
+    universal_critique_snapshot_from_compare_paste,
+)
+from nimbusware_console.workflow_explainers.universal_critique import (
+    universal_critique_default_enabled_caption,
+    universal_critique_enabled_stages_caption,
+    universal_critique_env_override_deltas,
+    universal_critique_env_override_summary_caption,
+    universal_critique_workflow_explainer_operator_metrics,
+    universal_critique_workflow_explainer_operator_metrics_caption,
+    universal_critique_workflow_explainer_payload,
+    universal_critique_workflow_vs_timeline_rows,
+    universal_critique_workflow_yaml_bytes_caption,
+    universal_critique_workflow_yaml_relpath_caption,
+    universal_critique_yaml_enabled_bucket_caption,
+    universal_critique_yaml_present_caption,
+    universal_critique_yaml_stage_keys_caption,
+    universal_critique_yaml_top_level_enabled_false_count_caption,
+    universal_critique_yaml_top_level_enabled_true_count_caption,
+    universal_critique_yaml_top_level_list_child_count_caption,
+    universal_critique_yaml_top_level_mapping_child_count_caption,
+    universal_critique_yaml_top_level_nonempty_count_caption,
+)
 from nimbusware_env import find_repo_root
+
 
 @pytest.fixture(autouse=True)
 def _clear_universal_critique_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -44,8 +68,8 @@ def test_explainer_env_overrides_yaml(repo_uc_stub: Path, monkeypatch: pytest.Mo
     assert out['yaml_only']['impl_llm'] is False
     assert out['effective_with_env']['impl_llm'] is True
     deltas = universal_critique_env_override_deltas(out)
-    assert any((r['knob'] == 'impl_llm' for r in deltas))
-    assert any((r['yaml_only'] == 'False' and r['effective_with_env'] == 'True' for r in deltas))
+    assert any(r['knob'] == 'impl_llm' for r in deltas)
+    assert any(r['yaml_only'] == 'False' and r['effective_with_env'] == 'True' for r in deltas)
 
 def test_explainer_new_stage_env_overrides_yaml(repo_uc_stub: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv('NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE', '0')

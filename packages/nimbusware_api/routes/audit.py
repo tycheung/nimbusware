@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException, Response
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -21,6 +20,7 @@ from nimbusware_orchestrator.audit_export import (
     surface_outcomes_from_events,
 )
 from nimbusware_orchestrator.policy_snapshot_diff import policy_snapshot_from_run_created_metadata
+from nimbusware_projections.builders.run_theater import build_run_theater_messages
 from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 from nimbusware_store.protocol import serialized_event_from_row
 

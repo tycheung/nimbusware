@@ -1,13 +1,43 @@
 from __future__ import annotations
+
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+
 import pytest
-from nimbusware_console.workflow_explainers.escalation_suppress import escalation_policy_export_filename_slug, escalation_policy_yaml_age_caption, escalation_policy_yaml_anti_deadlock_min_progress_caption, escalation_policy_yaml_anti_deadlock_shape_caption, escalation_policy_yaml_deadlock_minutes_caption, escalation_policy_yaml_file_bytes_caption, escalation_policy_yaml_key_count_caption, escalation_policy_yaml_keys_all_export_json, escalation_policy_yaml_keys_all_table_rows, escalation_policy_yaml_keys_all_table_rows_csv, escalation_policy_yaml_keys_sample_caption, escalation_policy_yaml_max_retries_caption, escalation_policy_yaml_mtime_caption, escalation_policy_yaml_relpath_caption, escalation_policy_yaml_top_level_kinds_caption, escalation_policy_yaml_top_level_kinds_export_json, escalation_policy_yaml_top_level_kinds_table_rows, escalation_policy_yaml_top_level_kinds_table_rows_csv, escalation_policy_yaml_verification_shape_caption, escalation_policy_yaml_version_caption, escalation_suppress_explainer_export_json, escalation_suppress_explainer_table_rows, escalation_suppress_explainer_table_rows_csv, escalation_suppress_export_filename_slug, escalation_suppress_flag_caption, escalation_suppress_workflow_explainer_operator_metrics, escalation_suppress_workflow_explainer_operator_metrics_caption, escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug, escalation_suppress_workflow_explainer_operator_metrics_table_rows, escalation_suppress_workflow_explainer_payload, escalation_yaml_key_present_caption
+
+from nimbusware_console.workflow_explainers.escalation_suppress import (
+    escalation_policy_export_filename_slug,
+    escalation_policy_yaml_age_caption,
+    escalation_policy_yaml_anti_deadlock_min_progress_caption,
+    escalation_policy_yaml_anti_deadlock_shape_caption,
+    escalation_policy_yaml_deadlock_minutes_caption,
+    escalation_policy_yaml_file_bytes_caption,
+    escalation_policy_yaml_key_count_caption,
+    escalation_policy_yaml_keys_all_export_json,
+    escalation_policy_yaml_keys_all_table_rows,
+    escalation_policy_yaml_keys_all_table_rows_csv,
+    escalation_policy_yaml_keys_sample_caption,
+    escalation_policy_yaml_max_retries_caption,
+    escalation_policy_yaml_mtime_caption,
+    escalation_policy_yaml_relpath_caption,
+    escalation_policy_yaml_top_level_kinds_caption,
+    escalation_policy_yaml_top_level_kinds_export_json,
+    escalation_policy_yaml_top_level_kinds_table_rows,
+    escalation_policy_yaml_top_level_kinds_table_rows_csv,
+    escalation_policy_yaml_verification_shape_caption,
+    escalation_policy_yaml_version_caption,
+    escalation_suppress_flag_caption,
+    escalation_suppress_workflow_explainer_operator_metrics,
+    escalation_suppress_workflow_explainer_operator_metrics_caption,
+    escalation_suppress_workflow_explainer_payload,
+    escalation_yaml_key_present_caption,
+)
 from nimbusware_env import find_repo_root
 from unit.composite_repo_fixtures import write_workflow_profile
 from unit.workflow_explainer_helpers import escalation_explainer_payload
+
 pytestmark = pytest.mark.slow
 
 def test_explainer_no_escalation_key(tmp_path: Path) -> None:
@@ -654,7 +684,7 @@ def test_escalation_policy_yaml_top_level_kinds_table_rows_mixed_policy(tmp_path
     pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile='wf')
     rows = escalation_policy_yaml_top_level_kinds_table_rows(pl)
     assert len(rows) == 4
-    assert sum((int(r['count']) for r in rows)) == pl['escalation_policy_yaml_top_level_key_count']
+    assert sum(int(r['count']) for r in rows) == pl['escalation_policy_yaml_top_level_key_count']
     assert {r['kind'] for r in rows} == {'mapping', 'scalar', 'list', 'other'}
     parsed = json.loads(escalation_policy_yaml_top_level_kinds_export_json(rows))
     assert len(parsed) == 4

@@ -2,15 +2,6 @@ from __future__ import annotations
 
 import re
 
-from nimbusware_console.explainer_core.generic_display_metrics import (
-    bundle_search_operator_metrics,
-    bundle_search_operator_metrics_caption,
-    bundle_search_operator_metrics_export_filename_slug,
-    bundle_search_operator_metrics_export_json,
-    bundle_search_operator_metrics_table_rows,
-    bundle_search_operator_metrics_table_rows_csv,
-)
-
 
 def bundle_search_filename_slug(query: str, *, max_len: int = 40) -> str:
     raw = query.strip().lower().replace(" ", "_")[:max_len]

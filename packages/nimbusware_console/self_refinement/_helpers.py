@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
-
 _SELF_REFINEMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("version", "Version"),
     ("description", "Description"),

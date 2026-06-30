@@ -15,8 +15,8 @@ from agent_core.models import (
 )
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_projections.builders.run_research import run_research_briefs_from_events
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from nimbusware_projections.builders.run_research import run_research_briefs_from_events
 
 router = APIRouter()
 

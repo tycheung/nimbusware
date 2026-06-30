@@ -1,28 +1,14 @@
 from __future__ import annotations
 
 from nimbusware_projections.builders.agent_evaluator import agent_evaluator_timeline_summary
+from nimbusware_projections.builders.agent_evaluator import (
+    agent_evaluator_timeline_summary as proj_agent_eval_summary,
+)
 from nimbusware_projections.builders.integrator_gate import (
     integrator_gate_timeline_delta,
     integrator_gate_timeline_entries,
     integrator_gate_timeline_history,
     integrator_gate_timeline_summary,
-)
-from nimbusware_projections.builders.security_scan import (
-    security_scan_on_verify_timeline_entries,
-    security_scan_on_verify_timeline_history,
-    security_scan_on_verify_timeline_summary,
-)
-from nimbusware_projections.builders.self_refinement import (
-    self_refinement_marker_timeline_entries,
-    self_refinement_marker_timeline_history,
-    self_refinement_timeline_summary,
-)
-from nimbusware_projections.builders.universal_critique import (
-    universal_critique_timeline_entries,
-    universal_critique_timeline_summary,
-)
-from nimbusware_projections.builders.agent_evaluator import (
-    agent_evaluator_timeline_summary as proj_agent_eval_summary,
 )
 from nimbusware_projections.builders.integrator_gate import (
     integrator_gate_timeline_delta as proj_delta,
@@ -37,6 +23,11 @@ from nimbusware_projections.builders.integrator_gate import (
     integrator_gate_timeline_summary as proj_summary,
 )
 from nimbusware_projections.builders.security_scan import (
+    security_scan_on_verify_timeline_entries,
+    security_scan_on_verify_timeline_history,
+    security_scan_on_verify_timeline_summary,
+)
+from nimbusware_projections.builders.security_scan import (
     security_scan_on_verify_timeline_entries as proj_scan_entries,
 )
 from nimbusware_projections.builders.security_scan import (
@@ -46,6 +37,11 @@ from nimbusware_projections.builders.security_scan import (
     security_scan_on_verify_timeline_summary as proj_scan_summary,
 )
 from nimbusware_projections.builders.self_refinement import (
+    self_refinement_marker_timeline_entries,
+    self_refinement_marker_timeline_history,
+    self_refinement_timeline_summary,
+)
+from nimbusware_projections.builders.self_refinement import (
     self_refinement_marker_timeline_entries as proj_sr_entries,
 )
 from nimbusware_projections.builders.self_refinement import (
@@ -53,6 +49,10 @@ from nimbusware_projections.builders.self_refinement import (
 )
 from nimbusware_projections.builders.self_refinement import (
     self_refinement_timeline_summary as proj_sr_summary,
+)
+from nimbusware_projections.builders.universal_critique import (
+    universal_critique_timeline_entries,
+    universal_critique_timeline_summary,
 )
 from nimbusware_projections.builders.universal_critique import (
     universal_critique_timeline_entries as proj_uc_entries,
