@@ -110,6 +110,7 @@ coverage.xml
 /_scraper_patch_*.txt
 /_recovered_*.txt
 /_ci*.txt
+/_ci*.log
 /_pytest*.txt
 /_dbg.txt
 /_cov_analysis.txt
