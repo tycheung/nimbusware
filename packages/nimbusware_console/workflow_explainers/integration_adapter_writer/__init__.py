@@ -1,3 +1,4 @@
+from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
@@ -13,18 +14,12 @@ from nimbusware_console.workflow_explainers.integration_adapter_writer.events im
     integration_adapter_writer_run_caption,
     integration_adapter_writer_run_table_rows,
 )
-from nimbusware_console.workflow_explainers.integration_adapter_writer.metrics import (
-    integration_adapter_writer_workflow_explainer_operator_metrics,
-    integration_adapter_writer_workflow_explainer_operator_metrics_caption,
-    integration_adapter_writer_workflow_explainer_operator_metrics_export_filename_slug,
-    integration_adapter_writer_workflow_explainer_operator_metrics_export_json,
-    integration_adapter_writer_workflow_explainer_operator_metrics_table_rows,
-    integration_adapter_writer_workflow_explainer_operator_metrics_table_rows_csv,
-)
 from nimbusware_console.workflow_explainers.integration_adapter_writer.payload import (
     integration_adapter_writer_fleet_manifest_count,
     integration_adapter_writer_workflow_explainer_payload,
 )
+
+install_explainer_metrics("integration_adapter_writer", globals())
 
 integration_adapter_writer_explainer_export_json = workflow_explainer_payload_export_json
 

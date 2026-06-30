@@ -1,3 +1,4 @@
+from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
@@ -34,16 +35,11 @@ from nimbusware_console.workflow_explainers.self_refinement.marker_exports impor
     self_refinement_marker_merge_compare_table_rows_csv,
     self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
 )
-from nimbusware_console.workflow_explainers.self_refinement.metrics import (
-    self_refinement_workflow_explainer_operator_metrics,
-    self_refinement_workflow_explainer_operator_metrics_caption,
-    self_refinement_workflow_explainer_operator_metrics_export_json,
-    self_refinement_workflow_explainer_operator_metrics_table_rows,
-    self_refinement_workflow_explainer_operator_metrics_table_rows_csv,
-)
 from nimbusware_console.workflow_explainers.self_refinement.payload import (
     self_refinement_workflow_explainer_payload,
 )
+
+install_explainer_metrics("self_refinement", globals())
 
 install_package_workflow_explainer_exports(
     globals(), "self_refinement"

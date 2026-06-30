@@ -1,47 +1,27 @@
 from __future__ import annotations
 
+import importlib
 from collections.abc import Callable, Mapping
 from typing import Any
 
 import pytest
 
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    WORKFLOW_EXPLAINER_SPECS,
+    explainer_metrics_prefix,
+)
 from nimbusware_console.explainer_core.workflow_metrics_spec import repo_explainer_spec
-from nimbusware_console.workflow_explainers.agent_evaluator import metrics as agent_evaluator_metrics
-from nimbusware_console.workflow_explainers.escalation_suppress import metrics as escalation_suppress_metrics
-from nimbusware_console.workflow_explainers.security_scan_metadata import (
-    metrics as security_scan_metadata_metrics,
-)
-from nimbusware_console.workflow_explainers.self_refinement import metrics as self_refinement_metrics
-from nimbusware_console.workflow_explainers.universal_critique import (
-    metrics as universal_critique_metrics,
-)
 
-_EXPLAINER_CASES: tuple[tuple[str, str, Callable[[Mapping[str, Any] | None], dict[str, Any]]], ...] = (
-    (
-        "self_refinement",
-        "self_refinement_workflow_explainer",
-        self_refinement_metrics.self_refinement_workflow_explainer_operator_metrics,
-    ),
-    (
-        "universal_critique",
-        "universal_critique_workflow_explainer",
-        universal_critique_metrics.universal_critique_workflow_explainer_operator_metrics,
-    ),
-    (
-        "agent_evaluator",
-        "agent_evaluator_workflow_explainer",
-        agent_evaluator_metrics.agent_evaluator_workflow_explainer_operator_metrics,
-    ),
-    (
-        "escalation_suppress",
-        "escalation_suppress_workflow_explainer",
-        escalation_suppress_metrics.escalation_suppress_workflow_explainer_operator_metrics,
-    ),
-    (
-        "security_scan_metadata",
-        "security_scan_metadata_workflow_explainer",
-        security_scan_metadata_metrics.security_scan_metadata_workflow_explainer_operator_metrics,
-    ),
+
+def _metrics_fn(slug: str) -> Callable[[Mapping[str, Any] | None], dict[str, Any]]:
+    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    prefix = explainer_metrics_prefix(slug)
+    return getattr(mod, f"{prefix}_operator_metrics")
+
+
+_EXPLAINER_CASES = tuple(
+    (spec.slug, explainer_metrics_prefix(spec.slug), _metrics_fn(spec.slug))
+    for spec in WORKFLOW_EXPLAINER_SPECS
 )
 
 
@@ -51,6 +31,8 @@ def test_workflow_explainer_metrics_yaml_spec_roundtrip(
     prefix: str,
     metrics_fn: Callable[[Mapping[str, Any] | None], dict[str, Any]],
 ) -> None:
+    if slug in {"integration_adapter_writer", "integrator_threshold"}:
+        pytest.skip("custom metrics install (no YAML spec file)")
     spec_path = repo_explainer_spec(slug)
     assert spec_path.is_file(), f"missing explainer spec: {spec_path}"
     out = metrics_fn(None)
@@ -64,13 +46,20 @@ def test_workflow_explainer_operator_exports_installed(
     prefix: str,
     metrics_fn: Callable[[Mapping[str, Any] | None], dict[str, Any]],
 ) -> None:
-    mod = {
-        "self_refinement": self_refinement_metrics,
-        "universal_critique": universal_critique_metrics,
-        "agent_evaluator": agent_evaluator_metrics,
-        "escalation_suppress": escalation_suppress_metrics,
-        "security_scan_metadata": security_scan_metadata_metrics,
-    }[slug]
+    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
     assert hasattr(mod, f"{prefix}_operator_metrics_table_rows")
     assert hasattr(mod, f"{prefix}_operator_metrics_caption")
     assert hasattr(mod, f"{prefix}_operator_metrics_export_json")
+    out = metrics_fn(None)
+    assert isinstance(out, dict) and out
+
+
+@pytest.mark.parametrize("slug", [spec.slug for spec in WORKFLOW_EXPLAINER_SPECS])
+def test_workflow_explainer_payload_fn_importable(slug: str) -> None:
+    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    payload_names = [
+        n
+        for n in dir(mod)
+        if n.endswith("_explainer_payload") or n.endswith("_workflow_explainer_payload")
+    ]
+    assert payload_names, f"{slug}: expected a payload builder export"

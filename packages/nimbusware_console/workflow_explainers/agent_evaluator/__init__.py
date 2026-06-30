@@ -1,3 +1,4 @@
+from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
@@ -21,17 +22,11 @@ from nimbusware_console.workflow_explainers.agent_evaluator.env import (
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )
-from nimbusware_console.workflow_explainers.agent_evaluator.metrics import (
-    agent_evaluator_workflow_explainer_operator_metrics,
-    agent_evaluator_workflow_explainer_operator_metrics_caption,
-    agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug,
-    agent_evaluator_workflow_explainer_operator_metrics_export_json,
-    agent_evaluator_workflow_explainer_operator_metrics_table_rows,
-    agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv,
-)
 from nimbusware_console.workflow_explainers.agent_evaluator.payload import (
     agent_evaluator_workflow_explainer_payload,
 )
+
+install_explainer_metrics("agent_evaluator", globals())
 
 install_package_workflow_explainer_exports(
     globals(), "agent_evaluator"

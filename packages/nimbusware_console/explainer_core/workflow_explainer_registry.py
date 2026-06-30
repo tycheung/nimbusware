@@ -27,6 +27,12 @@ class WorkflowExplainerSpec:
     package: str
 
 
+def explainer_metrics_prefix(slug: str) -> str:
+    if slug == "integrator_threshold":
+        return "integrator_threshold_explainer"
+    return f"{slug}_workflow_explainer"
+
+
 WORKFLOW_EXPLAINER_SPECS: tuple[WorkflowExplainerSpec, ...] = (
     WorkflowExplainerSpec("agent_evaluator", "workflow_explainers/agent_evaluator"),
     WorkflowExplainerSpec(

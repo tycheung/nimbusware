@@ -1,3 +1,4 @@
+from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.universal_critique_counts import (
     universal_critique_top_level_enabled_false_count as _universal_critique_top_level_enabled_false_count,
 )
@@ -48,17 +49,11 @@ from nimbusware_console.workflow_explainers.universal_critique.compare import (
     universal_critique_env_override_deltas,
     universal_critique_workflow_vs_timeline_rows,
 )
-from nimbusware_console.workflow_explainers.universal_critique.metrics import (
-    universal_critique_workflow_explainer_operator_metrics,
-    universal_critique_workflow_explainer_operator_metrics_caption,
-    universal_critique_workflow_explainer_operator_metrics_export_filename_slug,
-    universal_critique_workflow_explainer_operator_metrics_export_json,
-    universal_critique_workflow_explainer_operator_metrics_table_rows,
-    universal_critique_workflow_explainer_operator_metrics_table_rows_csv,
-)
 from nimbusware_console.workflow_explainers.universal_critique.payload import (
     universal_critique_workflow_explainer_payload,
 )
+
+install_explainer_metrics("universal_critique", globals())
 
 install_package_workflow_explainer_exports(
     globals(), "universal_critique"

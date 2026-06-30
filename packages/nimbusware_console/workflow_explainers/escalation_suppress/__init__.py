@@ -1,3 +1,4 @@
+from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
@@ -19,14 +20,6 @@ from nimbusware_console.workflow_explainers.escalation_suppress.captions import 
     escalation_suppress_flag_caption,
     escalation_yaml_key_present_caption,
 )
-from nimbusware_console.workflow_explainers.escalation_suppress.metrics import (
-    escalation_suppress_workflow_explainer_operator_metrics,
-    escalation_suppress_workflow_explainer_operator_metrics_caption,
-    escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug,
-    escalation_suppress_workflow_explainer_operator_metrics_export_json,
-    escalation_suppress_workflow_explainer_operator_metrics_table_rows,
-    escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv,
-)
 from nimbusware_console.workflow_explainers.escalation_suppress.payload import (
     escalation_suppress_workflow_explainer_payload,
 )
@@ -40,6 +33,8 @@ from nimbusware_console.workflow_explainers.escalation_suppress.policy_tables im
     escalation_policy_yaml_top_level_kinds_table_rows,
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
 )
+
+install_explainer_metrics("escalation_suppress", globals())
 
 install_package_workflow_explainer_exports(
     globals(), "escalation_suppress"
