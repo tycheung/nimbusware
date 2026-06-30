@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any, TypeVar, cast
 
@@ -15,6 +15,51 @@ ProfileLoadErrors = (
     ValueError,
     UnicodeDecodeError,
 )
+
+
+def _deep_merge_workflow(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(base)
+    for key, value in overlay.items():
+        if key == "extends":
+            continue
+        existing = merged.get(key)
+        if isinstance(existing, dict) and isinstance(value, dict):
+            merged[key] = _deep_merge_workflow(existing, value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def _resolve_workflow_profile_raw(
+    repo_root: Path,
+    profile: str,
+    *,
+    materializer: Any | None = None,
+    _stack: tuple[str, ...] = (),
+) -> dict[str, Any]:
+    key = profile.strip()
+    if key in _stack:
+        chain = " -> ".join((*_stack, key))
+        msg = f"workflow_profile extends cycle: {chain}"
+        raise ValueError(msg)
+    if materializer is not None and getattr(materializer, "use_db", False):
+        raw = cast(dict[str, Any], materializer.get_workflow_profile_dict(key))
+    else:
+        raw = load_yaml(workflow_profile_path(repo_root, key))
+    extends = raw.get("extends")
+    if extends is None:
+        return dict(raw)
+    parent_key = str(extends).strip()
+    if not parent_key:
+        return dict(raw)
+    parent = _resolve_workflow_profile_raw(
+        repo_root,
+        parent_key,
+        materializer=materializer,
+        _stack=(*_stack, key),
+    )
+    overlay = {k: v for k, v in raw.items() if k != "extends"}
+    return _deep_merge_workflow(parent, overlay)
 
 
 def workflow_profile_path(repo_root: Path, profile: str) -> Path:
@@ -37,7 +82,7 @@ def workflow_profile_dict(
 ) -> dict[str, Any]:
     if materializer is not None and getattr(materializer, "use_db", False):
         return cast(dict[str, Any], materializer.get_workflow_profile_dict(profile))
-    return load_yaml(workflow_profile_path(repo_root, profile))
+    return _resolve_workflow_profile_raw(repo_root, profile, materializer=materializer)
 
 
 def load_workflow_profile_dict(
