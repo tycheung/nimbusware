@@ -22,18 +22,16 @@ from nimbusware_orchestrator.enforcement_profiles import enforcement_effective_m
 from nimbusware_orchestrator.patch_context import normalize_patch_context
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.slice_budget_presets import resolve_slice_budget_preset
-from nimbusware_orchestrator.workflow_campaign import campaign_effective_metadata
-from nimbusware_orchestrator.workflow_dev_env import dev_env_effective_metadata
-from nimbusware_orchestrator.workflow_fast_slice import fast_slice_effective_metadata
-from nimbusware_orchestrator.workflow_patch import patch_effective_metadata
-from nimbusware_orchestrator.workflow_probation_automation import (
+from nimbusware_orchestrator.workflow_registry import (
+    campaign_effective_metadata,
+    dev_env_effective_metadata,
+    fast_slice_effective_metadata,
+    patch_effective_metadata,
     probation_automation_effective_metadata,
-)
-from nimbusware_orchestrator.workflow_research import (
     research_effective_metadata,
     stitch_effective_metadata,
+    theater_effective_metadata,
 )
-from nimbusware_orchestrator.workflow_theater import theater_effective_metadata
 
 
 def resolve_custom_agent_meta(

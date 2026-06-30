@@ -41,11 +41,11 @@ def preview_workflow_blast_radius(
 
     from nimbusware_maker.workspace import run_created_metadata_from_rows
     from nimbusware_orchestrator.slice_budget_presets import resolve_slice_budget_preset
-    from nimbusware_orchestrator.workflow_agent_evaluator import (
+    from nimbusware_orchestrator.workflow_registry import (
+        effective_universal_critique,
         parse_agent_evaluator_workflow_block,
+        parse_micro_slice_workflow_block,
     )
-    from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
-    from nimbusware_orchestrator.workflow_universal_critique import effective_universal_critique
 
     root = Path(repo_root)
     uc_now = effective_universal_critique(

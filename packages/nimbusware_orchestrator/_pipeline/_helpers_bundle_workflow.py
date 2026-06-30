@@ -1,61 +1,45 @@
 from __future__ import annotations
 
 from nimbusware_orchestrator.merge import load_yaml, policy_snapshot_from_files
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
+from nimbusware_orchestrator.workflow_registry import (
+    EffectiveUniversalCritique,
     agent_evaluator_llm_branch_effective,
     agent_evaluator_llm_stub_env_enabled,
     agent_evaluator_production_default_on,
     agent_evaluator_production_llm_fallback_enabled,
     agent_evaluator_rules_derived_llm_evaluation,
-    parse_agent_evaluator_workflow_block,
-    persona_coverage_critique_effective,
-    persona_coverage_critique_llm_branch_effective,
-)
-from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
-    parse_integration_adapter_writer_workflow_block,
-)
-from nimbusware_orchestrator.workflow_parallel_writers import (
-    parallel_writers_enabled,
-    test_writer_llm_body_enabled,
-    test_writer_llm_stub_fallback,
-    test_writer_stage_enabled,
-)
-from nimbusware_orchestrator.workflow_probation_automation import (
-    parse_probation_automation_workflow_block,
-)
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from nimbusware_orchestrator.workflow_refactor import (
-    parse_refactor_workflow_block,
-    refactor_stage_effective,
-)
-from nimbusware_orchestrator.workflow_research import (
-    parse_research_workflow_block,
-    parse_stitch_workflow_block,
-)
-from nimbusware_orchestrator.workflow_scan_critique import (
+    effective_universal_critique,
     network_resilience_critique_effective,
     network_resilience_critique_llm_branch_effective,
+    parallel_writers_enabled,
+    parse_agent_evaluator_workflow_block,
+    parse_escalation_workflow_block,
+    parse_integration_adapter_writer_workflow_block,
     parse_network_resilience_critique_workflow_block,
     parse_performance_critique_workflow_block,
+    parse_probation_automation_workflow_block,
+    parse_refactor_workflow_block,
+    parse_research_workflow_block,
     parse_security_critique_workflow_block,
+    parse_self_refinement_workflow_block,
+    parse_stitch_workflow_block,
+    parse_universal_critique_workflow_block,
     performance_critique_effective,
     performance_critique_llm_branch_effective,
+    persona_coverage_critique_effective,
+    persona_coverage_critique_llm_branch_effective,
+    refactor_stage_effective,
     security_critique_effective,
     security_critique_llm_branch_effective,
-)
-from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
-from nimbusware_orchestrator.workflow_self_refinement import (
-    parse_self_refinement_workflow_block,
+    security_scan_metadata_on_verify_enabled,
     self_refinement_llm_critique_branch_effective,
     self_refinement_llm_critique_effective_for_run,
     self_refinement_production_ungated_effective,
     self_refinement_ungated_loop_effective,
-)
-from nimbusware_orchestrator.workflow_universal_critique import (
-    EffectiveUniversalCritique,
-    effective_universal_critique,
-    parse_universal_critique_workflow_block,
+    test_writer_llm_body_enabled,
+    test_writer_llm_stub_fallback,
+    test_writer_stage_enabled,
     universal_critique_production_default_on,
 )
 
@@ -67,7 +51,6 @@ __all__ = (
     "agent_evaluator_production_llm_fallback_enabled",
     "agent_evaluator_rules_derived_llm_evaluation",
     "effective_universal_critique",
-    "load_yaml",
     "network_resilience_critique_effective",
     "network_resilience_critique_llm_branch_effective",
     "parallel_writers_enabled",
@@ -102,4 +85,5 @@ __all__ = (
     "universal_critique_production_default_on",
     "workflow_profile_dict",
     "workflow_profile_path",
+    "load_yaml",
 )

@@ -5,8 +5,8 @@ from typing import Any
 
 from nimbusware_extensions.personas import ALLOWED_SHELVES, PersonaShelf
 from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_path
+from nimbusware_orchestrator.workflow_registry import parse_agent_evaluator_workflow_block
 
 
 def assert_bundle_catalog_maps_resolve(

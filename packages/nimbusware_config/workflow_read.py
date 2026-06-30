@@ -4,20 +4,16 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
-from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
-from nimbusware_orchestrator.workflow_security_metadata import (
-    parse_security_scan_metadata_on_verify_workflow,
-)
-from nimbusware_orchestrator.workflow_self_refinement import (
+from nimbusware_orchestrator.workflow_registry import (
     SelfRefinementWorkflowBlock,
-    parse_self_refinement_workflow_block,
-)
-from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
+    parse_agent_evaluator_workflow_block,
+    parse_escalation_workflow_block,
+    parse_security_scan_metadata_on_verify_workflow,
+    parse_self_refinement_workflow_block,
     parse_universal_critique_workflow_block,
+    security_scan_metadata_on_verify_enabled,
 )
 
 __all__ = [
