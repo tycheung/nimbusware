@@ -12,12 +12,9 @@ from nimbusware_api.routes import (
     bundles,
     campaigns,
     chat,
-    chat_bindings,
-    chat_compute,
+    chat_collab,
     chat_host_transfer,
-    chat_library,
     chat_participants,
-    chat_session_scope,
     chat_stream,
     compute,
     config_ops,
@@ -60,12 +57,9 @@ def build_v1_router() -> APIRouter:
     router.include_router(projects.router)
     router.include_router(auth.router)
     router.include_router(chat.router)
-    router.include_router(chat_bindings.router)
-    router.include_router(chat_compute.router)
+    router.include_router(chat_collab.router)
     router.include_router(chat_participants.router)
-    router.include_router(chat_session_scope.router)
     router.include_router(chat_host_transfer.router)
-    router.include_router(chat_library.router)
     router.include_router(chat_stream.router)
     router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
