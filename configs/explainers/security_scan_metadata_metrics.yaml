@@ -1,0 +1,41 @@
+prefix: security_scan_metadata_workflow_explainer
+caption_prefix: "Security scan metadata explainer metrics: "
+defaults:
+  yaml_key_present: false
+  yaml_parsed_bool: false
+  effective_enabled: false
+  yaml_matches_effective: true
+  yaml_effective_mismatch: false
+  env_forces_on: false
+  env_forces_off: false
+  env_unset: true
+  load_error_present: false
+  workflow_yaml_version_int: null
+  workflow_yaml_file_bytes: null
+table_rows:
+  - [YAML key present, yaml_key_present]
+  - [YAML parsed bool, yaml_parsed_bool]
+  - [Effective enabled, effective_enabled]
+  - [YAML matches effective, yaml_matches_effective]
+  - [YAML/effective mismatch, yaml_effective_mismatch]
+  - [Env forces on, env_forces_on]
+  - [Env forces off, env_forces_off]
+  - [Env unset, env_unset]
+  - [Workflow YAML version, workflow_yaml_version_int]
+  - [Workflow YAML bytes, workflow_yaml_file_bytes]
+  - [Load error, load_error_present]
+table_rows_options:
+  append_load_error_row: true
+  exclude_keys:
+    - load_error_present
+build:
+  bool_fields:
+    - [security_scan_metadata_on_verify_yaml_key_present, yaml_key_present]
+    - [yaml_parsed_bool, yaml_parsed_bool]
+    - [effective_enabled, effective_enabled]
+  bool_match_fields:
+    - [security_scan_metadata_yaml_parsed_bool_matches_effective, yaml_matches_effective, yaml_effective_mismatch]
+  env_tri_state:
+    - NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA
+  workflow_yaml_file: true
+  load_error: true

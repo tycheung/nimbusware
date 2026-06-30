@@ -1,0 +1,55 @@
+prefix: agent_evaluator_workflow_explainer
+caption_prefix: "Agent evaluator explainer metrics: "
+defaults:
+  yaml_key_present: false
+  yaml_parsed_enabled: false
+  llm_evaluation_enabled: false
+  would_emit_llm_evaluation: false
+  would_emit_stage_started: false
+  env_forces_on: false
+  env_forces_off: false
+  env_unset: true
+  auto_promote_disabled: false
+  auto_create_disabled: false
+  persona_id_present: false
+  yaml_true_bool_value_count: 0
+  yaml_false_bool_value_count: 0
+  load_error_present: false
+  workflow_yaml_version_int: null
+table_rows:
+  - [YAML key present, yaml_key_present]
+  - [YAML parsed enabled, yaml_parsed_enabled]
+  - [Would emit stage, would_emit_stage_started]
+  - [Env forces on, env_forces_on]
+  - [Env forces off, env_forces_off]
+  - [Env unset, env_unset]
+  - [Persona id present, persona_id_present]
+  - [LLM evaluation enabled, llm_evaluation_enabled]
+  - [Would emit LLM branch, would_emit_llm_evaluation]
+  - [Auto-promote disabled (env), auto_promote_disabled]
+  - [Auto-create disabled (env), auto_create_disabled]
+  - [YAML true bool count, yaml_true_bool_value_count]
+  - [YAML false bool count, yaml_false_bool_value_count]
+  - [Workflow YAML version, workflow_yaml_version_int]
+table_rows_options:
+  append_load_error_row: true
+build:
+  bool_fields:
+    - [agent_evaluator_yaml_key_present, yaml_key_present]
+    - [yaml_parsed_enabled, yaml_parsed_enabled]
+    - [yaml_parsed_llm_evaluation_enabled, llm_evaluation_enabled]
+    - [would_emit_stage_started, would_emit_stage_started]
+    - [would_emit_llm_evaluation, would_emit_llm_evaluation]
+  int_fields:
+    - [agent_evaluator_yaml_true_bool_value_count, yaml_true_bool_value_count]
+    - [agent_evaluator_yaml_false_bool_value_count, yaml_false_bool_value_count]
+  env_tri_state:
+    - NIMBUSWARE_AGENT_EVALUATOR
+  env_flags:
+    - [NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE, disables_auto_promote, auto_promote_disabled]
+    - [NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE, disables_auto_create, auto_create_disabled]
+  str_present:
+    - [yaml_parsed_persona_id, persona_id_present]
+  optional_int:
+    - [workflow_yaml_top_level_version_int, workflow_yaml_version_int]
+  load_error: true

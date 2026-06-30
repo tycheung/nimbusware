@@ -1,0 +1,42 @@
+prefix: escalation_suppress_workflow_explainer
+caption_prefix: "Escalation suppress explainer metrics: "
+defaults:
+  escalation_key_present: false
+  suppress_automatic_escalation_effective: false
+  policy_yaml_exists: false
+  policy_top_level_key_count: 0
+  anti_deadlock_mapping_present: false
+  anti_deadlock_enabled: false
+  anti_deadlock_min_progress_events: null
+  policy_yaml_file_bytes: null
+  policy_yaml_age_seconds: null
+  load_error_present: false
+table_rows:
+  - [Escalation key present, escalation_key_present]
+  - [Suppress automatic (effective), suppress_automatic_escalation_effective]
+  - [Policy YAML exists, policy_yaml_exists]
+  - [Policy top-level keys, policy_top_level_key_count]
+  - [anti_deadlock mapping, anti_deadlock_mapping_present]
+  - [anti_deadlock enabled, anti_deadlock_enabled]
+  - [anti_deadlock min_progress_events, anti_deadlock_min_progress_events]
+  - [Policy YAML bytes, policy_yaml_file_bytes]
+  - [Policy YAML age (s), policy_yaml_age_seconds]
+table_rows_options:
+  optional_metric_keys:
+    - anti_deadlock_min_progress_events
+    - policy_yaml_file_bytes
+    - policy_yaml_age_seconds
+build:
+  bool_fields:
+    - [escalation_yaml_key_present, escalation_key_present]
+    - [suppress_automatic_escalation_effective, suppress_automatic_escalation_effective]
+    - [escalation_policy_yaml_path_exists, policy_yaml_exists]
+    - [escalation_policy_yaml_has_anti_deadlock_mapping, anti_deadlock_mapping_present]
+    - [escalation_policy_yaml_anti_deadlock_enabled, anti_deadlock_enabled]
+  int_fields:
+    - [escalation_policy_yaml_top_level_key_count, policy_top_level_key_count]
+    - [escalation_policy_yaml_file_bytes, policy_yaml_file_bytes]
+    - [escalation_policy_yaml_age_seconds, policy_yaml_age_seconds]
+  optional_int:
+    - [escalation_policy_yaml_anti_deadlock_min_progress_events, anti_deadlock_min_progress_events]
+  load_error: true

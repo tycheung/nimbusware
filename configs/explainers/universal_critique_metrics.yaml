@@ -1,0 +1,51 @@
+prefix: universal_critique_workflow_explainer
+caption_prefix: "Universal critique explainer metrics: "
+defaults:
+  yaml_present: false
+  top_level_key_count: 0
+  enabled_true_count: 0
+  enabled_false_count: 0
+  enabled_unset_mapping_count: 0
+  mapping_child_count: 0
+  scalar_leaf_count: 0
+  list_child_count: 0
+  default_enabled_on: false
+  unanimous_gate_enforce: false
+  fw_enabled: false
+  mi_enabled: false
+  load_error_present: false
+table_rows:
+  - [YAML present, yaml_present]
+  - [Top-level keys, top_level_key_count]
+  - [Enabled true, enabled_true_count]
+  - [Enabled false, enabled_false_count]
+  - [Enabled unset (mapping), enabled_unset_mapping_count]
+  - [Mapping children, mapping_child_count]
+  - [List children, list_child_count]
+  - [Scalar leaves, scalar_leaf_count]
+  - [default_enabled on, default_enabled_on]
+  - [unanimous_gate_enforce, unanimous_gate_enforce]
+  - [fw_enabled, fw_enabled]
+  - [mi_enabled, mi_enabled]
+build:
+  bool_fields:
+    - [universal_critique_yaml_present, yaml_present]
+  int_fields:
+    - [universal_critique_yaml_top_level_enabled_true_count, enabled_true_count]
+    - [universal_critique_yaml_top_level_enabled_false_count, enabled_false_count]
+    - [universal_critique_yaml_top_level_enabled_unset_mapping_count, enabled_unset_mapping_count]
+    - [universal_critique_yaml_top_level_mapping_child_count, mapping_child_count]
+    - [universal_critique_yaml_top_level_list_child_count, list_child_count]
+    - [universal_critique_yaml_top_level_scalar_leaf_count, scalar_leaf_count]
+  list_len_fields:
+    - [universal_critique_yaml_top_level_keys, top_level_key_count]
+  nested_bool_fields:
+    - nested_key: yaml_only
+      fields:
+        - [default_enabled, default_enabled_on]
+    - nested_key: effective_with_env
+      fields:
+        - [unanimous_gate_enforce, unanimous_gate_enforce]
+        - [fw_enabled, fw_enabled]
+        - [mi_enabled, mi_enabled]
+  load_error: true

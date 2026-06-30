@@ -4,46 +4,9 @@ from collections.abc import Mapping
 from typing import Any
 
 from agent_core.coercion import is_strict_int
-from nimbusware_console.explainer_core.operator_metrics_exports import (
-    build_metrics_fn,
-    caption_from_parts,
-    install_operator_metrics_module,
-    table_rows_fn,
-)
-
-_PREFIX = "escalation_suppress_workflow_explainer"
-
-_DEFAULTS: dict[str, Any] = {
-    "escalation_key_present": False,
-    "suppress_automatic_escalation_effective": False,
-    "policy_yaml_exists": False,
-    "policy_top_level_key_count": 0,
-    "anti_deadlock_mapping_present": False,
-    "anti_deadlock_enabled": False,
-    "anti_deadlock_min_progress_events": None,
-    "policy_yaml_file_bytes": None,
-    "policy_yaml_age_seconds": None,
-    "load_error_present": False,
-}
-
-_TABLE_ROWS: tuple[tuple[str, str], ...] = (
-    ("Escalation key present", "escalation_key_present"),
-    ("Suppress automatic (effective)", "suppress_automatic_escalation_effective"),
-    ("Policy YAML exists", "policy_yaml_exists"),
-    ("Policy top-level keys", "policy_top_level_key_count"),
-    ("anti_deadlock mapping", "anti_deadlock_mapping_present"),
-    ("anti_deadlock enabled", "anti_deadlock_enabled"),
-    ("anti_deadlock min_progress_events", "anti_deadlock_min_progress_events"),
-    ("Policy YAML bytes", "policy_yaml_file_bytes"),
-    ("Policy YAML age (s)", "policy_yaml_age_seconds"),
-)
-
-_OPTIONAL_METRIC_KEYS = frozenset(
-    {
-        "anti_deadlock_min_progress_events",
-        "policy_yaml_file_bytes",
-        "policy_yaml_age_seconds",
-    }
+from nimbusware_console.explainer_core.workflow_metrics_spec import (
+    install_workflow_metrics_from_spec,
+    repo_explainer_spec,
 )
 
 
@@ -74,41 +37,8 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     return parts
 
 
-(
-    escalation_suppress_workflow_explainer_operator_metrics,
-    escalation_suppress_workflow_explainer_operator_metrics_table_rows,
-    escalation_suppress_workflow_explainer_operator_metrics_caption,
-    escalation_suppress_workflow_explainer_operator_metrics_export_json,
-    escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv,
-    escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug,
-) = install_operator_metrics_module(
+install_workflow_metrics_from_spec(
     globals(),
-    module_prefix=_PREFIX,
-    metrics=build_metrics_fn(
-        _DEFAULTS,
-        bool_fields=(
-            ("escalation_yaml_key_present", "escalation_key_present"),
-            ("suppress_automatic_escalation_effective", "suppress_automatic_escalation_effective"),
-            ("escalation_policy_yaml_path_exists", "policy_yaml_exists"),
-            ("escalation_policy_yaml_has_anti_deadlock_mapping", "anti_deadlock_mapping_present"),
-            ("escalation_policy_yaml_anti_deadlock_enabled", "anti_deadlock_enabled"),
-        ),
-        int_fields=(
-            ("escalation_policy_yaml_top_level_key_count", "policy_top_level_key_count"),
-            ("escalation_policy_yaml_file_bytes", "policy_yaml_file_bytes"),
-            ("escalation_policy_yaml_age_seconds", "policy_yaml_age_seconds"),
-        ),
-        optional_int=(
-            (
-                "escalation_policy_yaml_anti_deadlock_min_progress_events",
-                "anti_deadlock_min_progress_events",
-            ),
-        ),
-        load_error=True,
-    ),
-    table_rows=table_rows_fn(
-        _TABLE_ROWS,
-        include_when=lambda m, key: key not in _OPTIONAL_METRIC_KEYS or m.get(key) is not None,
-    ),
-    caption=caption_from_parts("Escalation suppress explainer metrics: ", _caption_parts),
+    repo_explainer_spec("escalation_suppress"),
+    caption_parts_fn=_caption_parts,
 )

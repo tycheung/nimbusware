@@ -1,0 +1,50 @@
+prefix: self_refinement_workflow_explainer
+caption_prefix: "Self-refinement explainer metrics: "
+defaults:
+  yaml_present: false
+  yaml_mapping_key_count: 0
+  policy_enabled: false
+  policy_version: null
+  would_emit_marker: false
+  would_emit_marker_after_env: false
+  merged_max_iterations: null
+  ungated_loop_forces_on: false
+  ungated_loop_forces_off: false
+  ungated_loop_unset: true
+  load_error_present: false
+table_rows:
+  - [YAML present, yaml_present]
+  - [YAML mapping keys, yaml_mapping_key_count]
+  - [Policy enabled, policy_enabled]
+  - [Would emit marker, would_emit_marker]
+  - [Would emit after env, would_emit_marker_after_env]
+  - [Merged max iterations, merged_max_iterations]
+  - [Ungated loop forces on, ungated_loop_forces_on]
+  - [Ungated loop forces off, ungated_loop_forces_off]
+  - [Policy version, policy_version]
+  - [Load error, load_error_present]
+table_rows_options:
+  optional_metric_keys:
+    - merged_max_iterations
+    - policy_version
+    - load_error_present
+build:
+  bool_fields:
+    - [self_refinement_yaml_present, yaml_present]
+  int_fields:
+    - [self_refinement_yaml_mapping_string_key_count, yaml_mapping_key_count]
+  nested_bool_fields:
+    - nested_key: policy_yaml
+      fields:
+        - [enabled, policy_enabled]
+    - nested_key: marker_merge
+      fields:
+        - [would_emit_self_refinement_marker, would_emit_marker]
+        - [would_emit_marker_after_env, would_emit_marker_after_env]
+  nested_optional_int:
+    - [policy_yaml, version, policy_version]
+  optional_int:
+    - [merged_max_iterations, merged_max_iterations]
+  env_tri_state:
+    - [NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP, ungated_loop_forces_on, ungated_loop_forces_off, ungated_loop_unset]
+  load_error: true
