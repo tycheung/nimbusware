@@ -109,11 +109,18 @@ coverage.xml
 /_patch_*.txt
 /_scraper_patch_*.txt
 /_recovered_*.txt
+/_ci*.txt
+/_pytest*.txt
+/_dbg.txt
+/_cov_analysis.txt
 
 # Derived FAISS / memory indexes (rebuild via scripts or API)
 configs/memory/index/
 configs/memory/fleet/
 configs/bundles/index/
+
+# Runtime collab user overlays (local test/dev; not product defaults)
+configs/collab/users/
 
 # Local credentials (extra guard alongside .env)
 *.pem
