@@ -5,8 +5,8 @@ import subprocess
 
 from nimbusware_orchestrator.put_e2e_types import PutE2EFinding
 
-_HTTP_CONSOLE_STUB = "console capture stub (no browser session)"
-_HTTP_NETWORK_STUB = "network capture stub (no requests recorded)"
+_HTTP_CONSOLE_STUB = "unavailable — HTTP-only PUT E2E mode (no browser console capture)"
+_HTTP_NETWORK_STUB = "unavailable — HTTP-only PUT E2E mode (no network capture)"
 
 
 def _playwright_available() -> bool:

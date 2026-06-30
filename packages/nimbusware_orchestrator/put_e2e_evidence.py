@@ -42,7 +42,7 @@ def write_put_e2e_failure_evidence(
             "flow_id": result.flow_id,
             "base_url": result.base_url,
             "detail": result.detail,
-            "playwright_trace": "stub — HTTP-only PUT E2E runner (no browser session)",
+            "playwright_trace": "unavailable — HTTP-only PUT E2E mode (no browser session)",
         }
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("summary.json", json.dumps(summary, indent=2))

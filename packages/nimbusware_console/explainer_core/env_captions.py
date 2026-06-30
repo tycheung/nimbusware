@@ -68,7 +68,7 @@ ENV_TRI_STATE_TEMPLATES: dict[str, EnvTriStateTemplate] = {
         ),
         "forces_on_text": (
             "Integration Adapter Writer env: **{env_key}** "
-            "force-on{detail} — scaffold may activate when pipeline wiring lands."
+            "force-on{detail} — scaffold stage may emit when workflow ``enabled``."
         ),
         "unset_text": (
             "Integration Adapter Writer env: unset — "
