@@ -30,7 +30,6 @@ from nimbusware_maker.deploy_approval_events import (
     deploy_approved_from_events,
     emit_deploy_approved,
 )
-from nimbusware_maker.deploy_ci_events import emit_ci_workflow_stages
 from nimbusware_maker.deploy_credential_audit import (
     audit_credentials_updated,
     audit_credentials_used,
@@ -42,6 +41,7 @@ from nimbusware_maker.deploy_credential_vault import (
 from nimbusware_maker.deploy_pipeline_events import (
     deploy_apply_passed_from_events,
     deploy_rollback_passed_from_events,
+    emit_ci_workflow_stages,
     emit_deploy_apply_stages,
     emit_deploy_rollback_stages,
     emit_deploy_smoke_stages,
