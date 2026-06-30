@@ -4,6 +4,7 @@ prompt_id: contacts_api
 capture:
   console: true
   network: true
+  playwright_trace: true
 steps:
   - action: goto
     path: /

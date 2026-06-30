@@ -73,6 +73,15 @@ def run_put_e2e_flow(
     capture_cfg = mapping_or_empty(flow.get("capture"))
     console_on = bool(capture_cfg.get("console", False))
     network_on = bool(capture_cfg.get("network", False))
+    trace_on = bool(capture_cfg.get("playwright_trace", console_on or network_on))
+    browser_capture_requested = console_on or network_on or trace_on
+
+    def _should_attach_browser() -> bool:
+        if workspace is None or not workspace.is_dir():
+            return False
+        if require_playwright:
+            return True
+        return browser_capture_requested
 
     exercised: set[str] = set()
     findings: list[PutE2EFinding] = []
@@ -100,14 +109,12 @@ def run_put_e2e_flow(
         goto_path: str,
         exercised_paths: set[str],
     ) -> dict[str, Any]:
-        if workspace is None or not workspace.is_dir():
-            return capture
-        if not (console_on or network_on or require_playwright or pw_ready):
+        if not _should_attach_browser():
             return capture
         from nimbusware_orchestrator.put_e2e_browser import capture_failure_browser_trace
         from nimbusware_orchestrator.put_e2e_evidence import put_e2e_evidence_dir
 
-        evidence_dir = put_e2e_evidence_dir(workspace, flow_id)
+        evidence_dir = put_e2e_evidence_dir(workspace, flow_id)  # type: ignore[arg-type]
         trace_meta = capture_failure_browser_trace(
             base_url,
             goto_path,
@@ -197,18 +204,20 @@ def run_put_e2e_flow(
             capture={},
         )
 
-    findings.extend(
-        http_flow_stub_findings(
-            console_on=console_on,
-            network_on=network_on,
-            exercised_paths=exercised,
-        ),
-    )
+    if not (_should_attach_browser() and pw_ready):
+        findings.extend(
+            http_flow_stub_findings(
+                console_on=console_on,
+                network_on=network_on,
+                exercised_paths=exercised,
+            ),
+        )
     capture: dict[str, Any] = {
         "console": [f.to_dict() for f in findings if f.kind == "console"],
         "network": [f.to_dict() for f in findings if f.kind == "network"],
         "playwright_ready": pw_ready,
         "playwright_detail": pw_detail,
+        "playwright_trace_requested": trace_on,
     }
     capture = _attach_browser_capture(
         capture,
@@ -229,7 +238,7 @@ def run_put_e2e_flow(
             str(first.get("path") or "/") if str(first.get("action") or "") == "goto" else "/"
         )
         capture["fleet_browser"] = fleet_browser_goto(base_url, goto_path)
-    return PutE2EResult(
+    pending = PutE2EResult(
         verdict="PASS",
         flow_id=flow_id,
         base_url=base_url,
@@ -238,3 +247,11 @@ def run_put_e2e_flow(
         findings=findings,
         capture=capture,
     )
+    if workspace is not None and workspace.is_dir() and _should_attach_browser():
+        from nimbusware_orchestrator.put_e2e_evidence import write_put_e2e_evidence
+
+        evidence = write_put_e2e_evidence(workspace, pending)
+        capture = dict(capture)
+        capture["evidence"] = evidence
+        pending.capture = capture
+    return pending

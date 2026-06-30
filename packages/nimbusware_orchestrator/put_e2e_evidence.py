@@ -17,6 +17,13 @@ def write_put_e2e_failure_evidence(
     workspace: Path,
     result: PutE2EResult,
 ) -> dict[str, Any]:
+    return write_put_e2e_evidence(workspace, result)
+
+
+def write_put_e2e_evidence(
+    workspace: Path,
+    result: PutE2EResult,
+) -> dict[str, Any]:
     evidence_dir = put_e2e_evidence_dir(workspace, result.flow_id)
     evidence_dir.mkdir(parents=True, exist_ok=True)
     zip_path = evidence_dir / "evidence.zip"
