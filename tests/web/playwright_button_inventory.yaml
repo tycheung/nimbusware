@@ -1,8 +1,8 @@
 summary:
   total_buttons: 182
   clicked: 41
-  visible_only: 12
-  unwired: 129
+  visible_only: 13
+  unwired: 128
   click_ratio: 0.2253
 buttons:
 - test_id: admin-chat-accept-chip
@@ -170,6 +170,7 @@ buttons:
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_archetype_product_journey.spec.ts
+  - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-escalate-campaign
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
@@ -377,7 +378,8 @@ buttons:
   source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
-  visible_only_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-scope-manifest-plain
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
