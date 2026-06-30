@@ -1,3 +1,0 @@
-from __future__ import annotations
-
-from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify

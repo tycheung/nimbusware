@@ -10,6 +10,10 @@ from agent_core.models import serialize_event_persistent, validate_event_dict
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.routes.admin_ui_timeline import (
+    build_timeline_panels_payload,
+    timeline_events_from_store,
+)
 from nimbusware_api.routes.personas_helpers import load_shelf
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_console import enterprise_console as ent_console
@@ -45,16 +49,6 @@ from nimbusware_orchestrator.fleet_enforcement_policy import (
     load_fleet_enforcement_policies,
     save_fleet_enforcement_policies,
     tenant_enforcement_policy,
-)
-from nimbusware_projections.builders import (
-    agent_evaluator_timeline_summary,
-    integrator_gate_timeline_history,
-    integrator_gate_timeline_summary,
-    run_escalated_timeline_history,
-    run_escalated_timeline_summary,
-    security_scan_on_verify_timeline_summary,
-    self_refinement_timeline_summary,
-    universal_critique_timeline_summary,
 )
 from nimbusware_store.protocol import serialized_event_from_row
 
@@ -441,33 +435,8 @@ def enterprise_fleet_compare(
     }
 
 
-def _timeline_events_from_store(store: Any, run_id: UUID) -> list[dict[str, Any]]:
-    rows = store.list_run_events(str(run_id))
-    if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
-        )
-    events: list[dict[str, Any]] = []
-    for row in rows:
-        d = serialized_event_from_row(row)
-        d["store_seq"] = int(row.get("store_seq") or 0)
-        events.append(d)
-    return events
-
-
 @router.get("/runs/{run_id}/timeline-panels")
 def admin_ui_timeline_panels(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
     """Projection summaries for React admin — same read path as ``GET /runs/{id}/timeline``."""
-    events = _timeline_events_from_store(store, run_id)
-    ig_hist = integrator_gate_timeline_history(events)
-    re_hist = run_escalated_timeline_history(events)
-    return {
-        "run_id": str(run_id),
-        "integrator_gate": integrator_gate_timeline_summary(events) or (ig_hist[-1] if ig_hist else None),
-        "agent_evaluator": agent_evaluator_timeline_summary(events),
-        "self_refinement": self_refinement_timeline_summary(events),
-        "run_escalated": run_escalated_timeline_summary(events) or (re_hist[-1] if re_hist else None),
-        "security_scan_on_verify": security_scan_on_verify_timeline_summary(events),
-        "universal_critique": universal_critique_timeline_summary(events),
-    }
+    events = timeline_events_from_store(store, run_id)
+    return build_timeline_panels_payload(events, run_id=run_id)

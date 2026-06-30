@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.coercion import is_strict_int
-from nimbusware_console.run_escalated._common import _stringify
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 
 
 def run_escalated_operator_metrics_caption(

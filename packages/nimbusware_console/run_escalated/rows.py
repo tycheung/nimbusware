@@ -11,7 +11,7 @@ from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,
 )
-from nimbusware_console.run_escalated._common import _stringify
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_projections.fields.run_escalated import (
     RUN_ESCALATED_DELTA_FIELDS,
     RUN_ESCALATED_DISPLAY_FIELDS,
