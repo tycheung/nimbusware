@@ -1,0 +1,75 @@
+# Minimal payloads and repo fixtures for shared explainer export contract tests.
+cases:
+  - slug: agent_evaluator
+    export_slug: agent_evaluator
+    required_fields: [workflow_profile, yaml_parsed_enabled]
+    minimal_payload:
+      workflow_profile: wf
+      yaml_parsed_enabled: true
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_off: false
+        forces_on: true
+    repo:
+      profile: ae
+      workflow_yaml: |
+        version: 1
+        agent_evaluator:
+          enabled: true
+          persona_id: p1
+    operator_metrics_first_row: null
+
+  - slug: escalation_suppress
+    export_slug: escalation_suppress
+    required_fields: [workflow_profile]
+    minimal_payload:
+      workflow_profile: wf
+      suppress_automatic_escalation_effective: true
+      escalation_policy_yaml_top_level_kinds:
+        mapping: 1
+        scalar: 2
+        list: 0
+        other: 0
+    repo:
+      profile: wf
+      workflow_yaml: "version: 1\n"
+    operator_metrics_first_row: Escalation key present
+
+  - slug: universal_critique
+    export_slug: universal_critique
+    required_fields: [workflow_profile]
+    minimal_payload:
+      workflow_profile: wf
+      yaml_only:
+        impl_stub: true
+      effective_with_env:
+        impl_stub: false
+    repo:
+      profile: stub
+      fixture: universal_critique_stub
+    operator_metrics_first_row: YAML present
+
+  - slug: security_scan_metadata
+    export_slug: security_scan_metadata
+    required_fields: [effective_enabled, yaml_parsed_bool]
+    minimal_payload:
+      workflow_profile: wf
+      effective_enabled: true
+      yaml_parsed_bool: true
+    repo:
+      profile: wf
+      workflow_yaml: |
+        version: 1
+        security_scan_metadata_on_verify: true
+    operator_metrics_first_row: null
+
+  - slug: self_refinement
+    export_slug: self_refinement
+    required_fields: [workflow_profile]
+    minimal_payload:
+      workflow_profile: wf
+      marker_merge:
+        would_emit_self_refinement_marker: true
+    repo:
+      profile: on
+      fixture: self_refinement_on
+    operator_metrics_first_row: null
