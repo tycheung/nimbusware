@@ -78,6 +78,7 @@ _POLISH_BEHAVIORAL: tuple[str, ...] = (
 _FS6_BEHAVIORAL: tuple[str, ...] = (
     "packages/nimbusware_orchestrator/stack_agent_scaffold.py",
     "configs/personas/surface_critics.yaml",
+    "packages/nimbusware_orchestrator/factory_put_e2e.py",
     "tests/unit/test_fs6_scaffold_polish.py",
 )
 

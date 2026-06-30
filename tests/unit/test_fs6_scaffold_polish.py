@@ -8,8 +8,8 @@ from uuid import uuid4
 import yaml
 
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.audit_export import build_audit_bundle_bytes
-from nimbusware_orchestrator.audit_scope_export import (
+from nimbusware_orchestrator.audit_export import (
+    build_audit_bundle_bytes,
     scope_snapshot_from_requirements,
     surface_outcomes_from_events,
 )

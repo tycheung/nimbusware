@@ -15,8 +15,8 @@ from nimbusware_api.schemas.openapi import (
 )
 from nimbusware_maker.intent import requirements_from_run_created_metadata
 from nimbusware_maker.workspace import run_created_metadata_from_rows
-from nimbusware_orchestrator.audit_export import build_audit_bundle_bytes
-from nimbusware_orchestrator.audit_scope_export import (
+from nimbusware_orchestrator.audit_export import (
+    build_audit_bundle_bytes,
     scope_snapshot_from_requirements,
     surface_outcomes_from_events,
 )
