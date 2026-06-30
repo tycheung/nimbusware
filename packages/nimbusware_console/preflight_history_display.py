@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import mapping_export_json
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_operator_metrics_module,
 )
@@ -15,14 +15,6 @@ from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_h
 from nimbusware_projections.fields.preflight import PREFLIGHT_DISPLAY_FIELDS
 
 _PREFLIGHT_FIELDS = PREFLIGHT_DISPLAY_FIELDS
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def preflight_history_from_timeline(

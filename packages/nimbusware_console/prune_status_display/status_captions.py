@@ -8,6 +8,7 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import mapping_export_json
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 
 SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
@@ -43,14 +44,6 @@ _PRUNE_STATUS_FIELDS: tuple[tuple[str, str], ...] = (
     ("exclude_pattern_count", "Exclude pattern count"),
     ("wrote_at", "Wrote at (UTC)"),
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def load_prune_status(path: Path | None) -> dict[str, Any] | None:

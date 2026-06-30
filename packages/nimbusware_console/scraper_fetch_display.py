@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
@@ -11,6 +10,7 @@ from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,
 )
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_operator_metrics_module,
 )
@@ -28,14 +28,6 @@ _SCRAPER_FETCH_FIELDS: tuple[tuple[str, str], ...] = (
     ("event_id", "Event id"),
     ("occurred_at", "Occurred at"),
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def scraper_fetch_from_timeline(

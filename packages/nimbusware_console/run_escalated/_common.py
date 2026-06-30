@@ -1,12 +1,3 @@
 from __future__ import annotations
 
-import json
-from typing import Any
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify

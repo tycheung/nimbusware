@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import field_value_table_rows_csv
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 
 _PERSONA_ASSIGNMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("business_area.id", "Business area id"),
@@ -13,14 +13,6 @@ _PERSONA_ASSIGNMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("development_role.id", "Development role id"),
     ("development_role.display_name", "Development role display name"),
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def persona_assignment_from_timeline(

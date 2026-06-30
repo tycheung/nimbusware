@@ -8,6 +8,7 @@ from io import StringIO
 from typing import Any
 
 from agent_core.coercion import is_number, is_strict_int
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_extensions.extension_runtime import agent_evaluator_score_band
 
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (
@@ -39,14 +40,6 @@ _AUTO_ACTION_FLAT_FIELDS: tuple[tuple[str, str], ...] = (
     ("auto_create_shelf", "Auto-create shelf"),
     ("auto_create_display_name", "Auto-create display name"),
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def agent_evaluator_from_timeline(

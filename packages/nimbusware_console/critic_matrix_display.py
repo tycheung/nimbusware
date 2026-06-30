@@ -10,6 +10,7 @@ from typing import Any
 
 from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_operator_metrics_module,
@@ -24,14 +25,6 @@ _CRITIC_MATRIX_COLUMNS: tuple[str, ...] = (
     "event_id",
     "occurred_at",
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def critic_matrix_rows_from_events(events: Sequence[Any]) -> list[dict[str, str]]:

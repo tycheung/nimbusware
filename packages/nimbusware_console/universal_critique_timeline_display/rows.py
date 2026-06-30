@@ -7,11 +7,7 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    return str(value)
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 
 
 def universal_critique_from_timeline(

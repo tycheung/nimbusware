@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import json
 from typing import Any
+
+from nimbusware_console.explainer_core.display_common import stringify_display_value as _stringify
 
 _SECURITY_SCAN_ON_VERIFY_FIELDS: tuple[tuple[str, str], ...] = (
     ("security_scan_exit", "Security scan exit"),
@@ -15,11 +16,3 @@ _SECURITY_SCAN_ON_VERIFY_FIELDS: tuple[tuple[str, str], ...] = (
     ("event_id", "Event id"),
     ("occurred_at", "Occurred at"),
 )
-
-
-def _stringify(value: Any) -> str:
-    if value is None:
-        return "—"
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
