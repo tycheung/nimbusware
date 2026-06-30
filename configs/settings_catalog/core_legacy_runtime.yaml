@@ -1,0 +1,427 @@
+settings:
+- key: NIMBUSWARE_SKIP_PREFLIGHT
+  scope: system
+  kind: bool
+  default: '0'
+  label: Skip Ollama preflight
+  description: Skip model preflight on run start (dev/CI).
+  group: System — runtime
+- key: NIMBUSWARE_USE_LLM
+  scope: user
+  kind: bool
+  default: '0'
+  label: Enable LLM stages
+  description: Turn on Ollama-backed plan, critiques, and slice implement.
+  group: User — maker runtime
+- key: NIMBUSWARE_DEFAULT_MODEL
+  scope: user
+  kind: str
+  default: ''
+  label: Default Ollama model
+  description: Fallback model when a stage-specific model env is empty.
+  group: User — maker runtime
+- key: NIMBUSWARE_SLICE_BUDGET_PRESET
+  scope: user
+  kind: enum
+  default: standard
+  label: Slice budget preset
+  description: tiny, standard, or careful — maps to max_files, max_loc, replan max,
+    and context char caps.
+  group: User — maker runtime
+  choices:
+  - tiny
+  - standard
+  - careful
+- key: NIMBUSWARE_SLICE_AUTO_ADVANCE
+  scope: user
+  kind: bool
+  default: '1'
+  label: Auto-advance slices
+  description: When off, pause for plan/slice approval in Maker.
+  group: User — maker runtime
+- key: NIMBUSWARE_SLICE_IMPLEMENT
+  scope: user
+  kind: enum
+  default: scoped
+  label: Slice implement mode
+  description: scoped, stub, agent, or llm.
+  group: User — maker runtime
+  choices:
+  - scoped
+  - stub
+  - agent
+  - llm
+- key: NIMBUSWARE_FILESYSTEM_JAIL
+  scope: user
+  kind: bool
+  default: '1'
+  label: Agent tools filesystem jail
+  description: Deny .env, .git, secrets paths; require scoped grep.
+  group: User — agent tools safety
+- key: NIMBUSWARE_SLICE_E2E_COMMAND
+  scope: user
+  kind: enum
+  default: ''
+  label: Slice E2E command
+  description: Shell command for slice.e2e when workflow enables e2e.
+  group: User — maker runtime
+- key: NIMBUSWARE_SANDBOX_BACKEND
+  scope: user
+  kind: enum
+  default: none
+  label: Agent shell sandbox backend
+  description: none/stub/docker for Individual; kubernetes/e2b for enterprise fleet
+    sandboxes.
+  group: User — agent tools safety
+  choices:
+  - none
+  - stub
+  - docker
+  - kubernetes
+  - e2b
+- key: NIMBUSWARE_AGENT_MAX_TOOL_STEPS
+  scope: user
+  kind: enum
+  default: '20'
+  label: Max agent tool steps per slice
+  description: OpenHands-style cap on read/grep/write/shell steps in slice implement
+    agent mode.
+  group: User — agent tools safety
+- key: NIMBUSWARE_AGENT_MAX_SHELL_INVOCATIONS
+  scope: user
+  kind: enum
+  default: '5'
+  label: Max shell invocations per slice
+  description: Limits pytest/ruff shell calls in agent implement mode.
+  group: User — agent tools safety
+- key: NIMBUSWARE_AGENT_MAX_WRITE_BYTES
+  scope: user
+  kind: enum
+  default: '262144'
+  label: Max agent write bytes per slice
+  description: Total UTF-8 bytes across write steps before risk cap stops the agent
+    loop.
+  group: User — agent tools safety
+- key: NIMBUSWARE_SANDBOX_DOCKER_IMAGE
+  scope: user
+  kind: enum
+  default: python:3.11-slim
+  label: Docker image for agent shell sandbox
+  description: Used when NIMBUSWARE_SANDBOX_BACKEND=docker; workspace mounted at /workspace.
+  group: User — agent tools safety
+- key: NIMBUSWARE_SLICE_AUTO_COMMIT
+  scope: user
+  kind: bool
+  default: '0'
+  label: Git commit per slice
+  description: Auto-commit after each passing slice gate.
+  group: User — git outputs
+- key: NIMBUSWARE_GIT_NATIVE_OUTPUTS
+  scope: user
+  kind: bool
+  default: '0'
+  label: Git finalize on run complete
+  description: Commit when all slices pass gates.
+  group: User — git outputs
+- key: NIMBUSWARE_GIT_PR_ON_COMPLETE
+  scope: user
+  kind: bool
+  default: '0'
+  label: Open PR on complete
+  description: Run gh pr create after final commit (requires gh CLI).
+  group: User — git outputs
+- key: NIMBUSWARE_MICRO_SLICE_COUNT
+  scope: run
+  kind: int
+  default: '2'
+  label: Micro-slice count
+  description: Max automatic slices per run (dev tuning).
+  group: Run — slice loop
+- key: NIMBUSWARE_BACKLOG_MAX_SLICES
+  scope: run
+  kind: int
+  default: '500'
+  label: Campaign backlog max slices
+  description: Upper bound for delivery backlog generation in campaign mode.
+  group: Run — campaign
+- key: NIMBUSWARE_BACKLOG_GENERATOR_MODEL
+  scope: run
+  kind: str
+  default: ''
+  label: Backlog generator model
+  description: Ollama model id for LLM campaign backlog (empty = heuristic fallback).
+  group: Run — campaign
+- key: NIMBUSWARE_INTENT_CLASSIFIER_MODEL
+  scope: run
+  kind: str
+  default: ''
+  label: Intent classifier model
+  description: Ollama model for optional Chat work-type LLM assist (empty = rules
+    only).
+  group: Run — chat
+- key: NIMBUSWARE_RERESARCH_MISSING_CONTEXT
+  scope: system
+  kind: bool
+  default: '0'
+  label: Re-research on plan fail
+  description: Bounded re-research when planner fails for missing context.
+  group: System — research
+- key: NIMBUSWARE_RESEARCH
+  scope: system
+  kind: bool
+  default: '0'
+  label: Research lane enabled
+  description: Enable domain/code research stages when workflow allows.
+  group: System — research
+- key: NIMBUSWARE_STITCH
+  scope: system
+  kind: bool
+  default: '0'
+  label: Stitch lane enabled
+  description: Enable transplant/stitch stages when workflow allows.
+  group: System — research
+- key: NIMBUSWARE_PARALLEL_WRITERS
+  scope: system
+  kind: bool
+  default: '0'
+  label: Parallel writers
+  description: Run writer stages concurrently when workflow enables.
+  group: System — pipeline
+- key: NIMBUSWARE_RUN_DISPATCH
+  scope: install
+  kind: enum
+  default: ''
+  label: Run dispatch mode
+  description: memory or redis. Infrastructure .env.
+  group: Install — infrastructure
+  choices:
+  - ''
+  - memory
+  - redis
+  admin_editable: false
+  user_editable: false
+- key: NIMBUSWARE_COMPUTE_WORK_QUEUE
+  scope: install
+  kind: enum
+  default: ''
+  label: Compute work-unit queue
+  description: memory, redis, or postgres for mesh work-unit persistence.
+  group: Install — infrastructure
+  choices:
+  - ''
+  - memory
+  - redis
+  - postgres
+  admin_editable: false
+  user_editable: false
+- key: NIMBUSWARE_MESH_WORKSPACE_FALLBACK
+  scope: install
+  kind: enum
+  default: ''
+  label: Mesh workspace fallback
+  description: When on, workers without workspace in payload use NIMBUSWARE_WORKSPACE
+    or repo root.
+  group: Install — infrastructure
+  choices:
+  - ''
+  - '0'
+  - '1'
+  admin_editable: false
+  user_editable: false
+- key: NIMBUSWARE_REDIS_URL
+  scope: install
+  kind: str
+  default: ''
+  label: Redis URL
+  description: Fleet worker queue when dispatch=redis.
+  group: Install — infrastructure
+  admin_editable: false
+  user_editable: false
+- key: NIMBUSWARE_CONFIG_FROM_DB
+  scope: install
+  kind: bool
+  default: '1'
+  label: Config from Postgres
+  description: Use Postgres config documents vs files only.
+  group: Install — infrastructure
+  admin_editable: false
+  user_editable: false
+- key: NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE
+  scope: user
+  kind: str
+  default: micro_slice
+  label: Default workflow profile
+  description: Default profile for new projects/runs in Maker.
+  group: User — maker runtime
+- key: NIMBUSWARE_MAX_SYSTEM_RAM_PCT
+  scope: user
+  kind: int
+  default: '75'
+  label: Max system RAM %
+  description: Resource governor cap (also in Maker hardware settings).
+  group: User — hardware governor
+- key: NIMBUSWARE_MAX_VRAM_PCT
+  scope: user
+  kind: int
+  default: '85'
+  label: Max VRAM %
+  description: Discrete GPU memory cap for resource governor.
+  group: User — hardware governor
+- key: NIMBUSWARE_HW_AUTO_ADJUST
+  scope: user
+  kind: bool
+  default: '1'
+  label: Auto-adjust to hardware
+  description: Adjust slice budgets from detected hardware tier.
+  group: User — hardware governor
+- key: NIMBUSWARE_RUN_BANDIT
+  scope: system
+  kind: bool
+  default: '0'
+  label: Run Bandit on verify
+  description: Security scan with bandit during verify.
+  group: System — verifiers
+- key: NIMBUSWARE_ENFORCEMENT_DEPTH
+  scope: system
+  kind: bool
+  default: '1'
+  label: Enforcement depth slider
+  description: Enable per-run enforcement depth API, workspace CI runner, and slice
+    gate wiring.
+  group: System — verifiers
+- key: NIMBUSWARE_RUN_SEMGREP
+  scope: system
+  kind: bool
+  default: '1'
+  label: Run Semgrep on verify
+  description: Security scan with semgrep during verify.
+  group: System — verifiers
+- key: NIMBUSWARE_RUN_PERF_SCAN
+  scope: system
+  kind: bool
+  default: '1'
+  label: Run perf scan
+  description: Lightweight performance scan during verify.
+  group: System — verifiers
+- key: NIMBUSWARE_AGENT_EVALUATOR
+  scope: system
+  kind: bool
+  default: ''
+  label: Agent evaluator
+  description: Enable agent evaluator stage after verify (empty = YAML).
+  group: System — optional stages
+- key: NIMBUSWARE_THEATER_LLM_SUMMARY
+  scope: system
+  kind: bool
+  default: ''
+  label: Theater LLM summary
+  description: Enable optional one-line LLM paraphrase for theater messages (off by
+    default).
+  group: System — theater
+- key: NIMBUSWARE_THEATER_LLM_MODEL
+  scope: system
+  kind: str
+  default: ''
+  label: Theater LLM model
+  description: Ollama model id for theater summary when LLM summary is enabled.
+  group: System — theater
+- key: NIMBUSWARE_LAUNCH_EVAL_LLM
+  scope: system
+  kind: bool
+  default: ''
+  label: Launch eval LLM panel
+  description: Include opt-in advisory LLM findings in launch eval scorecards (off
+    by default).
+  group: System — launch eval
+- key: NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL
+  scope: system
+  kind: str
+  default: ''
+  label: Launch eval LLM model
+  description: Ollama model for launch eval LLM panel (empty = default Ollama model).
+  group: System — launch eval
+- key: NIMBUSWARE_EMIT_INTEGRATOR_GATE
+  scope: system
+  kind: bool
+  default: ''
+  label: Integrator gate
+  description: Emit integrator gate decision stage (empty = YAML).
+  group: System — optional stages
+- key: NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS
+  scope: system
+  kind: str
+  default: ''
+  label: Integrator min score
+  description: Override integrator pass threshold (empty = YAML).
+  group: System — optional stages
+- key: NIMBUSWARE_INTEGRATOR_DEP_PREFLIGHT
+  scope: system
+  kind: bool
+  default: ''
+  label: Integrator dep preflight
+  description: Emit finding when bundle required_packages are missing from pyproject.
+  group: System — optional stages
+- key: NIMBUSWARE_INTEGRATOR_PROBE_MAX_ATTEMPTS
+  scope: system
+  kind: int
+  default: '3'
+  label: Integrator probe attempts
+  description: Max HTTP health probe attempts for api_bridge integrator sync.
+  group: System — optional stages
+- key: NIMBUSWARE_INTEGRATOR_PROBE_RETRY_DELAY
+  scope: system
+  kind: str
+  default: '0.25'
+  label: Integrator probe retry delay
+  description: Base seconds between integrator HTTP probe retries (exponential backoff).
+  group: System — optional stages
+- key: NIMBUSWARE_EMBED_DISPATCH_WORKER
+  scope: system
+  kind: bool
+  default: '0'
+  label: Embed dispatch worker
+  description: Start in-process run-dispatch worker thread during API lifespan (memory
+    queue).
+  group: System — pipeline
+- key: NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER
+  scope: system
+  kind: bool
+  default: '0'
+  label: Self-refinement marker
+  description: Emit self-refinement loop signals in timeline.
+  group: System — optional stages
+- key: NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES
+  scope: system
+  kind: int
+  default: ''
+  label: Deadlock escalation minutes
+  description: Minutes before anti-deadlock escalation (empty = default).
+  group: System — pipeline
+- key: NIMBUSWARE_OUTBOUND_FETCH_ENABLED
+  scope: system
+  kind: bool
+  default: '0'
+  label: Outbound fetch
+  description: Allow scraper HTTP fetch for allowlisted roles.
+  group: System — egress
+- key: NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA
+  scope: system
+  kind: bool
+  default: '0'
+  label: Attach security scan metadata
+  description: Attach security scan metadata on verify events.
+  group: System — security
+- key: NIMBUSWARE_UNANIMOUS_GATE_ENFORCE
+  scope: system
+  kind: bool
+  default: '1'
+  label: Unanimous gate enforce
+  description: Require unanimous gate pass (global override).
+  group: System — gates
+- key: NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS
+  scope: system
+  kind: bool
+  default: ''
+  label: Stub implementation critics
+  description: Force stub implementation critique panels (empty = YAML).
+  group: System — critics
