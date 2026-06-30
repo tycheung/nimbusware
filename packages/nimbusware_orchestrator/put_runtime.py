@@ -175,14 +175,38 @@ def _probe_preview_health(base_url: str, stack: PutStack) -> dict[str, Any]:
     return last
 
 
+def resolve_put_stack_from_manifest(
+    stack_manifest: dict[str, Any] | None,
+    workspace: Path,
+) -> PutStack | None:
+    if not isinstance(stack_manifest, dict):
+        return None
+    surfaces = [
+        str(item).strip().lower() for item in (stack_manifest.get("surfaces") or []) if item
+    ]
+    if not surfaces:
+        return None
+    has_api = "api" in surfaces
+    has_web = "web" in surfaces
+    if has_api and has_web:
+        return "fullstack"
+    if has_api:
+        return "fastapi"
+    if has_web:
+        return "spa"
+    detected = detect_put_stack(workspace.resolve())
+    return detected if detected != "unknown" else None
+
+
 def start_put_preview(
     workspace: Path,
     port: int,
     *,
     startup_timeout_seconds: float = 15.0,
+    stack_manifest: dict[str, Any] | None = None,
 ) -> PutPreviewStartResult:
     ws = workspace.resolve()
-    stack = detect_put_stack(ws)
+    stack = resolve_put_stack_from_manifest(stack_manifest, ws) or detect_put_stack(ws)
     command = _preview_command(ws, stack, port)
     from nimbusware_orchestrator.put_sandbox import wrap_put_preview_command
 

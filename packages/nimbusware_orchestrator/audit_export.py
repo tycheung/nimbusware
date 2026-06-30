@@ -21,6 +21,8 @@ def build_audit_bundle_bytes(
     events: list[dict[str, Any]],
     policy_snapshot: dict[str, Any],
     theater_transcript_md: str | None = None,
+    scope_snapshot: dict[str, Any] | None = None,
+    surface_outcomes: list[dict[str, Any]] | None = None,
 ) -> bytes:
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
@@ -42,6 +44,16 @@ def build_audit_bundle_bytes(
             th_info = tarfile.TarInfo(name="theater_transcript.md")
             th_info.size = len(th_bytes)
             tar.addfile(th_info, io.BytesIO(th_bytes))
+        if scope_snapshot:
+            scope_bytes = json.dumps(scope_snapshot, indent=2).encode("utf-8")
+            scope_info = tarfile.TarInfo(name="scope_snapshot.json")
+            scope_info.size = len(scope_bytes)
+            tar.addfile(scope_info, io.BytesIO(scope_bytes))
+        if surface_outcomes:
+            surf_bytes = json.dumps(surface_outcomes, indent=2).encode("utf-8")
+            surf_info = tarfile.TarInfo(name="surface_outcomes.json")
+            surf_info.size = len(surf_bytes)
+            tar.addfile(surf_info, io.BytesIO(surf_bytes))
     payload = buf.getvalue()
     key = _signing_key()
     if not key:

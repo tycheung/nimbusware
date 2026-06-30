@@ -6,6 +6,25 @@ from typing import Any
 from uuid import UUID
 
 
+def primary_stack_id_from_requirements(requirements: dict[str, Any] | None) -> str | None:
+    if not isinstance(requirements, dict):
+        return None
+    manifest = requirements.get("stack_manifest")
+    if not isinstance(manifest, dict):
+        return None
+    stacks = manifest.get("stacks")
+    if not isinstance(stacks, dict):
+        return None
+    for surface in ("api", "web", "contract", "deploy"):
+        raw = stacks.get(surface)
+        if raw:
+            return str(raw).strip()
+    for raw in stacks.values():
+        if raw:
+            return str(raw).strip()
+    return None
+
+
 def write_catalog_candidate(
     repo_root: Path,
     *,
@@ -49,6 +68,22 @@ def list_catalog_candidates(repo_root: Path, *, limit: int = 100) -> list[dict[s
             if len(rows) >= limit:
                 return rows
     return rows
+
+
+def list_catalog_candidates_for_stack(
+    repo_root: Path,
+    stack_id: str,
+    *,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    sid = stack_id.strip()
+    if not sid:
+        return []
+    return [
+        row
+        for row in list_catalog_candidates(repo_root, limit=limit)
+        if str(row.get("stack_id") or "").strip() == sid
+    ]
 
 
 def list_pending_stitch_catalog_candidates(

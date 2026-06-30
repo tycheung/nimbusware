@@ -127,6 +127,27 @@ def roles_for_stack_manifest(manifest: dict[str, Any] | None) -> list[str]:
     return sorted(roles)
 
 
+def surface_binding_rows(
+    repo_root: Path,
+    manifest: dict[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not isinstance(manifest, dict):
+        return []
+    resolver = ModelBindingResolver(repo_root)
+    rows: list[dict[str, str]] = []
+    for surface_id, role in surface_stage_map(manifest).items():
+        binding = resolver.resolve(role)
+        rows.append(
+            {
+                "surface_id": surface_id,
+                "writer_role": role,
+                "model_id": str(binding.model_id or ""),
+                "provider_id": str(binding.provider_id or ""),
+            },
+        )
+    return rows
+
+
 def surface_stage_map(manifest: dict[str, Any] | None) -> dict[str, str]:
     if not isinstance(manifest, dict):
         return {}

@@ -170,6 +170,9 @@ def _run_put_e2e_for_run(
     str | None,
 ]:
     from nimbusware_env.env_flags import env_str
+    from nimbusware_maker.intent import requirements_from_run_created_metadata
+    from nimbusware_maker.stack_manifest import manifest_from_requirements
+    from nimbusware_maker.workspace import run_created_metadata_from_rows
     from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_combined
     from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
     from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
@@ -178,10 +181,15 @@ def _run_put_e2e_for_run(
         return None, None, None, None, None, None, None
 
     attach = attach_context_from_run(rows, repo_root)
+    meta = run_created_metadata_from_rows(rows)
+    req = requirements_from_run_created_metadata(meta) or {}
+    manifest_model = manifest_from_requirements(req)
+    stack_manifest = manifest_model.model_dump() if manifest_model is not None else None
     flow_id = match_factory_flow_id(
         _business_prompt_from_rows(rows),
         prompt_id=attach.get("prompt_id"),
         repo_root=repo_root,
+        stack_manifest=stack_manifest,
     )
     if not flow_id:
         skip = PutE2EResult(
@@ -193,7 +201,12 @@ def _run_put_e2e_for_run(
         return False, skip, None, None, None, None, None
 
     port = 19876 + (hash(str(workspace)) % 400)
-    preview = start_put_preview(workspace, port, startup_timeout_seconds=12.0)
+    preview = start_put_preview(
+        workspace,
+        port,
+        startup_timeout_seconds=12.0,
+        stack_manifest=stack_manifest,
+    )
     put_preview_ok = preview.ok
     base_url = preview.handle.base_url if preview.handle else f"http://127.0.0.1:{port}"
     ism = None

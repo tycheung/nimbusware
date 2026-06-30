@@ -386,13 +386,23 @@ def emit_stitch_stages_for_manifest(
         ),
     )
     if write_catalog_on_apply:
-        from nimbusware_research.bundle_promotion import write_stitch_catalog_candidate
+        from nimbusware_maker.intent import requirements_from_run_created_metadata
+        from nimbusware_research.bundle_promotion import (
+            primary_stack_id_from_requirements,
+            write_stitch_catalog_candidate,
+        )
 
+        req = requirements_from_run_created_metadata(run_created_metadata)
+        stack_id = primary_stack_id_from_requirements(req)
+        hints: dict[str, Any] = {}
+        if stack_id:
+            hints["stack_id"] = stack_id
         write_stitch_catalog_candidate(
             repo_root,
             run_id=run_id,
             manifest_id=manifest_id,
             files_added=files_added,
+            bundle_hints=hints or None,
         )
     return True
 

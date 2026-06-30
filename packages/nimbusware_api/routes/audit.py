@@ -13,8 +13,13 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from nimbusware_maker.intent import requirements_from_run_created_metadata
 from nimbusware_maker.workspace import run_created_metadata_from_rows
 from nimbusware_orchestrator.audit_export import build_audit_bundle_bytes
+from nimbusware_orchestrator.audit_scope_export import (
+    scope_snapshot_from_requirements,
+    surface_outcomes_from_events,
+)
 from nimbusware_orchestrator.policy_snapshot_diff import policy_snapshot_from_run_created_metadata
 from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 from nimbusware_store.protocol import serialized_event_from_row
@@ -46,6 +51,7 @@ def audit_export(run_id: UUID, store: StoreDep) -> Response:
         events.append(serialize_event_persistent(ev))
     meta = run_created_metadata_from_rows(rows)
     snap = policy_snapshot_from_run_created_metadata(meta)
+    requirements = requirements_from_run_created_metadata(meta)
     theater_md = format_theater_transcript_md(
         run_id=rid,
         messages=build_run_theater_messages(rows),
@@ -55,6 +61,8 @@ def audit_export(run_id: UUID, store: StoreDep) -> Response:
         events=events,
         policy_snapshot=snap,
         theater_transcript_md=theater_md,
+        scope_snapshot=scope_snapshot_from_requirements(requirements),
+        surface_outcomes=surface_outcomes_from_events(rows),
     )
     return Response(
         content=payload,

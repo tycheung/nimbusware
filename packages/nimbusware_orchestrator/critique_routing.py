@@ -91,3 +91,33 @@ def assert_critique_coverage_complete(snapshot: dict[str, Any]) -> None:
             f"{e.get('producer')!r}->{e.get('critic')!r}" for e in errors if isinstance(e, dict)
         )
         raise ValueError(msg)
+
+
+def default_surface_critics_path(repo_root: Path) -> Path:
+    return repo_root / "configs" / "personas" / "surface_critics.yaml"
+
+
+def load_surface_critics(repo_root: Path) -> dict[str, list[str]]:
+    path = default_surface_critics_path(repo_root)
+    if not path.is_file():
+        return {}
+    import yaml
+
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        return {}
+    block = raw.get("surface_critics")
+    if not isinstance(block, dict):
+        return {}
+    out: dict[str, list[str]] = {}
+    for surface_id, critics in block.items():
+        if isinstance(critics, list):
+            out[str(surface_id)] = [str(c).strip() for c in critics if str(c).strip()]
+    return out
+
+
+def extra_critics_for_surface(surface_id: str | None, repo_root: Path) -> list[str]:
+    sid = str(surface_id or "").strip().lower()
+    if not sid:
+        return []
+    return list(load_surface_critics(repo_root).get(sid, ()))

@@ -24,7 +24,10 @@ from agent_core.models import (
 from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_research.artifacts import persist_research_brief
-from nimbusware_research.bundle_promotion import write_catalog_candidate
+from nimbusware_research.bundle_promotion import (
+    primary_stack_id_from_requirements,
+    write_catalog_candidate,
+)
 from nimbusware_research.enterprise_index import append_enterprise_research_index
 from nimbusware_research.models import ResearchBrief, ResearchBriefSource
 from nimbusware_research.pattern_index import append_pattern_index, new_pattern_id
@@ -268,6 +271,7 @@ def emit_research_stages(
                 "repo_url": pattern["repo_url"],
                 "license": pattern["license"],
                 "domain_tag": domain_tag,
+                "stack_id": primary_stack_id_from_requirements(requirements) or "",
             },
         )
         _emit_critique_panel(

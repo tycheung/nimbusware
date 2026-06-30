@@ -47,6 +47,11 @@ def test_match_factory_flow_id_from_prompt_id() -> None:
     assert match_factory_flow_id("", prompt_id="todo_api", repo_root=REPO) == "todo_api"
 
 
+def test_match_factory_flow_id_from_stack_manifest() -> None:
+    manifest = {"surfaces": ["web"], "stacks": {"web": "react_vite"}}
+    assert match_factory_flow_id("", stack_manifest=manifest, repo_root=REPO) == "static_site"
+
+
 def test_stub_captures_return_findings() -> None:
     console = stub_console_capture(enabled=True)
     network = stub_network_capture(enabled=True, exercised_paths={"/health"})

@@ -14,3 +14,6 @@ verify_commands:
 launch_framework_id: react_vite
 max_files: 4
 max_loc: 160
+agent_scaffold:
+  system_prompt: "Implement React + Vite frontend slices for the frozen stack manifest globs."
+  description: "Auto-scaffolded from react_vite stack catalog"

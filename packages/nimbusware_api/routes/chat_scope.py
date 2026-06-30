@@ -19,6 +19,18 @@ from nimbusware_maker.scope_discovery import (
 router = APIRouter(tags=["maker"])
 
 
+def _enrich_scope(scope: dict[str, Any]) -> dict[str, Any]:
+    manifest = scope.get("stack_manifest")
+    if not isinstance(manifest, dict):
+        return scope
+    from nimbusware_env import find_repo_root
+    from nimbusware_orchestrator.binding_preflight import surface_binding_rows
+
+    enriched = dict(scope)
+    enriched["surface_bindings"] = surface_binding_rows(find_repo_root(), manifest)
+    return enriched
+
+
 def _tenant_slug_from_auth() -> str | None:
     ctx = get_auth_context()
     if ctx is None:
@@ -70,7 +82,7 @@ def post_scope_gather(body: ScopeGatherBody) -> ScopeDiscoverResponse:
         recommend_for_me_flag=recommend,
         tenant_slug=_tenant_slug_from_auth(),
     )
-    return ScopeDiscoverResponse(scope=gathered)
+    return ScopeDiscoverResponse(scope=_enrich_scope(gathered))
 
 
 class ScopeRecommendBody(BaseModel):
@@ -91,7 +103,7 @@ def post_scope_recommend(body: ScopeRecommendBody) -> ScopeDiscoverResponse:
     recommended["stack_manifest"] = manifest
     from nimbusware_maker.scope_discovery import attach_discovery_summary
 
-    return ScopeDiscoverResponse(scope=attach_discovery_summary(recommended))
+    return ScopeDiscoverResponse(scope=_enrich_scope(attach_discovery_summary(recommended)))
 
 
 class ScopeConfirmBody(BaseModel):
@@ -111,4 +123,4 @@ def post_scope_confirm(body: ScopeConfirmBody) -> ScopeDiscoverResponse:
             status_code=422,
             detail=problem("invalid_request", str(exc)),
         ) from exc
-    return ScopeDiscoverResponse(scope=confirmed)
+    return ScopeDiscoverResponse(scope=_enrich_scope(confirmed))

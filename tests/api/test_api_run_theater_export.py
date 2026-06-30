@@ -87,6 +87,21 @@ def test_audit_bundle_includes_theater_transcript() -> None:
     assert "theater_transcript.md" in names
 
 
+def test_audit_bundle_includes_scope_files_when_provided() -> None:
+    run_id = str(uuid4())
+    bundle = build_audit_bundle_bytes(
+        run_id=run_id,
+        events=[],
+        policy_snapshot={"policy_version": "1"},
+        scope_snapshot={"stack_manifest": {"surfaces": ["api"]}},
+        surface_outcomes=[{"surface_id": "api", "slice_count": 1}],
+    )
+    with tarfile.open(fileobj=BytesIO(bundle), mode="r:gz") as tar:
+        names = {m.name for m in tar.getmembers()}
+    assert "scope_snapshot.json" in names
+    assert "surface_outcomes.json" in names
+
+
 def test_audit_export_endpoint_includes_theater_file(client: TestClient) -> None:
     store = client.app.state.store
     run_id = _seed_run(store)

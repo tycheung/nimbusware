@@ -282,6 +282,19 @@ def scope_confirm(state: dict[str, Any], *, tenant_slug: str | None = None) -> d
     out["stack_manifest"] = frozen.model_dump()
     out["scope_confirmed"] = True
     out["discovery_complete"] = True
+    try:
+        from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.stack_agent_scaffold import scaffold_agents_for_manifest
+
+        agent_ids = scaffold_agents_for_manifest(
+            frozen.model_dump(),
+            repo_root=find_repo_root(),
+            persist=True,
+        )
+        if agent_ids:
+            out["scaffold_agent_ids"] = agent_ids
+    except OSError:
+        pass
     return out
 
 

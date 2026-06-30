@@ -1,0 +1,11 @@
+version: 1
+# Extra critics keyed by manifest surface_id (fo2156).
+surface_critics:
+  web:
+    - launch_test_critic
+  api:
+    - security_critic
+  deploy:
+    - security_critic
+  contract:
+    - architecture_critic

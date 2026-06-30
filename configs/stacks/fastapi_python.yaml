@@ -12,3 +12,6 @@ verify_commands:
 launch_framework_id: null
 max_files: 5
 max_loc: 200
+agent_scaffold:
+  system_prompt: "Implement Python FastAPI backend slices for the frozen stack manifest globs."
+  description: "Auto-scaffolded from fastapi_python stack catalog"
