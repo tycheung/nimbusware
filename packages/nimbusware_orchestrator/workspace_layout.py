@@ -56,10 +56,14 @@ class WorkspaceLayout:
 
 
 def _workspace_stack(workspace: Path) -> str:
+    if (workspace / "Cargo.toml").is_file():
+        return "rust"
     if (workspace / "go.mod").is_file():
         return "go"
     if (workspace / "pom.xml").is_file():
         return "jvm"
+    if (workspace / "package.json").is_file():
+        return "node"
     return "python"
 
 

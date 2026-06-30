@@ -12,8 +12,8 @@ from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_env.edition import enterprise_feature_enabled
 from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_iam.context import get_auth_context
+from nimbusware_memory.embeddings import resolve_fleet_embedding_mode
 from nimbusware_memory.factory import build_memory_chunk_store
-from nimbusware_memory.fleet_embedding import resolve_fleet_embedding_mode
 from nimbusware_memory.fleet_index import rebuild_fleet_memory_index
 from nimbusware_memory.fleet_sync import (
     fleet_memory_remote_status,

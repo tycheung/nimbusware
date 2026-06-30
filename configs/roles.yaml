@@ -1,4 +1,6 @@
 # Role Registry (plan §3, §5) — taxonomy key -> role_id UUID
+# fo2151: surface-aware writers only (frontend_writer, backend_writer, infra_writer).
+# Stack catalog supplies language/framework prompts — no per-language writer roles.
 version: 1
 roles:
   - taxonomy_key: planner
