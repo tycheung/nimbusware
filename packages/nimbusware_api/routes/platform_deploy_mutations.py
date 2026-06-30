@@ -24,12 +24,6 @@ from nimbusware_api.routes.platform_deploy_support import (
     resolved_deploy_environment,
 )
 from nimbusware_api.user import maker_user_id_str
-from nimbusware_maker.deploy_approval_events import (
-    autopilot_may_auto_approve_deploy,
-    deploy_apply_ready,
-    deploy_approved_from_events,
-    emit_deploy_approved,
-)
 from nimbusware_maker.deploy_credential_audit import (
     audit_credentials_updated,
     audit_credentials_used,
@@ -39,10 +33,14 @@ from nimbusware_maker.deploy_credential_vault import (
     save_deploy_credentials,
 )
 from nimbusware_maker.deploy_pipeline_events import (
+    autopilot_may_auto_approve_deploy,
     deploy_apply_passed_from_events,
+    deploy_apply_ready,
+    deploy_approved_from_events,
     deploy_rollback_passed_from_events,
     emit_ci_workflow_stages,
     emit_deploy_apply_stages,
+    emit_deploy_approved,
     emit_deploy_rollback_stages,
     emit_deploy_smoke_stages,
     live_urls_from_events,

@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
-from nimbusware_maker.deploy_approval_events import emit_deploy_approved
+from nimbusware_maker.deploy_pipeline_events import emit_deploy_approved
 from nimbusware_maker.user_participant_context import (
     load_user_participant_context,
     save_user_participant_context,
