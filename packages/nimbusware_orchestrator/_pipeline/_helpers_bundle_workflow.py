@@ -1,49 +1,10 @@
 from __future__ import annotations
 
+from nimbusware_orchestrator import workflow_registry as _wr
 from nimbusware_orchestrator.merge import load_yaml, policy_snapshot_from_files
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from nimbusware_orchestrator.workflow_registry import (
-    EffectiveUniversalCritique,
-    agent_evaluator_llm_branch_effective,
-    agent_evaluator_llm_stub_env_enabled,
-    agent_evaluator_production_default_on,
-    agent_evaluator_production_llm_fallback_enabled,
-    agent_evaluator_rules_derived_llm_evaluation,
-    effective_universal_critique,
-    network_resilience_critique_effective,
-    network_resilience_critique_llm_branch_effective,
-    parallel_writers_enabled,
-    parse_agent_evaluator_workflow_block,
-    parse_escalation_workflow_block,
-    parse_integration_adapter_writer_workflow_block,
-    parse_network_resilience_critique_workflow_block,
-    parse_performance_critique_workflow_block,
-    parse_probation_automation_workflow_block,
-    parse_refactor_workflow_block,
-    parse_research_workflow_block,
-    parse_security_critique_workflow_block,
-    parse_self_refinement_workflow_block,
-    parse_stitch_workflow_block,
-    parse_universal_critique_workflow_block,
-    performance_critique_effective,
-    performance_critique_llm_branch_effective,
-    persona_coverage_critique_effective,
-    persona_coverage_critique_llm_branch_effective,
-    refactor_stage_effective,
-    security_critique_effective,
-    security_critique_llm_branch_effective,
-    security_scan_metadata_on_verify_enabled,
-    self_refinement_llm_critique_branch_effective,
-    self_refinement_llm_critique_effective_for_run,
-    self_refinement_production_ungated_effective,
-    self_refinement_ungated_loop_effective,
-    test_writer_llm_body_enabled,
-    test_writer_llm_stub_fallback,
-    test_writer_stage_enabled,
-    universal_critique_production_default_on,
-)
 
-__all__ = (
+_PIPELINE_WORKFLOW_NAMES: tuple[str, ...] = (
     "EffectiveUniversalCritique",
     "agent_evaluator_llm_branch_effective",
     "agent_evaluator_llm_stub_env_enabled",
@@ -70,7 +31,6 @@ __all__ = (
     "performance_critique_llm_branch_effective",
     "persona_coverage_critique_effective",
     "persona_coverage_critique_llm_branch_effective",
-    "policy_snapshot_from_files",
     "refactor_stage_effective",
     "security_critique_effective",
     "security_critique_llm_branch_effective",
@@ -83,7 +43,15 @@ __all__ = (
     "test_writer_llm_stub_fallback",
     "test_writer_stage_enabled",
     "universal_critique_production_default_on",
+)
+
+for _export_name in _PIPELINE_WORKFLOW_NAMES:
+    globals()[_export_name] = getattr(_wr, _export_name)
+
+__all__ = (
+    *_PIPELINE_WORKFLOW_NAMES,
+    "load_yaml",
+    "policy_snapshot_from_files",
     "workflow_profile_dict",
     "workflow_profile_path",
-    "load_yaml",
 )

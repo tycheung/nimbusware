@@ -4,11 +4,15 @@ from pathlib import Path
 from typing import Any, Protocol
 from uuid import UUID
 
+from nimbusware_orchestrator._pipeline.protocol_hosts_critique import (
+    CritiqueGateHost,
+    OptionalCritiqueHost,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
 
-class LifecycleVerifyHost(Protocol):
+class LifecycleVerifyHost(CritiqueGateHost, OptionalCritiqueHost, Protocol):
     _store: EventStore
     _registry: RoleRegistry
     _repo_root: Path
@@ -28,8 +32,6 @@ class LifecycleVerifyHost(Protocol):
         *,
         workspace: Path | None = None,
     ) -> None: ...
-    def _stage_graph_snapshot_for_run(self, run_id: UUID) -> dict[str, Any] | None: ...
-    def _base_cfg(self) -> dict[str, Any]: ...
     def _run_writers_parallel_dispatch(
         self,
         run_id: UUID,
@@ -46,10 +48,7 @@ class LifecycleVerifyHost(Protocol):
         *,
         workspace: Path | None = None,
     ) -> tuple[int, str]: ...
-    def _selected_model_for_run(self, run_id: UUID) -> str | None: ...
-    def _strictness_context(self, run_id: UUID) -> Any: ...
     def _maybe_escalate_verifier_failure_checkpoint(self, run_id: UUID) -> None: ...
-    def _effective_universal_critique_for_run(self, run_id: UUID) -> Any: ...
     def _emit_security_critique_optional(
         self,
         run_id: UUID,
@@ -90,11 +89,6 @@ class LifecycleVerifyHost(Protocol):
         run_id: UUID,
         eff: Any,
     ) -> None: ...
-    def _critique_impl_hard_block_gate_fail(
-        self,
-        rows: list[dict[str, Any]],
-        eff: Any,
-    ) -> bool: ...
     def _emit_planner_critique_optional(
         self,
         run_id: UUID,
@@ -106,11 +100,6 @@ class LifecycleVerifyHost(Protocol):
         run_id: UUID,
         eff: Any,
     ) -> None: ...
-    def _critique_tw_hard_block_gate_fail(
-        self,
-        rows: list[dict[str, Any]],
-        eff: Any,
-    ) -> bool: ...
     def _emit_frontend_writer_critique_optional(
         self,
         run_id: UUID,
@@ -122,11 +111,6 @@ class LifecycleVerifyHost(Protocol):
         run_id: UUID,
         eff: Any,
     ) -> None: ...
-    def _critique_pll_hard_block_gate_fail(
-        self,
-        rows: list[dict[str, Any]],
-        eff: Any,
-    ) -> bool: ...
     def _emit_module_integrator_critique_optional(
         self,
         run_id: UUID,
@@ -138,11 +122,6 @@ class LifecycleVerifyHost(Protocol):
         run_id: UUID,
         eff: Any,
     ) -> None: ...
-    def _critique_fw_hard_block_gate_fail(
-        self,
-        rows: list[dict[str, Any]],
-        eff: Any,
-    ) -> bool: ...
     def _maybe_emit_critique_gate_fail_findings(self, run_id: UUID, eff: Any) -> None: ...
     def _maybe_auto_escalate(self, run_id: UUID) -> None: ...
     def _maybe_notice_escalate_findings(self, run_id: UUID) -> None: ...
