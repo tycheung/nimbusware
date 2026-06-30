@@ -7,8 +7,13 @@ import {
   selectedEnterpriseTenantSlug,
   setEnterpriseTenantSlug,
 } from "../api/client";
+import { FleetAutopilotPanel } from "./fleet/FleetAutopilotPanel";
 import { FleetComparePanel } from "./fleet/FleetComparePanel";
+import { FleetCompliancePanel } from "./fleet/FleetCompliancePanel";
+import { FleetDashboardPanel } from "./fleet/FleetDashboardPanel";
+import { FleetMeshPanel } from "./fleet/FleetMeshPanel";
 import { FleetTenantBar } from "./fleet/FleetTenantBar";
+import { FleetTenantPoliciesPanel } from "./fleet/FleetTenantPoliciesPanel";
 import { tenantOptions } from "./fleet/tenantUtils";
 import type {
   FleetCombinedSearch,
@@ -16,6 +21,7 @@ import type {
   FleetDashboard,
   MeshNodeRow,
   TenantOption,
+  TenantRow,
 } from "./fleet/types";
 
 export function FleetPage() {
@@ -498,448 +504,68 @@ export function FleetPage() {
       </button>
       {error ? <p class="error">{error}</p> : null}
       {compliance ? (
-        <section class="panel" data-testid="admin-fleet-compliance">
-          <h3>Compliance summary</h3>
-          <table class="data-table">
-            <tbody>
-              <tr>
-                <td>Audit retention (days)</td>
-                <td>{String(compliance.audit_retention_days ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>IAM actions indexed</td>
-                <td>{String(compliance.iam_action_count ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Event rows</td>
-                <td>{String(compliance.event_row_count ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Tenants</td>
-                <td>{String(compliance.tenant_count ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Gate pass rate</td>
-                <td>
-                  {compliance.gate_pass_rate != null
-                    ? `${Math.round(Number(compliance.gate_pass_rate) * 100)}%`
-                    : "—"}
-                </td>
-              </tr>
-              <tr>
-                <td>Mean slices / completed run</td>
-                <td>{String(compliance.mean_slices_per_run ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Slice size histogram</td>
-                <td>
-                  {compliance.slice_size_histogram
-                    ? JSON.stringify(compliance.slice_size_histogram)
-                    : "—"}
-                </td>
-              </tr>
-              <tr>
-                <td>Commit stage events</td>
-                <td>{String(compliance.commit_stage_events ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Last event at</td>
-                <td>{String(compliance.last_event_at ?? "—")}</td>
-              </tr>
-              <tr>
-                <td>Legal hold</td>
-                <td>{String(compliance.audit_policy?.legal_hold ?? "—")}</td>
-              </tr>
-            </tbody>
-          </table>
-          <section class="panel" data-testid="admin-fleet-audit-policy">
-            <h4>Audit retention policy</h4>
-            {auditPolicyCaption ? <p class="muted">{auditPolicyCaption}</p> : null}
-            <label data-testid="admin-fleet-legal-hold-toggle">
-              <input
-                type="checkbox"
-                checked={legalHold}
-                disabled={auditPolicyBusy}
-                onChange={(ev) => void saveLegalHold((ev.target as HTMLInputElement).checked)}
-              />
-              Legal hold — block event-store purge for this tenant
-            </label>
-            <p class="muted">
-              When enabled, <code>purge_event_store_retention.py</code> skips deletes. Env{" "}
-              <code>NIMBUSWARE_EVENT_STORE_LEGAL_HOLD=1</code> also blocks purge globally.
-            </p>
-          </section>
-          <section class="panel" data-testid="admin-fleet-collab-policy">
-            <h4>Collab guest policy</h4>
-            {collabPolicyCaption ? <p class="muted">{collabPolicyCaption}</p> : null}
-            <label data-testid="admin-fleet-allow-external-toggle">
-              <input
-                type="checkbox"
-                checked={allowExternalCollab}
-                disabled={collabPolicyBusy || !tenantId}
-                onChange={(ev) => setAllowExternalCollab((ev.target as HTMLInputElement).checked)}
-              />
-              Allow external collaborators via invite link (ADR 023)
-            </label>
-            <label>
-              Max session participants{" "}
-              <input
-                type="number"
-                min={1}
-                max={500}
-                value={maxParticipants}
-                disabled={!tenantId}
-                onInput={(e) =>
-                  setMaxParticipants(Number((e.target as HTMLInputElement).value) || 1)
-                }
-                data-testid="admin-fleet-max-participants"
-              />
-            </label>
-            <button
-              type="button"
-              class="secondary"
-              disabled={collabPolicyBusy || !tenantId}
-              onClick={() => void saveCollabPolicy()}
-              data-testid="admin-fleet-save-collab-policy"
-            >
-              Save collab policy
-            </button>
-            <p class="muted">
-              When external guests are disabled, users must be added from the org directory; token
-              link joins return 403.
-            </p>
-          </section>
-          <section class="panel" data-testid="admin-fleet-stack-policy">
-            <h4>Regulated stack allowlist</h4>
-            {stackPolicyCaption ? <p class="muted">{stackPolicyCaption}</p> : null}
-            <label>
-              API stack{" "}
-              <input
-                type="text"
-                value={allowedApiStack}
-                placeholder="fastapi_python"
-                disabled={!tenantId}
-                onInput={(e) => setAllowedApiStack((e.target as HTMLInputElement).value)}
-                data-testid="admin-fleet-stack-api"
-              />
-            </label>{" "}
-            <label>
-              Web stack{" "}
-              <input
-                type="text"
-                value={allowedWebStack}
-                placeholder="react_vite"
-                disabled={!tenantId}
-                onInput={(e) => setAllowedWebStack((e.target as HTMLInputElement).value)}
-                data-testid="admin-fleet-stack-web"
-              />
-            </label>{" "}
-            <button
-              type="button"
-              class="secondary"
-              disabled={stackPolicyBusy || !tenantId}
-              onClick={() => void saveStackPolicy()}
-              data-testid="admin-fleet-save-stack-policy"
-            >
-              Save stack policy
-            </button>
-            <p class="muted">
-              Discovery recommendations clamp to these stacks for the selected tenant (fo2344).
-            </p>
-          </section>
-        </section>
+        <>
+          <FleetCompliancePanel compliance={compliance} />
+          <FleetTenantPoliciesPanel
+            tenantId={tenantId}
+            legalHold={legalHold}
+            auditPolicyBusy={auditPolicyBusy}
+            auditPolicyCaption={auditPolicyCaption}
+            allowExternalCollab={allowExternalCollab}
+            maxParticipants={maxParticipants}
+            collabPolicyCaption={collabPolicyCaption}
+            collabPolicyBusy={collabPolicyBusy}
+            allowedApiStack={allowedApiStack}
+            allowedWebStack={allowedWebStack}
+            stackPolicyCaption={stackPolicyCaption}
+            stackPolicyBusy={stackPolicyBusy}
+            onLegalHoldChange={(enabled) => void saveLegalHold(enabled)}
+            onAllowExternalCollabChange={setAllowExternalCollab}
+            onMaxParticipantsChange={setMaxParticipants}
+            onSaveCollabPolicy={() => void saveCollabPolicy()}
+            onAllowedApiStackChange={setAllowedApiStack}
+            onAllowedWebStackChange={setAllowedWebStack}
+            onSaveStackPolicy={() => void saveStackPolicy()}
+          />
+        </>
       ) : null}
       {dashboard ? (
         <>
-          {dashboard.sli_caption ? <p>{dashboard.sli_caption}</p> : null}
-          {dashboard.worker_caption ? <p>{dashboard.worker_caption}</p> : null}
-          <h3 data-testid="admin-fleet-mesh-panel">Fleet mesh</h3>
-          <p class="muted" data-testid="admin-fleet-mesh-caption">
-            Enterprise fleet overview. Session-scoped nodes and queue depth: use Session compute mesh below.
-          </p>
-          <h3>Fleet memory</h3>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(dashboard.memory_rows || []).map((row, i) => (
-                <tr key={i}>
-                  <td>{row.field}</td>
-                  <td>{String(row.value ?? "—")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <h3 data-testid="admin-fleet-semantic-search">Semantic fleet search</h3>
-          <p class="muted">
-            Substring learnings across tenant workspaces plus semantic fleet-memory hits when indexed.
-          </p>
-          <label>
-            Query{" "}
-            <input
-              type="search"
-              value={fleetQuery}
-              data-testid="admin-fleet-search-query"
-              onInput={(e) => setFleetQuery((e.target as HTMLInputElement).value)}
-              placeholder="terraform rollback, sql timeout, …"
-            />
-          </label>{" "}
-          <button
-            type="button"
-            class="secondary"
-            data-testid="admin-fleet-search-btn"
-            disabled={fleetSearchBusy || !fleetQuery.trim()}
-            onClick={() => void runFleetSearch()}
-          >
-            {fleetSearchBusy ? "Searching…" : "Search fleet"}
-          </button>
-          {fleetSearchError ? <p class="error">{fleetSearchError}</p> : null}
-          {fleetSearch ? (
-            <>
-              <p class="hint">
-                {fleetSearch.hit_count ?? 0} hit(s) — embedding mode: {fleetSearch.embedding_mode ?? "—"}
-              </p>
-              {(fleetSearch.learnings_hits || []).length > 0 ? (
-                <>
-                  <h4>Workspace learnings</h4>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Title</th>
-                        <th>Excerpt</th>
-                        <th>Workspace</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(fleetSearch.learnings_hits || []).map((row, i) => (
-                        <tr key={`l-${i}`} data-testid="admin-fleet-search-learning-row">
-                          <td>{row.title || row.learning_id || "—"}</td>
-                          <td>{row.excerpt || "—"}</td>
-                          <td>{row.workspace || "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </>
-              ) : null}
-              {(fleetSearch.memory_hits || []).length > 0 ? (
-                <>
-                  <h4>Fleet memory (semantic)</h4>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Excerpt</th>
-                        <th>Score</th>
-                        <th>Category</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(fleetSearch.memory_hits || []).map((row, i) => (
-                        <tr key={`m-${i}`} data-testid="admin-fleet-search-memory-row">
-                          <td>{row.excerpt || "—"}</td>
-                          <td>{row.score != null ? String(row.score) : "—"}</td>
-                          <td>{row.category || "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </>
-              ) : null}
-            </>
-          ) : null}
-          {dashboard.archetype_fit_rows && dashboard.archetype_fit_rows.length > 0 ? (
-            <>
-              <h3 data-testid="admin-fleet-archetype-fit">Archetype fit</h3>
-              <p class="muted">Behavioral + static rubric from benchmarks/latest_archetype_metrics.json.</p>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Archetype</th>
-                    <th>Fit score</th>
-                    <th>Meets target</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboard.archetype_fit_rows.map((row, i) => (
-                    <tr key={i} data-testid="admin-fleet-archetype-fit-row">
-                      <td>{row.archetype}</td>
-                      <td>{row.fit_score}</td>
-                      <td>{row.meets_target}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          ) : null}
-          <h3>Hardware fleet</h3>
-          <p>
-            <button
-              type="button"
-              class="secondary"
-              data-testid="admin-fleet-rescan-btn"
-              disabled={rescanBusy}
-              onClick={rescanFleetHardware}
-            >
-              {rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}
-            </button>
-          </p>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Host</th>
-                <th>Tier</th>
-                <th>RAM (GB)</th>
-                <th>GPUs</th>
-                <th>Platform</th>
-                <th>Errors</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(dashboard.hardware_rows || []).map((row, i) => (
-                <tr key={i} data-testid="admin-fleet-hardware-row">
-                  <td>{String(row.host ?? "—")}</td>
-                  <td>{String(row.tier ?? "—")}</td>
-                  <td>
-                    {String(row.ram_available_gb ?? "—")} / {String(row.ram_total_gb ?? "—")}
-                  </td>
-                  <td>{String(row.gpu_count ?? "—")}</td>
-                  <td>{String(row.platform ?? "—")}</td>
-                  <td>{String(row.errors ?? "")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {dashboard.critic_reliability_rows && dashboard.critic_reliability_rows.length > 0 ? (
-            <>
-              <h3>Critic reliability</h3>
-              {dashboard.critic_reliability_caption ? (
-                <p>{dashboard.critic_reliability_caption}</p>
-              ) : null}
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Metric</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboard.critic_reliability_rows.map((row, i) => (
-                    <tr key={i}>
-                      <td>{row.metric}</td>
-                      <td>{row.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          ) : null}
-          <button type="button" onClick={downloadExport} disabled={!dashboard.export_json}>
-            Export JSON
-          </button>
+          <FleetDashboardPanel
+            dashboard={dashboard}
+            fleetQuery={fleetQuery}
+            fleetSearch={fleetSearch}
+            fleetSearchBusy={fleetSearchBusy}
+            fleetSearchError={fleetSearchError}
+            rescanBusy={rescanBusy}
+            onFleetQuery={setFleetQuery}
+            onFleetSearch={() => void runFleetSearch()}
+            onRescanHardware={rescanFleetHardware}
+            onDownloadExport={downloadExport}
+          />
           {tenantId ? (
-            <>
-              <h3>Fleet autopilot policy</h3>
-              <p class="muted">
-                Cap max autonomy level and require checkpoints for runs in the selected tenant.
-              </p>
-              {policyCaption ? <p class="hint">{policyCaption}</p> : null}
-              <label>
-                Max autopilot level{" "}
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={policyLevel}
-                  onInput={(e) => setPolicyLevel(Number((e.target as HTMLInputElement).value) || 0)}
-                />
-              </label>{" "}
-              <label>
-                Required checkpoints (comma-separated){" "}
-                <input
-                  value={policyCheckpoints}
-                  onInput={(e) => setPolicyCheckpoints((e.target as HTMLInputElement).value)}
-                  placeholder={policyCatalog.slice(0, 2).join(", ")}
-                />
-              </label>{" "}
-              <button type="button" class="secondary" onClick={saveAutopilotPolicy}>
-                Save policy
-              </button>
-              <h3>Fleet enforcement policy</h3>
-              <p class="muted">
-                Clamp per-run enforcement depth (0–10) for workspaces in the selected tenant.
-              </p>
-              {enforcementCaption ? <p class="hint">{enforcementCaption}</p> : null}
-              <label>
-                Min enforcement level{" "}
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={enforcementMin}
-                  onInput={(e) => setEnforcementMin(Number((e.target as HTMLInputElement).value) || 0)}
-                  data-testid="admin-fleet-enforcement-min"
-                />
-              </label>{" "}
-              <label>
-                Max enforcement level{" "}
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={enforcementMax}
-                  onInput={(e) => setEnforcementMax(Number((e.target as HTMLInputElement).value) || 0)}
-                  data-testid="admin-fleet-enforcement-max"
-                />
-              </label>{" "}
-              <button
-                type="button"
-                class="secondary"
-                onClick={saveEnforcementPolicy}
-                data-testid="admin-fleet-enforcement-save"
-              >
-                Save enforcement policy
-              </button>
-            </>
-          ) : null}
-          <h3>Session compute mesh</h3>
-          <p class="muted">Nodes registered for a collaborative chat session (share policy + delegate).</p>
-          <label>
-            Session ID{" "}
-            <input
-              type="text"
-              value={meshSessionId}
-              onInput={(e) => setMeshSessionId((e.target as HTMLInputElement).value)}
-              placeholder="chat session uuid"
-              data-testid="admin-fleet-mesh-session-id"
+            <FleetAutopilotPanel
+              policyLevel={policyLevel}
+              policyCheckpoints={policyCheckpoints}
+              policyCatalog={policyCatalog}
+              policyCaption={policyCaption}
+              enforcementMin={enforcementMin}
+              enforcementMax={enforcementMax}
+              enforcementCaption={enforcementCaption}
+              onPolicyLevelChange={setPolicyLevel}
+              onPolicyCheckpointsChange={setPolicyCheckpoints}
+              onEnforcementMinChange={setEnforcementMin}
+              onEnforcementMaxChange={setEnforcementMax}
+              onSaveAutopilotPolicy={saveAutopilotPolicy}
+              onSaveEnforcementPolicy={saveEnforcementPolicy}
             />
-          </label>{" "}
-          <button type="button" class="secondary" onClick={loadSessionMeshNodes}>
-            Load nodes
-          </button>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Node</th>
-                <th>Status</th>
-                <th>Share policy</th>
-                <th>Delegate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {meshNodes.map((row, i) => (
-                <tr key={i} data-testid="admin-fleet-mesh-node-row">
-                  <td>{row.display_name || row.node_id || "—"}</td>
-                  <td>{row.status || "—"}</td>
-                  <td>{row.share_policy || "—"}</td>
-                  <td>{row.allow_host_resource_management ? "yes" : "no"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          ) : null}
+          <FleetMeshPanel
+            meshSessionId={meshSessionId}
+            meshNodes={meshNodes}
+            onMeshSessionIdChange={setMeshSessionId}
+            onLoadNodes={loadSessionMeshNodes}
+          />
           <FleetComparePanel
             tenants={tenants}
             tenantA={tenantA}
