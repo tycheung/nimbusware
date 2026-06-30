@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.read_models.maker_progress import (
+from nimbusware_projections.builders.maker_progress import (
     maker_progress_from_events,
     strip_operator_fields,
 )

@@ -32,9 +32,9 @@ _API_PILOT = (
     "packages/nimbusware_api/errors.py",
 )
 
-# Tranche D (fo732): API read layer + enterprise routes that pass strict mypy.
+# Tranche D (fo732): API list helpers + enterprise routes that pass strict mypy.
 _TRANCHE_D = (
-    "packages/nimbusware_api/read_models",
+    "packages/nimbusware_api/routes/runs/list_helpers.py",
     "packages/nimbusware_api/facade.py",
     "packages/nimbusware_api/deps.py",
     "packages/nimbusware_api/routes/enterprise",

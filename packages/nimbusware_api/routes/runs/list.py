@@ -10,13 +10,15 @@ from fastapi.routing import APIRouter
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.read_models import (
+from nimbusware_api.routes.runs.list_helpers import (
     _decode_run_list_cursor,
     _encode_run_list_cursor,
     _parse_query_datetime,
     _runs_list_query_string,
     _sanitize_workflow_profile_prefix,
 )
+from nimbusware_projections.builders import *  # noqa: F403
+from nimbusware_projections.builders import __all__ as _projection_exports
 from nimbusware_api.routes.runs.constants import INCLUDE_SUMMARY_MAX_LIMIT
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,

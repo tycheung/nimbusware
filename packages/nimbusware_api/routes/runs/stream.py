@@ -11,7 +11,7 @@ from fastapi.responses import StreamingResponse
 from agent_core.models import EventType
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.read_models.maker_progress import maker_progress_from_events
+from nimbusware_projections.builders.maker_progress import maker_progress_from_events
 
 router = APIRouter()
 

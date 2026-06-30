@@ -2,8 +2,15 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from nimbusware_api.read_models import *  # noqa: F403
-from nimbusware_api.read_models import __all__ as _read_model_exports
+from nimbusware_api.routes.runs.list_helpers import (
+    _decode_run_list_cursor,
+    _encode_run_list_cursor,
+    _parse_query_datetime,
+    _runs_list_query_string,
+    _sanitize_workflow_profile_prefix,
+)
+from nimbusware_projections.builders import *  # noqa: F403
+from nimbusware_projections.builders import __all__ as _projection_exports
 from nimbusware_api.routes.runs.autopilot import router as autopilot_router
 from nimbusware_api.routes.runs.compact import router as compact_router
 from nimbusware_api.routes.runs.compactions import router as compactions_router
@@ -51,7 +58,12 @@ __all__ = [
     "research_router",
     "stream_router",
     "theater_router",
-    *_read_model_exports,
+    *_projection_exports,
+    "_decode_run_list_cursor",
+    "_encode_run_list_cursor",
+    "_parse_query_datetime",
+    "_runs_list_query_string",
+    "_sanitize_workflow_profile_prefix",
 ]
 
 

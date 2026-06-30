@@ -333,11 +333,10 @@ module = [
 ]
 ignore_errors = false
 
-# fo732 (Lane X2): typing tranche D — API read layer + strict enterprise routes (CI mypy).
+# fo732 (Lane X2): typing tranche D — API list helpers + strict enterprise routes (CI mypy).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_api.read_models",
-  "nimbusware_api.read_models.*",
+  "nimbusware_api.routes.runs.list_helpers",
   "nimbusware_api.facade",
   "nimbusware_api.deps",
   "nimbusware_api.routes.enterprise",

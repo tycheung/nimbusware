@@ -9,7 +9,7 @@ import json
 
 import pytest
 
-from nimbusware_console.self_refinement_display import (
+from nimbusware_console.self_refinement import (
     self_refinement_auto_promote_caption,
     self_refinement_description_length_caption,
     self_refinement_evaluation_caption,

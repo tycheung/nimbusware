@@ -8,7 +8,7 @@ pytestmark = pytest.mark.slow
 import json
 from datetime import datetime, timezone
 
-from nimbusware_console.security_scan_on_verify_display import (
+from nimbusware_console.security_scan_on_verify import (
     security_scan_category_severity_caption,
     security_scan_finding_event_ids_caption,
     security_scan_history_entry_count_caption,

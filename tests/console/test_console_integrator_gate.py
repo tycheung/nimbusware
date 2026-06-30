@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from nimbusware_console.integrator_gate_display import (
+from nimbusware_console.integrator_gate import (
     integrator_gate_compatibility_ranking_caption,
     integrator_gate_compatibility_ranking_table_rows,
     integrator_gate_delta_bundle_changed_caption,

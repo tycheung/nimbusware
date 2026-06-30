@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.read_models.run_theater import build_run_theater_messages
+from nimbusware_projections.builders.run_theater import build_run_theater_messages
 from nimbusware_api.routes.runs.stream import _sse_pack
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_env.env_flags import nimbusware_collab_enabled

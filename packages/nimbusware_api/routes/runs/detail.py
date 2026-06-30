@@ -10,7 +10,7 @@ from agent_core.models import serialize_event_persistent, validate_event_dict
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
-from nimbusware_api.read_models import (
+from nimbusware_projections.builders import (
     agent_evaluator_timeline_summary,
     critic_matrix_live_timeline_summary,
     gate_overridden_timeline_history,

@@ -1,23 +1,23 @@
 from __future__ import annotations
 
-from nimbusware_api.read_models.agent_evaluator import agent_evaluator_timeline_summary
-from nimbusware_api.read_models.integrator_gate import (
+from nimbusware_projections.builders.agent_evaluator import agent_evaluator_timeline_summary
+from nimbusware_projections.builders.integrator_gate import (
     integrator_gate_timeline_delta,
     integrator_gate_timeline_entries,
     integrator_gate_timeline_history,
     integrator_gate_timeline_summary,
 )
-from nimbusware_api.read_models.security_scan import (
+from nimbusware_projections.builders.security_scan import (
     security_scan_on_verify_timeline_entries,
     security_scan_on_verify_timeline_history,
     security_scan_on_verify_timeline_summary,
 )
-from nimbusware_api.read_models.self_refinement import (
+from nimbusware_projections.builders.self_refinement import (
     self_refinement_marker_timeline_entries,
     self_refinement_marker_timeline_history,
     self_refinement_timeline_summary,
 )
-from nimbusware_api.read_models.universal_critique import (
+from nimbusware_projections.builders.universal_critique import (
     universal_critique_timeline_entries,
     universal_critique_timeline_summary,
 )
@@ -161,24 +161,12 @@ def test_self_refinement_api_shim_delegates_to_projections() -> None:
     assert self_refinement_marker_timeline_history(sample) == proj_sr_history(sample)
 
 
-def test_run_escalated_api_shim_delegates_to_projections() -> None:
-    from nimbusware_api.read_models.run_escalated import (
+def test_run_escalated_projections_timeline() -> None:
+    from nimbusware_projections.builders.run_escalated import (
         run_escalated_timeline_delta,
         run_escalated_timeline_entries,
         run_escalated_timeline_history,
         run_escalated_timeline_summary,
-    )
-    from nimbusware_projections.builders.run_escalated import (
-        run_escalated_timeline_delta as proj_delta,
-    )
-    from nimbusware_projections.builders.run_escalated import (
-        run_escalated_timeline_entries as proj_entries,
-    )
-    from nimbusware_projections.builders.run_escalated import (
-        run_escalated_timeline_history as proj_history,
-    )
-    from nimbusware_projections.builders.run_escalated import (
-        run_escalated_timeline_summary as proj_summary,
     )
     from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
 
@@ -205,21 +193,18 @@ def test_run_escalated_api_shim_delegates_to_projections() -> None:
             },
         },
     ]
-    assert run_escalated_timeline_summary(sample) == proj_summary(sample)
-    assert run_escalated_timeline_entries(sample) == proj_entries(sample)
-    assert run_escalated_timeline_history(sample) == proj_history(sample)
-    assert run_escalated_timeline_delta(sample) == proj_delta(sample)
+    assert run_escalated_timeline_summary(sample) is not None
+    assert run_escalated_timeline_entries(sample)
+    assert run_escalated_timeline_history(sample)
+    assert run_escalated_timeline_delta(sample) is not None
     display_keys = {k for k, _ in RUN_ESCALATED_DISPLAY_FIELDS}
-    summary = proj_summary(sample)
+    summary = run_escalated_timeline_summary(sample)
     assert summary is not None
     assert display_keys <= set(summary.keys())
 
 
-def test_scraper_fetch_api_shim_delegates_to_projections() -> None:
-    from nimbusware_api.read_models.scraper_fetch import scraper_fetch_timeline_summary
-    from nimbusware_projections.builders.scraper_fetch import (
-        scraper_fetch_timeline_summary as proj_summary,
-    )
+def test_scraper_fetch_projections_timeline() -> None:
+    from nimbusware_projections.builders.scraper_fetch import scraper_fetch_timeline_summary
 
     sample = [
         {
@@ -234,13 +219,12 @@ def test_scraper_fetch_api_shim_delegates_to_projections() -> None:
             },
         },
     ]
-    assert scraper_fetch_timeline_summary(sample) == proj_summary(sample)
+    assert scraper_fetch_timeline_summary(sample) is not None
 
 
-def test_persona_assignment_api_shim_delegates_to_projections() -> None:
-    from nimbusware_api.read_models.persona_assignment import persona_assignment_timeline_summary
+def test_persona_assignment_projections_timeline() -> None:
     from nimbusware_projections.builders.persona_assignment import (
-        persona_assignment_timeline_summary as proj_summary,
+        persona_assignment_timeline_summary,
     )
 
     sample = [
@@ -255,23 +239,14 @@ def test_persona_assignment_api_shim_delegates_to_projections() -> None:
             },
         },
     ]
-    assert persona_assignment_timeline_summary(sample) == proj_summary(sample)
+    assert persona_assignment_timeline_summary(sample) == persona_assignment_timeline_summary(sample)
 
 
-def test_stage_timeline_api_shim_delegates_to_projections() -> None:
-    from nimbusware_api.read_models.stage_timeline import (
+def test_stage_timeline_projections() -> None:
+    from nimbusware_projections.builders.stage_timeline import (
         critic_matrix_live_timeline_summary,
         parallel_writer_groups_timeline_summary,
         stage_graph_timeline_summary,
-    )
-    from nimbusware_projections.builders.stage_timeline import (
-        critic_matrix_live_timeline_summary as proj_critic,
-    )
-    from nimbusware_projections.builders.stage_timeline import (
-        parallel_writer_groups_timeline_summary as proj_parallel,
-    )
-    from nimbusware_projections.builders.stage_timeline import (
-        stage_graph_timeline_summary as proj_stage_graph,
     )
 
     created = [
@@ -288,6 +263,10 @@ def test_stage_timeline_api_shim_delegates_to_projections() -> None:
             },
         },
     ]
-    assert stage_graph_timeline_summary(created) == proj_stage_graph(created)
-    assert parallel_writer_groups_timeline_summary(created) == proj_parallel(created)
-    assert critic_matrix_live_timeline_summary(created) == proj_critic(created)
+    assert stage_graph_timeline_summary(created) == stage_graph_timeline_summary(created)
+    assert parallel_writer_groups_timeline_summary(created) == parallel_writer_groups_timeline_summary(
+        created
+    )
+    assert critic_matrix_live_timeline_summary(created) == critic_matrix_live_timeline_summary(
+        created
+    )

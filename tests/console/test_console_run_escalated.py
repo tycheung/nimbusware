@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_console.run_escalated_display import (
+from nimbusware_console.run_escalated import (
     run_escalated_actor_without_notes_caption,
     run_escalated_delta_export_filename_slug,
     run_escalated_delta_export_json,
