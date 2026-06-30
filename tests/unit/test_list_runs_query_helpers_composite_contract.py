@@ -14,7 +14,7 @@ from nimbusware_api.routes.runs import (
     _parse_query_datetime,
     _sanitize_workflow_profile_prefix,
 )
-from unit.composite_api_fixtures import restore_b64_padding
+from unit.composite_contract_fixtures import restore_b64_padding
 
 _SAMPLE_RID = UUID("11111111-1111-4111-8111-111111111111")
 _SAMPLE_RID_ALT = UUID("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee")

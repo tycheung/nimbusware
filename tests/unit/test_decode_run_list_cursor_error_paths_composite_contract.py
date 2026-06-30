@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from nimbusware_api.app import app
 from nimbusware_api.routes.runs import _decode_run_list_cursor
-from unit.composite_api_fixtures import urlsafe_b64_encode
+from unit.composite_contract_fixtures import urlsafe_b64_encode
 
 _SAMPLE_UUID_STR = "11111111-1111-4111-8111-111111111111"
 
