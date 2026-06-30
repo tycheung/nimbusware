@@ -39,6 +39,8 @@ After UI changes: `cd packages/nimbusware_admin_ui && npm ci && npm run build`
 - **Audit retention policy** — legal-hold toggle (`GET/PUT /v1/enterprise/audit-policy`) blocks `purge_event_store_retention.py` for the tenant
 - **Collab guest policy** — allow external invite-link guests + max participants (`GET/PUT /v1/enterprise/tenants/{ref}/collab-policy`)
 - **Regulated stack allowlist** — per-surface stack IDs for discovery recommendations (`GET/PUT /v1/enterprise/tenants/{ref}/stack-policy`)
+- **Semantic fleet search** — query workspace learnings (`GET /v1/enterprise/fleet-learnings/search`) and indexed audit memory (`GET /v1/enterprise/fleet-memory/search`) from the Fleet tab
+- **Archetype fit dashboard** — safe_coding / engineer / enterprise rubric scores from `benchmarks/latest_archetype_metrics.json`
 
 Preflight history remains on the **Preflight** tab.
 

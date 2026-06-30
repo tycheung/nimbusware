@@ -24,7 +24,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 
 | Control | Implementation |
 |---------|----------------|
-| Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped index + canonical sync |
+| Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped semantic index + canonical sync; Admin Fleet tab search UI |
 | Fleet learnings | `GET /v1/enterprise/fleet-learnings/search` — learnings markdown across tenant project workspaces |
 | Fleet commit policy | `GET/PUT /v1/enterprise/tenants/{ref}/commit-policy` — auto-commit and message regex |
 | Fleet deploy policy | `GET/PUT /v1/enterprise/tenants/{ref}/deploy-policy` — allowed deploy targets per tenant |
