@@ -1,0 +1,26 @@
+name: Archetype fit weekly (fo2044)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 1"
+
+jobs:
+  archetype-fit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Measure archetype fit rubric
+        run: poetry run python scripts/benchmarks/measure_archetype_fit.py --json benchmarks/latest_archetype_fit.json
+      - name: Upload archetype fit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: archetype-fit-weekly
+          path: benchmarks/latest_archetype_fit.json

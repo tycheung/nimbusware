@@ -68,6 +68,19 @@ _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
     "scripts/benchmarks/measure_gate_comprehension.py",
 )
 
+_POLISH_BEHAVIORAL: tuple[str, ...] = (
+    "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js",
+    "tests/e2e/web/maker_product_polish_smoke.spec.ts",
+    ".github/workflows/product_polish_smoke.yml",
+    ".github/workflows/archetype_fit_weekly.yml",
+)
+
+_FS6_BEHAVIORAL: tuple[str, ...] = (
+    "packages/nimbusware_orchestrator/stack_agent_scaffold.py",
+    "configs/personas/surface_critics.yaml",
+    "tests/unit/test_fs6_scaffold_polish.py",
+)
+
 
 def _score_paths(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
     passed = 0
@@ -103,6 +116,9 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     collab_store = (root / "packages/nimbusware_config/collab_settings_store.py").read_text(
         encoding="utf-8",
     )
+    discovery_ui = (root / "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js").read_text(
+        encoding="utf-8",
+    )
     return {
         "safe_coding": {
             "wizard_poll": "pollPlaywrightBootstrap" in wizard and "BOOTSTRAP_POLL_MS" in wizard,
@@ -118,6 +134,13 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
             "fleet_semantic_embedding": (root / "packages/nimbusware_memory/embeddings.py").is_file(),
             "gate_comprehension_harness": (root / "scripts/benchmarks/measure_gate_comprehension.py").is_file(),
+        },
+        "polish": {
+            "discovery_explain": "discovery-explain-btn" in discovery_ui,
+            "surface_bindings": "maker-chat-scope-surface-bindings" in discovery_ui,
+            "product_polish_smoke": (root / "tests/e2e/web/maker_product_polish_smoke.spec.ts").is_file(),
+            "fs6_scaffold": (root / "packages/nimbusware_orchestrator/stack_agent_scaffold.py").is_file(),
+            "archetype_weekly": (root / ".github/workflows/archetype_fit_weekly.yml").is_file(),
         },
     }
 
@@ -194,7 +217,12 @@ def measure_archetype_fit(*, repo_root: Path | None = None) -> dict[str, object]
     enterprise_behavioral = _blend(enterprise_behavioral_files, enterprise_content)
     enterprise = _blend(enterprise_static, enterprise_behavioral)
 
-    ok = all(row.get("meets_target") for row in (safe, engineer, enterprise))
+    polish_static = _score_paths(root, _POLISH_BEHAVIORAL + _FS6_BEHAVIORAL)
+    polish_content = _score_content_checks(content["polish"])
+    polish_behavioral = _blend(polish_static, polish_content)
+    polish = _blend(polish_static, polish_behavioral)
+
+    ok = all(row.get("meets_target") for row in (safe, engineer, enterprise, polish))
     return {
         "version": 3,
         "ok": ok,
@@ -206,6 +234,7 @@ def measure_archetype_fit(*, repo_root: Path | None = None) -> dict[str, object]
             "safe_coding": safe,
             "engineer": engineer,
             "enterprise": enterprise,
+            "polish": polish,
         },
         "repo_root": str(root),
     }

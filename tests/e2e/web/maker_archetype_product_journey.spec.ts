@@ -116,11 +116,11 @@ function mockChatDiscovery(page: Page) {
         body: JSON.stringify({
           scope: {
             discovery_complete: false,
-            questions: [
+            questions_emitted: [
               {
                 id: "client_form",
-                prompt: "What kind of client do you want?",
-                options: ["Web app", "Mobile (web-first)"],
+                question: "What kind of client do you want?",
+                hint: "Pick web for browser UI or mobile for a responsive web-first shell.",
               },
             ],
             answers: [],
@@ -244,6 +244,7 @@ for (const arch of ARCHETYPES) {
     await page.getByTestId("maker-chat-message").fill("Build a todo app with web UI and API");
     await page.getByTestId("maker-chat-start").click();
     await expect(page.getByTestId("maker-chat-discovery-card")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId("maker-chat-discovery-explain-client_form")).toBeVisible();
 
     await mockPlanApis(page, runId);
     await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/plan`);
