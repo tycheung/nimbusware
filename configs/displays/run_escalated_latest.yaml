@@ -1,0 +1,35 @@
+prefix: run_escalated
+caption_prefix: "Run escalated metrics: "
+defaults:
+  notes_present: false
+  actor_id_present: false
+  reason_code_present: false
+  policy_snapshot_id_present: false
+  event_id_present: false
+  severity: null
+table_rows:
+  - [Severity, severity]
+  - [Reason code present, reason_code_present]
+  - [Actor id present, actor_id_present]
+  - [Policy snapshot id present, policy_snapshot_id_present]
+  - [Event id present, event_id_present]
+  - [Notes present, notes_present]
+table_rows_options:
+  bool_only_when_true:
+    - reason_code_present
+    - actor_id_present
+    - policy_snapshot_id_present
+    - event_id_present
+    - notes_present
+  optional_metric_keys:
+    - severity
+build:
+  str_present:
+    - [notes, notes_present]
+    - [actor_id, actor_id_present]
+  str_nonempty:
+    - [reason_code, reason_code_present]
+    - [policy_snapshot_id, policy_snapshot_id_present]
+    - [event_id, event_id_present]
+  optional_str:
+    - [severity, severity]
