@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { downloadBlob } from "../../../../nimbusware_ui_shared/js/download.js";
 import { getCollabMyRole } from "./chat_session_ui.js";
 
 function transferStatusLabel(status) {
@@ -117,15 +118,11 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
           const body = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer/${frozen.transfer_id}/bundle`,
           );
-          const blob = new Blob([JSON.stringify(body.manifest, null, 2)], {
-            type: "application/json",
-          });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `host-transfer-${frozen.transfer_id}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
+          downloadBlob(
+            JSON.stringify(body.manifest, null, 2),
+            `host-transfer-${frozen.transfer_id}.json`,
+            "application/json",
+          );
         } catch (e) {
           toast(String(e.message || e), "error");
         }

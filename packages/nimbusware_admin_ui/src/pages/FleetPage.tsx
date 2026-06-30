@@ -7,54 +7,25 @@ import {
   selectedEnterpriseTenantSlug,
   setEnterpriseTenantSlug,
 } from "../api/client";
-
-type FleetDashboard = {
-  memory_rows?: { field: string; value: unknown }[];
-  worker_caption?: string | null;
-  sli_caption?: string | null;
-  hardware_rows?: Record<string, unknown>[];
-  export_json?: string;
-  export_filename_slug?: string;
-  critic_reliability?: Record<string, unknown> | null;
-  critic_reliability_caption?: string | null;
-  critic_reliability_rows?: { metric: string; value: string }[];
-  archetype_fit_rows?: { archetype: string; fit_score: string; meets_target: string }[];
-};
-
-type FleetCombinedSearch = {
-  query?: string;
-  hit_count?: number;
-  embedding_mode?: string;
-  learnings_hits?: { title?: string; excerpt?: string; workspace?: string; learning_id?: string }[];
-  memory_hits?: { excerpt?: string; score?: number; category?: string }[];
-};
-
-type TenantRow = { tenant_id?: string; slug?: string; display_name?: string };
-
-function tenantOptions(tenants: TenantRow[]): { id: string; slug: string; label: string }[] {
-  const out: { id: string; slug: string; label: string }[] = [];
-  for (const row of tenants) {
-    const id = String(row.tenant_id || "").trim();
-    const slug = String(row.slug || "").trim();
-    if (!id && !slug) continue;
-    const display = String(row.display_name || "").trim();
-    const label = display ? `${slug || id} — ${display}` : slug || id;
-    out.push({ id: id || slug, slug: slug || id, label });
-  }
-  out.sort((a, b) => a.label.localeCompare(b.label));
-  return out;
-}
+import { FleetComparePanel } from "./fleet/FleetComparePanel";
+import { FleetTenantBar } from "./fleet/FleetTenantBar";
+import { tenantOptions } from "./fleet/tenantUtils";
+import type {
+  FleetCombinedSearch,
+  FleetCompareRow,
+  FleetDashboard,
+  MeshNodeRow,
+  TenantOption,
+} from "./fleet/types";
 
 export function FleetPage() {
   const [dashboard, setDashboard] = useState<FleetDashboard | null>(null);
-  const [tenants, setTenants] = useState<{ id: string; slug: string; label: string }[]>([]);
+  const [tenants, setTenants] = useState<TenantOption[]>([]);
   const [tenantId, setTenantId] = useState(selectedEnterpriseTenantSlug);
   const [tenantSearch, setTenantSearch] = useState("");
   const [tenantA, setTenantA] = useState("");
   const [tenantB, setTenantB] = useState("");
-  const [compareRows, setCompareRows] = useState<
-    { tenant: string; runs_scanned: string; gates_passed: string; gates_failed: string; ollama_p95_ms: string }[]
-  >([]);
+  const [compareRows, setCompareRows] = useState<FleetCompareRow[]>([]);
   const [compareCaption, setCompareCaption] = useState("");
   const [compareCsv, setCompareCsv] = useState("");
   const [rescanBusy, setRescanBusy] = useState(false);
@@ -66,15 +37,7 @@ export function FleetPage() {
   const [enforcementMax, setEnforcementMax] = useState(10);
   const [enforcementCaption, setEnforcementCaption] = useState("");
   const [meshSessionId, setMeshSessionId] = useState("");
-  const [meshNodes, setMeshNodes] = useState<
-    {
-      node_id?: string;
-      display_name?: string;
-      status?: string;
-      share_policy?: string;
-      allow_host_resource_management?: boolean;
-    }[]
-  >([]);
+  const [meshNodes, setMeshNodes] = useState<MeshNodeRow[]>([]);
   const [error, setError] = useState("");
   const [compliance, setCompliance] = useState<Record<string, unknown> | null>(null);
   const [legalHold, setLegalHold] = useState(false);
@@ -452,16 +415,6 @@ export function FleetPage() {
     }
   };
 
-  const filteredTenants = tenants.filter((t) => {
-    const q = tenantSearch.trim().toLowerCase();
-    if (!q) return true;
-    return (
-      t.label.toLowerCase().includes(q) ||
-      t.slug.toLowerCase().includes(q) ||
-      t.id.toLowerCase().includes(q)
-    );
-  });
-
   const loadCompare = useCallback(() => {
     if (!enterpriseApiKey() || !tenantA || !tenantB) {
       return;
@@ -532,57 +485,13 @@ export function FleetPage() {
         <a href="/v1/admin/app/preflight">Preflight history</a> is on the Preflight tab.
       </p>
       {tenants.length > 0 ? (
-        <>
-          <label class="fleet-tenant">
-            Tenant{" "}
-            <input
-              type="search"
-              placeholder="Filter org directory…"
-              value={tenantSearch}
-              onInput={(e) => setTenantSearch((e.target as HTMLInputElement).value)}
-              data-testid="admin-fleet-tenant-search"
-            />
-            <select
-              value={tenantId}
-              onChange={(e) => onTenantChange((e.target as HTMLSelectElement).value)}
-              data-testid="admin-fleet-tenant-select"
-            >
-              <option value="">(primary API key)</option>
-              {filteredTenants.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <details class="org-directory panel" data-testid="admin-org-directory">
-            <summary>Org directory ({filteredTenants.length})</summary>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Slug</th>
-                  <th>Tenant id</th>
-                  <th>Label</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTenants.map((t) => (
-                  <tr key={t.id}>
-                    <td>{t.slug}</td>
-                    <td>{t.id}</td>
-                    <td>{t.label}</td>
-                    <td>
-                      <button type="button" class="linkish" onClick={() => onTenantChange(t.id)}>
-                        Select
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </details>
-        </>
+        <FleetTenantBar
+          tenants={tenants}
+          tenantId={tenantId}
+          tenantSearch={tenantSearch}
+          onTenantSearch={setTenantSearch}
+          onTenantChange={onTenantChange}
+        />
       ) : null}
       <button type="button" class="secondary" onClick={loadDashboard}>
         Refresh
@@ -1031,93 +940,17 @@ export function FleetPage() {
               ))}
             </tbody>
           </table>
-          <h3>Cross-tenant comparison</h3>
-          <p class="muted">Compare slice gate pass/fail rates between two tenants.</p>
-          {tenants.length >= 2 ? (
-            <>
-              <label>
-                Tenant A{" "}
-                <select
-                  value={tenantA}
-                  onChange={(e) => setTenantA((e.target as HTMLSelectElement).value)}
-                >
-                  <option value="">Select…</option>
-                  {tenants.map((t) => (
-                    <option key={`a-${t.id}`} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </label>{" "}
-              <label>
-                Tenant B{" "}
-                <select
-                  value={tenantB}
-                  onChange={(e) => setTenantB((e.target as HTMLSelectElement).value)}
-                >
-                  <option value="">Select…</option>
-                  {tenants.map((t) => (
-                    <option key={`b-${t.id}`} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </label>{" "}
-              <button
-                type="button"
-                class="secondary"
-                onClick={loadCompare}
-                disabled={!tenantA || !tenantB || tenantA === tenantB}
-              >
-                Compare
-              </button>{" "}
-              <button
-                type="button"
-                class="secondary"
-                onClick={() => {
-                  if (!compareCsv) return;
-                  const blob = new Blob([compareCsv], { type: "text/csv" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = "fleet_compare.csv";
-                  a.click();
-                  URL.revokeObjectURL(url);
-                }}
-                disabled={!compareCsv}
-                data-testid="fleet-compare-csv-download"
-              >
-                Download CSV
-              </button>
-              {compareCaption ? <p>{compareCaption}</p> : null}
-              {compareRows.length ? (
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Tenant</th>
-                      <th>Runs scanned</th>
-                      <th>Gates passed</th>
-                      <th>Gates failed</th>
-                      <th>Ollama p95 ms</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {compareRows.map((row, i) => (
-                      <tr key={i}>
-                        <td>{row.tenant}</td>
-                        <td>{row.runs_scanned}</td>
-                        <td>{row.gates_passed}</td>
-                        <td>{row.gates_failed}</td>
-                        <td>{row.ollama_p95_ms}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : null}
-            </>
-          ) : (
-            <p class="muted">Need at least two tenants to compare.</p>
-          )}
+          <FleetComparePanel
+            tenants={tenants}
+            tenantA={tenantA}
+            tenantB={tenantB}
+            compareRows={compareRows}
+            compareCaption={compareCaption}
+            compareCsv={compareCsv}
+            onTenantA={setTenantA}
+            onTenantB={setTenantB}
+            onCompare={loadCompare}
+          />
         </>
       ) : null}
     </section>
