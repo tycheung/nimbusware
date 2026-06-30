@@ -7,9 +7,9 @@ from fastapi import HTTPException
 from nimbusware_api.errors import problem
 from nimbusware_env.env_flags import env_str
 from nimbusware_iam.context import get_auth_context
-from nimbusware_maker.deploy_environments import resolve_deploy_environment
 from nimbusware_maker.deploy_pipeline_events import manifest_from_events
 from nimbusware_maker.deploy_target_enforcement import (
+    resolve_deploy_environment,
     validate_credential_scopes,
     validate_manifest_deploy_target,
 )

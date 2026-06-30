@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from nimbusware_maker.deploy_environments import (
+from nimbusware_maker.deploy_target_enforcement import (
     DEFAULT_DEPLOY_ENVIRONMENT,
     normalize_deploy_environment,
 )

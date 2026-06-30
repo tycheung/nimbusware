@@ -29,7 +29,7 @@ First-run onboarding uses `GET /v1/platform/onboarding` (wizard tab in maker web
 |--------|------|
 | `slice_workflow/` | Approval orchestration (events, pending slice, revert) |
 | `slice_engine.py` | **Sole** module-level import site for `nimbusware_orchestrator` slice execution |
-| `deploy_pipeline_events.py`, `deploy_smoke.py`, `deploy_environments.py`, `terraform_validate.py` | Deploy validate/apply/smoke/rollback timeline stages and workspace Terraform helpers |
+| `deploy_pipeline_events.py`, `deploy_smoke.py`, `deploy_target_enforcement.py`, `terraform_validate.py` | Deploy validate/apply/smoke/rollback timeline stages, environment/target policy, and workspace Terraform helpers |
 | `approval.py` | Read models from run events (pending, snapshots, git commits) |
 | `workspace*.py` | Run workspace paths and snapshot restore |
 

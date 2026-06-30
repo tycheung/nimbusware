@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from nimbusware_api.app import app
-from nimbusware_maker.deploy_environments import (
+from nimbusware_maker.deploy_target_enforcement import (
     DEFAULT_DEPLOY_ENVIRONMENT,
     normalize_deploy_environment,
     resolve_deploy_environment,
