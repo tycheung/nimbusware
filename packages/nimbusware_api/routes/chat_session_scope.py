@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
-from nimbusware_api.routes.chat_collab_common import actor_user_id
+from nimbusware_api.routes.chat_common import actor_user_id
 from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.permissions import require_session_participant

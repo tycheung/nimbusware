@@ -1,11 +1,29 @@
-import path from "node:path";
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { activateMakerRoute } from "./maker_route_helper";
 
-const repoRoot = path.resolve(process.cwd(), "../../..");
 const SESSION_ID = "00000000-0000-4000-8000-000000000401";
+const PROJECT_ID = "00000000-0000-4000-8000-000000000402";
 
-function mockPlatform(page: import("@playwright/test").Page) {
+function mockProjects(page: Page) {
+  return page.route("**/v1/projects**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        projects: [{ project_id: PROJECT_ID, name: "Polish", workspace_path: "/tmp/ws" }],
+      }),
+    }),
+  );
+}
+
+function sessionPayload(turns: unknown[] = []) {
+  return {
+    session_id: SESSION_ID,
+    project_id: PROJECT_ID,
+    turns,
+  };
+}
+
+function mockPlatform(page: Page) {
   return page.route("**/v1/platform/**", (route) => {
     const url = route.request().url();
     if (url.includes("/industry-critic-packs")) {
@@ -17,6 +35,12 @@ function mockPlatform(page: import("@playwright/test").Page) {
             { id: "healthcare", label: "Healthcare" },
           ],
         }),
+      });
+    }
+    if (url.includes("/safe-coding-preferences")) {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ industry_critic_pack_ids: [] }),
       });
     }
     if (url.includes("/invite-templates")) {
@@ -37,46 +61,69 @@ function mockPlatform(page: import("@playwright/test").Page) {
   });
 }
 
+function mockChatSession(page: Page, discoverBody: Record<string, unknown>) {
+  return page.route("**/v1/chat/**", async (route) => {
+    const url = route.request().url();
+    const method = route.request().method();
+    if (method === "POST" && url.endsWith("/chat/sessions")) {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify(sessionPayload()),
+      });
+    }
+    if (method === "GET" && url.includes(SESSION_ID)) {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify(
+          sessionPayload([{ turn_id: "t1", role: "user", text: "Build a todo app" }]),
+        ),
+      });
+    }
+    if (method === "POST" && url.includes("/turns")) {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          classification: {
+            suggested_profile: "campaign_fullstack",
+            work_type: "campaign",
+            confidence: 0.92,
+          },
+        }),
+      });
+    }
+    if (method === "POST" && url.includes("/scope/discover")) {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ scope: discoverBody }),
+      });
+    }
+    return route.continue();
+  });
+}
+
 test.describe("fo2330–fo2338 product polish smoke (fo2349)", () => {
   test("fo2330 discovery Explain control", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("maker_archetype_subchoice", "safe_coding"));
-    await page.route("**/v1/projects**", (route) =>
-      route.fulfill({ contentType: "application/json", body: JSON.stringify({ projects: [] }) }),
-    );
-    await page.route("**/v1/chat/**", async (route) => {
-      const url = route.request().url();
-      const method = route.request().method();
-      if (method === "POST" && url.endsWith("/chat/sessions")) {
-        return route.fulfill({
-          contentType: "application/json",
-          body: JSON.stringify({ session_id: SESSION_ID, turns: [] }),
-        });
-      }
-      if (method === "POST" && url.includes("/scope/discover")) {
-        return route.fulfill({
-          contentType: "application/json",
-          body: JSON.stringify({
-            scope: {
-              discovery_complete: false,
-              questions_emitted: [
-                {
-                  id: "client_form",
-                  question: "What kind of client do you want?",
-                  hint: "Web app runs in the browser; mobile is web-first responsive.",
-                },
-              ],
-            },
-          }),
-        });
-      }
-      return route.continue();
+    await mockProjects(page);
+    await mockChatSession(page, {
+      discovery_complete: false,
+      questions_emitted: [
+        {
+          id: "client_form",
+          question: "What kind of client do you want?",
+          hint: "Web app runs in the browser; mobile is web-first responsive.",
+        },
+      ],
+      answers: [],
     });
 
     await page.goto("/v1/maker/app/");
     await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
     await activateMakerRoute(page, "/chat");
+    await page.getByTestId("maker-chat-project-select").selectOption(PROJECT_ID);
     await page.getByTestId("maker-chat-message").fill("Build a todo app");
     await page.getByTestId("maker-chat-start").click();
+    await expect(page.getByTestId("maker-chat-discovery-card")).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("maker-chat-discovery-explain-client_form")).toBeVisible();
   });
 
@@ -89,24 +136,18 @@ test.describe("fo2330–fo2338 product polish smoke (fo2349)", () => {
   });
 
   test("fo2333 industry pack catalog in settings", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("maker_archetype_subchoice", "safe_coding"));
     await mockPlatform(page);
-    await page.route("**/v1/settings/me**", (route) =>
-      route.fulfill({
-        contentType: "application/json",
-        body: JSON.stringify({ industry_critic_pack_ids: [] }),
-      }),
-    );
     await page.goto("/v1/maker/app/");
     await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
     await activateMakerRoute(page, "/settings");
+    await expect(page.getByTestId("maker-settings-safe-coding")).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("maker-settings-industry-critic-pack")).toBeVisible();
   });
 
   test("fo2338 solo hat chips in chat composer", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("maker_archetype_subchoice", "engineer"));
-    await page.route("**/v1/projects**", (route) =>
-      route.fulfill({ contentType: "application/json", body: JSON.stringify({ projects: [] }) }),
-    );
+    await mockProjects(page);
     await page.goto("/v1/maker/app/");
     await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
     await activateMakerRoute(page, "/chat");
@@ -115,38 +156,27 @@ test.describe("fo2330–fo2338 product polish smoke (fo2349)", () => {
 
   test("fo2155 scope manifest surface bindings preview", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("maker_archetype_subchoice", "engineer"));
-    await page.route("**/v1/projects**", (route) =>
-      route.fulfill({ contentType: "application/json", body: JSON.stringify({ projects: [] }) }),
-    );
-    await page.route("**/v1/chat/**", async (route) => {
-      const url = route.request().url();
-      if (route.request().method() === "POST" && url.includes("/scope/discover")) {
-        return route.fulfill({
-          contentType: "application/json",
-          body: JSON.stringify({
-            scope: {
-              discovery_complete: true,
-              stack_manifest: {
-                surfaces: ["web", "api"],
-                stacks: { web: "react_vite", api: "fastapi_python" },
-                frozen: true,
-                version: 1,
-              },
-              surface_bindings: [
-                { surface_id: "web", writer_role: "frontend_writer", model_id: "gpt-test", provider_id: "openai" },
-                { surface_id: "api", writer_role: "backend_writer", model_id: "gpt-test", provider_id: "openai" },
-              ],
-            },
-          }),
-        });
-      }
-      return route.continue();
+    await mockProjects(page);
+    await mockChatSession(page, {
+      discovery_complete: true,
+      stack_manifest: {
+        surfaces: ["web", "api"],
+        stacks: { web: "react_vite", api: "fastapi_python" },
+        frozen: true,
+        version: 1,
+      },
+      surface_bindings: [
+        { surface_id: "web", writer_role: "frontend_writer", model_id: "gpt-test", provider_id: "openai" },
+        { surface_id: "api", writer_role: "backend_writer", model_id: "gpt-test", provider_id: "openai" },
+      ],
     });
     await page.goto("/v1/maker/app/");
     await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
     await activateMakerRoute(page, "/chat");
+    await page.getByTestId("maker-chat-project-select").selectOption(PROJECT_ID);
     await page.getByTestId("maker-chat-message").fill("Full stack todo");
     await page.getByTestId("maker-chat-start").click();
+    await expect(page.getByTestId("maker-chat-scope-manifest")).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("maker-chat-scope-surface-bindings")).toBeVisible();
   });
 });

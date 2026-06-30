@@ -9,7 +9,6 @@ from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, S
 from nimbusware_api.errors import problem
 from nimbusware_api.routes import chat_scope, chat_start
 from nimbusware_api.routes.auth import OptionalUserDep
-from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.routes.chat_common import (
     ActiveLeafBody,
     AppendTurnBody,
@@ -22,6 +21,7 @@ from nimbusware_api.routes.chat_common import (
     CreateChatSessionBody,
     ForkChatBody,
     SwitchModeBody,
+    actor_user_id,
     project_metadata,
 )
 from nimbusware_api.routes.chat_common import (

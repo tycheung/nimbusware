@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, HostTransferStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
-from nimbusware_api.routes.chat_collab_common import require_collab_enabled
+from nimbusware_api.routes.chat_common import require_collab_enabled
 from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
 from nimbusware_auth.permissions import require_session_participant
 from nimbusware_maker.host_transfer_bundle import build_transfer_manifest, import_transfer_bundle

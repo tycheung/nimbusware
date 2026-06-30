@@ -4,14 +4,16 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from pydantic import BaseModel, Field
 
 from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import ChatStoreDep, OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes.chat_requirements import build_requirements_from_body
 from nimbusware_api.routes.runs.create import PatchContextBody, RunRequirementsBody
+from nimbusware_auth.models import UserRecord
+from nimbusware_auth.session_cookie import user_id_from_request
+from nimbusware_env.env_flags import nimbusware_collab_enabled
 from nimbusware_maker.chat_models import ChatSessionRecord
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_maker.intent_classifier import WorkType
@@ -19,6 +21,26 @@ from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabl
 from nimbusware_orchestrator.patch_context import normalize_patch_context
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
+
+
+def require_collab_enabled() -> None:
+    if not nimbusware_collab_enabled():
+        raise HTTPException(
+            status_code=403,
+            detail=problem("collab_disabled", "collaborative chat is disabled"),
+        )
+
+
+def actor_user_id(request: Request, user: UserRecord | None) -> UUID:
+    if user is not None:
+        return user.user_id
+    uid = user_id_from_request(request)
+    if uid is not None:
+        return uid
+    raise HTTPException(
+        status_code=401,
+        detail=problem("unauthorized", "sign in required"),
+    )
 
 
 class CreateChatSessionBody(BaseModel):
@@ -143,6 +165,8 @@ def requirements_payload(
     body: StartChatSessionBody, path_text: str | None
 ) -> dict[str, Any] | None:
     if body.requirements is not None:
+        from nimbusware_api.routes.chat_requirements import build_requirements_from_body
+
         return build_requirements_from_body(body.requirements)
     if path_text and path_text.strip():
         return build_requirements_artifact(business_prompt=path_text.strip())
