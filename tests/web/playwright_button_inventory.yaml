@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 181
+  total_buttons: 182
   clicked: 41
-  visible_only: 11
+  visible_only: 12
   unwired: 129
-  click_ratio: 0.2265
+  click_ratio: 0.2253
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -390,6 +390,13 @@ buttons:
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
+- test_id: maker-chat-scope-surface-bindings
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-solo-hat-coach
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js
@@ -419,6 +426,7 @@ buttons:
   - tests/e2e/web/maker_chat_branch.spec.ts
   - tests/e2e/web/maker_chat_override.spec.ts
   - tests/e2e/web/maker_chat_patch.spec.ts
+  - tests/e2e/web/maker_product_polish_smoke.spec.ts
   visible_only_in: []
 - test_id: maker-compact-save-artifact
   app: maker
@@ -776,7 +784,8 @@ buttons:
   label: Load pending
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
-  visible_only_in: []
+  visible_only_in:
+  - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-manager-scope-plain
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js

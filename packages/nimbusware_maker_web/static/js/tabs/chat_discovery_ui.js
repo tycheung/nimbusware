@@ -81,6 +81,18 @@ function renderManifestPreview(mount, state, { onConfirmed, sessionId } = {}) {
   summary.className = "muted";
   summary.textContent = manifestSummary(manifest);
   card.appendChild(summary);
+  if (Array.isArray(state.surface_bindings) && state.surface_bindings.length) {
+    const bindList = document.createElement("ul");
+    bindList.className = "muted chat-scope-bindings";
+    bindList.dataset.testid = "maker-chat-scope-surface-bindings";
+    for (const row of state.surface_bindings) {
+      const li = document.createElement("li");
+      const model = row.model_id || row.provider_id || "default";
+      li.textContent = `${row.surface_id}: ${row.writer_role} → ${model}`;
+      bindList.appendChild(li);
+    }
+    card.appendChild(bindList);
+  }
   if (!state.scope_confirmed) {
     const actions = document.createElement("div");
     actions.className = "actions";

@@ -1,0 +1,27 @@
+name: Product polish smoke (optional)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 7 * * 1"
+
+jobs:
+  playwright-polish:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Install Playwright browser
+        run: poetry run playwright install --with-deps chromium
+      - name: Run fo2330–fo2338 polish smoke (fo2349)
+        run: poetry run playwright test tests/e2e/web/maker_product_polish_smoke.spec.ts
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
