@@ -248,6 +248,7 @@ def enterprise_fleet_dashboard(
         "critic_reliability": critic,
         "critic_reliability_caption": critic_caption,
         "critic_reliability_rows": critic_rows,
+        "archetype_fit_rows": ent_console.archetype_fit_dashboard_rows(),
     }
 
 

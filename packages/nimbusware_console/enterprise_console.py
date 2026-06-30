@@ -4,6 +4,7 @@ import csv
 import io
 import json
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from agent_core.coercion import is_strict_int
@@ -274,3 +275,35 @@ def fleet_compare_csv(rows: list[dict[str, str]]) -> str:
     for row in rows:
         writer.writerow({key: row.get(key, "") for key in fieldnames})
     return buf.getvalue()
+
+
+def archetype_fit_dashboard_rows(repo_root: Path | None = None) -> list[dict[str, str]]:
+    from nimbusware_env import find_repo_root
+
+    try:
+        body = json.loads(
+            (
+                (repo_root or find_repo_root()) / "benchmarks" / "latest_archetype_metrics.json"
+            ).read_text(
+                encoding="utf-8",
+            ),
+        )
+        archetypes = body.get("archetypes") if isinstance(body, dict) else {}
+    except (OSError, json.JSONDecodeError, TypeError):
+        return []
+    if not isinstance(archetypes, dict):
+        return []
+    out: list[dict[str, str]] = []
+    for name in ("safe_coding", "engineer", "enterprise"):
+        row = archetypes.get(name)
+        if not isinstance(row, dict):
+            continue
+        score = row.get("fit_score")
+        out.append(
+            {
+                "archetype": name.replace("_", " ").title(),
+                "fit_score": f"{float(score):.0%}" if isinstance(score, (int, float)) else "—",
+                "meets_target": "yes" if row.get("meets_target") else "no",
+            },
+        )
+    return out

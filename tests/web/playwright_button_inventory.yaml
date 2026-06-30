@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 180
+  total_buttons: 181
   clicked: 41
   visible_only: 11
-  unwired: 128
-  click_ratio: 0.2278
+  unwired: 129
+  click_ratio: 0.2265
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -24,6 +24,12 @@ buttons:
   label: '{rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}'
   clicked_in:
   - tests/e2e/web/admin_fleet_hardware.spec.ts
+  visible_only_in: []
+- test_id: admin-fleet-search-btn
+  app: admin
+  source: packages/nimbusware_admin_ui/src/pages/FleetPage.tsx
+  label: ''
+  clicked_in: []
   visible_only_in: []
 - test_id: maker-accessible-compute
   app: maker

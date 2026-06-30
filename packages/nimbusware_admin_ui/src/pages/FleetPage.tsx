@@ -18,6 +18,15 @@ type FleetDashboard = {
   critic_reliability?: Record<string, unknown> | null;
   critic_reliability_caption?: string | null;
   critic_reliability_rows?: { metric: string; value: string }[];
+  archetype_fit_rows?: { archetype: string; fit_score: string; meets_target: string }[];
+};
+
+type FleetCombinedSearch = {
+  query?: string;
+  hit_count?: number;
+  embedding_mode?: string;
+  learnings_hits?: { title?: string; excerpt?: string; workspace?: string; learning_id?: string }[];
+  memory_hits?: { excerpt?: string; score?: number; category?: string }[];
 };
 
 type TenantRow = { tenant_id?: string; slug?: string; display_name?: string };
@@ -79,6 +88,10 @@ export function FleetPage() {
   const [allowedWebStack, setAllowedWebStack] = useState("");
   const [stackPolicyCaption, setStackPolicyCaption] = useState("");
   const [stackPolicyBusy, setStackPolicyBusy] = useState(false);
+  const [fleetQuery, setFleetQuery] = useState("");
+  const [fleetSearch, setFleetSearch] = useState<FleetCombinedSearch | null>(null);
+  const [fleetSearchBusy, setFleetSearchBusy] = useState(false);
+  const [fleetSearchError, setFleetSearchError] = useState("");
 
   const loadDashboard = useCallback(() => {
     if (!enterpriseApiKey()) {
@@ -400,6 +413,45 @@ export function FleetPage() {
     setEnterpriseTenantSlug(slug);
   };
 
+  const runFleetSearch = async () => {
+    const q = fleetQuery.trim();
+    if (!q || !enterpriseApiKey()) {
+      return;
+    }
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || null;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    setFleetSearchBusy(true);
+    setFleetSearchError("");
+    try {
+      const enc = encodeURIComponent(q);
+      const headers = { "X-Nimbusware-Api-Key": key };
+      const [learnings, memory] = await Promise.all([
+        apiJsonEnterprise<{ hits?: FleetCombinedSearch["learnings_hits"] }>(
+          `/enterprise/fleet-learnings/search?q=${enc}&k=10`,
+          { headers },
+        ),
+        apiJsonEnterprise<{ hits?: FleetCombinedSearch["memory_hits"]; embedding_mode?: string }>(
+          `/enterprise/fleet-memory/search?q=${enc}&k=10`,
+          { headers },
+        ).catch(() => ({ hits: [], embedding_mode: "none" })),
+      ]);
+      const learningsHits = learnings.hits || [];
+      const memoryHits = memory.hits || [];
+      setFleetSearch({
+        query: q,
+        embedding_mode: memory.embedding_mode,
+        learnings_hits: learningsHits,
+        memory_hits: memoryHits,
+        hit_count: learningsHits.length + memoryHits.length,
+      });
+    } catch (e) {
+      setFleetSearch(null);
+      setFleetSearchError(String((e as Error).message || e));
+    } finally {
+      setFleetSearchBusy(false);
+    }
+  };
+
   const filteredTenants = tenants.filter((t) => {
     const q = tenantSearch.trim().toLowerCase();
     if (!q) return true;
@@ -713,6 +765,107 @@ export function FleetPage() {
               ))}
             </tbody>
           </table>
+          <h3 data-testid="admin-fleet-semantic-search">Semantic fleet search</h3>
+          <p class="muted">
+            Substring learnings across tenant workspaces plus semantic fleet-memory hits when indexed.
+          </p>
+          <label>
+            Query{" "}
+            <input
+              type="search"
+              value={fleetQuery}
+              data-testid="admin-fleet-search-query"
+              onInput={(e) => setFleetQuery((e.target as HTMLInputElement).value)}
+              placeholder="terraform rollback, sql timeout, …"
+            />
+          </label>{" "}
+          <button
+            type="button"
+            class="secondary"
+            data-testid="admin-fleet-search-btn"
+            disabled={fleetSearchBusy || !fleetQuery.trim()}
+            onClick={() => void runFleetSearch()}
+          >
+            {fleetSearchBusy ? "Searching…" : "Search fleet"}
+          </button>
+          {fleetSearchError ? <p class="error">{fleetSearchError}</p> : null}
+          {fleetSearch ? (
+            <>
+              <p class="hint">
+                {fleetSearch.hit_count ?? 0} hit(s) — embedding mode: {fleetSearch.embedding_mode ?? "—"}
+              </p>
+              {(fleetSearch.learnings_hits || []).length > 0 ? (
+                <>
+                  <h4>Workspace learnings</h4>
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Excerpt</th>
+                        <th>Workspace</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(fleetSearch.learnings_hits || []).map((row, i) => (
+                        <tr key={`l-${i}`} data-testid="admin-fleet-search-learning-row">
+                          <td>{row.title || row.learning_id || "—"}</td>
+                          <td>{row.excerpt || "—"}</td>
+                          <td>{row.workspace || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              ) : null}
+              {(fleetSearch.memory_hits || []).length > 0 ? (
+                <>
+                  <h4>Fleet memory (semantic)</h4>
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Excerpt</th>
+                        <th>Score</th>
+                        <th>Category</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(fleetSearch.memory_hits || []).map((row, i) => (
+                        <tr key={`m-${i}`} data-testid="admin-fleet-search-memory-row">
+                          <td>{row.excerpt || "—"}</td>
+                          <td>{row.score != null ? String(row.score) : "—"}</td>
+                          <td>{row.category || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              ) : null}
+            </>
+          ) : null}
+          {dashboard.archetype_fit_rows && dashboard.archetype_fit_rows.length > 0 ? (
+            <>
+              <h3 data-testid="admin-fleet-archetype-fit">Archetype fit</h3>
+              <p class="muted">Behavioral + static rubric from benchmarks/latest_archetype_metrics.json.</p>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Archetype</th>
+                    <th>Fit score</th>
+                    <th>Meets target</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.archetype_fit_rows.map((row, i) => (
+                    <tr key={i} data-testid="admin-fleet-archetype-fit-row">
+                      <td>{row.archetype}</td>
+                      <td>{row.fit_score}</td>
+                      <td>{row.meets_target}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          ) : null}
           <h3>Hardware fleet</h3>
           <p>
             <button
