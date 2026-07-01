@@ -132,8 +132,10 @@ def install_workflow_metrics_from_spec(
     prefix = str(spec["prefix"])
     defaults = dict(spec.get("defaults") or {})
     table_rows = _tuple_pairs(spec.get("table_rows"))
-    build = spec.get("build") if isinstance(spec.get("build"), dict) else {}
-    tro = spec.get("table_rows_options") if isinstance(spec.get("table_rows_options"), dict) else {}
+    build_raw = spec.get("build")
+    build: Mapping[str, Any] = build_raw if isinstance(build_raw, dict) else {}
+    tro_raw = spec.get("table_rows_options")
+    tro: Mapping[str, Any] = tro_raw if isinstance(tro_raw, dict) else {}
 
     optional_keys = tro.get("optional_metric_keys")
     optional_frozen = (

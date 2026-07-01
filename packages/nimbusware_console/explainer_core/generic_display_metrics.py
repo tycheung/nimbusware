@@ -307,7 +307,7 @@ def bundle_search_operator_metrics_table_rows(
     return table_rows_fn(
         _BUNDLE_SEARCH_TABLE_ROWS,
         include_when=lambda _m, key: (
-            key != "top_hit_id" or (isinstance(_m.get(key), str) and str(_m.get(key)).strip())
+            key != "top_hit_id" or bool(isinstance(_m.get(key), str) and str(_m.get(key)).strip())
         ),
     )(metrics)
 
