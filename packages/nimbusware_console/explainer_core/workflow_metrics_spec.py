@@ -125,6 +125,7 @@ def install_workflow_metrics_from_spec(
     *,
     caption_parts_fn: CaptionPartsFn,
     custom_metrics_fn: Any | None = None,
+    post_process_metrics_fn: Any | None = None,
     custom_table_rows_fn: Any | None = None,
     custom_caption_fn: Any | None = None,
 ) -> None:
@@ -151,7 +152,17 @@ def install_workflow_metrics_from_spec(
 
     metrics_fn = custom_metrics_fn
     if metrics_fn is None:
-        metrics_fn = build_metrics_fn(defaults, **_build_kwargs_from_spec(build))
+        base_metrics_fn = build_metrics_fn(defaults, **_build_kwargs_from_spec(build))
+        if post_process_metrics_fn is not None:
+            post_fn = post_process_metrics_fn
+
+            def metrics_fn(payload: Mapping[str, Any] | None) -> dict[str, Any]:
+                metrics = base_metrics_fn(payload)
+                processed = post_fn(metrics, payload)
+                return dict(processed)
+
+        else:
+            metrics_fn = base_metrics_fn
 
     table_fn = custom_table_rows_fn
     if table_fn is None:

@@ -4,20 +4,6 @@ from collections.abc import Mapping
 from typing import Any
 
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
-from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
-
-_IAW_METRIC_DEFAULTS: dict[str, Any] = {
-    "yaml_key_present": False,
-    "workflow_enabled": False,
-    "effective_enabled": False,
-    "would_emit_stage_started": False,
-    "live_path_active": False,
-    "scaffold_status": None,
-    "workflow_yaml_path_present": False,
-    "fleet_manifest_count": 0,
-    "stub_only": None,
-    "target_adapter_kind": None,
-}
 
 _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("YAML key present", "yaml_key_present"),
@@ -32,18 +18,10 @@ _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
 )
 
 
-def integration_adapter_writer_metrics(payload: Mapping[str, Any] | None) -> dict[str, Any]:
-    metrics = build_operator_metrics(
-        payload,
-        _IAW_METRIC_DEFAULTS,
-        nested_bool_fields=(("workflow_block", (("enabled", "workflow_enabled"),)),),
-        bool_fields=(
-            ("effective_enabled", "effective_enabled"),
-            ("would_emit_stage_started", "would_emit_stage_started"),
-        ),
-        str_present=(("workflow_yaml_path", "workflow_yaml_path_present"),),
-        int_fields=(("fleet_workspace_manifest_count", "fleet_manifest_count"),),
-    )
+def integration_adapter_writer_post_process(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any] | None,
+) -> dict[str, Any]:
     if not isinstance(payload, Mapping):
         return metrics
     block = payload.get("workflow_block")

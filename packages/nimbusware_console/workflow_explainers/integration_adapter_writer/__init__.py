@@ -19,7 +19,7 @@ from nimbusware_console.workflow_explainers.integration_adapter_writer.events im
 )
 from nimbusware_console.workflow_explainers.integration_adapter_writer.metrics_custom import (
     integration_adapter_writer_caption,
-    integration_adapter_writer_metrics,
+    integration_adapter_writer_post_process,
     integration_adapter_writer_table_rows,
 )
 from nimbusware_console.workflow_explainers.integration_adapter_writer.payload import (
@@ -31,7 +31,7 @@ install_workflow_metrics_from_spec(
     globals(),
     repo_explainer_spec("integration_adapter_writer"),
     caption_parts_fn=lambda _metrics: [],
-    custom_metrics_fn=integration_adapter_writer_metrics,
+    post_process_metrics_fn=integration_adapter_writer_post_process,
     custom_table_rows_fn=integration_adapter_writer_table_rows,
     custom_caption_fn=integration_adapter_writer_caption,
 )
