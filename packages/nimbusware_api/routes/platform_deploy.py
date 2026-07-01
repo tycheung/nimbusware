@@ -5,23 +5,13 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
-from nimbusware_api.routes.platform_deploy_models import (
-    DeployApproveBody,
-    TerraformValidateBody,
-)
-from nimbusware_api.routes.platform_deploy_mutations import (
-    deploy_approval_chain_for_tenant,
-    deploy_policy_context,
-    resolved_deploy_environment,
-)
-from nimbusware_api.routes.platform_deploy_mutations import (
-    router as mutations_router,
-)
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_env.env_flags import env_str
 from nimbusware_iam.context import get_auth_context
 from nimbusware_maker.deploy_approval_enforcement import (
     resolve_deploy_approver_context,
@@ -35,11 +25,133 @@ from nimbusware_maker.deploy_pipeline_events import (
     deploy_apply_ready,
     emit_deploy_approved,
     emit_terraform_validate_stages,
+    manifest_from_events,
 )
-from nimbusware_maker.deploy_target_enforcement import deploy_environment_catalog
-from nimbusware_maker.terraform_validate import validate_workspace_terraform
+from nimbusware_maker.deploy_target_enforcement import (
+    deploy_environment_catalog,
+    resolve_deploy_environment,
+    validate_credential_scopes,
+    validate_manifest_deploy_target,
+)
+from nimbusware_maker.terraform_validate import RollbackMode, validate_workspace_terraform
 
 router = APIRouter(tags=["platform"])
+
+
+class TerraformValidateBody(BaseModel):
+    workspace_path: str = Field(min_length=1, max_length=2000)
+    run_id: str | None = Field(default=None, max_length=36)
+    deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+class DeployCredentialsBody(BaseModel):
+    aws_profile: str | None = Field(default=None, max_length=200)
+    github_repo: str | None = Field(default=None, max_length=200)
+    workflow_path: str | None = Field(default=None, max_length=500)
+    deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+class DeployApproveBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+
+
+class DeployApplyBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    workspace_path: str = Field(min_length=1, max_length=2000)
+    deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+class DeploySmokeBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    api_url: str | None = Field(default=None, max_length=2000)
+    web_url: str | None = Field(default=None, max_length=2000)
+    use_playwright: bool = False
+
+
+class DeployRollbackBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    workspace_path: str = Field(min_length=1, max_length=2000)
+    mode: RollbackMode = "destroy"
+    deploy_environment: str | None = Field(default=None, max_length=32)
+
+
+class DeployCiPollBody(BaseModel):
+    run_id: str = Field(min_length=36, max_length=36)
+    branch: str | None = Field(default=None, max_length=200)
+
+
+def resolved_deploy_environment(
+    *,
+    explicit: str | None,
+    creds: dict[str, Any],
+    rows: list[dict[str, Any]],
+) -> str:
+    try:
+        return resolve_deploy_environment(
+            explicit=explicit,
+            credentials=creds,
+            manifest_raw=manifest_from_events(rows),
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+def deploy_policy_context() -> tuple[str | None, str]:
+    ctx = get_auth_context()
+    tenant_slug = ctx.tenant_slug if ctx is not None else None
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
+    return tenant_slug, setup_bundle
+
+
+def deploy_approval_chain_for_tenant(tenant_slug: str | None, setup_bundle: str) -> str:
+    if setup_bundle != "enterprise":
+        return "maker_only"
+    from nimbusware_orchestrator.fleet_deploy_approval_policy import tenant_deploy_approval_policy
+
+    return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
+
+
+def enforce_manifest_deploy_target(
+    rows: list[dict[str, Any]],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_manifest_deploy_target(
+        manifest_from_events(rows),
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_target_denied", detail or "deploy target not allowed"),
+        )
+
+
+def enforce_credential_scopes(
+    creds: dict[str, Any],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_credential_scopes(
+        creds,
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_credential_scope_denied", detail or "credential scope denied"),
+        )
+
+
+from nimbusware_api.routes.platform_deploy_mutations import router as mutations_router
+
 router.include_router(mutations_router)
 
 
