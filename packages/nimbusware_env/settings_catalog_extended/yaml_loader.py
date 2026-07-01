@@ -22,7 +22,9 @@ _KIND = {
 
 
 def _settings_catalog_dir() -> Path:
-    return find_repo_root(start=Path(__file__).resolve().parents[3]) / "configs" / "settings_catalog"
+    return (
+        find_repo_root(start=Path(__file__).resolve().parents[3]) / "configs" / "settings_catalog"
+    )
 
 
 def load_setting_defs_yaml(name: str) -> tuple[SettingDef, ...]:
