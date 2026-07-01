@@ -5,9 +5,7 @@ from typing import Any
 
 from unit.composite_repo_fixtures import write_workflow_profile
 
-_POLICY_AND_WORKFLOW_POLICY_TEXT = (
-    'version: 1\nenabled: false\ndescription: "from disk policy"\n'
-)
+_POLICY_AND_WORKFLOW_POLICY_TEXT = 'version: 1\nenabled: false\ndescription: "from disk policy"\n'
 
 
 def write_escalation_policy(tmp_path: Path, yaml_body: str) -> None:

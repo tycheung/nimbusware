@@ -3,6 +3,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.display_common import (
+    stringify_display_value as _stringify,  # noqa: F401
+)
 from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_DISPLAY_FIELDS
 
 _INTEGRATOR_GATE_FIELDS = INTEGRATOR_GATE_DISPLAY_FIELDS

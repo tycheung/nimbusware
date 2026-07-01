@@ -18,7 +18,9 @@ from unit.workflow_explainer_helpers import (
     explainer_payload_for_slug,
 )
 
-_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "explainers" / "export_smoke_cases.yaml"
+_FIXTURES = (
+    Path(__file__).resolve().parents[1] / "fixtures" / "explainers" / "export_smoke_cases.yaml"
+)
 _CASES: list[dict[str, Any]] = yaml.safe_load(_FIXTURES.read_text(encoding="utf-8"))["cases"]
 
 

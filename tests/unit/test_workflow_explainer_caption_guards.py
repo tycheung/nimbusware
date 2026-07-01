@@ -22,9 +22,7 @@ def _decode_input(value: Any) -> Any:
 
 
 _BAD_CASES = [
-    (row["fn"], _decode_input(inp))
-    for row in _RAW["bad_payload"]
-    for inp in row["inputs"]
+    (row["fn"], _decode_input(inp)) for row in _RAW["bad_payload"] for inp in row["inputs"]
 ]
 
 _LOAD_ERROR_CASES = [(row["fn"], row["payload"]) for row in _RAW["load_error_payload"]]

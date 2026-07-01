@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from nimbusware_console.explainer_core.display_common import (
+    stringify_display_value as _stringify,  # noqa: F401
+)
+
 _SECURITY_SCAN_ON_VERIFY_FIELDS: tuple[tuple[str, str], ...] = (
     ("security_scan_exit", "Security scan exit"),
     ("security_scan_ruff_exit", "Ruff exit"),

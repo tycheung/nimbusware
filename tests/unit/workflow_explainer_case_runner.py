@@ -105,6 +105,5 @@ def load_caption_fn(dotted: str) -> Callable[[Any], str | None]:
 EXPORT_SMOKE_SLUGS = tuple(
     spec.slug
     for spec in WORKFLOW_EXPLAINER_SPECS
-    if spec.slug
-    not in {"integration_adapter_writer", "integrator_threshold"}
+    if spec.slug not in {"integration_adapter_writer", "integrator_threshold"}
 )

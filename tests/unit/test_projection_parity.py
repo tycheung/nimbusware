@@ -239,7 +239,9 @@ def test_persona_assignment_projections_timeline() -> None:
             },
         },
     ]
-    assert persona_assignment_timeline_summary(sample) == persona_assignment_timeline_summary(sample)
+    assert persona_assignment_timeline_summary(sample) == persona_assignment_timeline_summary(
+        sample
+    )
 
 
 def test_stage_timeline_projections() -> None:
@@ -264,9 +266,9 @@ def test_stage_timeline_projections() -> None:
         },
     ]
     assert stage_graph_timeline_summary(created) == stage_graph_timeline_summary(created)
-    assert parallel_writer_groups_timeline_summary(created) == parallel_writer_groups_timeline_summary(
+    assert parallel_writer_groups_timeline_summary(
         created
-    )
+    ) == parallel_writer_groups_timeline_summary(created)
     assert critic_matrix_live_timeline_summary(created) == critic_matrix_live_timeline_summary(
         created
     )
