@@ -6,7 +6,7 @@ import pytest
 import yaml
 
 from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     parse_escalation_workflow_block,
 )
 from nimbusware_orchestrator.workflow_security_metadata import (

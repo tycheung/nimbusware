@@ -13,7 +13,7 @@ from agent_core.models import (
 )
 from agent_core.slice_plan import SlicePlan
 from nimbusware_orchestrator.micro_slice_run_context import micro_slice_effective_from_rows
-from nimbusware_orchestrator.workflow_micro_slice import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     MicroSliceWorkflowBlock,
     parse_micro_slice_workflow_block,
 )

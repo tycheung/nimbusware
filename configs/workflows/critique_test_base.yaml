@@ -1,0 +1,15 @@
+# Shared base for single-critic toggle test profiles (extends universal_critique_on).
+extends: universal_critique_on
+security_critique:
+  enabled: false
+performance_critique:
+  enabled: false
+network_resilience_critique:
+  enabled: false
+security_scan_metadata_on_verify: true
+universal_critique:
+  unanimous_gate_enforce: true
+integrator_gate:
+  enabled: false
+agent_evaluator:
+  enabled: false

@@ -5,7 +5,7 @@ from pathlib import Path
 from agent_core.slice_plan import SlicePlan
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.stack_catalog import load_stack_catalog, stack_for_surface
-from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 
 def merge_stack_diff_budget(

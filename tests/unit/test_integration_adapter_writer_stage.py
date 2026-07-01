@@ -13,7 +13,7 @@ from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from unit.composite_repo_fixtures import write_workflow_profile

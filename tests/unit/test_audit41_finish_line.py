@@ -11,7 +11,7 @@ from nimbusware_orchestrator.simplification_rubric_critique import (
     emit_simplification_rubric_stage,
     run_simplification_rubric,
 )
-from nimbusware_orchestrator.workflow_dev_env import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     dev_env_effective_metadata,
     parse_dev_env_workflow_block,
 )

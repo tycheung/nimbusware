@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     DEFAULT_ADAPTER_KIND,
     IntegrationAdapterWriterWorkflowBlock,
 )

@@ -9,7 +9,7 @@ from nimbusware_orchestrator.slice_diff import (
     collect_slice_diff_stats,
     subdivide_slice_plan,
 )
-from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 
 def test_subdivide_slice_plan_reduces_file_count() -> None:

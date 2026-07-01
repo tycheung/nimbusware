@@ -36,7 +36,7 @@ from nimbusware_orchestrator.slice_handoff import (
 from nimbusware_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
 from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
 from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
-from nimbusware_orchestrator.workflow_micro_slice import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     MicroSliceWorkflowBlock,
     parse_micro_slice_workflow_block,
 )

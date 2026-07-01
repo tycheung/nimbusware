@@ -7,7 +7,7 @@ from pathlib import Path
 from nimbusware_env.env_flags import env_str
 from nimbusware_env.settings_resolve import resolve_int
 from nimbusware_orchestrator.micro_slice import DiffBudgetResult, SlicePlan, validate_diff_budget
-from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )

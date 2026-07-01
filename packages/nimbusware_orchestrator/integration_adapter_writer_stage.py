@@ -6,7 +6,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,

@@ -8,7 +8,7 @@ from nimbusware_orchestrator.micro_slice import (
     parse_slice_plan,
     validate_diff_budget,
 )
-from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+from nimbusware_orchestrator.workflow_blocks_simple import parse_micro_slice_workflow_block
 
 
 def test_parse_slice_plan() -> None:
@@ -25,7 +25,7 @@ def test_parse_slice_plan() -> None:
 
 
 def test_validate_diff_budget_rejects_large_slice() -> None:
-    from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+    from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=50)
     result = validate_diff_budget(

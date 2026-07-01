@@ -12,7 +12,7 @@ from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )
-from nimbusware_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )

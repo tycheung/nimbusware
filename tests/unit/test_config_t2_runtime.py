@@ -15,7 +15,7 @@ from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.critique_routing import load_critique_router
 from nimbusware_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
 from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
+from nimbusware_orchestrator.workflow_blocks_simple import parse_escalation_workflow_block
 from nimbusware_store.memory import InMemoryEventStore
 
 

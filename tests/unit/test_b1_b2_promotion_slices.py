@@ -14,7 +14,7 @@ from nimbusware_orchestrator.security_scan import (
 from nimbusware_orchestrator.workflow_agent_evaluator import (
     agent_evaluator_production_default_on,
 )
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from nimbusware_orchestrator.workflow_self_refinement import (

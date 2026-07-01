@@ -1,21 +1,7 @@
 # Phase 3 fo144 — Performance Critic stage (uses ruff_perf + N+1 heuristic evidence).
+extends: critique_test_base
 performance_critique:
   enabled: true
   stub: true
   llm_enabled: false
   severity_floor: MEDIUM
-
-security_critique:
-  enabled: false
-
-security_scan_metadata_on_verify: true
-
-universal_critique:
-  default_enabled: true
-  unanimous_gate_enforce: true
-
-integrator_gate:
-  enabled: false
-
-agent_evaluator:
-  enabled: false

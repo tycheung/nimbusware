@@ -4,7 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.slice_plan import DiffBudgetResult, SlicePlan, parse_slice_plan
-from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 __all__ = ["DiffBudgetResult", "SlicePlan", "parse_slice_plan", "validate_diff_budget"]
 

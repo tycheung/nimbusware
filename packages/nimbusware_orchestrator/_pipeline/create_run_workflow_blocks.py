@@ -10,20 +10,23 @@ from nimbusware_orchestrator._pipeline._helpers import (
     parse_self_refinement_workflow_block,
     parse_universal_critique_workflow_block,
 )
+from nimbusware_orchestrator.workflow_blocks_simple import (
+    parse_dev_env_workflow_block,
+    parse_fast_slice_workflow_block,
+    parse_micro_slice_workflow_block,
+    parse_theater_workflow_block,
+)
 from nimbusware_orchestrator.workflow_campaign import (
     parse_backlog_workflow_block,
     parse_campaign_workflow_block,
     parse_completion_workflow_block,
     parse_maintenance_workflow_block,
 )
-from nimbusware_orchestrator.workflow_dev_env import parse_dev_env_workflow_block
-from nimbusware_orchestrator.workflow_fast_slice import parse_fast_slice_workflow_block
 from nimbusware_orchestrator.workflow_memory import (
     memory_effective_metadata,
     parse_memory_workflow_block,
     resolve_memory_index_version,
 )
-from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 from nimbusware_orchestrator.workflow_patch import parse_patch_workflow_block
 from nimbusware_orchestrator.workflow_probation_automation import (
     parse_probation_automation_workflow_block,
@@ -32,7 +35,6 @@ from nimbusware_orchestrator.workflow_research import (
     parse_research_workflow_block,
     parse_stitch_workflow_block,
 )
-from nimbusware_orchestrator.workflow_theater import parse_theater_workflow_block
 
 
 @dataclass(frozen=True)

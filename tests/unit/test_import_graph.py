@@ -206,7 +206,7 @@ def test_workflow_explainers_use_config_workflow_read_facade() -> None:
             not in {
                 "nimbusware_orchestrator.integrator_gate",
                 "nimbusware_orchestrator.integration_adapter_writer_stage",
-                "nimbusware_orchestrator.workflow_integration_adapter_writer",
+                "nimbusware_orchestrator.workflow_blocks_simple",
             }
         ]
         if hits:

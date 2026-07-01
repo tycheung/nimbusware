@@ -9,7 +9,7 @@ from nimbusware_console.explainer_core.workflow_payload_header import workflow_p
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_blocks_simple import (
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
 )

@@ -1,21 +1,7 @@
 # Phase 3 fo143 — Security Critic stage after writer verify.
+extends: critique_test_base
 security_critique:
   enabled: true
   stub: true
   llm_enabled: false
   severity_floor: MEDIUM
-
-security_scan_metadata_on_verify: true
-
-universal_critique:
-  default_enabled: true
-  implementation:
-  planner:
-  test_writer:
-  unanimous_gate_enforce: true
-
-integrator_gate:
-  enabled: false
-
-agent_evaluator:
-  enabled: false

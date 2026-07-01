@@ -24,6 +24,23 @@ from nimbusware_orchestrator.workflow_agent_evaluator import (
     persona_coverage_critique_effective,
     persona_coverage_critique_llm_branch_effective,
 )
+from nimbusware_orchestrator.workflow_blocks_simple import (
+    DevEnvWorkflowBlock,
+    EscalationWorkflowBlock,
+    FastSliceWorkflowBlock,
+    IntegrationAdapterWriterWorkflowBlock,
+    MicroSliceWorkflowBlock,
+    TheaterWorkflowBlock,
+    dev_env_effective_metadata,
+    fast_slice_effective_metadata,
+    parse_dev_env_workflow_block,
+    parse_escalation_workflow_block,
+    parse_fast_slice_workflow_block,
+    parse_integration_adapter_writer_workflow_block,
+    parse_micro_slice_workflow_block,
+    parse_theater_workflow_block,
+    theater_effective_metadata,
+)
 from nimbusware_orchestrator.workflow_campaign import (
     BacklogWorkflowBlock,
     CampaignWorkflowBlock,
@@ -36,33 +53,11 @@ from nimbusware_orchestrator.workflow_campaign import (
     parse_completion_workflow_block,
     parse_maintenance_workflow_block,
 )
-from nimbusware_orchestrator.workflow_dev_env import (
-    DevEnvWorkflowBlock,
-    dev_env_effective_metadata,
-    parse_dev_env_workflow_block,
-)
-from nimbusware_orchestrator.workflow_escalation import (
-    EscalationWorkflowBlock,
-    parse_escalation_workflow_block,
-)
-from nimbusware_orchestrator.workflow_fast_slice import (
-    FastSliceWorkflowBlock,
-    fast_slice_effective_metadata,
-    parse_fast_slice_workflow_block,
-)
-from nimbusware_orchestrator.workflow_integration_adapter_writer import (
-    IntegrationAdapterWriterWorkflowBlock,
-    parse_integration_adapter_writer_workflow_block,
-)
 from nimbusware_orchestrator.workflow_memory import (
     MemoryWorkflowBlock,
     memory_effective_metadata,
     parse_memory_workflow_block,
     run_memory_retrieval_enabled,
-)
-from nimbusware_orchestrator.workflow_micro_slice import (
-    MicroSliceWorkflowBlock,
-    parse_micro_slice_workflow_block,
 )
 from nimbusware_orchestrator.workflow_parallel_critics import (
     ParallelCriticsWorkflowBlock,
@@ -127,11 +122,6 @@ from nimbusware_orchestrator.workflow_self_refinement import (
     self_refinement_llm_critique_effective_for_run,
     self_refinement_production_ungated_effective,
     self_refinement_ungated_loop_effective,
-)
-from nimbusware_orchestrator.workflow_theater import (
-    TheaterWorkflowBlock,
-    parse_theater_workflow_block,
-    theater_effective_metadata,
 )
 from nimbusware_orchestrator.workflow_universal_critique import (
     EffectiveUniversalCritique,
