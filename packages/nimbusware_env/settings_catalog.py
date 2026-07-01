@@ -60,3 +60,12 @@ def catalog_groups(scope: SettingScope | None = None) -> dict[str, list[SettingD
     for items in out.values():
         items.sort(key=lambda x: x.key)
     return dict(sorted(out.items()))
+
+
+def operator_catalog_defs() -> tuple[SettingDef, ...]:
+    """User- and system-facing settings for Maker/Admin surfaces (excludes internal/run)."""
+    return tuple(
+        d
+        for d in CATALOG.values()
+        if d.scope in {SettingScope.USER, SettingScope.SYSTEM} and d.admin_editable
+    )
