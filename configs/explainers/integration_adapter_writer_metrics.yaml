@@ -1,0 +1,35 @@
+prefix: integration_adapter_writer_workflow_explainer
+caption_prefix: "Integration Adapter Writer scaffold: "
+defaults:
+  yaml_key_present: false
+  workflow_enabled: false
+  effective_enabled: false
+  would_emit_stage_started: false
+  live_path_active: false
+  scaffold_status: null
+  workflow_yaml_path_present: false
+  fleet_manifest_count: 0
+  stub_only: null
+  target_adapter_kind: null
+table_rows:
+  - [YAML key present, yaml_key_present]
+  - [Workflow enabled, workflow_enabled]
+  - [Effective enabled, effective_enabled]
+  - [Would emit stage, would_emit_stage_started]
+  - [Live path active, live_path_active]
+  - [Scaffold status, scaffold_status]
+  - [Workflow YAML path, workflow_yaml_path_present]
+  - [Stub only, stub_only]
+  - [Target adapter kind, target_adapter_kind]
+build:
+  nested_bool_fields:
+    - nested_key: workflow_block
+      fields:
+        - [enabled, workflow_enabled]
+  bool_fields:
+    - [effective_enabled, effective_enabled]
+    - [would_emit_stage_started, would_emit_stage_started]
+  str_present:
+    - [workflow_yaml_path, workflow_yaml_path_present]
+  int_fields:
+    - [fleet_workspace_manifest_count, fleet_manifest_count]

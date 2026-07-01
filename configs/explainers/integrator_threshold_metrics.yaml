@@ -1,0 +1,45 @@
+prefix: integrator_threshold_explainer
+caption_prefix: "Integrator threshold explainer metrics: "
+defaults:
+  would_emit_gate_event: false
+  thresholds_yaml_exists: false
+  env_forces_on: false
+  env_forces_off: false
+  min_score_pipeline: null
+  min_score_preview: null
+  min_scores_agree: false
+  project_tags_list_length: 0
+  load_error_present: false
+table_rows:
+  - [Would emit gate event, would_emit_gate_event]
+  - [Thresholds YAML exists, thresholds_yaml_exists]
+  - [Env forces on, env_forces_on]
+  - [Env forces off, env_forces_off]
+  - [Min scores agree, min_scores_agree]
+  - [Project tags (workflow), project_tags_list_length]
+  - [Min score pipeline, min_score_pipeline]
+  - [Min score preview, min_score_preview]
+  - [Load error, load_error_present]
+table_rows_options:
+  optional_metric_keys:
+    - min_score_pipeline
+    - min_score_preview
+    - load_error_present
+build:
+  nested_bool_fields:
+    - nested_key: gate_event_emission
+      fields:
+        - [would_emit_integrator_gate_event, would_emit_gate_event]
+        - [thresholds_yaml_exists, thresholds_yaml_exists]
+        - [forces_on, env_forces_on]
+        - [forces_off, env_forces_off]
+  nested_exists:
+    - [thresholds_yaml, thresholds_yaml_exists]
+  float_fields:
+    - [pipeline_effective_min_score_to_pass, min_score_pipeline]
+  nested_int_fields:
+    - nested_key: workflow_integrator_gate
+      fields:
+        - [project_tags_list_length, project_tags_list_length]
+  list_nonempty_flags:
+    - [paste_parse_errors, load_error_present]

@@ -1,9 +1,12 @@
-from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
+)
+from nimbusware_console.explainer_core.workflow_metrics_spec import (
+    install_workflow_metrics_from_spec,
+    repo_explainer_spec,
 )
 from nimbusware_console.workflow_explainers.integrator_threshold.captions import (
     _INTEGRATOR_THRESHOLD_PASTE_PARSE_ERROR_CAP,
@@ -12,6 +15,11 @@ from nimbusware_console.workflow_explainers.integrator_threshold.captions import
     integrator_threshold_paste_parse_caption,
     integrator_threshold_project_tags_caption,
     integrator_threshold_thresholds_yaml_version_caption,
+)
+from nimbusware_console.workflow_explainers.integrator_threshold.metrics_custom import (
+    integrator_threshold_caption,
+    integrator_threshold_metrics,
+    integrator_threshold_table_rows,
 )
 from nimbusware_console.workflow_explainers.integrator_threshold.payload import (
     integrator_threshold_explainer_payload,
@@ -23,7 +31,14 @@ from nimbusware_console.workflow_explainers.integrator_threshold.snapshots impor
     _thresholds_snapshot,
 )
 
-install_explainer_metrics("integrator_threshold", globals())
+install_workflow_metrics_from_spec(
+    globals(),
+    repo_explainer_spec("integrator_threshold"),
+    caption_parts_fn=lambda _metrics: [],
+    custom_metrics_fn=integrator_threshold_metrics,
+    custom_table_rows_fn=integrator_threshold_table_rows,
+    custom_caption_fn=integrator_threshold_caption,
+)
 
 install_package_workflow_explainer_exports(
     globals(), "integrator_threshold"

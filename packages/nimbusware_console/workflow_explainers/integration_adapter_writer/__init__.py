@@ -1,9 +1,12 @@
-from nimbusware_console.explainer_core.generic_workflow_explainer import install_explainer_metrics
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
 from nimbusware_console.explainer_core.workflow_exports import (
     workflow_explainer_payload_export_json,
+)
+from nimbusware_console.explainer_core.workflow_metrics_spec import (
+    install_workflow_metrics_from_spec,
+    repo_explainer_spec,
 )
 from nimbusware_console.workflow_explainers.integration_adapter_writer.captions import (
     integration_adapter_writer_effective_caption,
@@ -14,12 +17,24 @@ from nimbusware_console.workflow_explainers.integration_adapter_writer.events im
     integration_adapter_writer_run_caption,
     integration_adapter_writer_run_table_rows,
 )
+from nimbusware_console.workflow_explainers.integration_adapter_writer.metrics_custom import (
+    integration_adapter_writer_caption,
+    integration_adapter_writer_metrics,
+    integration_adapter_writer_table_rows,
+)
 from nimbusware_console.workflow_explainers.integration_adapter_writer.payload import (
     integration_adapter_writer_fleet_manifest_count,
     integration_adapter_writer_workflow_explainer_payload,
 )
 
-install_explainer_metrics("integration_adapter_writer", globals())
+install_workflow_metrics_from_spec(
+    globals(),
+    repo_explainer_spec("integration_adapter_writer"),
+    caption_parts_fn=lambda _metrics: [],
+    custom_metrics_fn=integration_adapter_writer_metrics,
+    custom_table_rows_fn=integration_adapter_writer_table_rows,
+    custom_caption_fn=integration_adapter_writer_caption,
+)
 
 integration_adapter_writer_explainer_export_json = workflow_explainer_payload_export_json
 
