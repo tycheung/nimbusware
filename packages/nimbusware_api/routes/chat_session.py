@@ -23,7 +23,7 @@ from nimbusware_api.routes.chat_common import (
     start_run,
 )
 from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
-from nimbusware_api.routes.chat_requirements import enforce_discovery_gate
+from nimbusware_api.routes.runs.create import enforce_discovery_gate
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
 from nimbusware_auth.permissions import require_session_participant

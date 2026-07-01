@@ -165,7 +165,7 @@ def requirements_payload(
     body: StartChatSessionBody, path_text: str | None
 ) -> dict[str, Any] | None:
     if body.requirements is not None:
-        from nimbusware_api.routes.chat_requirements import build_requirements_from_body
+        from nimbusware_api.routes.runs.create import build_requirements_from_body
 
         return build_requirements_from_body(body.requirements)
     if path_text and path_text.strip():

@@ -9,11 +9,11 @@ from pydantic import BaseModel, Field
 from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes.chat_requirements import (
+from nimbusware_api.routes.runs.create import (
+    RunRequirementsBody,
     build_requirements_from_body,
     enforce_discovery_gate,
 )
-from nimbusware_api.routes.runs.create import RunRequirementsBody
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
