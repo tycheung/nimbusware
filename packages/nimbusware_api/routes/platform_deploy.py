@@ -150,7 +150,7 @@ def enforce_credential_scopes(
         )
 
 
-from nimbusware_api.routes.platform_deploy_mutations import router as mutations_router
+from nimbusware_api.routes.platform_deploy_mutations import router as mutations_router  # noqa: E402
 
 router.include_router(mutations_router)
 

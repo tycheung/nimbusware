@@ -2,84 +2,40 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any
+
+from nimbusware_maker.intent_classifier_rules import (
+    BACKEND_ONLY_PHRASES as _BACKEND_ONLY_PHRASES,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    CAMPAIGN_KEYWORDS as _CAMPAIGN_KEYWORDS,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    FACTORY_KEYWORDS as _FACTORY_KEYWORDS,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    FAST_SLICE_KEYWORDS as _FAST_SLICE_KEYWORDS,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    PATCH_KEYWORDS as _PATCH_KEYWORDS,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    PROFILE_BY_WORK_TYPE as _PROFILE_BY_WORK_TYPE,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    SLICE_KEYWORDS as _SLICE_KEYWORDS,
+)
+from nimbusware_maker.intent_classifier_rules import (
+    WorkType,
+)
+
+__all__ = ("ClassificationResult", "WorkType", "classify_intent", "scope_narrowed_to_backend_only")
 
 _PATH_RE = re.compile(
     r"(?:[\w.-]+/)+[\w.-]+\.(?:py|js|ts|tsx|vue|html|css|go|rs|java)\b",
     re.IGNORECASE,
 )
 _TEST_RE = re.compile(r"(?:tests?/[\w./-]+(?:::[\w]+)?)", re.IGNORECASE)
-
-_PATCH_KEYWORDS = (
-    "fix",
-    "bug",
-    "broken",
-    "error",
-    "failing",
-    "fail",
-    "crash",
-    "regression",
-    "typo",
-    "hotfix",
-    "stack trace",
-    "traceback",
-    "assertionerror",
-    "exception",
-)
-_CAMPAIGN_KEYWORDS = (
-    "build app",
-    "build a",
-    "mvp",
-    "crm",
-    "deliver",
-    "autonomous",
-    "full application",
-    "from scratch",
-    "product",
-    "saas",
-)
-_SLICE_KEYWORDS = (
-    "add feature",
-    "add a feature",
-    "refactor",
-    "implement",
-    "extend",
-    "module",
-    "component",
-    "endpoint",
-    "api route",
-)
-_FACTORY_KEYWORDS = ("factory", "zero-touch", "zero touch", "catalog prompt")
-_FAST_SLICE_KEYWORDS = ("fast slice", "quick slice")
-
-
-class WorkType(str, Enum):
-    QUICK = "quick"
-    PATCH = "patch"
-    SLICE = "slice"
-    CAMPAIGN = "campaign"
-    FACTORY = "factory"
-
-
-_PROFILE_BY_WORK_TYPE: dict[WorkType, str] = {
-    WorkType.QUICK: "quick_local",
-    WorkType.PATCH: "patch",
-    WorkType.SLICE: "micro_slice",
-    WorkType.CAMPAIGN: "campaign_fullstack",
-    WorkType.FACTORY: "campaign_factory_zero_touch",
-}
-
-_BACKEND_ONLY_PHRASES = (
-    "backend only",
-    "api only",
-    "rest api only",
-    "no frontend",
-    "no ui",
-    "python only",
-    "backend-only",
-    "api-only",
-)
 
 
 @dataclass
