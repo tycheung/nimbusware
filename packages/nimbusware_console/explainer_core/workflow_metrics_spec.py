@@ -81,6 +81,14 @@ def _build_kwargs_from_spec(build: Mapping[str, Any]) -> dict[str, Any]:
         kwargs["list_len_fields"] = _tuple_pairs(build["list_len_fields"])
     if build.get("nested_bool_fields"):
         kwargs["nested_bool_fields"] = _nested_bool_fields(build["nested_bool_fields"])
+    if build.get("nested_int_fields"):
+        kwargs["nested_int_fields"] = _nested_bool_fields(build["nested_int_fields"])
+    if build.get("nested_exists"):
+        kwargs["nested_exists"] = _tuple_pairs(build["nested_exists"])
+    if build.get("float_fields"):
+        kwargs["float_fields"] = _tuple_pairs(build["float_fields"])
+    if build.get("list_nonempty_flags"):
+        kwargs["list_nonempty_flags"] = _tuple_pairs(build["list_nonempty_flags"])
     if build.get("nested_optional_int"):
         nested_opt: list[tuple[str, str, str]] = []
         for row in build["nested_optional_int"]:

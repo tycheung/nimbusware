@@ -18,8 +18,8 @@ from nimbusware_console.workflow_explainers.integrator_threshold.captions import
 )
 from nimbusware_console.workflow_explainers.integrator_threshold.metrics_custom import (
     integrator_threshold_caption,
-    integrator_threshold_metrics,
-    integrator_threshold_table_rows,
+    integrator_threshold_caption_parts,
+    integrator_threshold_post_process,
 )
 from nimbusware_console.workflow_explainers.integrator_threshold.payload import (
     integrator_threshold_explainer_payload,
@@ -34,9 +34,8 @@ from nimbusware_console.workflow_explainers.integrator_threshold.snapshots impor
 install_workflow_metrics_from_spec(
     globals(),
     repo_explainer_spec("integrator_threshold"),
-    caption_parts_fn=lambda _metrics: [],
-    custom_metrics_fn=integrator_threshold_metrics,
-    custom_table_rows_fn=integrator_threshold_table_rows,
+    caption_parts_fn=integrator_threshold_caption_parts,
+    post_process_metrics_fn=integrator_threshold_post_process,
     custom_caption_fn=integrator_threshold_caption,
 )
 
