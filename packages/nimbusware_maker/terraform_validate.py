@@ -243,6 +243,15 @@ def rollback_workspace_terraform(
             "terraform_available": shutil.which("terraform") is not None,
         }
     terraform = shutil.which("terraform")
+    if mode == "previous":
+        backup = root / ".nimbusware" / "terraform.tfstate.snapshot"
+        if not backup.is_file():
+            return {
+                "status": "skipped",
+                "detail": "No pre-apply state snapshot — run apply first",
+                "terraform_available": terraform is not None,
+                "rollback_mode": mode,
+            }
     if terraform is None:
         return {
             "status": "failed",
@@ -251,13 +260,6 @@ def rollback_workspace_terraform(
         }
     if mode == "previous":
         backup = root / ".nimbusware" / "terraform.tfstate.snapshot"
-        if not backup.is_file():
-            return {
-                "status": "skipped",
-                "detail": "No pre-apply state snapshot — run apply first",
-                "terraform_available": True,
-                "rollback_mode": mode,
-            }
         shutil.copy2(backup, root / "terraform.tfstate")
         cmd = [terraform, "apply", "-auto-approve", "-input=false", "-no-color"]
         detail_ok = "terraform rollback to previous state ok"

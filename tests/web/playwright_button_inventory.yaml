@@ -14,20 +14,20 @@ buttons:
   visible_only_in: []
 - test_id: admin-fleet-enforcement-save
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/FleetPage.tsx
+  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetAutopilotPanel.tsx
   label: Save enforcement policy
   clicked_in: []
   visible_only_in: []
 - test_id: admin-fleet-rescan-btn
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/FleetPage.tsx
+  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
   label: '{rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}'
   clicked_in:
   - tests/e2e/web/admin_fleet_hardware.spec.ts
   visible_only_in: []
 - test_id: admin-fleet-search-btn
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/FleetPage.tsx
+  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
   label: ''
   clicked_in: []
   visible_only_in: []

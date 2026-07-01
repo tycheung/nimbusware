@@ -31,6 +31,9 @@ def _load_source_url(url: str) -> dict:
     return doc
 
 
+ROOT = Path(__file__).resolve().parents[2]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Sync hardware model catalog subset")
     parser.add_argument(
@@ -45,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true", help="Validate without writing")
     args = parser.parse_args(argv)
 
-    root = find_repo_root()
+    root = find_repo_root(start=ROOT)
     dest = root / "configs" / "hardware" / "model_catalog.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
 

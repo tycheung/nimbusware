@@ -110,7 +110,9 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     compliance = (root / "packages/nimbusware_api/routes/enterprise/compliance.py").read_text(
         encoding="utf-8",
     )
-    fleet = (root / "packages/nimbusware_admin_ui/src/pages/FleetPage.tsx").read_text(encoding="utf-8")
+    fleet = (
+        root / "packages/nimbusware_admin_ui/src/pages/fleet/FleetCompliancePanel.tsx"
+    ).read_text(encoding="utf-8")
     hydrate = (root / "packages/nimbusware_orchestrator/host_collab_mesh_hydrate.py").read_text(
         encoding="utf-8",
     )
