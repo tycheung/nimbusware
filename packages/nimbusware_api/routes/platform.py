@@ -9,8 +9,6 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
-from nimbusware_api.routes.platform_collab_disciplines import router as collab_disciplines_router
-from nimbusware_api.routes.platform_collab_settings import router as collab_settings_router
 from nimbusware_api.routes.platform_deploy import router as deploy_router
 from nimbusware_api.routes.platform_discipline_profile import router as discipline_profile_router
 from nimbusware_api.routes.platform_hardware import router as hardware_router
@@ -18,7 +16,12 @@ from nimbusware_api.routes.platform_model_routing import router as model_routing
 from nimbusware_api.routes.platform_operator_profiles import router as operator_profiles_router
 from nimbusware_api.routes.platform_user_profiles import router as user_profiles_router
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_config.collab_settings_store import save_persisted_collab_enabled
+from nimbusware_env import find_repo_root
+from nimbusware_env.collab_runtime import collab_settings_snapshot, set_runtime_collab_enabled
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles
+from nimbusware_maker.collab_disciplines import list_disciplines
+from nimbusware_maker.collab_invite_templates import list_invite_templates
 from nimbusware_maker.consumer_precommit_install import install_workspace_precommit
 from nimbusware_maker.consumer_test_scaffold import scaffold_consumer_tests
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
@@ -38,8 +41,6 @@ router = APIRouter(tags=["platform"])
 router.include_router(hardware_router)
 router.include_router(user_profiles_router)
 router.include_router(operator_profiles_router)
-router.include_router(collab_settings_router)
-router.include_router(collab_disciplines_router)
 router.include_router(discipline_profile_router)
 router.include_router(deploy_router)
 router.include_router(model_routing_router)
@@ -55,6 +56,54 @@ class WorkspacePathBody(BaseModel):
 
 class SafeCodingPreferencesBody(BaseModel):
     industry_critic_pack_ids: list[str] = Field(default_factory=list)
+
+
+class CollabSettingsBody(BaseModel):
+    collab_enabled: bool
+
+
+def _require_individual_collab_owner(request: Request, user: AuthUserDep) -> str:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    edition = edition_manifest()
+    if str(edition.get("edition") or "").lower() == "enterprise":
+        raise HTTPException(
+            status_code=403,
+            detail=problem("forbidden", "collab settings are managed via enterprise policy"),
+        )
+    return uid
+
+
+@router.get("/platform/collab-disciplines")
+def get_collab_disciplines(orch: OrchDep) -> dict[str, Any]:
+    return {"disciplines": list_disciplines(repo_root=orch.repo_root)}
+
+
+@router.get("/platform/invite-templates")
+def get_invite_templates(orch: OrchDep) -> dict[str, Any]:
+    return {"templates": list_invite_templates(repo_root=orch.repo_root)}
+
+
+@router.get("/platform/collab-settings")
+def get_collab_settings(request: Request, user: AuthUserDep) -> dict[str, Any]:
+    _require_individual_collab_owner(request, user)
+    return collab_settings_snapshot()
+
+
+@router.put("/platform/collab-settings")
+def put_collab_settings(
+    body: CollabSettingsBody,
+    request: Request,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    _require_individual_collab_owner(request, user)
+    set_runtime_collab_enabled(body.collab_enabled)
+    save_persisted_collab_enabled(body.collab_enabled, repo_root=find_repo_root())
+    return collab_settings_snapshot()
 
 
 @router.post("/platform/workspace-scaffold")
