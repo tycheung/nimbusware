@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes import chat_session
+from nimbusware_api.routes import chat_scope_discover, chat_session
 from nimbusware_api.routes.auth import OptionalUserDep
 from nimbusware_api.routes.chat_common import (
     ActiveLeafBody,
@@ -46,6 +46,7 @@ from nimbusware_maker.intent_classifier import WorkType, classify_intent
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_session.router)
+router.include_router(chat_scope_discover.router)
 
 
 @router.post("/sessions", response_model=ChatSessionResponse)
