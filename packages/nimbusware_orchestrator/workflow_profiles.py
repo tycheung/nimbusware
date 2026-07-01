@@ -74,6 +74,19 @@ def workflow_profile_path(repo_root: Path, profile: str) -> Path:
     return path
 
 
+def list_workflow_profile_names(repo_root: Path) -> tuple[str, ...]:
+    workflows_dir = repo_root / "configs" / "workflows"
+    if not workflows_dir.is_dir():
+        return ()
+    names: list[str] = []
+    for path in sorted(workflows_dir.glob("*.yaml")):
+        stem = path.stem
+        if stem.startswith("_"):
+            continue
+        names.append(stem)
+    return tuple(names)
+
+
 def workflow_profile_dict(
     repo_root: Path,
     profile: str,
