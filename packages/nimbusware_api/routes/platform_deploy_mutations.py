@@ -16,14 +16,9 @@ from nimbusware_api.routes.platform_deploy_models import (
     DeployRollbackBody,
     DeploySmokeBody,
 )
-from nimbusware_api.routes.platform_deploy_support import (
-    deploy_approval_chain_for_tenant,
-    deploy_policy_context,
-    enforce_credential_scopes,
-    enforce_manifest_deploy_target,
-    resolved_deploy_environment,
-)
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_env.env_flags import env_str
+from nimbusware_iam.context import get_auth_context
 from nimbusware_maker.deploy_credential_vault import (
     audit_credentials_updated,
     audit_credentials_used,
@@ -49,6 +44,9 @@ from nimbusware_maker.deploy_target_enforcement import (
     credential_scope_labels,
     deploy_target_from_credentials,
     deploy_target_from_manifest,
+    resolve_deploy_environment,
+    validate_credential_scopes,
+    validate_manifest_deploy_target,
 )
 from nimbusware_maker.github_workflow_poll import poll_github_workflow_run
 from nimbusware_maker.terraform_validate import (
@@ -58,6 +56,76 @@ from nimbusware_maker.terraform_validate import (
 from nimbusware_orchestrator.git_outputs import run_branch_name
 
 router = APIRouter(tags=["platform"])
+
+
+def resolved_deploy_environment(
+    *,
+    explicit: str | None,
+    creds: dict[str, Any],
+    rows: list[dict[str, Any]],
+) -> str:
+    try:
+        return resolve_deploy_environment(
+            explicit=explicit,
+            credentials=creds,
+            manifest_raw=manifest_from_events(rows),
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+def deploy_policy_context() -> tuple[str | None, str]:
+    ctx = get_auth_context()
+    tenant_slug = ctx.tenant_slug if ctx is not None else None
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
+    return tenant_slug, setup_bundle
+
+
+def deploy_approval_chain_for_tenant(tenant_slug: str | None, setup_bundle: str) -> str:
+    if setup_bundle != "enterprise":
+        return "maker_only"
+    from nimbusware_orchestrator.fleet_deploy_approval_policy import tenant_deploy_approval_policy
+
+    return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
+
+
+def enforce_manifest_deploy_target(
+    rows: list[dict[str, Any]],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_manifest_deploy_target(
+        manifest_from_events(rows),
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_target_denied", detail or "deploy target not allowed"),
+        )
+
+
+def enforce_credential_scopes(
+    creds: dict[str, Any],
+    *,
+    tenant_slug: str | None,
+    setup_bundle: str,
+) -> None:
+    ok, detail = validate_credential_scopes(
+        creds,
+        tenant_slug=tenant_slug,
+        setup_bundle=setup_bundle,
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("deploy_credential_scope_denied", detail or "credential scope denied"),
+        )
 
 
 @router.post("/platform/deploy/apply")
