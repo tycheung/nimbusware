@@ -5,7 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nimbusware_mcp.tools import TOOL_SPECS, call_tool
+from nimbusware_mcp.tool_specs import TOOL_SPECS
+from nimbusware_mcp.tools import call_tool
 
 
 def test_tool_specs_include_required_tools() -> None:

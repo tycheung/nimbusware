@@ -4,7 +4,8 @@ import json
 import sys
 from typing import Any
 
-from nimbusware_mcp.tools import TOOL_SPECS, call_tool
+from nimbusware_mcp.tool_specs import TOOL_SPECS
+from nimbusware_mcp.tools import call_tool
 
 _PROTOCOL_VERSION = "2024-11-05"
 _SERVER_INFO = {"name": "nimbusware-mcp", "version": "0.1.0"}

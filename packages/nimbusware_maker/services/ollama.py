@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import quote
 
 from nimbusware_client.http import delete_response, patch_response, post_json
+from nimbusware_client.ollama_paths import ollama_model_delete_path, ollama_models_path
 from nimbusware_maker.api_client import get_json
 
 
 def list_models(*, query: str = "") -> dict[str, Any]:
-    path = "/platform/ollama/models"
-    if query.strip():
-        path = f"{path}?q={quote(query.strip())}"
-    return get_json(path)
+    return get_json(ollama_models_path(query=query))
 
 
 def pull_model(model: str) -> dict[str, Any]:
@@ -20,7 +17,7 @@ def pull_model(model: str) -> dict[str, Any]:
 
 def delete_model(model_name: str) -> None:
     delete_response(
-        f"/platform/ollama/models/{quote(model_name.strip(), safe='')}",
+        ollama_model_delete_path(model_name),
         timeout=120.0,
     )
 

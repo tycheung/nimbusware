@@ -249,18 +249,23 @@ class InMemoryHostTransferStore:
         return session_id in self._frozen_sessions
 
 
-_store: InMemoryHostTransferStore | None = None
+from nimbusware_maker.store_backend import build_cached_store
+
+_store: list[InMemoryHostTransferStore | None] = [None]
 
 
 def build_host_transfer_store(database_url: str | None) -> HostTransferStore:
-    global _store
-    if database_url:
+    def _postgres(url: str) -> HostTransferStore:
         from nimbusware_maker.host_transfer_store_postgres import PostgresHostTransferStore
 
-        return PostgresHostTransferStore(database_url)
-    if _store is None:
-        _store = InMemoryHostTransferStore()
-    return _store
+        return PostgresHostTransferStore(url)
+
+    return build_cached_store(
+        database_url,
+        cache=_store,
+        memory_factory=InMemoryHostTransferStore,
+        postgres_factory=_postgres,
+    )
 
 
 def host_transfer_store() -> HostTransferStore:

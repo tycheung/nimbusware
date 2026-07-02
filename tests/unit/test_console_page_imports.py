@@ -15,7 +15,6 @@ _CONSOLE_MODULES: tuple[str, ...] = (
     "nimbusware_console.main",
     "nimbusware_console.operator_chat",
     "nimbusware_console.operator_chat_core",
-    "nimbusware_console.enterprise_console_ui",
     "nimbusware_console.services.operator_chat",
 )
 

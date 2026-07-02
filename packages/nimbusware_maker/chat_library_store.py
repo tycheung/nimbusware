@@ -366,15 +366,20 @@ class InMemoryChatLibraryStore:
         return session_roles, folder_roles, tag_roles
 
 
-_library_store: InMemoryChatLibraryStore | None = None
+from nimbusware_maker.store_backend import build_cached_store
+
+_library_store: list[InMemoryChatLibraryStore | None] = [None]
 
 
 def build_chat_library_store(database_url: str | None) -> ChatLibraryStore:
-    global _library_store
-    if database_url:
+    def _postgres(url: str) -> ChatLibraryStore:
         from nimbusware_maker.chat_library_store_postgres import PostgresChatLibraryStore
 
-        return PostgresChatLibraryStore(database_url)
-    if _library_store is None:
-        _library_store = InMemoryChatLibraryStore()
-    return _library_store
+        return PostgresChatLibraryStore(url)
+
+    return build_cached_store(
+        database_url,
+        cache=_library_store,
+        memory_factory=InMemoryChatLibraryStore,
+        postgres_factory=_postgres,
+    )

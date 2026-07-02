@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import quote
 
 from nimbusware_client.http import (
     admin_headers,
@@ -11,13 +10,14 @@ from nimbusware_client.http import (
     post_json,
     user_headers,
 )
+from nimbusware_client.ollama_paths import (
+    admin_ollama_model_delete_path,
+    ollama_models_path,
+)
 
 
 def list_models(*, query: str = "") -> dict[str, Any]:
-    path = "/platform/ollama/models"
-    if query.strip():
-        path = f"{path}?q={quote(query.strip())}"
-    return get_json(path)
+    return get_json(ollama_models_path(query=query))
 
 
 def save_user_policy(
@@ -52,7 +52,7 @@ def admin_pull_model(model: str) -> dict[str, Any]:
 
 def admin_delete_model(model_name: str) -> None:
     delete_response(
-        f"/admin/ollama/models/{quote(model_name.strip(), safe='')}",
+        admin_ollama_model_delete_path(model_name),
         headers={**user_headers(), **admin_headers()},
         timeout=120.0,
     )
