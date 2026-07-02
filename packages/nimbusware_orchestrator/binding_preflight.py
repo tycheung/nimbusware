@@ -44,11 +44,10 @@ _WORK_TYPE_ROLES: dict[str, list[str]] = {
 
 
 def _roles_from_defaults(repo_root: Path) -> list[str]:
-    path = repo_root / "configs" / "model_bindings" / "defaults.yaml"
-    if not path.is_file():
-        return []
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    roles = mapping_or_empty(doc.get("roles") if isinstance(doc, dict) else None)
+    from nimbusware_config.model_routing_sections import load_model_bindings_defaults_doc
+
+    doc = load_model_bindings_defaults_doc(repo_root)
+    roles = mapping_or_empty(doc.get("roles"))
     return sorted(str(k) for k in roles.keys())
 
 

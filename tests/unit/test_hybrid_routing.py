@@ -19,14 +19,18 @@ from nimbusware_orchestrator.stage_provider_routing import (
 
 
 def test_list_and_apply_routing_presets(tmp_path: Path) -> None:
-    presets_src = Path(__file__).resolve().parents[2] / "configs" / "routing_presets.yaml"
+    repo = Path(__file__).resolve().parents[2]
+    canonical = yaml.safe_load((repo / "configs" / "model-routing.yaml").read_text(encoding="utf-8"))
+    routing_presets = canonical.get("routing_presets") or {"version": 1, "presets": {}}
     (tmp_path / "configs").mkdir(parents=True)
-    (tmp_path / "configs" / "routing_presets.yaml").write_text(
-        presets_src.read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
     (tmp_path / "configs" / "model-routing.yaml").write_text(
-        yaml.dump({"version": 1, "models": {"primary": {"id": "llama3.1:8b"}}}),
+        yaml.dump(
+            {
+                "version": 1,
+                "models": {"primary": {"id": "llama3.1:8b"}},
+                "routing_presets": routing_presets,
+            },
+        ),
         encoding="utf-8",
     )
     summaries = list_routing_preset_summaries(tmp_path)

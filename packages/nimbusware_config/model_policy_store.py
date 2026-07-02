@@ -11,17 +11,9 @@ def model_policy_path(repo_root: Path) -> Path:
 
 
 def load_model_policy(repo_root: Path) -> dict[str, Any]:
-    path = model_policy_path(repo_root)
-    if not path.is_file():
-        return {
-            "version": 1,
-            "allowed_cloud_providers": [],
-            "require_admin_for_cloud_swap": False,
-            "blocked_model_ids": [],
-            "audit_include_binding_events": True,
-        }
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return doc if isinstance(doc, dict) else {"version": 1}
+    from nimbusware_config.model_routing_sections import load_model_policy_doc
+
+    return load_model_policy_doc(repo_root)
 
 
 def save_model_policy(repo_root: Path, doc: dict[str, Any]) -> None:

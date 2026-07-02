@@ -51,3 +51,99 @@ cloud_runtime:
   health_path: /models
 stage_providers: {}
 routing_preset_id: local_only
+model_policy:
+  version: 1
+  allow_cloud: false
+  allowed_cloud_providers: []
+  require_admin_for_cloud_swap: false
+  blocked_model_ids: []
+  audit_include_binding_events: true
+providers:
+- id: ollama
+  kind: local
+  label: Ollama
+  default_base_url: http://127.0.0.1:11434
+  connection_kind: api_key
+- id: openai
+  kind: cloud
+  label: OpenAI API
+  connection_kind: api_key
+  default_base_url: https://api.openai.com/v1
+- id: anthropic
+  kind: cloud
+  label: Anthropic API
+  connection_kind: api_key
+  default_base_url: https://api.anthropic.com
+- id: google
+  kind: cloud
+  label: Google Gemini
+  connection_kind: api_key
+  default_base_url: https://generativelanguage.googleapis.com/v1beta/openai
+  probe_health_path: /models
+- id: xai
+  kind: cloud
+  label: Grok (xAI)
+  connection_kind: api_key
+  default_base_url: https://api.x.ai/v1
+- id: openrouter
+  kind: cloud
+  label: OpenRouter
+  connection_kind: api_key
+  default_base_url: https://openrouter.ai/api/v1
+- id: custom
+  kind: cloud
+  label: Custom OpenAI-compatible
+  connection_kind: api_key
+- id: chatgpt_plus
+  kind: subscription
+  label: ChatGPT Plus (desktop)
+  connection_kind: subscription
+  desktop_app: ChatGPT
+  oauth_hint: Sign in to the ChatGPT desktop app on this machine, then click Connect.
+  oauth:
+    scopes: openid profile offline_access
+- id: claude_pro
+  kind: subscription
+  label: Claude Pro (desktop)
+  connection_kind: subscription
+  desktop_app: Claude
+  oauth_hint: Sign in to the Claude desktop app on this machine, then click Connect.
+  oauth:
+    scopes: openid profile offline_access
+model_bindings:
+  version: 1
+  roles:
+    planner:
+      provider_kind: local
+      provider_id: ollama
+      model_id: llama3.1:8b
+      base_url: null
+      api_key_ref: null
+      connection_id: null
+routing_presets:
+  version: 1
+  presets:
+    local_only:
+      label: Local only
+      description: All stages use Ollama — default Individual profile.
+      cloud_runtime:
+        enabled: false
+      stage_providers: {}
+    local_cloud_critique:
+      label: Local + cloud critique
+      description: Implement locally; optional cloud fallback for slice critique stages.
+      cloud_runtime:
+        enabled: true
+      stage_providers:
+        slice.critique: cloud
+    cloud_plan_local_implement:
+      label: Cloud plan / local implement
+      description: Planning stages may use cloud; implement and verify stay on Ollama.
+      cloud_runtime:
+        enabled: true
+      stage_providers:
+        plan: cloud
+        slice.plan: cloud
+        slice.implement: local
+        slice.verify: local
+        slice.test: local

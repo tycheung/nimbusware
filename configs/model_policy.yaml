@@ -1,2 +1,1 @@
-version: 1
-allow_cloud: false
+# Deprecated: see configs/model-routing.yaml (model_policy section)

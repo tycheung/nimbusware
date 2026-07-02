@@ -16,11 +16,9 @@ def defaults_yaml_path(repo_root: Path) -> Path:
 
 
 def load_defaults_file(repo_root: Path) -> dict[str, Any]:
-    path = defaults_yaml_path(repo_root)
-    if not path.is_file():
-        return {"version": 1, "roles": {}}
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return doc if isinstance(doc, dict) else {"version": 1, "roles": {}}
+    from nimbusware_config.model_routing_sections import load_model_bindings_defaults_doc
+
+    return load_model_bindings_defaults_doc(repo_root)
 
 
 def load_user_defaults(repo_root: Path, store: ConfigStore | None = None) -> dict[str, Any]:

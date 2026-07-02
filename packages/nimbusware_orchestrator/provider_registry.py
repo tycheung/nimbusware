@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any, Literal
 
 import httpx
-import yaml
 
 ConnectionKind = Literal["api_key", "subscription"]
 
@@ -33,12 +32,9 @@ def _preset_row(raw: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def load_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
-    path = repo_root / "configs" / "model_providers.yaml"
-    if not path.is_file():
-        return []
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not isinstance(doc, dict):
-        return []
+    from nimbusware_config.model_routing_sections import load_provider_catalog_doc
+
+    doc = load_provider_catalog_doc(repo_root)
     providers = doc.get("providers")
     if not isinstance(providers, list):
         return []
@@ -55,12 +51,9 @@ def load_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
 
 
 def load_subscription_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
-    path = repo_root / "configs" / "model_providers.yaml"
-    if not path.is_file():
-        return []
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not isinstance(doc, dict):
-        return []
+    from nimbusware_config.model_routing_sections import load_provider_catalog_doc
+
+    doc = load_provider_catalog_doc(repo_root)
     providers = doc.get("providers")
     if not isinstance(providers, list):
         return []

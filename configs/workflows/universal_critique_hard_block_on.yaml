@@ -1,28 +1,8 @@
 # Optional profile: post-verify ``implementation.critique`` stub + ``hard_block_on_gate_fail``.
 # When the last implementation critique gate is FAIL, integrator / agent-evaluator /
 # self-refinement markers are skipped (tail in ``execute_writer_verifier_pass``).
+extends: default
 version: 1
-finding_fix_strictness:
-  minimum_severity_requiring_fixes: MEDIUM
-  also_require_fixes_for_low_severity: false
-network_egress:
-  scraper_role_allowlist: null
-  domain_allowlist: null
-  budget_bytes_per_run: null
-scraper_fetch:
-  enabled: false
-  url: null
-  urls: null
-  actor_role_key: backend_writer
-  max_attempts: 1
-  backoff_seconds: 0
-  max_bytes: null
-  body_snippet_max_bytes: 256
-  persist_artifacts_max_bytes_per_url: null
-security_scan_metadata_on_verify: false
-agent_evaluator:
-  enabled: false
-  persona_id: default
 integrator_gate:
   enabled: true
 self_refinement:
@@ -35,27 +15,3 @@ universal_critique:
     stub: true
     stage_failed_on_gate_fail: false
     hard_block_on_gate_fail: true
-  test_writer:
-    enabled: false
-    llm: false
-    stub: false
-    stage_failed_on_gate_fail: false
-  planner:
-    enabled: false
-    llm: false
-    stub: false
-    stage_failed_on_gate_fail: false
-  frontend_writer:
-    enabled: false
-    llm: false
-    stub: false
-    stage_failed_on_gate_fail: false
-    hard_block_on_gate_fail: false
-  module_integrator:
-    enabled: false
-    llm: false
-    stub: false
-    stage_failed_on_gate_fail: false
-    hard_block_on_gate_fail: false
-escalation:
-  suppress_automatic_escalation: false

@@ -43,6 +43,8 @@ jobs:
         run: poetry run python scripts/ci/run_explainer_export_lint_gate.py
       - name: Workflow explainer init gate
         run: poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
+      - name: Workflow YAML line gate
+        run: poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
       - name: LOC budget gate
         run: poetry run python scripts/ci/run_loc_budget_ci_gate.py
       - name: Mypy

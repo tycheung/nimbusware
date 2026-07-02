@@ -1,0 +1,17 @@
+campaign_factory_t3.yaml
+campaign_factory_zero_touch.yaml
+campaign_fullstack.yaml
+campaign_micro_slice.yaml
+default.yaml
+fast_slice.yaml
+micro_slice.yaml
+micro_slice_fullstack.yaml
+micro_slice_web.yaml
+nimbusware_production.yaml
+parallel_writers_on.yaml
+patch.yaml
+patch_go.yaml
+patch_jvm.yaml
+quick_local.yaml
+safe_coding.yaml
+safe_coding_campaign_fullstack.yaml

@@ -9,11 +9,9 @@ from agent_core.mapping import mapping_or_empty
 
 
 def load_routing_presets(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / "configs" / "routing_presets.yaml"
-    if not path.is_file():
-        return {"version": 1, "presets": {}}
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return doc if isinstance(doc, dict) else {"version": 1, "presets": {}}
+    from nimbusware_config.model_routing_sections import load_routing_preset_catalog_doc
+
+    return load_routing_preset_catalog_doc(repo_root)
 
 
 def list_routing_preset_summaries(repo_root: Path) -> list[dict[str, Any]]:

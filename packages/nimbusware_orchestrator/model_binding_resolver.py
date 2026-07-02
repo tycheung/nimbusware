@@ -26,11 +26,9 @@ class ResolvedBinding:
 
 
 def _load_defaults_yaml(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / "configs" / "model_bindings" / "defaults.yaml"
-    if not path.is_file():
-        return {"version": 1, "roles": {}}
-    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return doc if isinstance(doc, dict) else {"version": 1, "roles": {}}
+    from nimbusware_config.model_routing_sections import load_model_bindings_defaults_doc
+
+    return load_model_bindings_defaults_doc(repo_root)
 
 
 def _binding_from_block(agent_role: str, block: dict[str, Any], *, source: str) -> ResolvedBinding:
