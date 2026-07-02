@@ -25,6 +25,13 @@ type RunDetail = {
   latest_event_type?: string;
 };
 
+const PRODUCTION_STUB_PROFILES = new Set(["nimbusware_production", "default"]);
+
+function productionProfileNotice(profile: string | undefined): string | null {
+  if (!profile || !PRODUCTION_STUB_PROFILES.has(profile)) return null;
+  return "Stub critics and disabled optional stages (integrator/research/stitch) are expected for this profile.";
+}
+
 export function RunDetailPage({ id }: { id?: string }) {
   const [run, setRun] = useState<RunDetail | null>(null);
   const [timeline, setTimeline] = useState<Record<string, unknown> | null>(null);
@@ -187,6 +194,8 @@ export function RunDetailPage({ id }: { id?: string }) {
   if (!id) return <p>Select a run.</p>;
   if (!run) return <p>Loading run…</p>;
 
+  const profileNotice = productionProfileNotice(run.workflow_profile);
+
   return (
     <section>
       <h2>Run {id}</h2>
@@ -194,7 +203,14 @@ export function RunDetailPage({ id }: { id?: string }) {
         <dt>Status</dt>
         <dd>{run.status}</dd>
         <dt>Workflow</dt>
-        <dd>{run.workflow_profile || "—"}</dd>
+        <dd>
+          {run.workflow_profile || "—"}
+          {profileNotice ? (
+            <p class="profile-notice" role="note">
+              {profileNotice}
+            </p>
+          ) : null}
+        </dd>
         <dt>Events</dt>
         <dd>{run.event_count}</dd>
         <dt>Findings</dt>

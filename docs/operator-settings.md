@@ -99,3 +99,20 @@ Patch and micro-slice runs do not set `open_pr_on_complete` by default. Global f
 **Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC).
 
 Helpers: `agent_core.context_budget`, `nimbusware_orchestrator.prompt_tiers`, `nimbusware_orchestrator.context_compaction`.
+
+## Production workflow profile (`nimbusware_production`)
+
+The default production-oriented profile in `configs/workflows/nimbusware_production.yaml` is **intentionally conservative**. Operators should not assume full LLM critique or every optional pipeline stage runs live.
+
+| Area | Production default | Meaning |
+|------|-------------------|---------|
+| Universal critique panels | `stub: true` | Deterministic critic panels; not live LLM security/performance review |
+| Phase 3 critics | `stub: true`, `llm_enabled: false` | security / performance / network_resilience critique emit stub findings |
+| `integrator_gate` | `enabled: false` | Module integrator gate stage skipped |
+| `research` / `stitch` | `enabled: false` | Research and stitch stages skipped |
+| `self_refinement` | LLM critique **on** | Post-verify refinement loop runs with LLM when configured |
+| `agent_evaluator` | LLM **on**, persona coverage stub | Evaluator runs; coverage panel may be stub |
+
+To run live LLM critics or enable integrator/research/stitch, use an explicit workflow profile overlay (for example `integrator_gate_on.yaml`) or set the matching `NIMBUSWARE_*` env overrides — do not change production YAML as part of routine operator tuning.
+
+Admin **Run detail** shows a notice when the run uses `nimbusware_production` or another profile known to default stub critics.
