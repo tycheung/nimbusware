@@ -10,7 +10,11 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
-from nimbusware_api.routes.chat_common import actor_user_id, require_collab_enabled, session_or_404
+from nimbusware_api.routes.chat_service import (
+    require_collab_enabled,
+    require_collab_session_participant,
+    session_or_404,
+)
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.models import SESSION_PARTICIPANT_ROLES
 from nimbusware_auth.permissions import require_session_participant
@@ -132,13 +136,12 @@ def list_session_participants(
     request: Request,
     user: OptionalUserDep,
 ) -> list[ParticipantResponse]:
-    require_collab_enabled()
-    session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
-    require_session_participant(
+    require_collab_session_participant(
+        chat_store,
         collab_store,
-        session_id=session_id,
-        user_id=actor,
+        session_id,
+        request,
+        user,
         minimum_role="session_read",
     )
     rows = collab_store.list_participants(session_id)
@@ -158,13 +161,12 @@ def add_session_participant(
     request: Request,
     user: OptionalUserDep,
 ) -> ParticipantResponse:
-    require_collab_enabled()
-    session = session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
-    require_session_participant(
+    session, _actor = require_collab_session_participant(
+        chat_store,
         collab_store,
-        session_id=session_id,
-        user_id=actor,
+        session_id,
+        request,
+        user,
         minimum_role="session_admin",
     )
     role = body.role.strip().lower()
@@ -225,13 +227,12 @@ def remove_session_participant(
     request: Request,
     user: OptionalUserDep,
 ) -> dict[str, bool]:
-    require_collab_enabled()
-    session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
-    require_session_participant(
+    require_collab_session_participant(
+        chat_store,
         collab_store,
-        session_id=session_id,
-        user_id=actor,
+        session_id,
+        request,
+        user,
         minimum_role="session_admin",
     )
     if not collab_store.remove_participant(session_id, user_id):
@@ -323,13 +324,12 @@ def create_session_invite(
     request: Request,
     user: OptionalUserDep,
 ) -> InviteResponse:
-    require_collab_enabled()
-    session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
-    require_session_participant(
+    _session, actor = require_collab_session_participant(
+        chat_store,
         collab_store,
-        session_id=session_id,
-        user_id=actor,
+        session_id,
+        request,
+        user,
         minimum_role="session_admin",
     )
     role = body.role.strip().lower()

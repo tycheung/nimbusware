@@ -4,43 +4,25 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
-from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import ChatStoreDep, OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.routes.chat_service import (
+    actor_user_id,
+    chat_http_error,
+    project_metadata,
+    require_collab_enabled,
+    session_or_404,
+)
 from nimbusware_api.routes.runs.create import PatchContextBody, RunRequirementsBody
-from nimbusware_auth.models import UserRecord
-from nimbusware_auth.session_cookie import user_id_from_request
-from nimbusware_env.env_flags import nimbusware_collab_enabled
-from nimbusware_maker.chat_models import ChatSessionRecord
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_maker.intent_classifier import WorkType
 from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabled
 from nimbusware_orchestrator.patch_context import normalize_patch_context
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
-
-
-def require_collab_enabled() -> None:
-    if not nimbusware_collab_enabled():
-        raise HTTPException(
-            status_code=403,
-            detail=problem("collab_disabled", "collaborative chat is disabled"),
-        )
-
-
-def actor_user_id(request: Request, user: UserRecord | None) -> UUID:
-    if user is not None:
-        return user.user_id
-    uid = user_id_from_request(request)
-    if uid is not None:
-        return uid
-    raise HTTPException(
-        status_code=401,
-        detail=problem("unauthorized", "sign in required"),
-    )
 
 
 class CreateChatSessionBody(BaseModel):
@@ -141,24 +123,6 @@ class ChatGraphResponse(BaseModel):
     nodes: list[dict[str, Any]]
     edges: list[dict[str, Any]]
     branches: list[dict[str, Any]]
-
-
-def project_metadata(project_store: ProjectStoreDep, project_uuid: UUID) -> dict[str, Any]:
-    record = project_store.get(project_uuid)
-    if record is None:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
-        )
-    assert_project_accessible(record)
-    data = record.to_dict()
-    return {
-        "project_id": data.get("project_id"),
-        "name": data.get("name"),
-        "template": data.get("template"),
-        "default_workflow_profile": data.get("default_workflow_profile"),
-        "default_work_type": data.get("default_work_type"),
-    }
 
 
 def requirements_payload(
@@ -410,35 +374,3 @@ def platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
     return hints
 
 
-def session_or_404(chat_store: ChatStoreDep, session_id: UUID) -> ChatSessionRecord:
-    session = chat_store.get_session(session_id)
-    if session is None:
-        raise HTTPException(
-            status_code=404,
-            detail=problem(
-                "chat_session_not_found",
-                "Unknown chat session",
-                details={"session_id": str(session_id)},
-            ),
-        )
-    return session
-
-
-def chat_http_error(exc: Exception) -> HTTPException:
-    if isinstance(exc, KeyError):
-        code = str(exc.args[0]) if exc.args else "not_found"
-        if code == "chat_turn_not_found":
-            return HTTPException(
-                status_code=404,
-                detail=problem(code, "Unknown chat turn"),
-            )
-        return HTTPException(
-            status_code=404,
-            detail=problem("chat_session_not_found", "Unknown chat session"),
-        )
-    if isinstance(exc, ValueError):
-        return HTTPException(
-            status_code=422,
-            detail=problem("invalid_request", str(exc)),
-        )
-    raise exc

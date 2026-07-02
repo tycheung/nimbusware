@@ -127,7 +127,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-branch-tree
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_branch_ui.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -159,7 +159,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-discipline-route
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_thread_ui.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

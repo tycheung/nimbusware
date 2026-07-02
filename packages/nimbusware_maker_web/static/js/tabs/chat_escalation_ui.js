@@ -1,6 +1,6 @@
 import { apiJson, toast } from "../api-client.js";
 import { queueInterjection } from "../interjection-ribbon.js";
-import { renderTurnLine } from "./chat_thread_ui.js";
+import { renderTurnLine } from "./chat_session_ui.js";
 import { switchWorkType } from "./chat_work_type.js";
 
 const ESCALATION_SLICE_OFFER =

@@ -52,3 +52,25 @@ def frontend_writer_optional_spec(*, pre_emit: Any) -> RoleCritiqueEmitSpec:
         emit_stub=surface.emit_stub_frontend_writer_critique_panel,
         pre_emit=pre_emit,
     )
+
+
+def security_critique_scan_spec():
+    from nimbusware_orchestrator._pipeline._helpers import (
+        ScanCritiqueEmitSpec,
+        emit_stub_security_critique_panel,
+        execute_security_critique_llm,
+        parse_security_critique_workflow_block,
+        run_security_scan_summary,
+        security_critique_effective,
+        security_critique_llm_branch_effective,
+    )
+
+    return ScanCritiqueEmitSpec(
+        parse_block=parse_security_critique_workflow_block,
+        effective=security_critique_effective,
+        llm_effective=security_critique_llm_branch_effective,
+        stage_id="implementation.security_critique",
+        run_scan=run_security_scan_summary,
+        execute_llm=execute_security_critique_llm,
+        emit_stub=emit_stub_security_critique_panel,
+    )

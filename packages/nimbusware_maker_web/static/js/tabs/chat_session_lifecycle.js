@@ -2,13 +2,13 @@ import { apiJson, toast } from "../api-client.js";
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 import { wireCollabSessionUi } from "./chat_collab_wiring.js";
 import { refreshChatLibrary } from "./chat_library_ui.js";
-import { refreshBranchPanel } from "./chat_branch_ui.js";
 import {
+  branchPanelCallbacks,
   getCollabMyRole,
+  refreshBranchPanel,
   refreshComputeNodes,
   refreshSessionSidebar,
 } from "./chat_session_ui.js";
-import { branchPanelCallbacks } from "./chat_thread_ui.js";
 
 const SESSION_KEY = "maker_chat_session_id";
 

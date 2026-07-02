@@ -12,7 +12,7 @@ import {
   getCollabMyRole,
   renderParticipantStrip,
 } from "./chat_session_ui.js";
-import { renderMessagesFromSession, renderTurnLine } from "./chat_thread_ui.js";
+import { renderMessagesFromSession, renderTurnLine } from "./chat_session_ui.js";
 
 let sessionStreamTurnCount = 0;
 let cachedCurrentUserId = null;

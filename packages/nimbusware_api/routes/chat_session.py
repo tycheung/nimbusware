@@ -12,15 +12,17 @@ from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.routes.chat_common import (
     StartChatSessionBody,
     StartChatSessionResponse,
-    actor_user_id,
     chat_http_error,
     maybe_apply_chat_replay_alignment,
     patch_context_payload,
     requirements_payload,
     resolve_workflow_profile,
-    session_or_404,
     start_campaign,
     start_run,
+)
+from nimbusware_api.routes.chat_service import (
+    collab_session_actor,
+    session_or_404,
 )
 from nimbusware_api.routes.runs.create import enforce_discovery_gate
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
@@ -296,7 +298,7 @@ def post_session_scope_publish(
     user: OptionalUserDep,
 ) -> ScopePendingResponse:
     session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
+    _, actor = collab_session_actor(chat_store, session_id, request, user)
     _require_scope_writer(chat_store, collab_store, session_id, actor)
     try:
         publish_scope_pending(chat_store, session_id, body.state)
@@ -322,7 +324,7 @@ def get_session_scope_pending(
     user: OptionalUserDep,
 ) -> ScopePendingResponse:
     session_or_404(chat_store, session_id)
-    actor = actor_user_id(request, user)
+    _, actor = collab_session_actor(chat_store, session_id, request, user)
     _require_scope_reader(chat_store, collab_store, session_id, actor)
     pending = get_scope_pending(chat_store, session_id)
     session = chat_store.get_session(session_id)

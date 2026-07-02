@@ -1,9 +1,12 @@
 import { apiJson, toast } from "../api-client.js";
-import { refreshBranchPanel } from "./chat_branch_ui.js";
 import { closeInviteModal, unbindSessionStream } from "./chat_collab_ui.js";
 import { CHAT_WORK_TYPES, chatLayoutHtml } from "./chat_shell_html.js";
 import { createChatSessionApi } from "./chat_session_lifecycle.js";
-import { branchPanelCallbacks, renderMessagesFromSession } from "./chat_thread_ui.js";
+import {
+  branchPanelCallbacks,
+  refreshBranchPanel,
+  renderMessagesFromSession,
+} from "./chat_session_ui.js";
 import {
   maybeOfferPatchEscalation,
   maybeOfferSliceCampaignPromotion,

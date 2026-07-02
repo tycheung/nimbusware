@@ -2,7 +2,7 @@ import { autopilotRibbonHtml } from "../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../enforcement-ribbon.js";
 import { chatInterjectionRibbonHtml } from "../interjection-ribbon.js";
 import { isSafeCodingUx } from "../safe-coding-ux.js";
-import { workTypeLabel } from "./chat_thread_ui.js";
+import { workTypeLabel } from "./chat_session_ui.js";
 
 export const CHAT_WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 export const SAFE_CODING_WORK_TYPES = ["auto", "patch", "slice", "quick"];

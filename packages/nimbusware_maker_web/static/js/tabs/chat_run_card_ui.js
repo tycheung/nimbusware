@@ -3,7 +3,7 @@ import { contractGateFromTimeline, contractGateCardHtml } from "../contract_gate
 import { deployStateFromTimeline } from "../deploy_cockpit.js";
 import { appendTheaterLine } from "../theater-renderer.js";
 import { loadRunCardAgents } from "./chat_agents_ui.js";
-import { workTypeLabel } from "./chat_thread_ui.js";
+import { workTypeLabel } from "./chat_session_ui.js";
 
 const SESSION_KEY = "maker_chat_session_id";
 

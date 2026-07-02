@@ -1,5 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
-import { renderMessagesFromSession, workTypeLabel } from "./chat_thread_ui.js";
+import { renderMessagesFromSession, workTypeLabel } from "./chat_session_ui.js";
 
 async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq } = {}) {
   const payload = { work_type: workType };

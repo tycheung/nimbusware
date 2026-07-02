@@ -12,7 +12,7 @@ import {
   scopeRequirementsPayload,
 } from "./chat_discovery_ui.js";
 import { ensureRunCard } from "./chat_run_card_ui.js";
-import { renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
+import { renderTurnLine, workTypeLabel } from "./chat_session_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
