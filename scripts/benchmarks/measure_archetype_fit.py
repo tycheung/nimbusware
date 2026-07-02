@@ -35,7 +35,7 @@ _SAFE_CODING_BEHAVIORAL: tuple[str, ...] = (
 
 _ENGINEER_STATIC: tuple[str, ...] = (
     "packages/nimbusware_orchestrator/collab_binding_resolver.py",
-    "packages/nimbusware_api/routes/platform_collab_settings.py",
+    "packages/nimbusware_api/routes/platform.py",
     "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
     "packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js",
     "docs/product/journeys/engineer-first-app.md",
