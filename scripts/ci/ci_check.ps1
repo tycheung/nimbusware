@@ -32,6 +32,8 @@ poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_loc_budget_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_loc_report.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/ci/mypy_ci_targets.py).Split(" ")
 poetry run mypy @mypyTargets
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
