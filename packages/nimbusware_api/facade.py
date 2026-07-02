@@ -13,6 +13,7 @@ from nimbusware_api.routes import (
     campaigns,
     chat,
     chat_collab,
+    chat_collab_library,
     chat_host_transfer,
     chat_participants,
     chat_stream,
@@ -58,6 +59,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(auth.router)
     router.include_router(chat.router)
     router.include_router(chat_collab.router)
+    router.include_router(chat_collab_library.router)
     router.include_router(chat_participants.router)
     router.include_router(chat_host_transfer.router)
     router.include_router(chat_stream.router)
