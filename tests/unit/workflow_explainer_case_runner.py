@@ -4,11 +4,20 @@ import importlib
 import json
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
+
+import pytest
+import yaml
 
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     WORKFLOW_EXPLAINER_SPECS,
     explainer_metrics_prefix,
+)
+from unit.composite_repo_fixtures import write_workflow_profile
+from unit.workflow_explainer_helpers import (
+    explainer_payload_for_slug,
+    write_escalation_policy,
 )
 
 
@@ -107,3 +116,176 @@ EXPORT_SMOKE_SLUGS = tuple(
     for spec in WORKFLOW_EXPLAINER_SPECS
     if spec.slug not in {"integration_adapter_writer", "integrator_threshold"}
 )
+
+
+def load_explainer_cases_yaml(path: Path) -> dict[str, Any]:
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise TypeError(f"expected mapping in {path}")
+    return raw
+
+
+def resolve_explainer_caption_fn(slug: str, fn_name: str) -> Callable[[Any], str | None]:
+    return load_caption_fn(f"nimbusware_console.workflow_explainers.{slug}.{fn_name}")
+
+
+def load_operator_metrics_fns(slug: str) -> tuple[
+    Callable[[Mapping[str, Any] | None], dict[str, Any]],
+    Callable[[Mapping[str, Any]], str | None],
+]:
+    prefix = explainer_metrics_prefix(slug)
+    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    return (
+        getattr(mod, f"{prefix}_operator_metrics"),
+        getattr(mod, f"{prefix}_operator_metrics_caption"),
+    )
+
+
+def setup_explainer_repo(tmp_path: Path, case: Mapping[str, Any]) -> None:
+    profile = str(case.get("workflow_profile", "wf"))
+    if "workflow_yaml" in case:
+        write_workflow_profile(tmp_path, profile, str(case["workflow_yaml"]))
+    if "policy_yaml" in case:
+        write_escalation_policy(tmp_path, str(case["policy_yaml"]))
+
+
+def run_explainer_payload_case(
+    slug: str,
+    case: Mapping[str, Any],
+    tmp_path: Path,
+) -> dict[str, Any]:
+    setup_explainer_repo(tmp_path, case)
+    profile = str(case.get("workflow_profile", "wf"))
+    return explainer_payload_for_slug(tmp_path, slug, profile)
+
+
+def assert_payload_expectations(
+    payload: Mapping[str, Any],
+    case: Mapping[str, Any],
+) -> None:
+    expect = case.get("expect") or {}
+    for key, expected in expect.items():
+        assert payload[key] == expected, f"{case.get('id', '?')}: {key}"
+    for key in case.get("expect_nonempty_str") or ():
+        value = payload[key]
+        assert isinstance(value, str) and value.strip() != "", (
+            f"{case.get('id', '?')}: {key} expected non-empty str"
+        )
+    for key, type_name in (case.get("expect_type") or {}).items():
+        value = payload[key]
+        if type_name == "str":
+            assert isinstance(value, str), f"{case.get('id', '?')}: {key}"
+        elif type_name == "int":
+            assert isinstance(value, int), f"{case.get('id', '?')}: {key}"
+        elif type_name == "list":
+            assert isinstance(value, list), f"{case.get('id', '?')}: {key}"
+        else:
+            raise ValueError(f"unsupported expect_type: {type_name!r}")
+    for key, bound in (case.get("expect_int_range") or {}).items():
+        value = payload[key]
+        assert isinstance(value, int), f"{case.get('id', '?')}: {key}"
+        if "min" in bound:
+            assert value >= bound["min"], f"{case.get('id', '?')}: {key}"
+        if "max" in bound:
+            assert value <= bound["max"], f"{case.get('id', '?')}: {key}"
+    for key, nested in (case.get("expect_nested") or {}).items():
+        value = payload[key]
+        assert isinstance(value, dict), f"{case.get('id', '?')}: {key}"
+        for sub_key, expected in nested.items():
+            assert value.get(sub_key) == expected, f"{case.get('id', '?')}: {key}.{sub_key}"
+    for key in case.get("expect_get_null") or ():
+        assert payload.get(key) is None, f"{case.get('id', '?')}: {key}"
+
+
+def assert_caption_expectations(
+    result: str | None,
+    expect: Mapping[str, Any],
+    *,
+    case_id: str = "?",
+) -> None:
+    if expect.get("null"):
+        assert result is None, case_id
+        return
+    if expect.get("not_null"):
+        assert result is not None, case_id
+    if "eq" in expect:
+        assert result == expect["eq"], case_id
+    if result is not None:
+        for fragment in expect.get("contains") or ():
+            needle = str(fragment).lower() if isinstance(fragment, bool) else str(fragment)
+            haystack = result.lower() if isinstance(fragment, bool) else result
+            assert needle in haystack, f"{case_id}: missing {fragment!r} in {result!r}"
+        if "icontains" in expect:
+            assert expect["icontains"].lower() in result.lower(), case_id
+        if "startswith" in expect:
+            assert result.startswith(expect["startswith"]), case_id
+        if "endswith" in expect:
+            assert result.endswith(expect["endswith"]), case_id
+
+
+def run_caption_case(
+    slug: str,
+    case: Mapping[str, Any],
+    tmp_path: Path | None = None,
+) -> str | None:
+    fn = resolve_explainer_caption_fn(slug, str(case["fn"]))
+    payload = case.get("payload")
+    if payload is None and tmp_path is not None and (
+        "workflow_yaml" in case or "policy_yaml" in case
+    ):
+        payload = run_explainer_payload_case(slug, case, tmp_path)
+    return fn(payload)
+
+
+def run_and_assert_caption_case(
+    slug: str,
+    case: Mapping[str, Any],
+    tmp_path: Path | None = None,
+) -> None:
+    if "payload" in case:
+        payload = case["payload"]
+    elif tmp_path is not None and ("workflow_yaml" in case or "policy_yaml" in case):
+        payload = run_explainer_payload_case(slug, case, tmp_path)
+        if case.get("expect_payload"):
+            assert_payload_expectations(
+                payload,
+                {"expect": case["expect_payload"], "id": case.get("id", "?")},
+            )
+    else:
+        raise ValueError(f"caption case {case.get('id', '?')} needs payload or repo setup")
+    fn = resolve_explainer_caption_fn(slug, str(case["fn"]))
+    result = fn(payload)
+    assert_caption_expectations(result, case.get("expect") or {}, case_id=str(case.get("id", "?")))
+
+
+def run_and_assert_operator_metrics_case(slug: str, case: Mapping[str, Any]) -> None:
+    metrics_fn, caption_fn = load_operator_metrics_fns(slug)
+    payload = case.get("payload") or {}
+    metrics = metrics_fn(payload)
+    for key, expected in (case.get("expect_metrics") or {}).items():
+        assert metrics[key] == expected, f"{case.get('id', '?')}: metrics[{key}]"
+    cap = caption_fn(metrics)
+    expect_cap = case.get("expect_caption") or {}
+    if expect_cap.get("null"):
+        assert cap is None, case.get("id")
+    elif expect_cap.get("not_null"):
+        assert cap is not None, case.get("id")
+    if cap is not None:
+        for fragment in expect_cap.get("contains") or ():
+            needle = str(fragment).lower() if isinstance(fragment, bool) else str(fragment)
+            haystack = cap.lower() if isinstance(fragment, bool) else cap
+            assert needle in haystack, f"{case.get('id', '?')}: caption missing {fragment!r}"
+        if "icontains" in expect_cap:
+            assert expect_cap["icontains"].lower() in cap.lower(), case.get("id")
+
+
+def run_and_assert_env_payload_case(
+    slug: str,
+    case: Mapping[str, Any],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    for key, value in (case.get("env") or {}).items():
+        monkeypatch.setenv(key, str(value))
+    payload = run_explainer_payload_case(slug, case, tmp_path)
+    assert_payload_expectations(payload, case)

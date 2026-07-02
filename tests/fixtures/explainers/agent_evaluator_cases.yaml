@@ -1,0 +1,447 @@
+slug: agent_evaluator
+
+payload_cases:
+  - id: missing_key_bare
+    workflow_profile: bare
+    workflow_yaml: |
+      version: 1
+    expect:
+      agent_evaluator_yaml_key_present: false
+      agent_evaluator_yaml_raw_type: null
+      agent_evaluator_yaml_mapping_string_key_count: null
+      agent_evaluator_yaml_true_bool_value_count: null
+      agent_evaluator_yaml_false_bool_value_count: null
+      yaml_parsed_enabled: false
+      yaml_parsed_persona_id: default
+      yaml_parsed_auto_promote_probation: false
+      yaml_parsed_auto_create_persona:
+        enabled: false
+        shelf: ""
+        display_name: ""
+      would_emit_stage_started: false
+      load_error: null
+      workflow_yaml_top_level_version_int: 1
+    expect_nested:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE:
+        disables_auto_create: false
+
+  - id: version_missing_then_on
+    workflow_profile: no_ver
+    workflow_yaml: |
+      agent_evaluator:
+        enabled: false
+        persona_id: x
+    expect:
+      workflow_yaml_top_level_version_int: null
+
+  - id: enabled_on_custom_persona
+    workflow_profile: ae_on
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+        persona_id: custom-p
+    expect:
+      agent_evaluator_yaml_key_present: true
+      agent_evaluator_yaml_raw_type: dict
+      agent_evaluator_yaml_mapping_string_key_count: 2
+      agent_evaluator_yaml_true_bool_value_count: 1
+      agent_evaluator_yaml_false_bool_value_count: 0
+      yaml_parsed_enabled: true
+      yaml_parsed_persona_id: custom-p
+      yaml_parsed_auto_promote_probation: false
+      would_emit_stage_started: true
+
+  - id: workflow_disabled
+    workflow_profile: ae_off
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: false
+    expect:
+      yaml_parsed_enabled: false
+      agent_evaluator_yaml_raw_type: dict
+      agent_evaluator_yaml_mapping_string_key_count: 1
+      agent_evaluator_yaml_true_bool_value_count: 0
+      agent_evaluator_yaml_false_bool_value_count: 1
+      would_emit_stage_started: false
+
+  - id: llm_evaluation_enabled
+    workflow_profile: ae_llm
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+        llm_evaluation_enabled: true
+    expect:
+      yaml_parsed_llm_evaluation_enabled: true
+
+  - id: auto_promote_probation
+    workflow_profile: ae_promo
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+        persona_id: x
+        auto_promote_probation: true
+    expect:
+      yaml_parsed_auto_promote_probation: true
+      agent_evaluator_yaml_raw_type: dict
+      agent_evaluator_yaml_mapping_string_key_count: 3
+      agent_evaluator_yaml_true_bool_value_count: 2
+    expect_nested:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE:
+        disables_auto_promote: false
+
+  - id: auto_create_persona_block
+    workflow_profile: ae_create
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+        persona_id: net_new_ae_pid
+        auto_create_persona:
+          enabled: true
+          shelf: business_area
+          display_name: Net New AE
+    expect:
+      yaml_parsed_auto_create_persona:
+        enabled: true
+        shelf: business_area
+        display_name: Net New AE
+      agent_evaluator_yaml_true_bool_value_count: 1
+    expect_nested:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE:
+        disables_auto_create: false
+
+caption_cases:
+  - id: env_gate_kill_switch
+    fn: agent_evaluator_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_off: true
+        raw: "0"
+    expect:
+      not_null: true
+      contains: [kill-switch]
+
+  - id: env_gate_force_on
+    fn: agent_evaluator_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_on: true
+        raw: "1"
+    expect:
+      not_null: true
+      contains: [force-on]
+
+  - id: env_gate_unset
+    fn: agent_evaluator_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR:
+        unset: true
+    expect:
+      not_null: true
+      contains: [unset]
+
+  - id: env_gate_null
+    fn: agent_evaluator_env_gate_caption
+    payload: null
+    expect:
+      null: true
+
+  - id: env_gate_load_error
+    fn: agent_evaluator_env_gate_caption
+    payload:
+      load_error: bad
+    expect:
+      null: true
+
+  - id: auto_promote_kill_switch
+    fn: agent_evaluator_auto_promote_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE:
+        disables_auto_promote: true
+        raw: "0"
+    expect:
+      not_null: true
+      contains: [kill-switch]
+
+  - id: auto_promote_unset
+    fn: agent_evaluator_auto_promote_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE:
+        unset: true
+    expect:
+      not_null: true
+      contains: [unset]
+
+  - id: auto_promote_unrecognised
+    fn: agent_evaluator_auto_promote_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE:
+        unrecognised_value: true
+        raw: maybe
+    expect:
+      not_null: true
+      contains: [unrecognised]
+
+  - id: auto_create_kill_switch
+    fn: agent_evaluator_auto_create_env_gate_caption
+    payload:
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE:
+        disables_auto_create: true
+        raw: "0"
+    expect:
+      not_null: true
+      contains: [kill-switch]
+
+  - id: yaml_key_absent
+    fn: agent_evaluator_yaml_key_present_caption
+    payload:
+      agent_evaluator_yaml_key_present: false
+    expect:
+      not_null: true
+      contains: [absent]
+
+  - id: yaml_key_on
+    fn: agent_evaluator_yaml_key_present_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_enabled: true
+    expect:
+      not_null: true
+      contains: [present, "true"]
+
+  - id: yaml_key_off
+    fn: agent_evaluator_yaml_key_present_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_enabled: false
+    expect:
+      not_null: true
+      contains: ["false"]
+
+  - id: persona_id_default
+    fn: agent_evaluator_persona_id_caption
+    payload:
+      yaml_parsed_persona_id: default
+    expect:
+      not_null: true
+      contains: ["`default`"]
+
+  - id: persona_id_custom
+    fn: agent_evaluator_persona_id_caption
+    payload:
+      yaml_parsed_persona_id: "  custom-p  "
+    expect:
+      not_null: true
+      contains: ["`custom-p`"]
+
+  - id: persona_id_empty
+    fn: agent_evaluator_persona_id_caption
+    payload:
+      yaml_parsed_persona_id: ""
+    expect:
+      null: true
+
+  - id: parsed_enabled_on
+    fn: agent_evaluator_yaml_parsed_enabled_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_enabled: true
+    expect:
+      not_null: true
+      contains: ["**true**"]
+
+  - id: parsed_enabled_off
+    fn: agent_evaluator_yaml_parsed_enabled_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_enabled: false
+    expect:
+      not_null: true
+      contains: ["**false**"]
+
+  - id: parsed_enabled_key_absent
+    fn: agent_evaluator_yaml_parsed_enabled_caption
+    payload:
+      agent_evaluator_yaml_key_present: false
+      yaml_parsed_enabled: true
+    expect:
+      null: true
+
+  - id: llm_eval_on
+    fn: agent_evaluator_llm_evaluation_enabled_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_llm_evaluation_enabled: true
+    expect:
+      not_null: true
+      contains: [llm_evaluation_enabled, "**on**"]
+
+  - id: llm_eval_off
+    fn: agent_evaluator_llm_evaluation_enabled_caption
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_llm_evaluation_enabled: false
+    expect:
+      not_null: true
+      contains: ["**off**"]
+
+  - id: would_emit_on
+    fn: agent_evaluator_would_emit_caption
+    payload:
+      would_emit_stage_started: true
+    expect:
+      not_null: true
+      contains: [would emit]
+
+  - id: would_emit_off
+    fn: agent_evaluator_would_emit_caption
+    payload:
+      would_emit_stage_started: false
+    expect:
+      not_null: true
+      contains: [would not emit]
+
+  - id: workflow_version_three
+    fn: agent_evaluator_workflow_yaml_version_caption
+    payload:
+      workflow_yaml_top_level_version_int: 3
+    expect:
+      not_null: true
+      contains: ["**3**"]
+
+  - id: workflow_version_zero
+    fn: agent_evaluator_workflow_yaml_version_caption
+    payload:
+      workflow_yaml_top_level_version_int: 0
+    expect:
+      null: true
+
+  - id: workflow_version_bool
+    fn: agent_evaluator_workflow_yaml_version_caption
+    payload:
+      workflow_yaml_top_level_version_int: true
+    expect:
+      null: true
+
+caption_repo_cases:
+  - id: yaml_raw_type_dict
+    fn: agent_evaluator_yaml_raw_type_caption
+    workflow_profile: ae
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+    expect:
+      not_null: true
+      contains: ["**dict**"]
+
+  - id: yaml_true_bool_count
+    fn: agent_evaluator_yaml_true_bool_count_caption
+    workflow_profile: ae
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+        auto_promote_probation: true
+    expect:
+      not_null: true
+      contains: ["**2**"]
+
+operator_metrics_cases:
+  - id: would_emit_llm
+    payload:
+      would_emit_llm_evaluation: true
+      yaml_parsed_llm_evaluation_enabled: true
+      would_emit_stage_started: true
+    expect_metrics:
+      would_emit_llm_evaluation: true
+    expect_caption:
+      not_null: true
+      contains: [LLM branch]
+
+  - id: llm_and_env_gates
+    payload:
+      yaml_parsed_llm_evaluation_enabled: true
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE:
+        disables_auto_promote: true
+      NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE:
+        disables_auto_create: true
+    expect_metrics:
+      llm_evaluation_enabled: true
+      auto_promote_disabled: true
+      auto_create_disabled: true
+    expect_caption:
+      not_null: true
+      contains: [LLM, auto-promote]
+
+  - id: yaml_bool_counts
+    payload:
+      agent_evaluator_yaml_true_bool_value_count: 2
+      agent_evaluator_yaml_false_bool_value_count: 1
+    expect_metrics:
+      yaml_true_bool_value_count: 2
+      yaml_false_bool_value_count: 1
+    expect_caption:
+      not_null: true
+      icontains: true
+
+  - id: env_forces_on
+    payload:
+      agent_evaluator_yaml_key_present: true
+      yaml_parsed_enabled: false
+      yaml_parsed_persona_id: p1
+      would_emit_stage_started: true
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_on: true
+        forces_off: false
+        unset: false
+      workflow_yaml_top_level_version_int: 3
+    expect_metrics:
+      env_forces_on: true
+      would_emit_stage_started: true
+      persona_id_present: true
+      workflow_yaml_version_int: 3
+    expect_caption:
+      not_null: true
+      contains: [emit]
+
+  - id: load_error
+    payload:
+      load_error: missing file
+    expect_metrics:
+      load_error_present: true
+
+env_payload_cases:
+  - id: env_force_on_overrides_off
+    env:
+      NIMBUSWARE_AGENT_EVALUATOR: "1"
+    workflow_profile: ae_off
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: false
+    expect:
+      yaml_parsed_enabled: false
+      would_emit_stage_started: true
+    expect_nested:
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_on: true
+
+  - id: env_kill_switch_overrides_on
+    env:
+      NIMBUSWARE_AGENT_EVALUATOR: "0"
+    workflow_profile: ae_on
+    workflow_yaml: |
+      version: 1
+      agent_evaluator:
+        enabled: true
+    expect:
+      yaml_parsed_enabled: true
+      would_emit_stage_started: false
+    expect_nested:
+      NIMBUSWARE_AGENT_EVALUATOR:
+        forces_off: true

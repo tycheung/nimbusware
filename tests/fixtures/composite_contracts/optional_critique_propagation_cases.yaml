@@ -1,0 +1,46 @@
+cases:
+  - case_id: base_url_default
+    base_cfg: {}
+    expect_base_url: http://localhost:11434
+    expect_timeout: 120.0
+    verifier_exit_code: 0
+    log_snippet: ok
+    model_id: llama3.1:8b
+
+  - case_id: base_url_override
+    base_cfg:
+      runtime:
+        base_url: http://example:9000
+    expect_base_url: http://example:9000
+    expect_timeout: 120.0
+    verifier_exit_code: 0
+    log_snippet: ok
+    model_id: llama3.1:8b
+
+  - case_id: timeout_default
+    base_cfg: {}
+    expect_base_url: http://localhost:11434
+    expect_timeout: 120.0
+    verifier_exit_code: 0
+    log_snippet: ok
+    model_id: llama3.1:8b
+    assert_timeout_type: true
+
+  - case_id: timeout_override
+    base_cfg:
+      runtime:
+        request_timeout_seconds: 30
+    expect_base_url: http://localhost:11434
+    expect_timeout: 30.0
+    verifier_exit_code: 0
+    log_snippet: ok
+    model_id: llama3.1:8b
+    assert_timeout_type: true
+
+  - case_id: kwargs_propagation
+    base_cfg: null
+    expect_base_url: null
+    expect_timeout: null
+    verifier_exit_code: 42
+    log_snippet: LOG_X
+    model_id: custom-model:13b

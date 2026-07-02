@@ -3,9 +3,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 from uuid import uuid4
+
+import yaml
 
 from agent_core.models import (
     EventType,
@@ -213,3 +216,46 @@ def make_propagation_eff(spec: OptionalCritiqueEmitterSpec) -> EffectiveUniversa
     return make_effective_universal_critique(
         **{spec.enabled_key: True, spec.llm_key: True, spec.stub_key: False},
     )
+
+
+_PROPAGATION_FIXTURE = (
+    Path(__file__).resolve().parents[2]
+    / "fixtures"
+    / "composite_contracts"
+    / "optional_critique_propagation_cases.yaml"
+)
+PROPAGATION_CASES: tuple[dict[str, Any], ...] = tuple(
+    yaml.safe_load(_PROPAGATION_FIXTURE.read_text(encoding="utf-8"))["cases"]
+)
+
+
+def run_optional_critique_propagation_case(
+    spec: OptionalCritiqueEmitterSpec,
+    case: dict[str, Any],
+) -> tuple[dict[str, Any], Any]:
+    eff = make_propagation_eff(spec)
+    with (
+        patch(spec.llm_patch) as m_llm,
+        patch(spec.stub_patch),
+    ):
+        m_llm.return_value = True
+        orch, mem = make_dev_orchestrator()
+        rid = orch.create_run("default")
+        append_model_selected_primary(mem, rid, model_id=case["model_id"])
+        emit = getattr(orch, spec.emit_method)
+        if case["base_cfg"] is None:
+            emit(
+                rid,
+                verifier_exit_code=case["verifier_exit_code"],
+                log_snippet=case["log_snippet"],
+                eff=eff,
+            )
+        else:
+            with patch.object(orch, "_base_cfg", return_value=case["base_cfg"]):
+                emit(
+                    rid,
+                    verifier_exit_code=case["verifier_exit_code"],
+                    log_snippet=case["log_snippet"],
+                    eff=eff,
+                )
+        return m_llm.call_args.kwargs, rid

@@ -1,0 +1,978 @@
+slug: escalation_suppress
+
+payload_cases:
+  - id: no_escalation_key_bare
+    workflow_profile: bare
+    workflow_yaml: |
+      version: 1
+    expect:
+      escalation_yaml_key_present: false
+      escalation_yaml_value: null
+      suppress_automatic_escalation_yaml_raw: null
+      suppress_automatic_escalation_effective: false
+      load_error: null
+      suppress_automatic_escalation_yaml_raw_type: null
+      workflow_yaml_top_level_version_int: 1
+
+  - id: no_escalation_key_sup_on
+    workflow_profile: sup_on
+    workflow_yaml: |
+      version: 1
+      escalation:
+        suppress_automatic_escalation: true
+    expect:
+      escalation_yaml_key_present: true
+      suppress_automatic_escalation_effective: true
+      suppress_automatic_escalation_yaml_raw: true
+      suppress_automatic_escalation_yaml_raw_type: bool
+      workflow_yaml_top_level_version_int: 1
+
+  - id: suppress_false
+    workflow_profile: sup_off
+    workflow_yaml: |
+      version: 1
+      escalation:
+        suppress_automatic_escalation: false
+    expect:
+      suppress_automatic_escalation_effective: false
+      suppress_automatic_escalation_yaml_raw: false
+      suppress_automatic_escalation_yaml_raw_type: bool
+      workflow_yaml_top_level_version_int: 1
+
+  - id: string_yes_truthy
+    workflow_profile: yes_str
+    workflow_yaml: |
+      version: 1
+      escalation:
+        suppress_automatic_escalation: "yes"
+    expect:
+      suppress_automatic_escalation_effective: true
+      suppress_automatic_escalation_yaml_raw_type: str
+      workflow_yaml_top_level_version_int: 1
+
+  - id: malformed_escalation_scalar
+    workflow_profile: bad_esc
+    workflow_yaml: |
+      version: 1
+      escalation: true
+    expect:
+      escalation_yaml_key_present: true
+      escalation_yaml_value: true
+      suppress_automatic_escalation_yaml_raw: null
+      suppress_automatic_escalation_effective: false
+      suppress_automatic_escalation_yaml_raw_type: null
+      workflow_yaml_top_level_version_int: 1
+
+  - id: version_missing
+    workflow_profile: no_ver
+    workflow_yaml: |
+      escalation:
+        suppress_automatic_escalation: false
+    expect:
+      workflow_yaml_top_level_version_int: null
+      escalation_yaml_key_present: true
+
+  - id: version_non_int
+    workflow_profile: v_bad
+    workflow_yaml: |
+      version: "1"
+      escalation:
+        suppress_automatic_escalation: false
+    expect:
+      workflow_yaml_top_level_version_int: null
+
+  - id: policy_absent
+    workflow_profile: bare
+    workflow_yaml: |
+      version: 1
+    expect:
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_relpath: null
+      escalation_policy_yaml_file_bytes: null
+      escalation_policy_yaml_mtime_iso: null
+      escalation_policy_yaml_top_level_key_count: 0
+      escalation_policy_yaml_top_level_keys_sample: []
+      escalation_policy_yaml_top_level_kinds:
+        mapping: 0
+        scalar: 0
+        list: 0
+        other: 0
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_verification_mapping: null
+      escalation_policy_yaml_has_anti_deadlock_mapping: null
+
+  - id: scalar_retry_fields
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      max_retries_per_stage: 5
+      deadlock_escalation_after_minutes: 12
+    expect:
+      escalation_policy_yaml_max_retries_per_stage: 5
+      escalation_policy_yaml_deadlock_escalation_after_minutes: 12
+      escalation_policy_yaml_version: 1
+      escalation_policy_yaml_anti_deadlock_enabled: null
+
+  - id: rejects_non_int_max_retries
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      max_retries_per_stage: true
+      deadlock_escalation_after_minutes: "12"
+    expect:
+      escalation_policy_yaml_max_retries_per_stage: null
+
+  - id: rejects_non_int_deadlock_minutes
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      max_retries_per_stage: true
+      deadlock_escalation_after_minutes: "12"
+    expect:
+      escalation_policy_yaml_deadlock_escalation_after_minutes: null
+
+  - id: rejects_non_int_anti_deadlock_min_progress
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      anti_deadlock:
+        min_progress_events: not_int
+    expect:
+      escalation_policy_yaml_anti_deadlock_min_progress_events: null
+
+  - id: anti_deadlock_enabled_false
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 2
+      anti_deadlock:
+        enabled: false
+        min_progress_events: 1
+    expect:
+      escalation_policy_yaml_version: 2
+      escalation_policy_yaml_anti_deadlock_enabled: false
+      escalation_policy_yaml_anti_deadlock_min_progress_events: 1
+
+  - id: anti_deadlock_min_progress_only
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      anti_deadlock:
+        min_progress_events: 9
+    expect:
+      escalation_policy_yaml_has_anti_deadlock_mapping: true
+      escalation_policy_yaml_anti_deadlock_enabled: null
+      escalation_policy_yaml_anti_deadlock_min_progress_events: 9
+
+  - id: anti_deadlock_mapping_true
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      anti_deadlock:
+        max_retries: 1
+    expect:
+      escalation_policy_yaml_has_anti_deadlock_mapping: true
+      escalation_policy_yaml_max_retries_per_stage: null
+      escalation_policy_yaml_deadlock_escalation_after_minutes: null
+      escalation_policy_yaml_anti_deadlock_min_progress_events: null
+
+  - id: anti_deadlock_scalar_false
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      anti_deadlock: true
+    expect:
+      escalation_policy_yaml_has_anti_deadlock_mapping: false
+
+  - id: verification_mapping_true
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      verification:
+        auto_escalate_after_cumulative_findings: null
+    expect:
+      escalation_policy_yaml_has_verification_mapping: true
+
+  - id: top_level_kinds_mixed
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      a: {x: 1}
+      b: 1
+      c: [1, 2]
+      d: null
+      e: hello
+    expect:
+      escalation_policy_yaml_top_level_kinds:
+        mapping: 1
+        scalar: 3
+        list: 1
+        other: 0
+      escalation_policy_yaml_top_level_key_count: 5
+
+  - id: age_seconds_absent_policy
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    expect:
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_age_seconds: null
+
+  - id: age_seconds_fresh_small
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+    expect_type:
+      escalation_policy_yaml_age_seconds: int
+    expect_int_range:
+      escalation_policy_yaml_age_seconds:
+        min: 0
+        max: 300
+
+  - id: age_seconds_load_error
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      : : not yaml
+    expect_type:
+      escalation_policy_yaml_load_error: str
+    expect:
+      escalation_policy_yaml_age_seconds: null
+
+  - id: malformed_policy_load_error
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      : not valid yaml :
+    expect:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: 0
+      escalation_policy_yaml_top_level_keys_sample: []
+      escalation_policy_yaml_top_level_kinds:
+        mapping: 0
+        scalar: 0
+        list: 0
+        other: 0
+      load_error: null
+    expect_nonempty_str:
+      - escalation_policy_yaml_load_error
+    expect_get_null:
+      - escalation_policy_yaml_has_verification_mapping
+      - escalation_policy_yaml_has_anti_deadlock_mapping
+
+caption_cases:
+  - id: deadlock_minutes_12
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_deadlock_escalation_after_minutes: 12
+    expect:
+      not_null: true
+      contains: ["12", "minutes"]
+
+  - id: deadlock_minutes_singular
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_deadlock_escalation_after_minutes: 1
+    expect:
+      not_null: true
+      contains: ["minute."]
+
+  - id: deadlock_minutes_null_input
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload: null
+    expect:
+      null: true
+
+  - id: deadlock_minutes_load_error
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload:
+      load_error: bad
+    expect:
+      null: true
+
+  - id: deadlock_minutes_policy_load_error
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: x
+      escalation_policy_yaml_deadlock_escalation_after_minutes: 1
+    expect:
+      null: true
+
+  - id: deadlock_minutes_negative
+    fn: escalation_policy_yaml_deadlock_minutes_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_deadlock_escalation_after_minutes: -1
+    expect:
+      null: true
+
+  - id: anti_deadlock_min_progress_null
+    fn: escalation_policy_yaml_anti_deadlock_min_progress_caption
+    payload: null
+    expect:
+      null: true
+
+  - id: anti_deadlock_min_progress_no_policy
+    fn: escalation_policy_yaml_anti_deadlock_min_progress_caption
+    payload:
+      escalation_policy_yaml_path_exists: false
+    expect:
+      null: true
+
+  - id: anti_deadlock_min_progress_nine
+    fn: escalation_policy_yaml_anti_deadlock_min_progress_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_anti_deadlock_min_progress_events: 9
+    expect:
+      eq: "Escalation policy anti_deadlock.min_progress_events: **9** events."
+
+  - id: anti_deadlock_min_progress_one
+    fn: escalation_policy_yaml_anti_deadlock_min_progress_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_anti_deadlock_min_progress_events: 1
+    expect:
+      not_null: true
+      contains: ["1** event."]
+
+  - id: anti_deadlock_min_progress_non_int
+    fn: escalation_policy_yaml_anti_deadlock_min_progress_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_anti_deadlock_min_progress_events: true
+    expect:
+      null: true
+
+  - id: anti_deadlock_shape_true
+    fn: escalation_policy_yaml_anti_deadlock_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_anti_deadlock_mapping: true
+    expect:
+      not_null: true
+      icontains: anti_deadlock
+
+  - id: anti_deadlock_shape_false
+    fn: escalation_policy_yaml_anti_deadlock_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_anti_deadlock_mapping: false
+    expect:
+      not_null: true
+      icontains: no top-level
+
+  - id: anti_deadlock_shape_unknown
+    fn: escalation_policy_yaml_anti_deadlock_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_anti_deadlock_mapping: null
+    expect:
+      null: true
+
+  - id: yaml_key_present_absent
+    fn: escalation_yaml_key_present_caption
+    payload:
+      escalation_yaml_key_present: false
+    expect:
+      not_null: true
+      contains: [absent]
+
+  - id: yaml_key_present_on
+    fn: escalation_yaml_key_present_caption
+    payload:
+      escalation_yaml_key_present: true
+      suppress_automatic_escalation_effective: true
+    expect:
+      not_null: true
+      contains: ["true"]
+
+  - id: yaml_key_present_off
+    fn: escalation_yaml_key_present_caption
+    payload:
+      escalation_yaml_key_present: true
+      suppress_automatic_escalation_effective: false
+    expect:
+      not_null: true
+      contains: ["false"]
+
+  - id: yaml_key_present_null
+    fn: escalation_yaml_key_present_caption
+    payload: null
+    expect:
+      null: true
+
+  - id: yaml_key_present_load_error
+    fn: escalation_yaml_key_present_caption
+    payload:
+      load_error: bad
+    expect:
+      null: true
+
+  - id: suppress_flag_effective_missing
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_yaml_raw_type: bool
+    expect:
+      null: true
+
+  - id: suppress_flag_effective_int
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_yaml_raw_type: bool
+      suppress_automatic_escalation_effective: 1
+    expect:
+      null: true
+
+  - id: suppress_flag_effective_str
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_yaml_raw_type: bool
+      suppress_automatic_escalation_effective: "true"
+    expect:
+      null: true
+
+  - id: suppress_flag_effective_none
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_yaml_raw_type: bool
+      suppress_automatic_escalation_effective: null
+    expect:
+      null: true
+
+  - id: suppress_flag_composite_true_bool
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_effective: true
+      suppress_automatic_escalation_yaml_raw_type: bool
+    expect:
+      eq: "Suppress automatic escalation: True (YAML raw type: bool)."
+
+  - id: suppress_flag_composite_false_nonetype
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_effective: false
+      suppress_automatic_escalation_yaml_raw_type: NoneType
+    expect:
+      eq: "Suppress automatic escalation: False (YAML raw type: NoneType)."
+
+  - id: suppress_flag_bare_raw_none
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_effective: true
+      suppress_automatic_escalation_yaml_raw_type: null
+    expect:
+      eq: "Suppress automatic escalation: True."
+
+  - id: suppress_flag_bare_raw_blank
+    fn: escalation_suppress_flag_caption
+    payload:
+      load_error: null
+      suppress_automatic_escalation_effective: true
+      suppress_automatic_escalation_yaml_raw_type: "   "
+    expect:
+      eq: "Suppress automatic escalation: True."
+
+  - id: verification_shape_true
+    fn: escalation_policy_yaml_verification_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_verification_mapping: true
+    expect:
+      not_null: true
+      icontains: verification
+
+  - id: verification_shape_false
+    fn: escalation_policy_yaml_verification_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_verification_mapping: false
+    expect:
+      not_null: true
+      icontains: no top-level
+
+  - id: verification_shape_unknown
+    fn: escalation_policy_yaml_verification_shape_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_has_verification_mapping: null
+    expect:
+      null: true
+
+  - id: key_count_absent_file
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_top_level_key_count: 3
+    expect:
+      null: true
+
+  - id: key_count_missing
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+    expect:
+      null: true
+
+  - id: key_count_str
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: "3"
+    expect:
+      null: true
+
+  - id: key_count_none
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: null
+    expect:
+      null: true
+
+  - id: key_count_bool
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: true
+    expect:
+      null: true
+
+  - id: key_count_negative
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: -1
+    expect:
+      null: true
+
+  - id: key_count_zero
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: 0
+    expect:
+      eq: "Policy YAML top-level keys: 0."
+
+  - id: key_count_four
+    fn: escalation_policy_yaml_key_count_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: 4
+    expect:
+      eq: "Policy YAML top-level keys: 4."
+
+  - id: version_absent_file
+    fn: escalation_policy_yaml_version_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_version: 2
+    expect:
+      null: true
+
+  - id: version_missing
+    fn: escalation_policy_yaml_version_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+    expect:
+      null: true
+
+  - id: version_three
+    fn: escalation_policy_yaml_version_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_version: 3
+    expect:
+      eq: "Escalation policy YAML version: **3**."
+
+  - id: version_bool
+    fn: escalation_policy_yaml_version_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_version: true
+    expect:
+      null: true
+
+  - id: max_retries_five
+    fn: escalation_policy_yaml_max_retries_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_max_retries_per_stage: 5
+    expect:
+      eq: "Escalation policy max retries per stage: **5**."
+
+  - id: max_retries_zero
+    fn: escalation_policy_yaml_max_retries_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_max_retries_per_stage: 0
+    expect:
+      eq: "Escalation policy max retries per stage: **0**."
+
+  - id: keys_sample_absent_file
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_top_level_keys_sample: [a, b]
+    expect:
+      null: true
+
+  - id: keys_sample_missing
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+    expect:
+      null: true
+
+  - id: keys_sample_not_list_str
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: a
+    expect:
+      null: true
+
+  - id: keys_sample_not_list_null
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: null
+    expect:
+      null: true
+
+  - id: keys_sample_empty
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: []
+    expect:
+      null: true
+
+  - id: keys_sample_all_unusable
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: ["   ", "", 1, null, false]
+    expect:
+      null: true
+
+  - id: keys_sample_single
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: ["  foo  "]
+    expect:
+      eq: "Policy YAML top-level keys (sample): foo."
+
+  - id: keys_sample_three
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: [z, a, m]
+    expect:
+      eq: "Policy YAML top-level keys (sample): z, a, m."
+
+  - id: keys_sample_mixed
+    fn: escalation_policy_yaml_keys_sample_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_keys_sample: [ok, 99, null, "  bar  "]
+    expect:
+      eq: "Policy YAML top-level keys (sample): ok, bar."
+
+  - id: relpath_absent_file
+    fn: escalation_policy_yaml_relpath_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: false
+      escalation_policy_yaml_relpath: configs/escalation/policy.yaml
+    expect:
+      null: true
+
+  - id: relpath_blank
+    fn: escalation_policy_yaml_relpath_caption
+    payload:
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_relpath: "   "
+    expect:
+      null: true
+
+  - id: kinds_all_zero
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_top_level_kinds:
+        mapping: 0
+        scalar: 0
+        list: 0
+        other: 0
+    expect:
+      null: true
+
+  - id: kinds_bare_mapping
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    payload:
+      mapping: 2
+      scalar: 1
+      list: 0
+      other: 1
+    expect:
+      eq: "Policy top-level kinds: 2 mapping(s), 1 scalar(s), 0 list(s), 1 other."
+
+  - id: kinds_bare_zero
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    payload:
+      mapping: 0
+      scalar: 0
+      list: 0
+      other: 0
+    expect:
+      null: true
+
+  - id: kinds_non_int
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    payload:
+      mapping: "2"
+      scalar: true
+      list: null
+      other: 1.5
+    expect:
+      null: true
+
+  - id: mtime_missing_iso
+    fn: escalation_policy_yaml_mtime_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_mtime_iso: null
+      escalation_policy_yaml_age_seconds: 10
+    expect:
+      null: true
+
+  - id: mtime_age_none
+    fn: escalation_policy_yaml_mtime_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_mtime_iso: "2026-01-01T00:00:00Z"
+      escalation_policy_yaml_age_seconds: null
+    expect:
+      null: true
+
+  - id: mtime_age_bool
+    fn: escalation_policy_yaml_mtime_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_mtime_iso: "2026-01-01T00:00:00Z"
+      escalation_policy_yaml_age_seconds: true
+    expect:
+      null: true
+
+  - id: mtime_age_str
+    fn: escalation_policy_yaml_mtime_caption
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_load_error: null
+      escalation_policy_yaml_mtime_iso: "2026-01-01T00:00:00Z"
+      escalation_policy_yaml_age_seconds: "5"
+    expect:
+      null: true
+
+caption_repo_cases:
+  - id: kinds_caption_none_policy_absent
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    expect:
+      null: true
+
+  - id: kinds_caption_mixed
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      a: {x: 1}
+      b: 1
+      c: [1, 2]
+      d: null
+      e: hello
+    expect:
+      eq: "Policy top-level kinds: 1 mapping(s), 3 scalar(s), 1 list(s), 0 other."
+
+  - id: kinds_caption_mapping_only
+    fn: escalation_policy_yaml_top_level_kinds_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      a: {x: 1}
+      b: {y: 2}
+    expect:
+      eq: "Policy top-level kinds: 2 mapping(s), 0 scalar(s), 0 list(s), 0 other."
+
+  - id: key_count_fresh_two_key
+    fn: escalation_policy_yaml_key_count_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      version: 1
+      thresholds:
+        warning: 3
+    expect:
+      eq: "Policy YAML top-level keys: 2."
+    expect_payload:
+      escalation_policy_yaml_top_level_key_count: 2
+
+  - id: keys_sample_fresh_sorted
+    fn: escalation_policy_yaml_keys_sample_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      zeta: 1
+      alpha: 2
+      beta: 3
+    expect:
+      eq: "Policy YAML top-level keys (sample): alpha, beta, zeta."
+    expect_payload:
+      escalation_policy_yaml_top_level_key_count: 3
+
+  - id: suppress_flag_fresh_workflow
+    fn: escalation_suppress_flag_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    expect:
+      not_null: true
+      startswith: "Suppress automatic escalation: False"
+
+  - id: relpath_fresh_policy
+    fn: escalation_policy_yaml_relpath_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    policy_yaml: |
+      a: 1
+    expect:
+      not_null: true
+      contains: [escalation]
+
+  - id: mtime_caption_none_policy_absent
+    fn: escalation_policy_yaml_mtime_caption
+    workflow_profile: wf
+    workflow_yaml: |
+      version: 1
+    expect:
+      null: true
+
+operator_metrics_cases:
+  - id: policy_file_bytes
+    payload:
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_file_bytes: 512
+    expect_metrics:
+      policy_yaml_file_bytes: 512
+    expect_caption:
+      not_null: true
+      contains: ["512"]
+
+  - id: anti_deadlock
+    payload:
+      escalation_policy_yaml_has_anti_deadlock_mapping: true
+      escalation_policy_yaml_anti_deadlock_min_progress_events: 9
+    expect_metrics:
+      anti_deadlock_mapping_present: true
+      anti_deadlock_min_progress_events: 9
+    expect_caption:
+      not_null: true
+      contains: ["9"]
+
+  - id: policy_age
+    payload:
+      escalation_policy_yaml_age_seconds: 42
+    expect_metrics:
+      policy_yaml_age_seconds: 42
+    expect_caption:
+      not_null: true
+      contains: ["42s"]
+
+  - id: escalation_key_on
+    payload:
+      escalation_yaml_key_present: true
+      suppress_automatic_escalation_effective: true
+      escalation_policy_yaml_path_exists: true
+      escalation_policy_yaml_top_level_key_count: 5
+    expect_metrics:
+      escalation_key_present: true
+      suppress_automatic_escalation_effective: true
+    expect_caption:
+      not_null: true
+      contains: ["on"]
