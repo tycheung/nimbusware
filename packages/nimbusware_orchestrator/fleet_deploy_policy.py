@@ -4,17 +4,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-from agent_core.mapping import mapping_or_empty
-from nimbusware_env import find_repo_root
-from nimbusware_iam.constants import DEFAULT_TENANT_SLUG
+from nimbusware_orchestrator.fleet_policy_loader import (
+    load_tenant_policies,
+    save_tenant_policies,
+    tenant_policy,
+)
 
 DEFAULT_ENTERPRISE_DEPLOY_TARGETS: tuple[str, ...] = (
     "aws-ecs",
     "aws-static-site",
     "github-actions",
 )
+
+_YAML = "fleet_deploy_policies.yaml"
 
 
 @dataclass(frozen=True)
@@ -29,11 +31,6 @@ class FleetDeployPolicy:
         }
 
 
-def _policies_path(repo_root: Path | None = None) -> Path:
-    root = repo_root or find_repo_root()
-    return root / "configs" / "enterprise" / "fleet_deploy_policies.yaml"
-
-
 def _normalize_targets(raw: Any) -> tuple[str, ...]:
     if not isinstance(raw, list):
         return DEFAULT_ENTERPRISE_DEPLOY_TARGETS
@@ -41,26 +38,21 @@ def _normalize_targets(raw: Any) -> tuple[str, ...]:
     return out or DEFAULT_ENTERPRISE_DEPLOY_TARGETS
 
 
+def _parse_entry(slug: str, entry: dict[str, Any]) -> FleetDeployPolicy:
+    return FleetDeployPolicy(
+        tenant_slug=slug,
+        allowed_deploy_targets=_normalize_targets(entry.get("allowed_deploy_targets")),
+    )
+
+
+def _serialize_entry(policy: FleetDeployPolicy) -> dict[str, Any]:
+    return {"allowed_deploy_targets": list(policy.allowed_deploy_targets)}
+
+
 def load_fleet_deploy_policies(
     repo_root: Path | None = None,
 ) -> dict[str, FleetDeployPolicy]:
-    path = _policies_path(repo_root)
-    if not path.is_file():
-        return {}
-    raw = mapping_or_empty(yaml.safe_load(path.read_text(encoding="utf-8")))
-    tenants = mapping_or_empty(raw.get("tenants"))
-    out: dict[str, FleetDeployPolicy] = {}
-    for slug, entry in tenants.items():
-        if not isinstance(entry, dict):
-            continue
-        slug_s = str(slug).strip()
-        if not slug_s:
-            continue
-        out[slug_s] = FleetDeployPolicy(
-            tenant_slug=slug_s,
-            allowed_deploy_targets=_normalize_targets(entry.get("allowed_deploy_targets")),
-        )
-    return out
+    return load_tenant_policies(_YAML, _parse_entry, repo_root=repo_root)
 
 
 def save_fleet_deploy_policies(
@@ -68,14 +60,7 @@ def save_fleet_deploy_policies(
     *,
     repo_root: Path | None = None,
 ) -> None:
-    path = _policies_path(repo_root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tenants = {
-        slug: {"allowed_deploy_targets": list(p.allowed_deploy_targets)}
-        for slug, p in sorted(policies.items(), key=lambda x: x[0])
-    }
-    payload = {"version": 1, "tenants": tenants}
-    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+    save_tenant_policies(_YAML, policies, _serialize_entry, repo_root=repo_root)
 
 
 def tenant_deploy_policy(
@@ -83,10 +68,9 @@ def tenant_deploy_policy(
     *,
     repo_root: Path | None = None,
 ) -> FleetDeployPolicy:
-    slug = (tenant_slug or DEFAULT_TENANT_SLUG).strip() or DEFAULT_TENANT_SLUG
-    policies = load_fleet_deploy_policies(repo_root)
-    if slug in policies:
-        return policies[slug]
-    if DEFAULT_TENANT_SLUG in policies:
-        return policies[DEFAULT_TENANT_SLUG]
-    return FleetDeployPolicy(tenant_slug=slug)
+    return tenant_policy(
+        tenant_slug,
+        load_fleet_deploy_policies,
+        FleetDeployPolicy,
+        repo_root=repo_root,
+    )

@@ -4,15 +4,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-from agent_core.mapping import mapping_or_empty
-from nimbusware_env import find_repo_root
-from nimbusware_iam.constants import DEFAULT_TENANT_SLUG
 from nimbusware_orchestrator.enforcement_profiles import (
     EnforcementProfile,
     resolve_enforcement_profile,
 )
+from nimbusware_orchestrator.fleet_policy_loader import (
+    load_tenant_policies,
+    save_tenant_policies,
+    tenant_policy,
+)
+
+_YAML = "fleet_enforcement_policies.yaml"
 
 
 @dataclass(frozen=True)
@@ -31,35 +33,29 @@ class FleetEnforcementPolicy:
         }
 
 
-def _policies_path(repo_root: Path | None = None) -> Path:
-    root = repo_root or find_repo_root()
-    return root / "configs" / "enterprise" / "fleet_enforcement_policies.yaml"
+def _parse_entry(slug: str, entry: dict[str, Any]) -> FleetEnforcementPolicy:
+    return FleetEnforcementPolicy(
+        tenant_slug=slug,
+        min_enforcement_level=max(0, min(10, int(entry.get("min_enforcement_level") or 0))),
+        max_enforcement_level=max(0, min(10, int(entry.get("max_enforcement_level") or 10))),
+        required_enforcement_profile_id=str(
+            entry.get("required_enforcement_profile_id") or "",
+        ).strip(),
+    )
+
+
+def _serialize_entry(policy: FleetEnforcementPolicy) -> dict[str, Any]:
+    return {
+        "min_enforcement_level": policy.min_enforcement_level,
+        "max_enforcement_level": policy.max_enforcement_level,
+        "required_enforcement_profile_id": policy.required_enforcement_profile_id,
+    }
 
 
 def load_fleet_enforcement_policies(
     repo_root: Path | None = None,
 ) -> dict[str, FleetEnforcementPolicy]:
-    path = _policies_path(repo_root)
-    if not path.is_file():
-        return {}
-    raw = mapping_or_empty(yaml.safe_load(path.read_text(encoding="utf-8")))
-    tenants = mapping_or_empty(raw.get("tenants"))
-    out: dict[str, FleetEnforcementPolicy] = {}
-    for slug, entry in tenants.items():
-        if not isinstance(entry, dict):
-            continue
-        slug_s = str(slug).strip()
-        if not slug_s:
-            continue
-        out[slug_s] = FleetEnforcementPolicy(
-            tenant_slug=slug_s,
-            min_enforcement_level=max(0, min(10, int(entry.get("min_enforcement_level") or 0))),
-            max_enforcement_level=max(0, min(10, int(entry.get("max_enforcement_level") or 10))),
-            required_enforcement_profile_id=str(
-                entry.get("required_enforcement_profile_id") or "",
-            ).strip(),
-        )
-    return out
+    return load_tenant_policies(_YAML, _parse_entry, repo_root=repo_root)
 
 
 def save_fleet_enforcement_policies(
@@ -67,18 +63,7 @@ def save_fleet_enforcement_policies(
     *,
     repo_root: Path | None = None,
 ) -> None:
-    path = _policies_path(repo_root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tenants = {
-        slug: {
-            "min_enforcement_level": p.min_enforcement_level,
-            "max_enforcement_level": p.max_enforcement_level,
-            "required_enforcement_profile_id": p.required_enforcement_profile_id,
-        }
-        for slug, p in sorted(policies.items(), key=lambda x: x[0])
-    }
-    payload = {"version": 1, "tenants": tenants}
-    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+    save_tenant_policies(_YAML, policies, _serialize_entry, repo_root=repo_root)
 
 
 def tenant_enforcement_policy(
@@ -86,13 +71,12 @@ def tenant_enforcement_policy(
     *,
     repo_root: Path | None = None,
 ) -> FleetEnforcementPolicy:
-    slug = (tenant_slug or DEFAULT_TENANT_SLUG).strip() or DEFAULT_TENANT_SLUG
-    policies = load_fleet_enforcement_policies(repo_root)
-    if slug in policies:
-        return policies[slug]
-    if DEFAULT_TENANT_SLUG in policies:
-        return policies[DEFAULT_TENANT_SLUG]
-    return FleetEnforcementPolicy(tenant_slug=slug)
+    return tenant_policy(
+        tenant_slug,
+        load_fleet_enforcement_policies,
+        FleetEnforcementPolicy,
+        repo_root=repo_root,
+    )
 
 
 def clamp_profile_to_policy(

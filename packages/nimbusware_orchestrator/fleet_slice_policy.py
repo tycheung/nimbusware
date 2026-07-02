@@ -4,11 +4,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
+from nimbusware_orchestrator.fleet_policy_loader import (
+    load_tenant_policies,
+    save_tenant_policies,
+    tenant_policy,
+)
 
-from agent_core.mapping import mapping_or_empty
-from nimbusware_env import find_repo_root
-from nimbusware_iam.constants import DEFAULT_TENANT_SLUG
+_YAML = "fleet_slice_policies.yaml"
 
 
 @dataclass(frozen=True)
@@ -29,32 +31,27 @@ class FleetSlicePolicy:
         }
 
 
-def _policies_path(repo_root: Path | None = None) -> Path:
-    root = repo_root or find_repo_root()
-    return root / "configs" / "enterprise" / "fleet_slice_policies.yaml"
+def _parse_entry(slug: str, entry: dict[str, Any]) -> FleetSlicePolicy:
+    return FleetSlicePolicy(
+        tenant_slug=slug,
+        slice_budget_preset=str(entry.get("slice_budget_preset") or "standard"),
+        max_files=max(1, int(entry.get("max_files") or 3)),
+        max_loc=max(1, int(entry.get("max_loc") or 120)),
+        require_unanimous_gate=bool(entry.get("require_unanimous_gate", True)),
+    )
+
+
+def _serialize_entry(policy: FleetSlicePolicy) -> dict[str, Any]:
+    return {
+        "slice_budget_preset": policy.slice_budget_preset,
+        "max_files": policy.max_files,
+        "max_loc": policy.max_loc,
+        "require_unanimous_gate": policy.require_unanimous_gate,
+    }
 
 
 def load_fleet_slice_policies(repo_root: Path | None = None) -> dict[str, FleetSlicePolicy]:
-    path = _policies_path(repo_root)
-    if not path.is_file():
-        return {}
-    raw = mapping_or_empty(yaml.safe_load(path.read_text(encoding="utf-8")))
-    tenants = mapping_or_empty(raw.get("tenants"))
-    out: dict[str, FleetSlicePolicy] = {}
-    for slug, entry in tenants.items():
-        if not isinstance(entry, dict):
-            continue
-        slug_s = str(slug).strip()
-        if not slug_s:
-            continue
-        out[slug_s] = FleetSlicePolicy(
-            tenant_slug=slug_s,
-            slice_budget_preset=str(entry.get("slice_budget_preset") or "standard"),
-            max_files=max(1, int(entry.get("max_files") or 3)),
-            max_loc=max(1, int(entry.get("max_loc") or 120)),
-            require_unanimous_gate=bool(entry.get("require_unanimous_gate", True)),
-        )
-    return out
+    return load_tenant_policies(_YAML, _parse_entry, repo_root=repo_root)
 
 
 def save_fleet_slice_policies(
@@ -62,19 +59,7 @@ def save_fleet_slice_policies(
     *,
     repo_root: Path | None = None,
 ) -> None:
-    path = _policies_path(repo_root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tenants = {
-        slug: {
-            "slice_budget_preset": p.slice_budget_preset,
-            "max_files": p.max_files,
-            "max_loc": p.max_loc,
-            "require_unanimous_gate": p.require_unanimous_gate,
-        }
-        for slug, p in sorted(policies.items(), key=lambda x: x[0])
-    }
-    payload = {"version": 1, "tenants": tenants}
-    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+    save_tenant_policies(_YAML, policies, _serialize_entry, repo_root=repo_root)
 
 
 def tenant_slice_policy(
@@ -82,10 +67,9 @@ def tenant_slice_policy(
     *,
     repo_root: Path | None = None,
 ) -> FleetSlicePolicy:
-    slug = (tenant_slug or DEFAULT_TENANT_SLUG).strip() or DEFAULT_TENANT_SLUG
-    policies = load_fleet_slice_policies(repo_root)
-    if slug in policies:
-        return policies[slug]
-    if DEFAULT_TENANT_SLUG in policies:
-        return policies[DEFAULT_TENANT_SLUG]
-    return FleetSlicePolicy(tenant_slug=slug)
+    return tenant_policy(
+        tenant_slug,
+        load_fleet_slice_policies,
+        FleetSlicePolicy,
+        repo_root=repo_root,
+    )

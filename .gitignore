@@ -134,6 +134,10 @@ secrets.json
 *.rej
 *~
 
+# Admin UI OpenAPI artifacts (generated at build/CI — scripts/codegen/openapi_to_ts.py)
+packages/nimbusware_admin_ui/src/api/openapi.json
+packages/nimbusware_admin_ui/src/api/schema.d.ts
+
 # Nimbusware planning docs (local only — two-file model: normative plan + backlog)
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md

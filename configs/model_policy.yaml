@@ -1,8 +1,2 @@
 version: 1
-allowed_cloud_providers:
-  - openai
-  - anthropic
-  - openrouter
-require_admin_for_cloud_swap: false
-blocked_model_ids: []
-audit_include_binding_events: true
+allow_cloud: false

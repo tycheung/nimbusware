@@ -11,7 +11,7 @@ const hatChipsJs = readFileSync(
   "utf8",
 );
 const coachJs = readFileSync(
-  resolve(import.meta.dirname, "../static/js/tabs/chat_solo_hat_coach_ui.js"),
+  resolve(import.meta.dirname, "../static/js/tabs/chat_solo_hat_ui.js"),
   "utf8",
 );
 const chatShellJs = readFileSync(

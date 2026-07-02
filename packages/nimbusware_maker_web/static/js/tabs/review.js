@@ -2,9 +2,8 @@ import { apiJson, toast } from "../api-client.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { formatGateSummary } from "../gate-summary.js";
 import { renderPendingCards } from "./review_cards_ui.js";
-import { wireReviewGitPanel } from "./review_git_ui.js";
+import { wireReviewGitPanel, mountReviewDeployAuditPanel } from "./review_git_ui.js";
 import { wireReviewAdvancedPanel } from "./review_advanced_ui.js";
-import { mountReviewDeployAuditPanel } from "./review_deploy_audit_ui.js";
 import { deployCockpitHtml, wireDeployCockpit } from "../deploy_cockpit.js";
 
 export async function mountReview(root) {

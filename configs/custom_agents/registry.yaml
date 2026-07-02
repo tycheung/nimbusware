@@ -1,17 +1,36 @@
-# Custom operator agents. Editable via Admin web UI or PATCH /v1/custom-agents/{id}.
 agents:
-  - id: default_planner
-    display_name: Default planner
-    description: Plans micro-slices with conservative scope.
-    system_prompt: |
-      You are a Nimbusware planning agent. Propose one small slice at a time with clear
-      target paths and acceptance criteria. Never request whole-repo rewrites.
-    version: 1
-  - id: backend_slice_writer
-    display_name: Backend slice writer
-    description: Implements backend micro-slices only.
-    bound_role_id: backend_writer
-    system_prompt: |
-      You are a Nimbusware backend implementation agent. Change only the files listed in the
-      active slice plan. Keep diffs minimal and testable.
-    version: 1
+- id: backend_slice_writer
+  display_name: Backend slice writer
+  system_prompt: 'You are a Nimbusware backend implementation agent. Change only the
+    files listed in the
+
+    active slice plan. Keep diffs minimal and testable.
+
+    '
+  description: Implements backend micro-slices only.
+  version: 1
+  bound_role_id: backend_writer
+- id: default_planner
+  display_name: Default planner
+  system_prompt: 'You are a Nimbusware planning agent. Propose one small slice at
+    a time with clear
+
+    target paths and acceptance criteria. Never request whole-repo rewrites.
+
+    '
+  description: Plans micro-slices with conservative scope.
+  version: 1
+- id: fastapi_python_writer
+  display_name: Python FastAPI writer
+  system_prompt: Implement Python FastAPI backend slices for the frozen stack manifest
+    globs.
+  description: Auto-scaffolded from fastapi_python stack catalog
+  version: 34
+  bound_role_id: backend_writer
+- id: react_vite_writer
+  display_name: React + Vite writer
+  system_prompt: Implement React + Vite frontend slices for the frozen stack manifest
+    globs.
+  description: Auto-scaffolded from react_vite stack catalog
+  version: 34
+  bound_role_id: frontend_writer

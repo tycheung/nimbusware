@@ -24,8 +24,7 @@ import {
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
 import { wireChatMentionAutocomplete } from "../chat_mention_ui.js";
-import { mountSoloHatChips } from "./chat_solo_hat_ui.js";
-import { mountSoloHatCoachHint } from "./chat_solo_hat_coach_ui.js";
+import { mountSoloHatChips, mountSoloHatCoachHint } from "./chat_solo_hat_ui.js";
 
 export async function mountChat(root) {
   root.innerHTML = chatLayoutHtml();

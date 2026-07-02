@@ -3,18 +3,96 @@ tenants:
   bff-enf:
     min_enforcement_level: 4
     max_enforcement_level: 8
+    required_enforcement_profile_id: ''
   default:
     min_enforcement_level: 0
     max_enforcement_level: 10
+    required_enforcement_profile_id: ''
+  enf-00c3fe55:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-0bc2ef3f:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-1dc26b73:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-2545fdc6:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
   enf-26d538a8:
     min_enforcement_level: 5
     max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-3b206416:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-3bd53c52:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-475b5223:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-696dd6c4:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
   enf-795e4d77:
     min_enforcement_level: 5
     max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-7ea1319e:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-8d0c1c88:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-bb2a5e53:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-c1c62677:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-c6435be8:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-c75b6ded:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-cef1d6f5:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
   enf-cf393b7e:
     min_enforcement_level: 5
     max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-cfe6f525:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-d6d25742:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-e38c584c:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
   enf-policy:
     min_enforcement_level: 5
     max_enforcement_level: 9
+    required_enforcement_profile_id: ''

@@ -9,11 +9,11 @@
   "out_of_domain_fail_count": 0,
   "out_of_domain_rate": 0.0,
   "out_of_domain_verdict_count": 0,
-  "published_at": "2026-06-30T17:04:13.808456Z",
+  "published_at": "2026-07-02T15:31:50.642232Z",
   "repeat_finding_paths": 0,
   "runs_scanned": 1,
   "runs_with_critics": 0,
   "snapshot": true,
   "source": "swe_bench_harness",
-  "source_run_id": "68bd081c-06ec-4f36-b416-a67d2b9add93"
+  "source_run_id": "0484166c-c31f-44cc-a1ef-1b07ee50fc50"
 }

@@ -37,7 +37,7 @@ _ENGINEER_STATIC: tuple[str, ...] = (
     "packages/nimbusware_orchestrator/collab_binding_resolver.py",
     "packages/nimbusware_api/routes/platform.py",
     "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
-    "packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_coach_ui.js",
+    "packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js",
     "docs/product/journeys/engineer-first-app.md",
     "configs/install/bundles/default.config.yaml",
     "packages/nimbusware_config/collab_settings_store.py",
