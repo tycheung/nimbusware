@@ -314,6 +314,25 @@ def attach_discovery_summary(state: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def scope_tenant_slug() -> str | None:
+    from nimbusware_iam.context import get_auth_context
+
+    ctx = get_auth_context()
+    return ctx.tenant_slug if ctx is not None else None
+
+
+def enrich_scope_surface_bindings(scope: dict[str, Any]) -> dict[str, Any]:
+    manifest = scope.get("stack_manifest")
+    if not isinstance(manifest, dict):
+        return scope
+    from nimbusware_env import find_repo_root
+    from nimbusware_orchestrator.binding_preflight import surface_binding_rows
+
+    enriched = dict(scope)
+    enriched["surface_bindings"] = surface_binding_rows(find_repo_root(), manifest)
+    return enriched
+
+
 def attach_scope_to_requirements(
     requirements: dict[str, Any],
     scope_state: dict[str, Any],

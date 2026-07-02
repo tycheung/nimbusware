@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes import chat_scope_discover, chat_session
+from nimbusware_api.routes import chat_session
 from nimbusware_api.routes.auth import OptionalUserDep
 from nimbusware_api.routes.chat_common import (
     ActiveLeafBody,
@@ -22,16 +22,12 @@ from nimbusware_api.routes.chat_common import (
     ForkChatBody,
     SwitchModeBody,
     actor_user_id,
+    chat_http_error,
     project_metadata,
+    session_or_404,
 )
 from nimbusware_api.routes.chat_common import (
-    chat_http_error as _chat_http_error,
-)
-from nimbusware_api.routes.chat_common import (
-    platform_hints as _platform_hints,
-)
-from nimbusware_api.routes.chat_common import (
-    session_or_404 as _session_or_404,
+    platform_hints as resolve_platform_hints,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
@@ -46,7 +42,6 @@ from nimbusware_maker.intent_classifier import WorkType, classify_intent
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_session.router)
-router.include_router(chat_scope_discover.router)
 
 
 @router.post("/sessions", response_model=ChatSessionResponse)
@@ -109,7 +104,7 @@ def get_chat_session(
     _user: UserDep,
     include_turns: bool = Query(default=False),
 ) -> ChatSessionResponse:
-    session = _session_or_404(chat_store, session_id)
+    session = session_or_404(chat_store, session_id)
     payload = session_response(chat_store, session, include_turns=include_turns)
     if nimbusware_collab_enabled():
         from nimbusware_env import find_repo_root
@@ -156,11 +151,11 @@ def get_chat_session(
     responses={404: PROBLEM_RESPONSE_404},
 )
 def get_chat_graph(session_id: UUID, chat_store: ChatStoreDep, _user: UserDep) -> ChatGraphResponse:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     try:
         graph = chat_store.get_graph(session_id)
     except KeyError as exc:
-        raise _chat_http_error(exc) from exc
+        raise chat_http_error(exc) from exc
     return ChatGraphResponse(**graph)
 
 
@@ -175,12 +170,12 @@ def fork_chat_session(
     chat_store: ChatStoreDep,
     _user: UserDep,
 ) -> ChatSessionResponse:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     try:
         turn_id = UUID(body.turn_id)
         session = chat_store.fork_at_turn(session_id, turn_id)
     except (KeyError, ValueError) as exc:
-        raise _chat_http_error(exc) from exc
+        raise chat_http_error(exc) from exc
     return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
 
 
@@ -195,12 +190,12 @@ def set_chat_active_leaf(
     chat_store: ChatStoreDep,
     _user: UserDep,
 ) -> ChatSessionResponse:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     try:
         leaf = UUID(body.leaf_turn_id)
         session = chat_store.set_active_leaf(session_id, leaf)
     except (KeyError, ValueError) as exc:
-        raise _chat_http_error(exc) from exc
+        raise chat_http_error(exc) from exc
     return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
 
 
@@ -220,7 +215,7 @@ def append_chat_turn(
     user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
-    session = _session_or_404(chat_store, session_id)
+    session = session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else None
     if actor_id is None and nimbusware_collab_enabled():
         try:
@@ -239,7 +234,7 @@ def append_chat_turn(
         body.text,
         attachments=body.attachments,
         project_metadata=meta,
-        platform_hints=_platform_hints(),
+        platform_hints=resolve_platform_hints(),
     )
     try:
         turn = chat_store.append_turn(
@@ -261,7 +256,7 @@ def append_chat_turn(
             work_type_source="classifier",
         )
     except (KeyError, ValueError) as exc:
-        raise _chat_http_error(exc) from exc
+        raise chat_http_error(exc) from exc
     if nimbusware_collab_enabled():
         from nimbusware_maker.collab_discipline_routing import maybe_route_collab_message
 
@@ -328,7 +323,7 @@ def switch_chat_mode(
     chat_store: ChatStoreDep,
     _user: UserDep,
 ) -> ChatSessionResponse:
-    session = _session_or_404(chat_store, session_id)
+    session = session_or_404(chat_store, session_id)
     try:
         work_type = WorkType(body.work_type.strip().lower())
     except ValueError as exc:
@@ -366,7 +361,7 @@ def switch_chat_mode(
             work_type_override=work_type.value,
         )
     except (KeyError, ValueError) as exc:
-        raise _chat_http_error(exc) from exc
+        raise chat_http_error(exc) from exc
     return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
 
 
@@ -390,6 +385,6 @@ def classify_chat_intent(
         body.message,
         attachments=body.attachments,
         project_metadata=meta,
-        platform_hints=_platform_hints(body.platform_hints),
+        platform_hints=resolve_platform_hints(body.platform_hints),
     )
     return ClassificationResponse(classification=classification_dict(result))
