@@ -12,8 +12,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import OptionalUserDep
-from nimbusware_api.routes.chat_common import actor_user_id, require_collab_enabled
-from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
+from nimbusware_api.routes.chat_common import actor_user_id, require_collab_enabled, session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_api.user import UserDep
 from nimbusware_auth.permissions import enforce_collab_turn_write, require_session_participant
@@ -51,7 +50,7 @@ def chat_session_stream(
 ) -> StreamingResponse:
     if nimbusware_collab_enabled():
         require_collab_enabled()
-        _session_or_404(chat_store, session_id)
+        session_or_404(chat_store, session_id)
         actor = actor_user_id(request, user)
         require_session_participant(
             collab_store,
@@ -60,7 +59,7 @@ def chat_session_stream(
             minimum_role="session_read",
         )
     else:
-        _session_or_404(chat_store, session_id)
+        session_or_404(chat_store, session_id)
 
     async def generate() -> Any:
         last_fingerprint: str | None = None
@@ -124,7 +123,7 @@ def post_session_commentary(
     _user: UserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
     enforce_collab_turn_write(
         collab_store,
@@ -171,7 +170,7 @@ def session_compute_delegate_control(
     _user: UserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
     require_session_participant(
         collab_store,
@@ -206,7 +205,7 @@ def get_session_optimizer_weights(
     chat_store: ChatStoreDep,
     _user: UserDep,
 ) -> dict[str, Any]:
-    sess = _session_or_404(chat_store, session_id)
+    sess = session_or_404(chat_store, session_id)
     from nimbusware_maker.optimizer_weights_store import DEFAULT_OPTIMIZER_WEIGHTS
     from nimbusware_orchestrator.role_claims_mesh import optimizer_weights_from_session_metadata
 
@@ -225,7 +224,7 @@ def put_session_optimizer_weights(
     chat_store: ChatStoreDep,
     _user: UserDep,
 ) -> dict[str, Any]:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     from nimbusware_maker.optimizer_weights_store import DEFAULT_OPTIMIZER_WEIGHTS
     from nimbusware_orchestrator.mesh_optimizer import weights_from_priority
 
@@ -259,7 +258,7 @@ def session_compute_opt_in(
     user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else None
     if actor_id is None and nimbusware_collab_enabled():
         actor_id = actor_user_id(request, user)
@@ -303,7 +302,7 @@ def get_participant_bindings(
     _user: UserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
     sess = chat_store.get_session(session_id)
     meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
@@ -326,7 +325,7 @@ def put_participant_binding(
     _user: UserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
     require_session_participant(collab_store, session_id=session_id, user_id=actor_id)
     sess = chat_store.get_session(session_id)

@@ -9,8 +9,11 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatLibraryStoreDep, ChatStoreDep, CollabStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
-from nimbusware_api.routes.chat_common import ChatMessageResponse, require_collab_enabled
-from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
+from nimbusware_api.routes.chat_common import (
+    ChatMessageResponse,
+    require_collab_enabled,
+    session_or_404,
+)
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_auth.permissions import require_session_participant
@@ -48,7 +51,7 @@ def session_model_binding_swap(
     store: StoreDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     if not store.list_run_events(str(body.run_id)):
         raise HTTPException(
             status_code=404,
@@ -99,7 +102,7 @@ def session_role_claim(
     request: Request,
     _user: UserDep,
 ) -> dict[str, Any]:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     if not store.list_run_events(str(body.run_id)):
         raise HTTPException(
             status_code=404,
@@ -148,7 +151,7 @@ def session_role_release(
     _user: UserDep,
     run_id: Annotated[UUID | None, Query()] = None,
 ) -> dict[str, Any]:
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     resolved_run_id = run_id
     if resolved_run_id is None:
         sess = chat_store.get_session(session_id)
@@ -397,7 +400,7 @@ def update_session_library(
         user_id=user.user_id,
         minimum_role="session_admin",
     )
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     kw: dict[str, Any] = {}
     if "folder_id" in body.model_fields_set:
         kw["folder_id"] = body.folder_id
@@ -417,7 +420,7 @@ def get_effective_role(
     target_user_id: Annotated[UUID | None, Query()] = None,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    sess = _session_or_404(chat_store, session_id)
+    sess = session_or_404(chat_store, session_id)
     uid = target_user_id or user.user_id
     direct = collab_store.get_participant(session_id, uid)
     direct_role = direct.role if direct else None

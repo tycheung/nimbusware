@@ -9,8 +9,7 @@ from pydantic import BaseModel
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, HostTransferStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
-from nimbusware_api.routes.chat_common import require_collab_enabled
-from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
+from nimbusware_api.routes.chat_common import require_collab_enabled, session_or_404
 from nimbusware_auth.permissions import require_session_participant
 from nimbusware_maker.host_transfer_bundle import build_transfer_manifest, import_transfer_bundle
 from nimbusware_maker.host_transfer_store import default_consent_hours
@@ -36,7 +35,7 @@ def request_host_transfer(
     user: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    sess = _session_or_404(chat_store, session_id)
+    sess = session_or_404(chat_store, session_id)
     require_session_participant(
         collab_store,
         session_id=session_id,
@@ -69,7 +68,7 @@ def list_host_transfers(
     _: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     rows = transfer_store.list_for_session(session_id)
     return {"transfers": [r.to_dict() for r in rows]}
 
@@ -83,7 +82,7 @@ def export_host_transfer_bundle(
     user: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     row = transfer_store.get(transfer_id)
     if row is None or row.session_id != session_id:
         raise HTTPException(
@@ -112,7 +111,7 @@ def accept_host_transfer(
     user: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     row = transfer_store.get(transfer_id)
     if row is None or row.session_id != session_id:
         raise HTTPException(
@@ -199,7 +198,7 @@ def complete_host_transfer(
     user: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     row = transfer_store.get(transfer_id)
     if row is None or row.session_id != session_id:
         raise HTTPException(
@@ -234,7 +233,7 @@ def decline_host_transfer(
     user: AuthUserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     row = transfer_store.get(transfer_id)
     if row is None or row.session_id != session_id:
         raise HTTPException(

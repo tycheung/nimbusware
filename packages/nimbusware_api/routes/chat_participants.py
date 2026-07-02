@@ -10,8 +10,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
-from nimbusware_api.routes.chat_common import actor_user_id, require_collab_enabled
-from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
+from nimbusware_api.routes.chat_common import actor_user_id, require_collab_enabled, session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.models import SESSION_PARTICIPANT_ROLES
 from nimbusware_auth.permissions import require_session_participant
@@ -177,7 +176,7 @@ def list_session_participants(
     user: OptionalUserDep,
 ) -> list[ParticipantResponse]:
     _require_collab()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,
@@ -203,7 +202,7 @@ def add_session_participant(
     user: OptionalUserDep,
 ) -> ParticipantResponse:
     _require_collab()
-    session = _session_or_404(chat_store, session_id)
+    session = session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,
@@ -270,7 +269,7 @@ def remove_session_participant(
     user: OptionalUserDep,
 ) -> dict[str, bool]:
     _require_collab()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,
@@ -300,7 +299,7 @@ def create_session_invite(
     user: OptionalUserDep,
 ) -> InviteResponse:
     _require_collab()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,
@@ -347,7 +346,7 @@ def join_chat_session(
             status_code=404,
             detail=problem("invite_invalid", "invite token invalid or expired"),
         )
-    session = _session_or_404(chat_store, invite.session_id)
+    session = session_or_404(chat_store, invite.session_id)
     tenant_slug = _tenant_slug_for_session(session)
     from nimbusware_maker.collab_policy_enforcement import (
         CollabPolicyViolation,
@@ -407,7 +406,7 @@ def update_my_session_discipline(
     user: AuthUserDep,
 ) -> ParticipantResponse:
     _require_collab()
-    _session_or_404(chat_store, session_id)
+    session_or_404(chat_store, session_id)
     require_session_participant(
         collab_store,
         session_id=session_id,
