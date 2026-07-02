@@ -8,3 +8,6 @@ stacks:
     path: vue_vite.yaml
   - id: node_express
     path: node_express.yaml
+  - id: expo
+    path: expo.yaml
+    status: scaffold

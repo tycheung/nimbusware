@@ -16,8 +16,10 @@ def test_load_stack_catalog_has_core_stacks() -> None:
     catalog = load_stack_catalog(repo)
     assert "fastapi_python" in catalog
     assert "react_vite" in catalog
+    assert "expo" in catalog
     assert catalog["fastapi_python"].surface == "api"
     assert catalog["react_vite"].surface == "web"
+    assert catalog["expo"].surface == "mobile"
     assert catalog["react_vite"].max_files == 4
     assert catalog["fastapi_python"].max_loc == 200
 
@@ -43,6 +45,7 @@ def test_stack_for_surface() -> None:
 
 def test_writer_role_for_surface() -> None:
     assert writer_role_for_surface("web") == "frontend_writer"
+    assert writer_role_for_surface("mobile") == "frontend_writer"
     assert writer_role_for_surface("api") == "backend_writer"
     assert writer_role_for_surface("deploy") == "infra_writer"
     assert writer_role_for_surface("infra") == "integration_adapter_writer"

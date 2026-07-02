@@ -1,0 +1,9 @@
+{
+  "published_at": "2026-07-02T14:24:08.679505+00:00",
+  "journey": "fo2172_one_prompt_fullstack_scope",
+  "live_requested": false,
+  "llm_configured": false,
+  "skipped": true,
+  "ok": true,
+  "skip_reason": "set NIMBUSWARE_FO2172_LIVE=1 to run live journey soak"
+}

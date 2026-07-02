@@ -1,0 +1,18 @@
+stack_id: expo
+surface: mobile
+display_name: Expo (React Native)
+workspace_subdir: mobile
+writer_role: frontend_writer
+allowed_globs:
+  - "**/*.tsx"
+  - "**/*.ts"
+  - "**/app.json"
+  - "**/package.json"
+verify_commands:
+  - ["npx", "expo", "export", "--platform", "web"]
+launch_framework_id: expo
+max_files: 4
+max_loc: 160
+agent_scaffold:
+  system_prompt: "Implement Expo / React Native mobile slices for the frozen stack manifest globs."
+  description: "Auto-scaffolded from expo stack catalog (fo2300 scaffold — dispatch deferred)"

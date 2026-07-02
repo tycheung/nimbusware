@@ -11,6 +11,7 @@ from nimbusware_env import find_repo_root
 _SURFACE_WRITER = {
     "api": "backend_writer",
     "web": "frontend_writer",
+    "mobile": "frontend_writer",
     "infra": "integration_adapter_writer",
     "deploy": "infra_writer",
     "contract": "planner",
