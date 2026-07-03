@@ -162,7 +162,7 @@ def finish_micro_slice_gate_chain(
     if _launch_test_enabled(rows):
         from orchestrator.campaign.generator import _requirements_from_rows
         from orchestrator.dev_env.supervisor import frontend_base_url
-        from orchestrator.launch_test_stage import run_launch_test_stage
+        from orchestrator.launch.launch_test_stage import run_launch_test_stage
 
         preview = frontend_base_url(ws)
         requirements = _requirements_from_rows(rows)

@@ -7,7 +7,7 @@ from typing import Any
 from pydantic import BaseModel, Field, ValidationError
 
 from env.env_flags import env_bool, env_str, nimbusware_ollama_base_url
-from orchestrator.interaction_surface_map import discover_surfaces_combined
+from orchestrator.interaction.interaction_surface_map import discover_surfaces_combined
 from orchestrator.llm.common import ollama_chat_json_via_plan_patch
 from orchestrator.ui_flow_synthesis import validate_ui_flow_yaml
 
@@ -42,7 +42,7 @@ def generate_llm_ui_flow_dict(
         return None
     ism = discover_surfaces_combined(workspace, preview_base_url=preview_base_url)
     surfaces = [{"kind": s.kind, "label": s.label, "path": s.path} for s in ism.surfaces[:20]]
-    from orchestrator.launch_test_stage import build_launch_test_writer_prompt
+    from orchestrator.launch.launch_test_stage import build_launch_test_writer_prompt
 
     prompt = build_launch_test_writer_prompt(workspace)
     error_block = ""

@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from agent_core.models import EventType, StagePassedEvent, StageStartedEvent
 from agent_core.models.events_payloads import StagePassedPayload, StageStartedPayload
-from orchestrator.resolution_council import loc_accord_for_findings
+from orchestrator.improvement.resolution_council import loc_accord_for_findings
 
 REFACTOR_LOC_ACCORD_STAGE = "refactor.loc_accord"
 DEFAULT_LOC_BUDGET = 400

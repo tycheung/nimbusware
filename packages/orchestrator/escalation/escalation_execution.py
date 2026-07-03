@@ -6,7 +6,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, RunEscalatedEvent, RunEscalatedPayload
-from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth
 
 
 def escalation_run_metadata(repo_root: Path) -> dict[str, Any]:

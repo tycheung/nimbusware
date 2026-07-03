@@ -47,8 +47,8 @@ class ImprovementCouncilResult:
 
 
 def run_improvement_council(workspace: Path) -> ImprovementCouncilResult:
-    from orchestrator.feature_gap_matrix import build_feature_gap_matrix
-    from orchestrator.improvement_scope import filter_votes_by_scope, infer_repo_scope
+    from orchestrator.improvement.feature_gap_matrix import build_feature_gap_matrix
+    from orchestrator.improvement.improvement_scope import filter_votes_by_scope, infer_repo_scope
 
     ws = workspace.resolve()
     inventory = build_repo_inventory(ws)

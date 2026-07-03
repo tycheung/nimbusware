@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from agent_core.models import EventType, StagePassedEvent
 from agent_core.models.events_payloads import StagePassedPayload
-from orchestrator.resolution_council import ResolutionCouncilResult
+from orchestrator.improvement.resolution_council import ResolutionCouncilResult
 
 
 def _run_id(run_id: UUID | str) -> UUID:

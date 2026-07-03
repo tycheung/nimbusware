@@ -382,7 +382,7 @@ def maybe_run_launch_eval_for_campaign(
     ws = workspace or resolve_run_workspace(rows)
     if not ws.is_dir():
         return None
-    from orchestrator.launch_eval_catalog import attach_context_from_run
+    from orchestrator.launch.launch_eval_catalog import attach_context_from_run
 
     scorecard = evaluate_workspace_rubric(ws)
     scorecard = merge_dev_env_into_scorecard(scorecard, rows)

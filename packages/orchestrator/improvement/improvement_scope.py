@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from orchestrator.improvement_council import CouncilVote, ImprovementTrack
+from orchestrator.improvement.improvement_council import CouncilVote, ImprovementTrack
 
 
 class RepoScope(str, Enum):

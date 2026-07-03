@@ -90,7 +90,7 @@ def run_slice_gate_chain(
     )
     resolution_detail = ""
     if critique_fail:
-        from orchestrator.resolution_council import run_resolution_council
+        from orchestrator.improvement.resolution_council import run_resolution_council
 
         findings = []
         for v in critique_verdicts:

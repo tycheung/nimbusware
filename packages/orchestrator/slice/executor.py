@@ -64,7 +64,7 @@ def execute_single_micro_slice(
     timeout = float(runtime.get("request_timeout_seconds", 120))
     max_replan = slice_replan_max_for_run(rows)
 
-    from orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
+    from orchestrator.improvement.diagnose_learn import latest_learning_excerpt_from_rows
     from orchestrator.profiles.autopilot_profiles import autopilot_profile_from_rows
     from orchestrator.slice.cycle_integration import (
         maybe_run_repo_explore_slice_stage,

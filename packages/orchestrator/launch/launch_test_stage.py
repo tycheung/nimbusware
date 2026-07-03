@@ -8,7 +8,7 @@ import yaml
 
 from env import find_repo_root
 from env.env_flags import env_truthy
-from orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
+from orchestrator.factory.js_framework_detect import detect_js_framework, load_framework_pack
 from orchestrator.ui_flow_synthesis import (
     synthesize_ui_flow_from_ism,
     validate_ui_flow_yaml,
@@ -116,7 +116,7 @@ def _write_flow_attempt(
     attempt: int,
     critique_errors: tuple[str, ...],
 ) -> tuple[Path, str]:
-    from orchestrator.launch_test_llm import (
+    from orchestrator.launch.launch_test_llm import (
         generate_llm_ui_flow_dict,
         launch_test_llm_enabled,
     )

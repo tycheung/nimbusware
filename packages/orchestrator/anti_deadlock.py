@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from env.env_flags import env_str
-from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth
 from orchestrator.merge import load_yaml
 
 _PROGRESS_IGNORE: frozenset[str] = frozenset(

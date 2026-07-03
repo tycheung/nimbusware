@@ -13,8 +13,8 @@ from orchestrator.anti_deadlock import (
     should_emit_anti_deadlock_escalation,
 )
 from orchestrator.critique.verifier_escalation import load_escalate_on_first_verifier_failure
-from orchestrator.escalation_execution import append_run_escalated
-from orchestrator.escalation_threshold import (
+from orchestrator.escalation.escalation_execution import append_run_escalated
+from orchestrator.escalation.escalation_threshold import (
     load_auto_escalate_after_cumulative_findings,
     load_escalate_after_cumulative_gate_failures,
     load_escalate_after_cumulative_high_severity_findings,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from orchestrator.interaction_surface_map import InteractionSurfaceMap, coverage_pct
+from orchestrator.interaction.interaction_surface_map import InteractionSurfaceMap, coverage_pct
 
 
 def critique_interaction_surfaces(

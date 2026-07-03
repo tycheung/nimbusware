@@ -8,7 +8,7 @@ from uuid import UUID, uuid4
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType, StagePassedEvent
 from agent_core.models.events_payloads import StagePassedPayload
-from orchestrator.improvement_council import ImprovementTrack, run_improvement_council
+from orchestrator.improvement.improvement_council import ImprovementTrack, run_improvement_council
 from orchestrator.profiles.autopilot_profiles import autopilot_profile_from_rows
 from orchestrator.repo_intel.explorer import run_repo_explore
 from orchestrator.slice.cycle_emits import emit_improvement_council, emit_repo_explore
@@ -251,13 +251,13 @@ def execute_improvement_track(
     if track in {ImprovementTrack.DISCOVER_FEATURES, ImprovementTrack.SIMPLIFY}:
         explore = run_repo_explore(workspace)
         emit_repo_explore(store, run_id, explore)
-        from orchestrator.improvement_council_backlog import queue_council_backlog_slice
+        from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
 
         if track == ImprovementTrack.SIMPLIFY:
             queue_council_backlog_slice(store, run_id, workspace, track)
         return
     if track == ImprovementTrack.IMPLEMENT_PLANNED:
-        from orchestrator.improvement_council_backlog import queue_council_backlog_slice
+        from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
 
         queue_council_backlog_slice(store, run_id, workspace, track)
         return

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from orchestrator.diagnose_learn import learnings_dir
+from orchestrator.improvement.diagnose_learn import learnings_dir
 
 
 def list_workspace_learnings(workspace: Path, *, limit: int = 50) -> list[dict[str, Any]]:

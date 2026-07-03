@@ -17,21 +17,21 @@ from orchestrator.dev_env.supervisor import (
     DevEnvStartResult,
     start_dev_environment,
 )
-from orchestrator.diagnose_learn import (
+from orchestrator.factory.human_fidelity import run_human_fidelity_suite
+from orchestrator.improvement.diagnose_learn import (
     agent_packet_from_learning,
     diagnose_from_failure,
 )
-from orchestrator.human_fidelity import run_human_fidelity_suite
-from orchestrator.launch_flow_resolver import resolve_launch_flows
+from orchestrator.improvement.resolution_council import (
+    ResolutionCouncilResult,
+    run_resolution_council,
+)
+from orchestrator.launch.launch_flow_resolver import resolve_launch_flows
 from orchestrator.profiles.autopilot_profiles import (
     AutopilotProfile,
     autopilot_profile_from_rows,
 )
 from orchestrator.repo_intel.explorer import run_repo_explore
-from orchestrator.resolution_council import (
-    ResolutionCouncilResult,
-    run_resolution_council,
-)
 from orchestrator.slice.cycle_emits import (
     emit_diagnose_learn,
     emit_repo_explore,

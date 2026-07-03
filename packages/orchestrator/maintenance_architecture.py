@@ -62,7 +62,7 @@ def run_maintenance_architecture(
             elif inv.duplicate_clusters > 0:
                 rationale = f"Architecture: deduplicate {inv.duplicate_clusters} similar cluster(s)"
             else:
-                from orchestrator.feature_gap_matrix import build_feature_gap_matrix
+                from orchestrator.improvement.feature_gap_matrix import build_feature_gap_matrix
 
                 gap = build_feature_gap_matrix(ws)
                 if gap.gaps:

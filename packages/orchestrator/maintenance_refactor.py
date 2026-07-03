@@ -122,7 +122,7 @@ def run_maintenance_refactor(
     rows = store.list_run_events(str(run_id))
     from maker.workspace.workspace import resolve_run_workspace
     from orchestrator.factory.cadence import maybe_run_factory_cadence_pass
-    from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+    from orchestrator.launch.launch_evaluator import maybe_run_launch_eval_for_campaign
 
     ws = resolve_run_workspace(rows)
     maybe_run_launch_eval_for_campaign(

@@ -26,7 +26,7 @@ def test_env_kill_switch_suppresses_marker_when_policy_would_emit(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     with patch(
-        "orchestrator.self_refinement_policy.load_self_refinement_policy",
+        "orchestrator.workflow.self_refinement_policy.load_self_refinement_policy",
         return_value=SelfRefinementPolicy(version=2, enabled=True, description="x"),
     ):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
@@ -38,7 +38,7 @@ def test_env_unset_still_emits_marker(monkeypatch: pytest.MonkeyPatch) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     with patch(
-        "orchestrator.self_refinement_policy.load_self_refinement_policy",
+        "orchestrator.workflow.self_refinement_policy.load_self_refinement_policy",
         return_value=SelfRefinementPolicy(version=3, enabled=True, description="y"),
     ):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001

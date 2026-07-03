@@ -386,7 +386,7 @@ def evaluate_and_finalize_campaign(
     emit_completion_evaluated(store, run_id, result)
     if result.verdict == "PASS":
         from maker.workspace.workspace import resolve_run_workspace
-        from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+        from orchestrator.launch.launch_evaluator import maybe_run_launch_eval_for_campaign
 
         maybe_run_launch_eval_for_campaign(
             store,

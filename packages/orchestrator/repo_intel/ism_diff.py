@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from orchestrator.interaction_surface_map import InteractionSurfaceMap
+from orchestrator.interaction.interaction_surface_map import InteractionSurfaceMap
 
 
 def ism_snapshot_path(workspace: Path, slice_id: str) -> Path:

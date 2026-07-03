@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from agent_core.models.backlog import BacklogSlice
 from orchestrator.campaign.generator import backlog_from_events, emit_backlog_revised
-from orchestrator.improvement_council import ImprovementTrack
+from orchestrator.improvement.improvement_council import ImprovementTrack
 
 
 def queue_council_backlog_slice(
@@ -39,7 +39,7 @@ def queue_council_backlog_slice(
         else:
             return False
     elif track == ImprovementTrack.IMPLEMENT_PLANNED:
-        from orchestrator.feature_gap_matrix import build_feature_gap_matrix
+        from orchestrator.improvement.feature_gap_matrix import build_feature_gap_matrix
 
         gap = build_feature_gap_matrix(workspace)
         if gap.gaps:

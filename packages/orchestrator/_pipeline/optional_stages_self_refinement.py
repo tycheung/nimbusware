@@ -37,7 +37,7 @@ from orchestrator._pipeline.protocol_hosts import SelfRefinementOptionalStagesHo
 from orchestrator._pipeline.self_refinement_critique_emit import (
     try_emit_self_refinement_critique_for_host,
 )
-from orchestrator.self_refinement_policy import resolve_self_refinement_policy
+from orchestrator.workflow.self_refinement_policy import resolve_self_refinement_policy
 
 _SelfRefinementOrchestrationBranch = Literal["rules", "rules_with_llm_critique"]
 _LlmGateDecision = Literal["proceed", "hold"]

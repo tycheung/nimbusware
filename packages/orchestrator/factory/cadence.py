@@ -159,7 +159,7 @@ def maybe_run_factory_cadence_pass(
     tier = policy.factory_tier
     if policy.auto_launch_eval and not launch_eval_completed(rows):
         from maker.workspace.workspace import resolve_run_workspace
-        from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+        from orchestrator.launch.launch_evaluator import maybe_run_launch_eval_for_campaign
 
         ws = workspace or resolve_run_workspace(rows)
         maybe_run_launch_eval_for_campaign(store, run_id, rows, workspace=ws)

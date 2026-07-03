@@ -5,7 +5,7 @@ from typing import Any
 
 import yaml
 
-from orchestrator.interaction_surface_map import discover_surfaces_combined
+from orchestrator.interaction.interaction_surface_map import discover_surfaces_combined
 from orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, UiLocator
 
 

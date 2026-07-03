@@ -36,8 +36,8 @@ def run_put_e2e_for_factory_run(
     from maker.stack_manifest import manifest_from_requirements
     from maker.workspace.workspace import run_created_metadata_from_rows
     from orchestrator.factory.runtime import start_put_preview, stop_put_preview
-    from orchestrator.interaction_surface_map import discover_surfaces_combined
-    from orchestrator.launch_eval_catalog import attach_context_from_run
+    from orchestrator.interaction.interaction_surface_map import discover_surfaces_combined
+    from orchestrator.launch.launch_eval_catalog import attach_context_from_run
 
     if tier in {"T0", "T1"}:
         return None, None, None, None, None, None, None
@@ -128,7 +128,7 @@ def run_put_e2e_for_factory_run(
         if ui_flow_required and put_preview_ok and put_e2e and put_e2e.verdict == "PASS":
             from orchestrator.browser_controller import run_ui_flow
             from orchestrator.dev_env.events import emit_dev_env_ui_regression
-            from orchestrator.launch_flow_resolver import resolve_launch_flows
+            from orchestrator.launch.launch_flow_resolver import resolve_launch_flows
 
             resolved = resolve_launch_flows(rows, workspace, repo_root=repo_root)
             if resolved.ui_flow is not None:

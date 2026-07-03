@@ -16,7 +16,7 @@ from agent_core.models.backlog import (
 )
 from env import find_repo_root
 from orchestrator.factory.runner import PutE2EFinding, PutE2EResult
-from orchestrator.interaction_surface_map import InteractionSurfaceMap, coverage_pct
+from orchestrator.interaction.interaction_surface_map import InteractionSurfaceMap, coverage_pct
 
 FactoryTier = Literal["T0", "T1", "T2", "T3"]
 PUT_E2E_FIX_CATEGORY = "put_e2e_fix"
