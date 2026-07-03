@@ -1,5 +1,5 @@
 # Optional profile: Integration Adapter Writer live metadata slice (§14 #13).
-version: 1
+extends: default
 integration_adapter_writer:
   enabled: true
   target_adapter_kind: api_bridge

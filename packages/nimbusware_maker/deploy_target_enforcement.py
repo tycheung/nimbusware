@@ -71,7 +71,7 @@ def allowed_deploy_targets_for_tenant(
     bundle = (setup_bundle or "").strip().lower()
     if bundle and bundle != "enterprise":
         return []
-    from nimbusware_orchestrator.fleet_deploy_policy import tenant_deploy_policy
+    from nimbusware_orchestrator.fleet_policies import tenant_deploy_policy
 
     policy = tenant_deploy_policy(tenant_slug, repo_root=repo_root)
     return list(policy.allowed_deploy_targets)
@@ -143,7 +143,7 @@ def credential_scope_labels(creds: dict[str, Any]) -> list[str]:
 
 
 def default_enterprise_deploy_policy() -> Any:
-    from nimbusware_orchestrator.fleet_deploy_policy import (
+    from nimbusware_orchestrator.fleet_policies import (
         DEFAULT_ENTERPRISE_DEPLOY_TARGETS,
         FleetDeployPolicy,
     )

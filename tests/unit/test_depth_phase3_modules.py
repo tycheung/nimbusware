@@ -6,7 +6,7 @@ from nimbusware_orchestrator.collab_binding_resolver import (
     merge_participant_memory_policy,
     participant_memory_policy,
 )
-from nimbusware_orchestrator.fleet_commit_policy import (
+from nimbusware_orchestrator.fleet_policies import (
     FleetCommitPolicy,
     load_fleet_commit_policies,
     save_fleet_commit_policies,

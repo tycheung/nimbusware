@@ -7,7 +7,7 @@ from typing import Any
 
 from nimbusware_env.env_flags import nimbusware_slice_auto_commit_enabled
 from nimbusware_iam.context import get_auth_context
-from nimbusware_orchestrator.fleet_commit_policy import tenant_commit_policy
+from nimbusware_orchestrator.fleet_policies import tenant_commit_policy
 from nimbusware_orchestrator.git_outputs import run_branch_name, slice_commit_message
 from nimbusware_orchestrator.micro_slice import SlicePlan
 

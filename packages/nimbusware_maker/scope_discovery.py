@@ -254,7 +254,7 @@ def discovery_complete_for_start(
     bundle = (setup_bundle or env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default").lower()
     if bundle != "enterprise":
         return True, None
-    from nimbusware_orchestrator.fleet_discovery_policy import tenant_discovery_policy
+    from nimbusware_orchestrator.fleet_policies import tenant_discovery_policy
 
     policy = tenant_discovery_policy(tenant_slug)
     if not policy.discovery_required_fields:

@@ -10,12 +10,14 @@ from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from nimbusware_orchestrator.fleet_stack_policy import (
+from nimbusware_orchestrator.fleet_policy_guards import apply_regulated_stack_guard
+from nimbusware_orchestrator.fleet_policies import (
     FleetStackPolicy,
     load_fleet_stack_policies,
     save_fleet_stack_policies,
     tenant_stack_policy,
 )
+
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 
@@ -44,7 +46,7 @@ def put_fleet_stack_policy(
     __: AdminDep,
 ) -> dict[str, Any]:
     slug = _tenant_slug_for_ref(iam, tenant_ref)
-    from nimbusware_orchestrator.fleet_stack_policy import normalize_allowed_stacks
+    from nimbusware_orchestrator.fleet_policies import normalize_allowed_stacks
 
     allowed = normalize_allowed_stacks(body.allowed_stacks)
     policies = load_fleet_stack_policies()

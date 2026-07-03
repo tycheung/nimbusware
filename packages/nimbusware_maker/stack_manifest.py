@@ -101,7 +101,7 @@ def validate_frozen_manifest(
     repo_root: Any | None = None,
     tenant_slug: str | None = None,
 ) -> list[str]:
-    from nimbusware_orchestrator.fleet_stack_policy import tenant_stack_policy
+    from nimbusware_orchestrator.fleet_policies import tenant_stack_policy
 
     errors: list[str] = []
     if not manifest.surfaces:

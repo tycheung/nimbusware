@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from nimbusware_env.env_flags import env_str
-from nimbusware_orchestrator.fleet_slice_policy import tenant_slice_policy
+from nimbusware_orchestrator.fleet_policies import tenant_slice_policy
 
 
 def clamp_slice_budget(

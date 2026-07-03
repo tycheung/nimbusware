@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.fleet_stack_policy import (
+from nimbusware_orchestrator.fleet_policy_guards import apply_regulated_stack_guard
+from nimbusware_orchestrator.fleet_policies import (
     FleetStackPolicy,
-    apply_regulated_stack_guard,
     load_fleet_stack_policies,
     save_fleet_stack_policies,
     tenant_stack_policy,
 )
+
 
 
 def test_fleet_stack_policies_round_trip(tmp_path) -> None:

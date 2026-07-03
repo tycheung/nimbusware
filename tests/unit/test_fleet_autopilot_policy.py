@@ -3,9 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_orchestrator.autopilot_profiles import resolve_autopilot_profile
-from nimbusware_orchestrator.fleet_autopilot_policy import (
+from nimbusware_orchestrator.fleet_policy_guards import (
+    clamp_autopilot_profile_to_policy,
+    clamp_autopilot_profile_to_policy as clamp_profile_to_policy,
+    enforce_tenant_autopilot_policy,
+)
+from nimbusware_orchestrator.fleet_policies import (
     FleetAutopilotPolicy,
-    clamp_profile_to_policy,
     load_fleet_autopilot_policies,
     save_fleet_autopilot_policies,
     tenant_autopilot_policy,

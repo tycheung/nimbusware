@@ -155,7 +155,7 @@ def persist_run_autopilot(
     repo_root: Path | None = None,
 ) -> AutopilotProfile:
     """Append durable autopilot override; also refresh in-process cache."""
-    from nimbusware_orchestrator.fleet_autopilot_policy import enforce_tenant_autopilot_policy
+    from nimbusware_orchestrator.fleet_policies import enforce_tenant_autopilot_policy
 
     profile = enforce_tenant_autopilot_policy(
         profile,

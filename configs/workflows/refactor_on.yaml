@@ -1,4 +1,5 @@
 # Phase 3 fo146 — Refactorer + refactor critique (default off on nimbusware_production).
+extends: default
 refactor:
   enabled: true
   stub_only: true

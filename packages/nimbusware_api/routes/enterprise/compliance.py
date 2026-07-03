@@ -8,10 +8,10 @@ from nimbusware_api.deps import IamStoreDep, StoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_config.tenant_policy_store import audit_redaction, load_tenant_audit_policy
 from nimbusware_orchestrator.enterprise_audit_export import audit_retention_days
-from nimbusware_orchestrator.fleet_autopilot_policy import load_fleet_autopilot_policies
-from nimbusware_orchestrator.fleet_commit_policy import load_fleet_commit_policies
-from nimbusware_orchestrator.fleet_enforcement_policy import load_fleet_enforcement_policies
-from nimbusware_orchestrator.fleet_slice_policy import load_fleet_slice_policies
+from nimbusware_orchestrator.fleet_policies import load_fleet_autopilot_policies
+from nimbusware_orchestrator.fleet_policies import load_fleet_commit_policies
+from nimbusware_orchestrator.fleet_policies import load_fleet_enforcement_policies
+from nimbusware_orchestrator.fleet_policies import load_fleet_slice_policies
 from nimbusware_projections.builders.competitive_metrics import build_compliance_dashboard_metrics
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])

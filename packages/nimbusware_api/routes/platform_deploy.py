@@ -109,7 +109,7 @@ def deploy_policy_context() -> tuple[str | None, str]:
 def deploy_approval_chain_for_tenant(tenant_slug: str | None, setup_bundle: str) -> str:
     if setup_bundle != "enterprise":
         return "maker_only"
-    from nimbusware_orchestrator.fleet_deploy_approval_policy import tenant_deploy_approval_policy
+    from nimbusware_orchestrator.fleet_policies import tenant_deploy_approval_policy
 
     return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
 

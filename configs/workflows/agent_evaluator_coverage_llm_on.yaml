@@ -1,7 +1,5 @@
-version: 1
+extends: agent_evaluator_on
 agent_evaluator:
-  enabled: true
-  persona_id: default
   persona_coverage_critique:
     enabled: true
     stub: true

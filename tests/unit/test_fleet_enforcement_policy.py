@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from nimbusware_orchestrator.enforcement_profiles import preset_for_enforcement_level
-from nimbusware_orchestrator.fleet_enforcement_policy import (
+from nimbusware_orchestrator.fleet_policy_guards import (
+    clamp_enforcement_profile_to_policy,
+    clamp_enforcement_profile_to_policy as clamp_profile_to_policy,
+    enforce_tenant_enforcement_policy,
+)
+from nimbusware_orchestrator.fleet_policies import (
     FleetEnforcementPolicy,
-    clamp_profile_to_policy,
     load_fleet_enforcement_policies,
     save_fleet_enforcement_policies,
 )

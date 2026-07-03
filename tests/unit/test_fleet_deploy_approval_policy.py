@@ -10,7 +10,7 @@ from nimbusware_maker.deploy_approval_enforcement import (
     user_may_record_deploy_approval,
 )
 from nimbusware_maker.deploy_pipeline_events import deploy_apply_ready, emit_deploy_approved
-from nimbusware_orchestrator.fleet_deploy_approval_policy import (
+from nimbusware_orchestrator.fleet_policies import (
     FleetDeployApprovalPolicy,
     load_fleet_deploy_approval_policies,
     save_fleet_deploy_approval_policies,

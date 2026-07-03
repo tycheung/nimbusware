@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.fleet_discovery_policy import (
+from nimbusware_orchestrator.fleet_policies import (
     FleetDiscoveryPolicy,
     load_fleet_discovery_policies,
     save_fleet_discovery_policies,

@@ -11,7 +11,11 @@ from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from nimbusware_orchestrator.fleet_enforcement_policy import (
+from nimbusware_orchestrator.fleet_policy_guards import (
+    clamp_enforcement_profile_to_policy,
+    enforce_tenant_enforcement_policy,
+)
+from nimbusware_orchestrator.fleet_policies import (
     FleetEnforcementPolicy,
     load_fleet_enforcement_policies,
     save_fleet_enforcement_policies,

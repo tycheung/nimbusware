@@ -62,7 +62,7 @@ def test_recommend_for_me_applies_regulated_stack_guard(tmp_path, monkeypatch) -
         encoding="utf-8",
     )
     monkeypatch.setattr(
-        "nimbusware_orchestrator.fleet_stack_policy.find_repo_root",
+        "nimbusware_env.find_repo_root",
         lambda: tmp_path,
     )
     state = scope_discover("Build a todo app")
@@ -82,7 +82,7 @@ def test_manifest_from_answers_clamps_backend_stack_for_regulated_tenant(
         encoding="utf-8",
     )
     monkeypatch.setattr(
-        "nimbusware_orchestrator.fleet_stack_policy.find_repo_root",
+        "nimbusware_env.find_repo_root",
         lambda: tmp_path,
     )
     state = scope_discover("Build a todo app")
