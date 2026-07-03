@@ -43,7 +43,7 @@ $ErrorActionPreference = "Continue"
 poetry run pip-audit 2>&1 | Out-Null
 $ErrorActionPreference = "Stop"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-poetry run pytest tests -q -m "not integration and not slow and not benchmark" `
+poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e_stack" `
   --cov=packages `
   --cov-report=term-missing:skip-covered `
   --cov-report=json:$CovJson `

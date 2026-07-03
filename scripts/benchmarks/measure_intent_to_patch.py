@@ -22,6 +22,8 @@ os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
 os.environ.setdefault("NIMBUSWARE_SLICE_AUTO_ADVANCE", "0")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))
+os.environ["NIMBUSWARE_DATABASE_URL"] = ""
+os.environ.pop("DATABASE_URL", None)
 
 
 def _bind_inmemory_chat(client) -> None:
