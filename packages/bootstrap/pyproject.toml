@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nimbusware-bootstrap"
+version = "0.5.0"
+description = "Thin consumer bootstrap CLI for Nimbusware install hints"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "Nimbusware" }]
+dependencies = []
+
+[project.scripts]
+nimbusware-bootstrap = "bootstrap:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bootstrap"]

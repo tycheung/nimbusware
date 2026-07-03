@@ -11,14 +11,14 @@ from agent_core.models import (
     EventType,
     FindingCreatedPayload,
 )
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.llm_plan import (
+from env import find_repo_root
+from orchestrator.llm_plan import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_universal_critique import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_universal_critique import (
     effective_universal_critique,
 )
 

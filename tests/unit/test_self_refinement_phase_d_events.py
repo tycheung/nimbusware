@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_self_refinement_marker_emits_phase_d_loop_signal() -> None:
@@ -44,7 +44,7 @@ def test_self_refinement_marker_llm_critique_branch_when_hold() -> None:
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "nimbusware_orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
+                "orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
                 return_value={
                     "verdict": "PASS",
                     "gate_decision": "proceed",
@@ -78,7 +78,7 @@ def test_self_refinement_stub_critique_panel_when_llm_misses() -> None:
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "nimbusware_orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
+                "orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
                 return_value=None,
             ):
                 orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001

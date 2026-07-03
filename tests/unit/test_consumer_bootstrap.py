@@ -23,9 +23,9 @@ def test_bootstrap_consumer_print_only() -> None:
 
 
 def test_bootstrap_wheel_module_print_only() -> None:
-    pkg_root = _REPO / "packages" / "nimbusware_bootstrap"
+    pkg_root = _REPO / "packages" / "bootstrap"
     proc = subprocess.run(
-        [sys.executable, "-m", "nimbusware_bootstrap", "--print-only"],
+        [sys.executable, "-m", "bootstrap", "--print-only"],
         cwd=pkg_root,
         capture_output=True,
         text=True,

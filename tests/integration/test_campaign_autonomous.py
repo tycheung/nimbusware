@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 @pytest.fixture(autouse=True)

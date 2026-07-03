@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+_CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "console"
 
 _ALLOWLIST_OVER_400: frozenset[str] = frozenset()
 

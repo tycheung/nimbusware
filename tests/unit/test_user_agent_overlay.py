@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_maker.user_agent_overlay import (
+from maker.user_agent_overlay import (
     load_user_agent_overlays,
     prompt_addon_for_run_claims,
     prompt_extension_for_taxonomy_key,

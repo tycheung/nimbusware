@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_self_refinement import (
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )

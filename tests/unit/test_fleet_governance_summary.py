@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.fleet_governance_summary import fleet_governance_summary
+from maker.fleet_governance_summary import fleet_governance_summary
 
 
 def test_fleet_governance_summary_enterprise() -> None:

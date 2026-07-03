@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_compute.worker_policy import (
+from compute.worker_policy import (
     DEFAULT_MAX_PAYLOAD_BYTES,
     sanitize_work_unit_payload,
 )

@@ -8,10 +8,10 @@ from uuid import UUID
 import pytest
 
 from agent_core.models import EventType, Verdict
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
 
 _GATE_EMITTED = EventType.GATE_DECISION_EMITTED.value
@@ -98,11 +98,11 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     orch_a3, mem_a3 = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("integrator_gate_on")
     class_spy_a3, _ = _make_fake_mi_class()
-    with patch("nimbusware_extensions.extension_runtime.ModuleIntegrator", class_spy_a3):
+    with patch("extensions.extension_runtime.ModuleIntegrator", class_spy_a3):
         orch_a3._emit_bundle_integrator_gate(rid_a3)  # noqa: SLF001
     assert class_spy_a3.call_count == 0, (
         f"A3: env kill-switch `NIMBUSWARE_EMIT_INTEGRATOR_GATE=0` short-circuits "
-        f"BEFORE the lazy `from nimbusware_extensions.extension_runtime import ModuleIntegrator` "
+        f"BEFORE the lazy `from extensions.extension_runtime import ModuleIntegrator` "
         f"+ subsequent `ModuleIntegrator(min_score_to_pass=...)` at "
         f"pipeline.py:1486-1500; got class_spy_a3.call_count="
         f"{class_spy_a3.call_count}. A 'move the kill-switch below the "
@@ -126,7 +126,7 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     orch_a5, mem_a5 = make_dev_orchestrator()
     rid_a5 = orch_a5.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+        "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_a5._emit_bundle_integrator_gate(rid_a5)  # noqa: SLF001
@@ -148,11 +148,11 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b1 = orch_b1.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=["foo", "bar"],
         ),
     ):
@@ -169,11 +169,11 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b2 = orch_b2.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=None,
         ),
     ):
@@ -195,15 +195,15 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b3 = orch_b3.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=None,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
+            "orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
     ):
@@ -221,11 +221,11 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b4 = orch_b4.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=[],
         ),
     ):
@@ -264,10 +264,10 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c1 = orch_c1.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
-        patch("nimbusware_extensions.extension_runtime.ModuleIntegrator", class_spy_c1),
+        patch("extensions.extension_runtime.ModuleIntegrator", class_spy_c1),
     ):
         orch_c1._emit_bundle_integrator_gate(rid_c1)  # noqa: SLF001
     profile_c1 = mi_c1.score_fit.call_args_list[0].args[1]
@@ -286,14 +286,14 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c2 = orch_c2.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
+            "orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
-        patch("nimbusware_extensions.extension_runtime.ModuleIntegrator", class_spy_c2),
+        patch("extensions.extension_runtime.ModuleIntegrator", class_spy_c2),
     ):
         orch_c2._emit_bundle_integrator_gate(rid_c2)  # noqa: SLF001
     profile_c2 = mi_c2.score_fit.call_args_list[0].args[1]
@@ -313,11 +313,11 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c3 = orch_c3.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=["AUTH", "RBAC"],
         ),
     ):
@@ -334,11 +334,11 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c4 = orch_c4.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=["auth", "   ", "rbac"],
         ),
     ):
@@ -357,15 +357,15 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c5 = orch_c5.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+            "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
+            "orchestrator._pipeline.optional_stages_integrator.parse_integrator_gate_project_tags",
             return_value=["auth", "rbac"],
         ),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
+            "orchestrator._pipeline.optional_stages_integrator.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
     ):
@@ -389,7 +389,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     orch_pass, mem_pass = make_dev_orchestrator()
     rid_pass = orch_pass.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+        "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_pass._emit_bundle_integrator_gate(rid_pass)  # noqa: SLF001
@@ -401,7 +401,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     orch_fail, mem_fail = make_dev_orchestrator()
     rid_fail = orch_fail.create_run("integrator_gate_mismatch")
     with patch(
-        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+        "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_fail._emit_bundle_integrator_gate(rid_fail)  # noqa: SLF001

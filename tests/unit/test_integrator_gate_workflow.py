@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.integrator_gate import (
+from env import find_repo_root
+from orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
     integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,

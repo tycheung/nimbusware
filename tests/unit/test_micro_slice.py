@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.micro_slice import (
+from env import find_repo_root
+from orchestrator.micro_slice import (
     micro_slice_timeline_summary,
     parse_slice_plan,
     validate_diff_budget,
 )
-from nimbusware_orchestrator.workflow_blocks_simple import parse_micro_slice_workflow_block
+from orchestrator.workflow_blocks_simple import parse_micro_slice_workflow_block
 
 
 def test_parse_slice_plan() -> None:
@@ -16,7 +16,7 @@ def test_parse_slice_plan() -> None:
         {
             "slice_id": "s1",
             "rationale": "touch api only",
-            "target_paths": ["packages/nimbusware_api/routes/runs.py"],
+            "target_paths": ["packages/api/routes/runs.py"],
             "acceptance_criteria": "tests pass",
         },
     )
@@ -25,7 +25,7 @@ def test_parse_slice_plan() -> None:
 
 
 def test_validate_diff_budget_rejects_large_slice() -> None:
-    from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
+    from orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=50)
     result = validate_diff_budget(

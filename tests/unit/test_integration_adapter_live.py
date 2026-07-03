@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import nimbusware_integration_adapter_live_enabled
+from env.env_flags import nimbusware_integration_adapter_live_enabled
 
 
 def test_integration_adapter_live_default_off(monkeypatch) -> None:

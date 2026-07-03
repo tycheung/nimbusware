@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_agent_evaluator import (
     agent_evaluator_llm_branch_effective,
     agent_evaluator_production_default_on,
     parse_agent_evaluator_workflow_block,

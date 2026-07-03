@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_maker.push_subscriptions import clear_push_subscriptions
+from api.app import app
+from maker.push_subscriptions import clear_push_subscriptions
 
 
 def test_push_subscription_register_and_list(monkeypatch, tmp_path) -> None:

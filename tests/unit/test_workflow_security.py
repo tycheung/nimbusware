@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from env import find_repo_root
+from orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from unit.composite_repo_fixtures import write_security_scan_workflow_profile
 
 

@@ -4,13 +4,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_hw.fleet_hardware import (
+from hw.fleet_hardware import (
     parse_fleet_hosts_env,
     probe_fleet_hardware_hosts,
     run_probe_matrix,
 )
-from nimbusware_hw.probe import probe_hardware_remote_ssh
-from nimbusware_hw.ssh_probe import parse_remote_probe_output, run_ssh_hardware_probe
+from hw.probe import probe_hardware_remote_ssh
+from hw.ssh_probe import parse_remote_probe_output, run_ssh_hardware_probe
 
 
 def test_parse_remote_probe_output_mem_and_cpu() -> None:
@@ -43,7 +43,7 @@ MemTotal:       16000000 kB
 MemAvailable:    8000000 kB
 CPU_COUNT=4
 """
-    with patch("nimbusware_hw.ssh_probe.subprocess.run") as mock_run:
+    with patch("hw.ssh_probe.subprocess.run") as mock_run:
         mock_run.return_value = MagicMock(returncode=0, stdout=stdout, stderr="")
         raw = run_ssh_hardware_probe("gpu-node.internal", identity_path=None)
     assert raw["remote_host"] == "gpu-node.internal"
@@ -66,7 +66,7 @@ def test_parse_fleet_hosts_env(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_probe_hardware_remote_ssh_no_mock_missing_ssh(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
     monkeypatch.delenv("NIMBUSWARE_HW_SSH_MOCK", raising=False)
-    with patch("nimbusware_hw.ssh_probe.subprocess.run") as mock_run:
+    with patch("hw.ssh_probe.subprocess.run") as mock_run:
         mock_run.side_effect = FileNotFoundError("ssh not found")
         raw = probe_hardware_remote_ssh("unreachable.example")
     assert raw["errors"]

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 
-from nimbusware_hw.fleet_hardware import run_probe_matrix
+from hw.fleet_hardware import run_probe_matrix
 
 
 def main() -> int:

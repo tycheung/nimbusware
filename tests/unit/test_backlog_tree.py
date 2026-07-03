@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import (
+from env import find_repo_root
+from orchestrator.backlog_generator import (
     emit_backlog_generated,
     generate_heuristic_backlog,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_projections.builders.backlog_tree import (
+from orchestrator.pipeline import make_dev_orchestrator
+from projections.builders.backlog_tree import (
     backlog_tree_from_events,
     campaign_has_backlog,
 )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from nimbusware_projections.builders.preflight import preflight_timeline_summary
+from projections.builders.preflight import preflight_timeline_summary
 
 
 def _passed_event(

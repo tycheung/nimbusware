@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_maker.collab_policy_enforcement import (
+from maker.collab_policy_enforcement import (
     CollabPolicyViolation,
     assert_link_join_allowed,
     assert_participant_capacity,
@@ -30,7 +30,7 @@ def test_effective_collab_policy_merges_repo_defaults(tmp_path, monkeypatch) -> 
         encoding="utf-8",
     )
     monkeypatch.setattr(
-        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        "maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
     doc = effective_collab_policy(None)
@@ -45,7 +45,7 @@ def test_assert_link_join_allowed_blocks_when_disabled(tmp_path, monkeypatch) ->
     policy.write_text("version: 1\nallow_external_collaborators: false\n", encoding="utf-8")
     monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
     monkeypatch.setattr(
-        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        "maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
     with pytest.raises(CollabPolicyViolation, match="external collaborators disabled"):
@@ -58,7 +58,7 @@ def test_assert_link_join_allowed_skips_on_individual_bundle(tmp_path, monkeypat
     policy.write_text("version: 1\nallow_external_collaborators: false\n", encoding="utf-8")
     monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "default")
     monkeypatch.setattr(
-        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        "maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
     result = assert_link_join_allowed(tenant_slug=None)
@@ -70,7 +70,7 @@ def test_assert_participant_capacity_enforces_limit(tmp_path, monkeypatch) -> No
     policy.parent.mkdir(parents=True)
     policy.write_text("version: 1\nmax_session_participants: 4\n", encoding="utf-8")
     monkeypatch.setattr(
-        "nimbusware_maker.collab_policy_enforcement.find_repo_root",
+        "maker.collab_policy_enforcement.find_repo_root",
         lambda: tmp_path,
     )
     session_id = uuid4()

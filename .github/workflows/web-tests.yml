@@ -5,9 +5,9 @@ on:
   pull_request:
     branches: [main, master]
     paths:
-      - "packages/nimbusware_maker_web/**"
-      - "packages/nimbusware_admin_ui/**"
-      - "packages/nimbusware_api/**"
+      - "packages/maker_web/**"
+      - "packages/admin_ui/**"
+      - "packages/api/**"
       - "tests/e2e/web/**"
       - "tests/web/**"
 
@@ -22,7 +22,7 @@ jobs:
       - run: pip install poetry
       - run: poetry install
       - name: Pytest web + API
-        run: poetry run pytest tests/web tests/api/test_memory_influence_route.py tests/api/test_admin_ui_bff.py -q
+        run: poetry run pytest tests/web tests/api_http/test_memory_influence_route.py tests/api_http/test_admin_ui_bff.py -q
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_DATABASE_URL: ""
@@ -31,12 +31,12 @@ jobs:
           node-version: "20"
       - name: Vitest maker_web
         run: |
-          cd packages/nimbusware_maker_web
+          cd packages/maker_web
           npm ci
           npm test
       - name: Vitest admin_ui
         run: |
-          cd packages/nimbusware_admin_ui
+          cd packages/admin_ui
           npm ci
           npm test
       - name: Playwright

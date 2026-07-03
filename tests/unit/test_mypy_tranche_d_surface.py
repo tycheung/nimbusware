@@ -8,12 +8,12 @@ _TARGETS = _REPO / "scripts" / "ci" / "mypy_ci_targets.py"
 
 _TRANCHE_D_MODULES = frozenset(
     {
-        "nimbusware_api.routes.runs.list_helpers",
-        "nimbusware_api.facade",
-        "nimbusware_api.deps",
-        "nimbusware_api.routes.enterprise",
-        "nimbusware_api.routes.enterprise.*",
-        "nimbusware_api.routes.personas_helpers",
+        "api.routes.runs.list_helpers",
+        "api.facade",
+        "api.deps",
+        "api.routes.enterprise",
+        "api.routes.enterprise.*",
+        "api.routes.personas_helpers",
     },
 )
 
@@ -31,6 +31,6 @@ def test_tranche_d_listed_in_mypy_strict_override() -> None:
 
 def test_tranche_d_paths_in_ci_targets() -> None:
     text = _TARGETS.read_text(encoding="utf-8")
-    assert "packages/nimbusware_api/routes/runs/list_helpers.py" in text
-    assert "packages/nimbusware_console" in text
-    assert "packages/nimbusware_maker" in text
+    assert "packages/api/routes/runs/list_helpers.py" in text
+    assert "packages/console" in text
+    assert "packages/maker" in text

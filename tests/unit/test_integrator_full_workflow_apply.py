@@ -10,14 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.integrator_workflow_apply import (
+from console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_full_workflow_yaml,
     merge_full_workflow_into_profile_document,
     prepare_full_workflow_apply,
     workflow_yaml_write_enabled,
 )
-from nimbusware_console.integrator_workflow_preview import (
+from console.integrator_workflow_preview import (
     full_workflow_merge_added_top_level_caption,
     full_workflow_merge_attention_export_filename_slug,
     full_workflow_merge_attention_export_json,
@@ -57,7 +57,7 @@ from nimbusware_console.integrator_workflow_preview import (
     parse_full_workflow_yaml_paste,
     validate_full_workflow_document,
 )
-from nimbusware_orchestrator.merge import load_yaml
+from orchestrator.merge import load_yaml
 
 
 @pytest.fixture()

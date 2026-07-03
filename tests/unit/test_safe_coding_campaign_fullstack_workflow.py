@@ -4,8 +4,8 @@ from pathlib import Path
 
 import yaml
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_campaign import (
+from env import find_repo_root
+from orchestrator.workflow_campaign import (
     parse_backlog_workflow_block,
     parse_campaign_workflow_block,
 )

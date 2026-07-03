@@ -13,10 +13,10 @@ from agent_core.models import (
     RunStartedEvent,
     RunStartedPayload,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
 
 def _append_primary(

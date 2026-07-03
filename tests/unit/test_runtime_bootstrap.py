@@ -5,13 +5,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.runtime_bootstrap import (
+from orchestrator.registry import RoleRegistry
+from orchestrator.runtime_bootstrap import (
     build_runtime_orchestrator,
     resolve_role_registry,
     roles_from_db_enabled,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_roles_from_db_enabled_parses_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -49,7 +49,7 @@ def test_api_and_worker_share_in_memory_store_without_db(
     monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
 
-    with patch("nimbusware_orchestrator.runtime_bootstrap.RunOrchestrator") as orch_cls:
+    with patch("orchestrator.runtime_bootstrap.RunOrchestrator") as orch_cls:
         api_rt = build_runtime_orchestrator(
             roles_from_db=False,
             use_materializer_registry=False,
@@ -64,7 +64,7 @@ def test_api_and_worker_share_in_memory_store_without_db(
     assert api_rt.registry.yaml_version == worker_rt.registry.yaml_version
 
 
-@patch("nimbusware_orchestrator.runtime_bootstrap.load_registry_from_postgres")
+@patch("orchestrator.runtime_bootstrap.load_registry_from_postgres")
 def test_resolve_role_registry_postgres_when_flag(
     mock_load: MagicMock,
     tmp_path: Path,
@@ -82,8 +82,8 @@ def test_resolve_role_registry_postgres_when_flag(
     assert reg is mock_load.return_value
 
 
-@patch("nimbusware_orchestrator.runtime_bootstrap.config_from_db_enabled", return_value=True)
-@patch("nimbusware_orchestrator.runtime_bootstrap.PostgresEventStore")
+@patch("orchestrator.runtime_bootstrap.config_from_db_enabled", return_value=True)
+@patch("orchestrator.runtime_bootstrap.PostgresEventStore")
 def test_worker_uses_materializer_registry_when_db_config(
     _pg: MagicMock,
     _cfg: MagicMock,
@@ -104,7 +104,7 @@ def test_worker_uses_materializer_registry_when_db_config(
 
     mat_reg = MagicMock(spec=RoleRegistry)
     with patch(
-        "nimbusware_orchestrator.runtime_bootstrap.ConfigMaterializer",
+        "orchestrator.runtime_bootstrap.ConfigMaterializer",
     ) as mat_cls:
         mat_cls.return_value.get_role_registry.return_value = mat_reg
         worker_rt = build_runtime_orchestrator(
@@ -114,7 +114,7 @@ def test_worker_uses_materializer_registry_when_db_config(
     assert worker_rt.registry is mat_reg
 
     with patch(
-        "nimbusware_orchestrator.runtime_bootstrap.ConfigMaterializer",
+        "orchestrator.runtime_bootstrap.ConfigMaterializer",
     ) as mat_cls:
         mat_cls.return_value.get_role_registry.return_value = mat_reg
         api_rt = build_runtime_orchestrator(

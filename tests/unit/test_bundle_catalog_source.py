@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from nimbusware_api.routes.bundles import get_bundle_catalog_source
+from api.routes.bundles import get_bundle_catalog_source
 
 
 def test_bundle_catalog_source_yaml(tmp_path: Path) -> None:

@@ -39,7 +39,7 @@ from agent_core.models import (
     StitchPlanEmittedPayload,
     Verdict,
 )
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
+from projections.builders.run_theater import build_run_theater_messages
 
 
 def _with_store_seq(rows: list[dict]) -> list[dict]:

@@ -5,13 +5,13 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType, Verdict
-from nimbusware_memory import (
+from memory import (
     InMemoryMemoryChunkStore,
     rebuild_memory_index,
     repo_scope_hash,
     search_memory,
 )
-from nimbusware_memory.manifest import read_manifest
+from memory.manifest import read_manifest
 
 
 def _sample_rows() -> list[dict]:

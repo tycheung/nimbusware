@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch_evaluator import evaluate_workspace_rubric
 
 
 def test_launch_eval_passes_tiny_python_fixture() -> None:

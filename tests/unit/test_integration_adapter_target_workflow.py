@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from nimbusware_orchestrator.integration_adapter_writer_stage import (
+from env import find_repo_root
+from orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
+from orchestrator.integration_adapter_writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 

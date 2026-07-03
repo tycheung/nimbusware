@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.llm.providers import (
+from orchestrator.llm.providers import (
     AnthropicProvider,
     OllamaProvider,
     OpenAICompatibleProvider,

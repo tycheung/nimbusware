@@ -1,70 +1,70 @@
 from __future__ import annotations
 
-from nimbusware_projections.builders.agent_evaluator import agent_evaluator_timeline_summary
-from nimbusware_projections.builders.agent_evaluator import (
+from projections.builders.agent_evaluator import agent_evaluator_timeline_summary
+from projections.builders.agent_evaluator import (
     agent_evaluator_timeline_summary as proj_agent_eval_summary,
 )
-from nimbusware_projections.builders.integrator_gate import (
+from projections.builders.integrator_gate import (
     integrator_gate_timeline_delta,
     integrator_gate_timeline_entries,
     integrator_gate_timeline_history,
     integrator_gate_timeline_summary,
 )
-from nimbusware_projections.builders.integrator_gate import (
+from projections.builders.integrator_gate import (
     integrator_gate_timeline_delta as proj_delta,
 )
-from nimbusware_projections.builders.integrator_gate import (
+from projections.builders.integrator_gate import (
     integrator_gate_timeline_entries as proj_entries,
 )
-from nimbusware_projections.builders.integrator_gate import (
+from projections.builders.integrator_gate import (
     integrator_gate_timeline_history as proj_history,
 )
-from nimbusware_projections.builders.integrator_gate import (
+from projections.builders.integrator_gate import (
     integrator_gate_timeline_summary as proj_summary,
 )
-from nimbusware_projections.builders.security_scan import (
+from projections.builders.security_scan import (
     security_scan_on_verify_timeline_entries,
     security_scan_on_verify_timeline_history,
     security_scan_on_verify_timeline_summary,
 )
-from nimbusware_projections.builders.security_scan import (
+from projections.builders.security_scan import (
     security_scan_on_verify_timeline_entries as proj_scan_entries,
 )
-from nimbusware_projections.builders.security_scan import (
+from projections.builders.security_scan import (
     security_scan_on_verify_timeline_history as proj_scan_history,
 )
-from nimbusware_projections.builders.security_scan import (
+from projections.builders.security_scan import (
     security_scan_on_verify_timeline_summary as proj_scan_summary,
 )
-from nimbusware_projections.builders.self_refinement import (
+from projections.builders.self_refinement import (
     self_refinement_marker_timeline_entries,
     self_refinement_marker_timeline_history,
     self_refinement_timeline_summary,
 )
-from nimbusware_projections.builders.self_refinement import (
+from projections.builders.self_refinement import (
     self_refinement_marker_timeline_entries as proj_sr_entries,
 )
-from nimbusware_projections.builders.self_refinement import (
+from projections.builders.self_refinement import (
     self_refinement_marker_timeline_history as proj_sr_history,
 )
-from nimbusware_projections.builders.self_refinement import (
+from projections.builders.self_refinement import (
     self_refinement_timeline_summary as proj_sr_summary,
 )
-from nimbusware_projections.builders.universal_critique import (
+from projections.builders.universal_critique import (
     universal_critique_timeline_entries,
     universal_critique_timeline_summary,
 )
-from nimbusware_projections.builders.universal_critique import (
+from projections.builders.universal_critique import (
     universal_critique_timeline_entries as proj_uc_entries,
 )
-from nimbusware_projections.builders.universal_critique import (
+from projections.builders.universal_critique import (
     universal_critique_timeline_summary as proj_uc_summary,
 )
-from nimbusware_projections.fields.integrator_gate import (
+from projections.fields.integrator_gate import (
     INTEGRATOR_GATE_DISPLAY_FIELDS,
     INTEGRATOR_GATE_ROW_KEYS,
 )
-from nimbusware_projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
+from projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
 
 
 def test_integrator_gate_row_keys_align_with_display_fields() -> None:
@@ -162,13 +162,13 @@ def test_self_refinement_api_shim_delegates_to_projections() -> None:
 
 
 def test_run_escalated_projections_timeline() -> None:
-    from nimbusware_projections.builders.run_escalated import (
+    from projections.builders.run_escalated import (
         run_escalated_timeline_delta,
         run_escalated_timeline_entries,
         run_escalated_timeline_history,
         run_escalated_timeline_summary,
     )
-    from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
+    from projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
 
     sample = [
         {
@@ -204,7 +204,7 @@ def test_run_escalated_projections_timeline() -> None:
 
 
 def test_scraper_fetch_projections_timeline() -> None:
-    from nimbusware_projections.builders.scraper_fetch import scraper_fetch_timeline_summary
+    from projections.builders.scraper_fetch import scraper_fetch_timeline_summary
 
     sample = [
         {
@@ -223,7 +223,7 @@ def test_scraper_fetch_projections_timeline() -> None:
 
 
 def test_persona_assignment_projections_timeline() -> None:
-    from nimbusware_projections.builders.persona_assignment import (
+    from projections.builders.persona_assignment import (
         persona_assignment_timeline_summary,
     )
 
@@ -245,7 +245,7 @@ def test_persona_assignment_projections_timeline() -> None:
 
 
 def test_stage_timeline_projections() -> None:
-    from nimbusware_projections.builders.stage_timeline import (
+    from projections.builders.stage_timeline import (
         critic_matrix_live_timeline_summary,
         parallel_writer_groups_timeline_summary,
         stage_graph_timeline_summary,

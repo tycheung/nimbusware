@@ -10,7 +10,7 @@ def require_playwright_chromium(*, fail_message: str | None = None) -> None:
     except ImportError:
         pytest.skip("playwright not installed")
 
-    from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
+    from orchestrator.playwright_probe import playwright_chromium_launchable
 
     if not playwright_chromium_launchable():
         if fail_message:

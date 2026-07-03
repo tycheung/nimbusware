@@ -17,8 +17,8 @@ pytestmark = [
 
 
 def test_micro_slice_web_profile_loads() -> None:
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+    from env import find_repo_root
+    from orchestrator.workflow_profiles import workflow_profile_dict
 
     repo = find_repo_root()
     profile = workflow_profile_dict(repo, "micro_slice_web")
@@ -31,7 +31,7 @@ def test_tiny_web_app_fixture_copy(tmp_path: Path) -> None:
 
 
 def _stub_orchestrator_modules(ws: Path) -> None:
-    target_dir = ws / "packages/nimbusware_orchestrator"
+    target_dir = ws / "packages/orchestrator"
     target_dir.mkdir(parents=True, exist_ok=True)
     (target_dir / "micro_slice.py").write_text("# stub\n", encoding="utf-8")
     (target_dir / "slice_gate.py").write_text("# stub\n", encoding="utf-8")

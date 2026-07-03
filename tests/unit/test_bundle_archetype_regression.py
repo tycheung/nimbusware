@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env.install_setup_bundles import (
+from env.install_setup_bundles import (
     SETUP_BUNDLE_DEFAULT,
     SETUP_BUNDLE_ENTERPRISE,
     archetype_subchoice_config,

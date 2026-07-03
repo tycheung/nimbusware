@@ -8,9 +8,9 @@ import pytest
 from pydantic import ValidationError
 
 from agent_core.models.events import FindingFixStrictnessSettings, Severity
-from nimbusware_orchestrator._pipeline import base as orchestrator_base
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator._pipeline import base as orchestrator_base
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 from unit.composite_orchestrator_fixtures import all_false_effective_critique
 from unit.composite_store_fixtures import inject_raw_run_created_row
 
@@ -153,8 +153,8 @@ def test_strictness_context_real_path_integration_5_axis() -> None:
     )
     assert fs_b1.minimum_severity_requiring_fixes == Severity.MEDIUM, (
         f"B1: bare-default severity must be MEDIUM (set in "
-        f"[packages/nimbusware_orchestrator/merge.py:37-41]"
-        f"(packages/nimbusware_orchestrator/merge.py) when no layer "
+        f"[packages/orchestrator/merge.py:37-41]"
+        f"(packages/orchestrator/merge.py) when no layer "
         f"provides strictness). Got: "
         f"{fs_b1.minimum_severity_requiring_fixes!r}"
     )
@@ -315,7 +315,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     assert captured_args["wf"] == "123", (
         f"C4 KEY DIVERGENCE: non-string ``workflow_profile=123`` must "
         f"be ``str()``-coerced to ``'123'`` at "
-        f"[integrator_gate.py:84](packages/nimbusware_orchestrator/integrator_gate.py): "
+        f"[integrator_gate.py:84](packages/orchestrator/integrator_gate.py): "
         f"``return str(wf) if wf is not None else None``. A refactor "
         f"that dropped the ``str()`` cast would let ``int`` flow "
         f"downstream and break ``workflow_profile_path(repo_root, "
@@ -439,7 +439,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
     assert captured_d4["repo_root"] == orch_d4.repo_root, (
         f"D4 KEY DIVERGENCE: ``effective_universal_critique`` must "
         f"receive ``self._repo_root`` as the FIRST positional argument "
-        f"(per [pipeline.py:702](packages/nimbusware_orchestrator/pipeline.py) "
+        f"(per [pipeline.py:702](packages/orchestrator/pipeline.py) "
         f"``effective_universal_critique(self._repo_root, wf)``). A "
         f"refactor that hardcoded a path or used a module-level global "
         f"would break this. Got: repo_root={captured_d4['repo_root']!r} "

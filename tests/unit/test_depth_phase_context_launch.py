@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.context_artifacts import (
+from orchestrator.context_artifacts import (
     clear_context_artifacts_memory,
     create_context_artifact,
     list_context_artifacts_for_actor,
 )
-from nimbusware_orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch_evaluator import evaluate_workspace_rubric
 
 
 def test_list_context_artifacts_for_actor_filters_private() -> None:

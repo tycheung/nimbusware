@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-_PKG = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_bootstrap"
+_PKG = Path(__file__).resolve().parents[2] / "packages" / "bootstrap"
 if str(_PKG) not in sys.path:
     sys.path.insert(0, str(_PKG))
 
-from nimbusware_bootstrap.platform import (
+from bootstrap.platform import (
     github_repo_parts,
     launcher_asset_filename,
     launcher_platform_slug,

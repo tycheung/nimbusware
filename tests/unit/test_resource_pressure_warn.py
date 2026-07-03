@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType
-from nimbusware_hw.audit import maybe_append_resource_pressure_warn
-from nimbusware_hw.governor import ResourceGovernor
+from hw.audit import maybe_append_resource_pressure_warn
+from hw.governor import ResourceGovernor
 
 
 class _MemStore:
@@ -35,7 +35,7 @@ def test_maybe_append_warn_emits_once_per_cooldown(monkeypatch) -> None:
     def _fake_sample(_gov):
         return "warn", {"tier": "medium", "reason": "ram_at_cap", "ram_used_pct": 82.0}
 
-    monkeypatch.setattr("nimbusware_hw.audit.sample_pressure", _fake_sample)
+    monkeypatch.setattr("hw.audit.sample_pressure", _fake_sample)
 
     seq1 = maybe_append_resource_pressure_warn(store, run_id=run_id, governor=gov, hook="test")
     seq2 = maybe_append_resource_pressure_warn(store, run_id=run_id, governor=gov, hook="test")
@@ -62,7 +62,7 @@ def test_cooldown_allows_second_warn_after_interval(monkeypatch) -> None:
     def _fake_sample(_gov):
         return "throttle", {"tier": "weak", "reason": "ram_near_cap", "ram_used_pct": 90.0}
 
-    monkeypatch.setattr("nimbusware_hw.audit.sample_pressure", _fake_sample)
+    monkeypatch.setattr("hw.audit.sample_pressure", _fake_sample)
 
     seq = maybe_append_resource_pressure_warn(
         store,
@@ -76,5 +76,5 @@ def test_cooldown_allows_second_warn_after_interval(monkeypatch) -> None:
 def test_ok_pressure_skips_emit(monkeypatch) -> None:
     run_id = uuid4()
     store = _MemStore()
-    monkeypatch.setattr("nimbusware_hw.audit.sample_pressure", lambda _g: ("ok", {}))
+    monkeypatch.setattr("hw.audit.sample_pressure", lambda _g: ("ok", {}))
     assert maybe_append_resource_pressure_warn(store, run_id=run_id) is None

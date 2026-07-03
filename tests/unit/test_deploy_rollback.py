@@ -5,13 +5,13 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_maker.deploy_pipeline_events import (
+from api.app import app
+from maker.deploy_pipeline_events import (
     deploy_rollback_passed_from_events,
     emit_deploy_rollback_stages,
 )
-from nimbusware_maker.terraform_validate import rollback_workspace_terraform
-from nimbusware_store.memory import InMemoryEventStore
+from maker.terraform_validate import rollback_workspace_terraform
+from store.memory import InMemoryEventStore
 
 
 def test_rollback_skips_without_tf_files(tmp_path) -> None:
@@ -62,19 +62,19 @@ def test_deploy_rollback_after_apply(client: TestClient, monkeypatch: pytest.Mon
     run_id = created.json()["run_id"]
     client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.maker_user_id_str",
+        "api.routes.platform_deploy_mutations.maker_user_id_str",
         lambda _req: "deploy-test-user",
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
+        "api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "dev"},
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.apply_workspace_terraform",
+        "api.routes.platform_deploy_mutations.apply_workspace_terraform",
         lambda _ws, **_: {"status": "passed", "detail": "ok"},
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.rollback_workspace_terraform",
+        "api.routes.platform_deploy_mutations.rollback_workspace_terraform",
         lambda _ws, **_: {"status": "passed", "detail": "destroy ok", "rollback_mode": "destroy"},
     )
     client.post(

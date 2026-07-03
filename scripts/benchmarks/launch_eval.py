@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 def _evaluate_workspace(ws: Path, *, min_aggregate: float, use_llm: bool):
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from nimbusware_orchestrator.launch_evaluator import evaluate_workspace_rubric
+    from orchestrator.launch_evaluator import evaluate_workspace_rubric
 
     if use_llm:
         os.environ["NIMBUSWARE_LAUNCH_EVAL_LLM"] = "1"
@@ -23,7 +23,7 @@ def _evaluate_workspace(ws: Path, *, min_aggregate: float, use_llm: bool):
 
 def _run_matrix(*, min_aggregate: float, use_llm: bool) -> list[dict[str, object]]:
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from nimbusware_orchestrator.launch_eval_catalog import (
+    from orchestrator.launch_eval_catalog import (
         default_workspace_paths,
         prompt_ids,
     )
@@ -55,7 +55,7 @@ def _load_run_rows(run_id: str, events_path: Path | None) -> list[dict[str, obje
     if not url:
         raise SystemExit("--run-id requires --run-events or NIMBUSWARE_DATABASE_URL")
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from nimbusware_store.postgres import PostgresStore
+    from store.postgres import PostgresStore
 
     return PostgresStore(url).list_run_events(run_id)
 
@@ -88,8 +88,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.run_id:
         sys.path.insert(0, str(REPO_ROOT / "packages"))
-        from nimbusware_maker.workspace import resolve_run_workspace
-        from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
+        from maker.workspace import resolve_run_workspace
+        from orchestrator.launch_eval_catalog import attach_context_from_run
 
         rows = _load_run_rows(args.run_id, args.run_events)
         ws = resolve_run_workspace(rows)

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.integrator_core.thresholds import integrator_gate_emission_breakdown
-from nimbusware_orchestrator.integrator_gate import integrator_gate_event_would_emit
+from console.integrator_core.thresholds import integrator_gate_emission_breakdown
+from orchestrator.integrator_gate import integrator_gate_event_would_emit
 from unit.composite_repo_fixtures import write_integrator_thresholds
 
 

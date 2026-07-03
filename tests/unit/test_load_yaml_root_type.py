@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.merge import load_yaml
+from orchestrator.workflow_blocks_simple import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )
-from nimbusware_orchestrator.workflow_security_metadata import (
+from orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 from unit.composite_repo_fixtures import write_tmp_yaml, write_workflow_profile
@@ -125,9 +125,9 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
 
     The **tie-in to the upcoming fo76 zero-behavior cleanup** -- pins
     that both ``parse_escalation_workflow_block`` in
-    [workflow_blocks_simple.py](packages\\nimbusware_orchestrator\\workflow_blocks_simple.py)
+    [workflow_blocks_simple.py](packages\\orchestrator\\workflow_blocks_simple.py)
     and ``parse_security_scan_metadata_on_verify_workflow`` in
-    [workflow_security_metadata.py](packages\\nimbusware_orchestrator\\workflow_security_metadata.py)
+    [workflow_security_metadata.py](packages\\orchestrator\\workflow_security_metadata.py)
     cascade to their respective defaults for every non-dict YAML root.
 
     The cascade chain:
@@ -140,9 +140,9 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
        ``parse_security_scan_metadata_on_verify_workflow`` returns
        ``False``).
     4. The outer ``if isinstance(raw, dict)`` guard at line 35 of
-       [workflow_blocks_simple.py](packages\\nimbusware_orchestrator\\workflow_blocks_simple.py)
+       [workflow_blocks_simple.py](packages\\orchestrator\\workflow_blocks_simple.py)
        and line 60 of
-       [workflow_security_metadata.py](packages\\nimbusware_orchestrator\\workflow_security_metadata.py)
+       [workflow_security_metadata.py](packages\\orchestrator\\workflow_security_metadata.py)
        **never executes** because the try/except returned first.
 
     Step 4 is the dead-code observation that justifies the fo76

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_maker.deploy_credential_vault import (
+from maker.deploy_credential_vault import (
     append_deploy_audit_event,
     list_deploy_audit_events,
 )

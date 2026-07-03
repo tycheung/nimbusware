@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Match CI integration job: apply packages/nimbusware_store/schema/postgres.sql then pytest -m integration.
+# Match CI integration job: apply packages/store/schema/postgres.sql then pytest -m integration.
 # Usage:
 #   export NIMBUSWARE_DATABASE_URL="postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 #   export NIMBUSWARE_REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"  # optional

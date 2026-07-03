@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from nimbusware_orchestrator._pipeline.base import RunOrchestratorBase
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator._pipeline.base import RunOrchestratorBase
+from orchestrator.registry import RoleRegistry
+from store.memory import InMemoryEventStore
 
 
 def test_base_cfg_prefers_materializer_when_db(tmp_path: Path) -> None:

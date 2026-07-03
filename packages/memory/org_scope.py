@@ -1,0 +1,47 @@
+from __future__ import annotations
+
+import hashlib
+from uuid import UUID
+
+from env.edition import is_enterprise, require_enterprise_feature
+from iam.context import resolve_store_tenant_id
+
+_FLEET_SCOPE_PREFIX = "fleet"
+
+
+def fleet_scope_hash(
+    tenant_id: UUID,
+    *,
+    org_slug: str = "default",
+) -> str:
+    slug = org_slug.strip().lower() or "default"
+    raw = f"{_FLEET_SCOPE_PREFIX}:{tenant_id}:{slug}".encode()
+    return hashlib.sha256(raw).hexdigest()[:16]
+
+
+def resolve_fleet_scope(
+    *,
+    tenant_id: UUID | None = None,
+    org_slug: str = "default",
+) -> tuple[UUID, str]:
+    require_fleet_memory_feature()
+    tid = tenant_id or resolve_store_tenant_id()
+    return tid, fleet_scope_hash(tid, org_slug=org_slug)
+
+
+def repo_scope_as_org_scope(repo_scope: str) -> str:
+    """Individual edition: repo scope is the memory namespace."""
+    return repo_scope
+
+
+def memory_namespace_for_repo(repo_scope: str) -> str:
+    """Scope key used by ``MemoryChunkStore`` for repo-local indexes."""
+    return repo_scope_as_org_scope(repo_scope)
+
+
+def require_fleet_memory_feature() -> None:
+    require_enterprise_feature("fleet_memory")
+
+
+def fleet_memory_enabled() -> bool:
+    return is_enterprise()

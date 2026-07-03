@@ -9,8 +9,8 @@ import sys
 import urllib.request
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_hw.catalog_sync import (
+from env import find_repo_root
+from hw.catalog_sync import (
     build_catalog_from_source,
     catalog_info_from_path,
     load_catalog_doc,

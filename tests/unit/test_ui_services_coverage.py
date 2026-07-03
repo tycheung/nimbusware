@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from nimbusware_console import enterprise_console as ent_ui
-from nimbusware_console.services import config_editors as cfg_svc
-from nimbusware_console.services import custom_agents as agents_svc
-from nimbusware_console.services import enterprise as enterprise_svc
-from nimbusware_console.services import operator_chat as chat_svc
-from nimbusware_maker.services import platform as platform_svc
-from nimbusware_maker.services import projects as projects_svc
+from console import enterprise_console as ent_ui
+from console.services import config_editors as cfg_svc
+from console.services import custom_agents as agents_svc
+from console.services import enterprise as enterprise_svc
+from console.services import operator_chat as chat_svc
+from maker.services import platform as platform_svc
+from maker.services import projects as projects_svc
 
 
 def test_operator_chat_create_run() -> None:
-    with patch("nimbusware_console.services.operator_chat.post_response") as post:
+    with patch("console.services.operator_chat.post_response") as post:
         post.return_value = MagicMock(status_code=201)
         chat_svc.create_run({"workflow_profile": "default"})
     post.assert_called_once()
@@ -20,33 +20,33 @@ def test_operator_chat_create_run() -> None:
 
 
 def test_operator_chat_fetch_timeline() -> None:
-    with patch("nimbusware_console.services.operator_chat.get_response") as get:
+    with patch("console.services.operator_chat.get_response") as get:
         get.return_value = MagicMock()
         chat_svc.fetch_timeline_response("rid")
     assert get.call_args.args[0] == "/runs/rid/timeline"
 
 
 def test_config_editors_bundle_and_persona() -> None:
-    with patch("nimbusware_console.services.config_editors.get_json") as get_json:
+    with patch("console.services.config_editors.get_json") as get_json:
         get_json.return_value = {"bundles": []}
         assert cfg_svc.load_bundle_catalog() == {"bundles": []}
         get_json.assert_called_with("/bundles/catalog", timeout=10.0)
         get_json.return_value = {"personas": []}
         assert cfg_svc.load_persona_shelves() == {"personas": []}
 
-    with patch("nimbusware_console.services.config_editors.patch_response") as patch_resp:
+    with patch("console.services.config_editors.patch_response") as patch_resp:
         patch_resp.return_value = MagicMock(json=lambda: {"ok": True})
         out = cfg_svc.patch_bundle("b1", {"name": "x"}, "tok")
         assert out == {"ok": True}
         cfg_svc.patch_persona("p1", {"name": "y"}, "tok")
 
-    with patch("nimbusware_console.services.config_editors.delete_response") as delete:
+    with patch("console.services.config_editors.delete_response") as delete:
         cfg_svc.delete_persona("p1", "tok")
     delete.assert_called_once()
 
 
 def test_custom_agents_patch() -> None:
-    with patch("nimbusware_console.services.custom_agents.patch_response") as patch_resp:
+    with patch("console.services.custom_agents.patch_response") as patch_resp:
         agents_svc.patch_custom_agent("a1", {"system_prompt": "hi"})
     assert patch_resp.call_args.args[0] == "/custom-agents/a1"
 
@@ -65,17 +65,17 @@ def test_enterprise_manifest_helpers() -> None:
 
 
 def test_enterprise_fetch_with_api_key() -> None:
-    with patch("nimbusware_console.services.enterprise.get_json") as get_json:
+    with patch("console.services.enterprise.get_json") as get_json:
         get_json.return_value = {"tenants": []}
         enterprise_svc.fetch_tenants(api_key="secret")
     headers = get_json.call_args.kwargs.get("headers") or get_json.call_args[1].get("headers")
     assert headers is not None
 
-    with patch("nimbusware_console.services.enterprise.get_json") as get_json:
+    with patch("console.services.enterprise.get_json") as get_json:
         get_json.return_value = {"edition": "enterprise"}
         assert enterprise_svc.fetch_platform_edition()["edition"] == "enterprise"
 
-    with patch("nimbusware_console.services.enterprise.get_json") as get_json:
+    with patch("console.services.enterprise.get_json") as get_json:
         get_json.return_value = {"tenant_id": "t1"}
         enterprise_svc.fetch_fleet_memory_status(api_key="k")
         enterprise_svc.fetch_fleet_preflight_aggregate(api_key="k", limit=3)
@@ -117,33 +117,33 @@ def test_enterprise_console_pure_helpers() -> None:
 
 
 def test_maker_platform_and_projects() -> None:
-    with patch("nimbusware_maker.services.platform.get_json") as get_json:
+    with patch("maker.services.platform.get_json") as get_json:
         get_json.return_value = {"status": "ready"}
         assert platform_svc.fetch_readiness()["status"] == "ready"
 
-    with patch("nimbusware_maker.services.projects.get_json") as get_json:
+    with patch("maker.services.projects.get_json") as get_json:
         get_json.return_value = {"projects": []}
         assert projects_svc.list_projects() == {"projects": []}
 
-    with patch("nimbusware_maker.services.projects.post_json") as post_json:
+    with patch("maker.services.projects.post_json") as post_json:
         post_json.return_value = {"project_id": "p1"}
         out = projects_svc.create_project({"name": "App"})
         assert out["project_id"] == "p1"
 
 
 def test_console_runs_service() -> None:
-    from nimbusware_console.services import runs as runs_svc
+    from console.services import runs as runs_svc
 
-    with patch("nimbusware_console.services.runs.get_json") as get_json:
+    with patch("console.services.runs.get_json") as get_json:
         get_json.return_value = {"run_id": "r1"}
         assert runs_svc.fetch_run("r1")["run_id"] == "r1"
         runs_svc.fetch_timeline("r1")
         runs_svc.fetch_findings("r1")
-    with patch("nimbusware_console.services.runs.get_response") as get_resp:
+    with patch("console.services.runs.get_response") as get_resp:
         get_resp.return_value = MagicMock(status_code=200)
         runs_svc.fetch_runs_list(params={"limit": 5})
     assert get_resp.call_args.kwargs["params"] == {"limit": 5}
-    with patch("nimbusware_console.services.runs.post_json") as post_json:
+    with patch("console.services.runs.post_json") as post_json:
         post_json.return_value = {"ok": True}
         runs_svc.post_retry("r1")
         runs_svc.post_escalate("r1", {"reason": "stuck"})
@@ -151,9 +151,9 @@ def test_console_runs_service() -> None:
 
 
 def test_maker_runs_service() -> None:
-    from nimbusware_maker.services import runs as maker_runs_svc
+    from maker.services import runs as maker_runs_svc
 
-    with patch("nimbusware_maker.services.runs.post_json") as post_json:
+    with patch("maker.services.runs.post_json") as post_json:
         post_json.return_value = {"run_id": "r2"}
         assert maker_runs_svc.create_run({"workflow_profile": "micro_slice"})["run_id"] == "r2"
         maker_runs_svc.approve_plan("r2")
@@ -162,7 +162,7 @@ def test_maker_runs_service() -> None:
         maker_runs_svc.skip_slice("r2", {"slice_id": "s1"})
         maker_runs_svc.revert_workspace("r2")
     assert post_json.call_count == 6
-    with patch("nimbusware_maker.services.runs.get_json") as get_json:
+    with patch("maker.services.runs.get_json") as get_json:
         get_json.return_value = {"pending": True}
         assert maker_runs_svc.fetch_pending("r2")["pending"] is True
         get_json.return_value = {"progress": 1}
@@ -170,13 +170,13 @@ def test_maker_runs_service() -> None:
 
 
 def test_console_ollama_services() -> None:
-    from nimbusware_console.services import ollama as console_ollama
+    from console.services import ollama as console_ollama
 
-    with patch("nimbusware_console.services.ollama.get_json") as get_json:
+    with patch("console.services.ollama.get_json") as get_json:
         get_json.return_value = {"models": []}
         console_ollama.list_models(query="llama")
     assert "q=llama" in get_json.call_args.args[0]
-    with patch("nimbusware_console.services.ollama.patch_response") as patch_resp:
+    with patch("console.services.ollama.patch_response") as patch_resp:
         patch_resp.return_value = MagicMock(json=lambda: ["not", "a", "dict"])
         out = console_ollama.save_user_policy(
             allow_pull=False,
@@ -184,26 +184,26 @@ def test_console_ollama_services() -> None:
             allow_update_routing=False,
         )
         assert out["allow_pull"] is False
-    with patch("nimbusware_console.services.ollama.post_json") as post_json:
+    with patch("console.services.ollama.post_json") as post_json:
         post_json.return_value = {"job_id": "j1"}
         console_ollama.admin_pull_model("llama3")
-    with patch("nimbusware_console.services.ollama.delete_response") as delete:
+    with patch("console.services.ollama.delete_response") as delete:
         console_ollama.admin_delete_model("old")
     delete.assert_called_once()
 
 
 def test_maker_ollama_services() -> None:
-    from nimbusware_maker.services import ollama as maker_ollama
+    from maker.services import ollama as maker_ollama
 
-    with patch("nimbusware_maker.services.ollama.get_json") as get_json:
+    with patch("maker.services.ollama.get_json") as get_json:
         get_json.return_value = {"models": []}
         maker_ollama.list_models(query="q")
-    with patch("nimbusware_maker.services.ollama.post_json") as post_json:
+    with patch("maker.services.ollama.post_json") as post_json:
         post_json.return_value = {"job_id": "j2"}
         maker_ollama.pull_model("llama3")
-    with patch("nimbusware_maker.services.ollama.delete_response") as delete:
+    with patch("maker.services.ollama.delete_response") as delete:
         maker_ollama.delete_model("old")
-    with patch("nimbusware_maker.services.ollama.patch_response") as patch_resp:
+    with patch("maker.services.ollama.patch_response") as patch_resp:
         maker_ollama.set_primary_routing("llama3:latest")
     patch_resp.assert_called_once()
     delete.assert_called_once()

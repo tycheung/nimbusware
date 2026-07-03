@@ -8,10 +8,10 @@ import pytest
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
-import nimbusware_api.routes.runs as runs_module
-from nimbusware_api.app import app
-from nimbusware_api.facade import build_v1_router
-from nimbusware_env import find_repo_root
+import api.routes.runs as runs_module
+from api.app import app
+from api.facade import build_v1_router
+from env import find_repo_root
 
 os.environ.setdefault(
     "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))

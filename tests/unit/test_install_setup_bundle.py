@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env.install_setup_bundles import (
+from env.install_setup_bundles import (
     SETUP_BUNDLE_DEFAULT,
     SETUP_BUNDLE_ENTERPRISE,
     apply_setup_bundle_env,
@@ -46,7 +46,7 @@ def test_apply_setup_bundle_env_writes_dotenv(tmp_path: Path) -> None:
 
 
 def test_launcher_install_args_include_setup_bundle() -> None:
-    from nimbusware_env.launcher_fetch import (
+    from env.launcher_fetch import (
         SETUP_BUNDLE_ENTERPRISE,
         install_script_args,
     )

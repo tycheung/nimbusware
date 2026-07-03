@@ -6,14 +6,14 @@ from unittest.mock import patch
 
 from agent_core.models import EventType
 from agent_core.stage_graph import parallel_group_members
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 @patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False)
 def test_frontend_writer_runs_in_parallel_group() -> None:
     with patch(
-        "nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok")
+        "orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok")
     ):
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("parallel_writers_on")

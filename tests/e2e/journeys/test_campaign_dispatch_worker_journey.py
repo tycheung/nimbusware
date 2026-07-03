@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from api.app import app
 from e2e.harness.journey import JourneyClient
 from e2e.harness.stack import start_inprocess_dispatch_worker
-from nimbusware_api.app import app
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_stack]
 

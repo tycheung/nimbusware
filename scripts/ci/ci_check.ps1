@@ -84,7 +84,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($node) {
-    Push-Location (Join-Path $Root "packages\nimbusware_maker_web")
+    Push-Location (Join-Path $Root "packages\maker_web")
     if (Test-Path package.json) {
         npm ci --silent 2>$null
         if ($LASTEXITCODE -eq 0) {
@@ -93,7 +93,7 @@ if ($node) {
         }
     }
     Pop-Location
-    $adminUi = Join-Path $Root "packages\nimbusware_admin_ui"
+    $adminUi = Join-Path $Root "packages\admin_ui"
     if (Test-Path (Join-Path $adminUi "package.json")) {
         $env:NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL = "1"
         poetry run python scripts/codegen/openapi_to_ts.py

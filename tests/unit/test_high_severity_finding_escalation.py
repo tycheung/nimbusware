@@ -10,7 +10,7 @@ from agent_core.models import (
     FindingCreatedPayload,
     Severity,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 _BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
 
@@ -53,7 +53,7 @@ def test_cumulative_high_severity_findings_emits_single_escalation() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_high_severity_findings(rid)  # noqa: SLF001
@@ -79,7 +79,7 @@ def test_high_severity_finding_escalation_suppressed_when_workflow_suppresses() 
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_high_severity_findings(rid)  # noqa: SLF001
@@ -116,7 +116,7 @@ def test_low_severity_findings_do_not_count_toward_high_threshold() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_high_severity_findings",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_high_severity_findings(rid)  # noqa: SLF001

@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from nimbusware_projections.builders.context_budget import estimate_context_budget
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
+from projections.builders.context_budget import estimate_context_budget
+from projections.builders.run_theater import build_run_theater_messages
 
 
 def test_theater_renders_campaign_context_compacted() -> None:

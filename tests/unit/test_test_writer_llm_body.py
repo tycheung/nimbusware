@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.test_writer_stage import run_test_writer_stage
+from orchestrator.test_writer_stage import run_test_writer_stage
 
 
 def test_llm_body_uses_stub_when_env_enabled() -> None:

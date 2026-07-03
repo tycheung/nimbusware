@@ -3,15 +3,15 @@ from __future__ import annotations
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, Verdict
-from nimbusware_orchestrator.ollama_chat import extract_ollama_usage
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.role_telemetry import (
+from orchestrator.ollama_chat import extract_ollama_usage
+from orchestrator.registry import RoleRegistry
+from orchestrator.role_telemetry import (
     ROLE_TELEMETRY_METADATA_KEY,
     aggregate_role_telemetry_rows,
     extract_role_telemetry_hint,
     merge_role_telemetry_metadata,
 )
-from nimbusware_orchestrator.routing_suggestions import (
+from orchestrator.routing_suggestions import (
     enrich_aggregate_with_model_selection,
     suggest_model_routing_changes,
 )

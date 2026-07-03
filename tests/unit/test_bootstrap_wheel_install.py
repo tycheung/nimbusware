@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 _REPO = Path(__file__).resolve().parents[2]
-_PKG = _REPO / "packages" / "nimbusware_bootstrap"
+_PKG = _REPO / "packages" / "bootstrap"
 
 
 def _ensure_wheel() -> Path:
@@ -53,7 +53,7 @@ def test_bootstrap_wheel_install_smoke(tmp_path: Path) -> None:
     env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
     env["PYTHONPATH"] = str(site)
     proc = subprocess.run(
-        [sys.executable, "-m", "nimbusware_bootstrap", "--print-only"],
+        [sys.executable, "-m", "bootstrap", "--print-only"],
         cwd=tmp_path,
         env=env,
         capture_output=True,
@@ -92,7 +92,7 @@ def test_bootstrap_wheel_venv_install_subprocess(tmp_path: Path) -> None:
     )
     assert install.returncode == 0, install.stdout + install.stderr
     proc = subprocess.run(
-        [str(py), "-m", "nimbusware_bootstrap", "--print-only"],
+        [str(py), "-m", "bootstrap", "--print-only"],
         cwd=tmp_path,
         capture_output=True,
         text=True,

@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.merge import load_yaml
+from config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+from config.materializer import ConfigMaterializer
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.merge import load_yaml
 
 
 def test_materializer_file_fallback_matches_disk(repo_root: Path) -> None:

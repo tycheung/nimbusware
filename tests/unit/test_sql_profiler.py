@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.sql_profiler import (
+from env import find_repo_root
+from orchestrator.sql_profiler import (
     check_runtime_sql_budget,
     record_sql_query,
     reset_sql_query_counter,

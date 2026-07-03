@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.workflow_explainers.security_scan_metadata import (
+from console.workflow_explainers.security_scan_metadata import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
     security_scan_metadata_mapping_key_count_caption,
@@ -297,7 +297,7 @@ def test_yaml_effective_mismatch_caption_none_when_aligned() -> None:
 
 
 def test_security_scan_metadata_operator_metrics_yaml_effective_mismatch() -> None:
-    from nimbusware_console.workflow_explainers.security_scan_metadata import (
+    from console.workflow_explainers.security_scan_metadata import (
         security_scan_metadata_workflow_explainer_operator_metrics,
     )
 

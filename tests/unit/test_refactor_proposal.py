@@ -3,15 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.refactor_proposal import (
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.refactor_proposal import (
     build_refactor_proposal,
     orphan_gate_exceeded,
 )
-from nimbusware_orchestrator.refactor_stage import emit_refactor_stage_and_critique
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.workflow_refactor import RefactorWorkflowBlock
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.refactor_stage import emit_refactor_stage_and_critique
+from orchestrator.registry import RoleRegistry
+from orchestrator.workflow_refactor import RefactorWorkflowBlock
+from store.memory import InMemoryEventStore
 
 _REPO = Path(__file__).resolve().parents[2]
 
@@ -75,10 +75,10 @@ def test_refactor_orphan_gate_fails_critique(tmp_path: Path) -> None:
 def test_refactor_llm_patch_path(monkeypatch: object, tmp_path: Path) -> None:
     from uuid import uuid4
 
-    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-    from nimbusware_orchestrator.refactor_stage import emit_refactor_stage_and_critique
-    from nimbusware_orchestrator.registry import RoleRegistry
-    from nimbusware_store.memory import InMemoryEventStore
+    from extensions.extension_runtime import UniversalCritiqueRouter
+    from orchestrator.refactor_stage import emit_refactor_stage_and_critique
+    from orchestrator.registry import RoleRegistry
+    from store.memory import InMemoryEventStore
 
     ws = tmp_path / "proj"
     ws.mkdir()
@@ -93,11 +93,11 @@ def test_refactor_llm_patch_path(monkeypatch: object, tmp_path: Path) -> None:
 
     monkeypatch.setenv("NIMBUSWARE_USE_LLM", "1")
     monkeypatch.setattr(
-        "nimbusware_orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
         _fake_ollama,
     )
     monkeypatch.setattr(
-        "nimbusware_env.env_flags.nimbusware_use_llm_enabled",
+        "env.env_flags.nimbusware_use_llm_enabled",
         lambda: True,
     )
 

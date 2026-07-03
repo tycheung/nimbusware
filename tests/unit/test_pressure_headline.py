@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_projections.builders.pressure_headline import (
+from projections.builders.pressure_headline import (
     latest_resource_pressure_from_events,
     pressure_headline,
 )

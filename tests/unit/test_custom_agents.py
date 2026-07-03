@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_extensions.custom_agents import CustomAgent, CustomAgentRegistry
+from extensions.custom_agents import CustomAgent, CustomAgentRegistry
 
 
 def test_registry_roundtrip(tmp_path: Path) -> None:

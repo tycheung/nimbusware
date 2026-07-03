@@ -11,9 +11,9 @@ from agent_core.models import (
     RunCreatedPayload,
     serialize_event_persistent,
 )
-from nimbusware_store.allowed_types import allowed_event_type_values, assert_event_type_registered
-from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_store.protocol import (
+from store.allowed_types import allowed_event_type_values, assert_event_type_registered
+from store.memory import InMemoryEventStore
+from store.protocol import (
     EventStore,
     event_row_from_serialized,
     serialized_event_from_row,
@@ -161,7 +161,7 @@ def test_in_memory_event_store_satisfies_event_store_protocol() -> None:
 
 
 def test_postgres_run_list_status_fragments_without_status() -> None:
-    from nimbusware_store.postgres import _run_list_status_fragments
+    from store.postgres import _run_list_status_fragments
 
     join, filt, extra = _run_list_status_fragments(None)
     assert join == ""
@@ -170,7 +170,7 @@ def test_postgres_run_list_status_fragments_without_status() -> None:
 
 
 def test_postgres_run_list_status_fragments_with_status() -> None:
-    from nimbusware_store.postgres import _run_list_status_fragments
+    from store.postgres import _run_list_status_fragments
 
     join, filt, extra = _run_list_status_fragments("running")
     assert "run_list_status" in join

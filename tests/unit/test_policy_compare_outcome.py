@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from agent_core.models import EventType
 from agent_core.models.events_payloads import StagePassedPayload
-from nimbusware_projections.builders.policy_compare_outcome import (
+from projections.builders.policy_compare_outcome import (
     build_policy_compare_outcome,
     load_policy_compare_outcome,
     save_policy_compare_outcome,

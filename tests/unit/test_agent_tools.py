@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_agent_tools.allowlist import path_in_plan, validate_shell_invocation
-from nimbusware_agent_tools.runtime import execute_slice_implement_agent
-from nimbusware_agent_tools.tools import (
+from agent_tools.allowlist import path_in_plan, validate_shell_invocation
+from agent_tools.runtime import execute_slice_implement_agent
+from agent_tools.tools import (
     tool_edit_file,
     tool_find,
     tool_grep,
@@ -14,8 +14,8 @@ from nimbusware_agent_tools.tools import (
     tool_read_file,
     tool_write_file,
 )
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.slice_implement import slice_implement_mode
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice_implement import slice_implement_mode
 
 
 def test_path_in_plan() -> None:
@@ -116,12 +116,12 @@ def test_execute_slice_implement_agent_stub(
     assert slice_implement_mode() == "agent"
     ws = tmp_path / "proj"
     ws.mkdir()
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
+    (ws / "packages/orchestrator").mkdir(parents=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
     plan = parse_slice_plan(
         {
             "slice_id": "slice-1",
-            "target_paths": ["packages/nimbusware_orchestrator/micro_slice.py"],
+            "target_paths": ["packages/orchestrator/micro_slice.py"],
             "rationale": "inventory",
         },
     )

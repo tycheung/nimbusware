@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_maker.workspace_readiness import assess_workspace_readiness
-from nimbusware_orchestrator.fleet_policies import tenant_slice_policy
+from maker.workspace_readiness import assess_workspace_readiness
+from orchestrator.fleet_policies import tenant_slice_policy
 
 
 def test_tenant_slice_policy_default() -> None:

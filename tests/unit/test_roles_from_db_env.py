@@ -8,11 +8,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-import nimbusware_api.app as _nimbusware_api_app_pkg  # noqa: F401 -- ensures submodule loads
-import nimbusware_orchestrator.runtime_bootstrap as _runtime_bootstrap
-from nimbusware_api.app import app
-from nimbusware_iam.store import InMemoryIamStore
-from nimbusware_orchestrator.registry import RoleRegistry
+import api.app as _api_app_pkg  # noqa: F401 -- ensures submodule loads
+import orchestrator.runtime_bootstrap as _runtime_bootstrap
+from api.app import app
+from iam.store import InMemoryIamStore
+from orchestrator.registry import RoleRegistry
 
 _FAKE_DB_URL = "postgresql://test:test@localhost/nimbusware"
 _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
@@ -21,11 +21,11 @@ _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
     content_digest_sha256_16="db:nimbusware_roles_registry",
 )
 
-_APP_MODULE = sys.modules["nimbusware_api.app"]
-"""Direct submodule reference because ``nimbusware_api/__init__.py`` does
-``from nimbusware_api.app import app`` which rebinds ``nimbusware_api.app`` in
+_APP_MODULE = sys.modules["api.app"]
+"""Direct submodule reference because ``api/__init__.py`` does
+``from api.app import app`` which rebinds ``api.app`` in
 the package namespace to the **FastAPI instance** (shadowing the
-submodule). ``mock.patch("nimbusware_api.app.X")`` follows the package
+submodule). ``mock.patch("api.app.X")`` follows the package
 namespace via ``getattr`` and therefore lands on the FastAPI instance
 rather than the submodule -- using ``patch.object(_APP_MODULE, ...)``
 sidesteps that resolution and patches the function reference inside
@@ -48,7 +48,7 @@ def _run_lifespan(
     ``db_url`` / ``roles_from_db``: ``None`` -> ``monkeypatch.delenv(...)``
     to exercise the absent-env arm; any string is set verbatim (no
     ``.strip()`` mirrors production semantics at
-    [app.py:34](packages\\nimbusware_api\\app.py)).
+    [app.py:34](packages\\api\\app.py)).
     """
     if db_url is None:
         monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)

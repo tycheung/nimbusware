@@ -9,13 +9,13 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_api.deps import get_orchestrator, get_store
-from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
-from nimbusware_store.memory import InMemoryEventStore
+from api.app import app
+from api.deps import get_orchestrator, get_store
+from config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+from config.materializer import ConfigMaterializer
+from config.store import InMemoryConfigStore
+from orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
+from store.memory import InMemoryEventStore
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def test_persona_patch_db_mode_no_yaml_write(
     app.dependency_overrides[get_orchestrator] = lambda: _Orch()
     app.dependency_overrides[get_store] = lambda: mem
     try:
-        with patch("nimbusware_config.persist.atomic_write_yaml") as mock_write:
+        with patch("config.persist.atomic_write_yaml") as mock_write:
             with TestClient(app) as c:
                 r = c.patch(
                     "/v1/personas/business_area/commerce",
@@ -104,7 +104,7 @@ def test_auto_promote_uses_db_not_yaml(persona_db_env: tuple[Path, ConfigMateria
     mem = InMemoryEventStore()
     run_id = uuid4()
 
-    with patch("nimbusware_config.persist.atomic_write_yaml") as mock_write:
+    with patch("config.persist.atomic_write_yaml") as mock_write:
         meta = try_auto_promote_probation_persona(
             tmp_path,
             mem,

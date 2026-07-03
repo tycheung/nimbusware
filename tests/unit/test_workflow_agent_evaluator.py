@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from env import find_repo_root
+from orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )

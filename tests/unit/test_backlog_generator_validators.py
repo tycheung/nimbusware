@@ -7,7 +7,7 @@ from agent_core.models.backlog import (
     DeliveryBacklog,
     sync_backlog_metadata,
 )
-from nimbusware_orchestrator.backlog_generator import validate_backlog, validate_backlog_limits
+from orchestrator.backlog_generator import validate_backlog, validate_backlog_limits
 
 
 def test_validate_backlog_limits() -> None:

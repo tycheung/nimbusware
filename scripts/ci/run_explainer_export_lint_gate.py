@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CONSOLE_ROOT = ROOT / "packages" / "nimbusware_console"
+CONSOLE_ROOT = ROOT / "packages" / "console"
 
 # Migrated to explainer_core.table_rows_csv and functools.partial assignments (C46).
 ALLOWLISTED_HAND_WRITTEN_TABLE_ROWS_CSV: frozenset[str] = frozenset()

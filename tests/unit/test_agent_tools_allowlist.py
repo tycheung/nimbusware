@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_agent_tools.tool_registry import (
+from agent_tools.tool_registry import (
     agent_tool_list_prompt,
+    agent_tools_allowlist,
     is_agent_tool_enabled,
-    nimbusware_agent_tools_allowlist,
 )
-from nimbusware_agent_tools.tools import tool_find, tool_ls
+from agent_tools.tools import tool_find, tool_ls
 
 
 def test_default_allowlist_excludes_find_ls() -> None:
-    allow = nimbusware_agent_tools_allowlist()
+    allow = agent_tools_allowlist()
     assert "read" in allow
     assert "find" not in allow
     assert "ls" not in allow
@@ -24,7 +24,7 @@ def test_allowlist_includes_find_when_env_set(monkeypatch: pytest.MonkeyPatch) -
         "NIMBUSWARE_AGENT_TOOLS",
         "read,write,edit,grep,shell,find,ls",
     )
-    allow = nimbusware_agent_tools_allowlist()
+    allow = agent_tools_allowlist()
     assert "find" in allow
     assert "ls" in allow
     assert "find" in agent_tool_list_prompt()

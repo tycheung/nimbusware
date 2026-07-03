@@ -4,8 +4,8 @@ import pytest
 from fastapi import HTTPException
 from starlette.requests import Request
 
-from nimbusware_api import user as user_mod
-from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+from api import user as user_mod
+from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 
 def _empty_request() -> Request:

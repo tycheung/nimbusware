@@ -7,13 +7,13 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_maker.intent import build_requirements_artifact
-from nimbusware_maker.slice_workflow import (
+from maker.intent import build_requirements_artifact
+from maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
     prepare_next_pending_slice,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 _REPO = Path(__file__).resolve().parents[2]
 _JVM_FIXTURE = _REPO / "tests/fixtures/repos/tiny_jvm_app"

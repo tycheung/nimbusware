@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env.launcher_fetch import (
+from env.launcher_fetch import (
     INSTALL_PROFILE_BAREBONES,
     INSTALL_PROFILE_FULL,
     github_archive_url,
@@ -46,8 +46,8 @@ def test_resolve_install_script_from_repo() -> None:
 
 
 def test_extract_github_zip_layout(tmp_path: Path) -> None:
-    from nimbusware_env.desktop_common import NIMBUSWARE_SCHEMA_REL
-    from nimbusware_env.launcher_fetch import _extract_github_zip
+    from env.desktop_common import NIMBUSWARE_SCHEMA_REL
+    from env.launcher_fetch import _extract_github_zip
 
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:

@@ -7,13 +7,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from nimbusware_api.app import app
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from nimbusware_iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID
-from nimbusware_iam.context import resolve_store_tenant_id, set_auth_context
-from nimbusware_iam.crypto import hash_api_key
-from nimbusware_iam.store import InMemoryIamStore
-from nimbusware_store.memory import InMemoryEventStore
+from api.app import app
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID
+from iam.context import resolve_store_tenant_id, set_auth_context
+from iam.crypto import hash_api_key
+from iam.store import InMemoryIamStore
+from store.memory import InMemoryEventStore
 
 
 def test_individual_skips_iam_enforcement(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -97,7 +97,7 @@ def test_enterprise_bootstrap_and_me(
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
-    from nimbusware_api.app import app
+    from api.app import app
 
     with TestClient(app) as client:
         denied = client.get("/v1/enterprise/status")
@@ -127,7 +127,7 @@ def test_enterprise_create_tenant_and_key(
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
-    from nimbusware_api.app import app
+    from api.app import app
 
     with TestClient(app) as client:
         boot = client.post(
@@ -164,7 +164,7 @@ def test_postgres_iam_store_verify(monkeypatch: pytest.MonkeyPatch) -> None:
     url = os.environ.get("NIMBUSWARE_DATABASE_URL")
     if not url:
         pytest.skip("NIMBUSWARE_DATABASE_URL not set")
-    from nimbusware_iam.store import PostgresIamStore
+    from iam.store import PostgresIamStore
 
     store = PostgresIamStore(url)
     try:

@@ -3,15 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.security_scan import run_security_scan
+from orchestrator.security_scan import run_security_scan
 
 
-@patch("nimbusware_orchestrator.security_scan.run_semgrep_scan", return_value=(0, "semgrep ok\n"))
-@patch("nimbusware_orchestrator.security_scan.scan_n_plus_one_heuristic", return_value=(0, "ok\n"))
-@patch("nimbusware_orchestrator.security_scan.run_ruff_perf", return_value=(0, "perf ok\n"))
-@patch("nimbusware_orchestrator.security_scan.run_mypy", return_value=(2, "mypy bad\n"))
-@patch("nimbusware_orchestrator.security_scan.run_bandit", return_value=(0, "bandit ok\n"))
-@patch("nimbusware_orchestrator.security_scan.run_ruff_check", return_value=(1, "ruff bad\n"))
+@patch("orchestrator.security_scan.run_semgrep_scan", return_value=(0, "semgrep ok\n"))
+@patch("orchestrator.security_scan.scan_n_plus_one_heuristic", return_value=(0, "ok\n"))
+@patch("orchestrator.security_scan.run_ruff_perf", return_value=(0, "perf ok\n"))
+@patch("orchestrator.security_scan.run_mypy", return_value=(2, "mypy bad\n"))
+@patch("orchestrator.security_scan.run_bandit", return_value=(0, "bandit ok\n"))
+@patch("orchestrator.security_scan.run_ruff_check", return_value=(1, "ruff bad\n"))
 def test_run_security_scan_returns_worst_and_per_tool_exits(
     _mock_ruff: object,
     _mock_bandit: object,

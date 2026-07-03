@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.critic_matrix_live import (
+from orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )

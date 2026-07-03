@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from nimbusware_console.preflight_history_display import (
+from console.preflight_history_display import (
     preflight_history_checks_passed_caption,
     preflight_history_context_tokens_caption,
     preflight_history_event_id_caption,
@@ -27,7 +27,7 @@ from nimbusware_console.preflight_history_display import (
     preflight_history_summary_rows_csv,
     preflight_history_validated_model_caption,
 )
-from nimbusware_orchestrator.preflight_histogram import BUCKET_EDGES_MS
+from orchestrator.preflight_histogram import BUCKET_EDGES_MS
 
 # preflight_history_from_timeline
 

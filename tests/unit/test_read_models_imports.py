@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import nimbusware_api.routes.runs as runs_package
-import nimbusware_projections.builders as projections_builders
+import api.routes.runs as runs_package
+import projections.builders as projections_builders
 
 
 def test_projection_builders_public_exports_match_runs_package() -> None:
@@ -11,9 +11,9 @@ def test_projection_builders_public_exports_match_runs_package() -> None:
 
 
 def test_timeline_helpers_importable_from_projections() -> None:
-    from nimbusware_api.routes.runs import _decode_run_list_cursor
-    from nimbusware_projections.builders.integrator_gate import integrator_gate_timeline_summary
-    from nimbusware_projections.builders.universal_critique import (
+    from api.routes.runs import _decode_run_list_cursor
+    from projections.builders.integrator_gate import integrator_gate_timeline_summary
+    from projections.builders.universal_critique import (
         universal_critique_timeline_summary,
     )
 

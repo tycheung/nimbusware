@@ -4,17 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_agent_tools.runtime import AgentStep
-from nimbusware_client.http import admin_headers, api_base, user_headers
-from nimbusware_maker.readiness import build_platform_readiness
-from nimbusware_maker.slice_preview import (
+from agent_tools.runtime import AgentStep
+from client.http import admin_headers, api_base, user_headers
+from maker.readiness import build_platform_readiness
+from maker.slice_preview import (
     preview_note_for_scoped_mode,
     unified_diff_from_edits,
 )
-from nimbusware_maker.store import InMemoryProjectStore
-from nimbusware_projections.builders.maker_progress import maker_progress_from_events
-from nimbusware_projections.builders.run_escalated import run_escalated_timeline_summary
-from nimbusware_store.memory import InMemoryEventStore
+from maker.store import InMemoryProjectStore
+from projections.builders.maker_progress import maker_progress_from_events
+from projections.builders.run_escalated import run_escalated_timeline_summary
+from store.memory import InMemoryEventStore
 
 
 def test_slice_preview_unified_diff(tmp_path: Path) -> None:
@@ -62,7 +62,7 @@ def test_run_escalated_summary_empty() -> None:
     assert run_escalated_timeline_summary([]) is None
 
 
-def test_nimbusware_client_helpers() -> None:
+def test_client_helpers() -> None:
     assert api_base().endswith("/v1")
     assert "X-Nimbusware-Admin-Token" in admin_headers()
     assert isinstance(user_headers(), dict)

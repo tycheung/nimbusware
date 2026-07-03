@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_maker.stack_manifest import (
+from env import find_repo_root
+from maker.stack_manifest import (
     freeze_manifest,
     parse_stack_manifest,
     validate_frozen_manifest,

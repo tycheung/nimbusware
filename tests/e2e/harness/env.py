@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 DEFAULT_E2E_ENV: dict[str, str] = {
     "NIMBUSWARE_SKIP_PREFLIGHT": "1",

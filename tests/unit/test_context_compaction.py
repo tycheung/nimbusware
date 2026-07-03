@@ -3,11 +3,11 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models.slice_handoff import SliceHandoffSummary
-from nimbusware_orchestrator.context_compaction import (
+from orchestrator.context_compaction import (
     compact_campaign_context,
     maybe_emit_compaction_event,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def _handoff_event(

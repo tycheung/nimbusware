@@ -29,7 +29,7 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
 

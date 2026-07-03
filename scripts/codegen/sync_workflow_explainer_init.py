@@ -8,16 +8,16 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-CONSOLE = REPO / "packages" / "nimbusware_console"
+CONSOLE = REPO / "packages" / "console"
 
-from nimbusware_console.explainer_core.workflow_explainer_registry import (  # noqa: E402
+from console.explainer_core.workflow_explainer_registry import (  # noqa: E402
     EXPORT_INSTALL_MARKER,
     WORKFLOW_EXPLAINER_SPECS,
     codegen_install_line,
 )
 
 _LEGACY_BLOCK_RE = re.compile(
-    r"(?:from nimbusware_console\.explainer_core\.workflow_exports import \(\n"
+    r"(?:from console\.explainer_core\.workflow_exports import \(\n"
     r"    install_named_workflow_explainer_exports,\n"
     r"\)\n\n?)?"
     r"install_named_workflow_explainer_exports\(\n"
@@ -36,7 +36,7 @@ _LEGACY_CODEGEN_RE = re.compile(
 )
 
 _REGISTRY_IMPORT = (
-    "from nimbusware_console.explainer_core.workflow_explainer_registry import (\n"
+    "from console.explainer_core.workflow_explainer_registry import (\n"
     "    install_package_workflow_explainer_exports,\n"
     ")\n"
 )
@@ -50,7 +50,7 @@ def _insert_registry_import(text: str) -> str:
     if "workflow_explainer_registry" in text:
         return text
     match = re.search(
-        r"(^from nimbusware_console\.explainer_core\.workflow_exports import[^\n]*\n"
+        r"(^from console\.explainer_core\.workflow_exports import[^\n]*\n"
         r"(?:    [^\n]+\n)*\))",
         text,
         re.MULTILINE,

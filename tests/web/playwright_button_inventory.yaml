@@ -7,78 +7,78 @@ summary:
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/OperatorChatPage.tsx
+  source: packages/admin_ui/src/pages/OperatorChatPage.tsx
   label: ''
   clicked_in:
   - tests/e2e/web/admin_operator_chat.spec.ts
   visible_only_in: []
 - test_id: admin-fleet-enforcement-save
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetAutopilotPanel.tsx
+  source: packages/admin_ui/src/pages/fleet/FleetAutopilotPanel.tsx
   label: Save enforcement policy
   clicked_in: []
   visible_only_in: []
 - test_id: admin-fleet-rescan-btn
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
+  source: packages/admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
   label: '{rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}'
   clicked_in:
   - tests/e2e/web/admin_fleet_hardware.spec.ts
   visible_only_in: []
 - test_id: admin-fleet-search-btn
   app: admin
-  source: packages/nimbusware_admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
+  source: packages/admin_ui/src/pages/fleet/FleetDashboardPanel.tsx
   label: ''
   clicked_in: []
   visible_only_in: []
 - test_id: maker-accessible-compute
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/accessible_compute_ui.js
+  source: packages/maker_web/static/js/tabs/accessible_compute_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-accessible-compute-trigger
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/accessible_compute_ui.js
+  source: packages/maker_web/static/js/tabs/accessible_compute_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_accessible_compute.spec.ts
   visible_only_in: []
 - test_id: maker-archetype-engineer
   app: maker
-  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  source: packages/maker_web/static/js/archetype-picker.js
   label: ''
   clicked_in: []
   visible_only_in: []
 - test_id: maker-archetype-picker
   app: maker
-  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  source: packages/maker_web/static/js/archetype-picker.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-archetype-safe
   app: maker
-  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  source: packages/maker_web/static/js/archetype-picker.js
   label: ''
   clicked_in: []
   visible_only_in: []
 - test_id: maker-autopilot-profile-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/autopilot-ribbon.js
+  source: packages/maker_web/static/js/autopilot-ribbon.js
   label: Save profile
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-autopilot-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/autopilot-ribbon.js
+  source: packages/maker_web/static/js/autopilot-ribbon.js
   label: Apply to run
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
   visible_only_in: []
 - test_id: maker-build-start-run
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/build.js
+  source: packages/maker_web/static/js/tabs/build.js
   label: '${campaignMode ? "Start campaign" : "Start run"}'
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -86,7 +86,7 @@ buttons:
   - tests/e2e/web/maker_build_review.spec.ts
 - test_id: maker-campaign-pause
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -94,46 +94,46 @@ buttons:
   - tests/e2e/web/maker_campaign_progress.spec.ts
 - test_id: maker-chat-accept-chip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
   visible_only_in: []
 - test_id: maker-chat-agent-popover
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_agent_popover_ui.js
+  source: packages/maker_web/static/js/tabs/chat_agent_popover_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-agents-strip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  source: packages/maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-autopilot-hint
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
 - test_id: maker-chat-autopilot-hint-dismiss
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
   visible_only_in: []
 - test_id: maker-chat-branch-tree
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  source: packages/maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-classifier-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -141,31 +141,31 @@ buttons:
   - tests/e2e/web/maker_chat_patch.spec.ts
 - test_id: maker-chat-collab-models-drawer
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_model_drawer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-commentary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_ui.js
+  source: packages/maker_web/static/js/tabs/chat_collab_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-delegate-control
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  source: packages/maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-discipline-route
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  source: packages/maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-discovery-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -173,14 +173,14 @@ buttons:
   - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-escalate-campaign
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
+  source: packages/maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_escalation.spec.ts
   visible_only_in: []
 - test_id: maker-chat-escalate-slice
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
+  source: packages/maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -188,240 +188,240 @@ buttons:
   - tests/e2e/web/maker_chat_escalation.spec.ts
 - test_id: maker-chat-escalation-campaign
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
+  source: packages/maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-escalation-slice
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
+  source: packages/maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-host-fallback
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_wiring.js
+  source: packages/maker_web/static/js/tabs/chat_collab_wiring.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-host-transfer
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_host_transfer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_host_transfer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-host-transfer-accept
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_host_transfer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_host_transfer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-host-transfer-request
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_host_transfer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_host_transfer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-host-transfer-target
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_host_transfer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_host_transfer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-interjection-last
   app: maker
-  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  source: packages/maker_web/static/js/interjection-ribbon.js
   label: Last
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-interjection-next
   app: maker
-  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  source: packages/maker_web/static/js/interjection-ribbon.js
   label: Next
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-invite-btn
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_ui.js
+  source: packages/maker_web/static/js/tabs/chat_collab_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-invite-copy-link
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_invite_modal_ui.js
+  source: packages/maker_web/static/js/tabs/chat_invite_modal_ui.js
   label: Copy invite link
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-invite-modal
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_invite_modal_ui.js
+  source: packages/maker_web/static/js/tabs/chat_invite_modal_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-library-all
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_library_ui.js
+  source: packages/maker_web/static/js/tabs/chat_library_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-library-sessions
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_library_ui.js
+  source: packages/maker_web/static/js/tabs/chat_library_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-library-tag-filter
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_library_ui.js
+  source: packages/maker_web/static/js/tabs/chat_library_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-mention-menu
   app: maker
-  source: packages/nimbusware_maker_web/static/js/chat_mention_ui.js
+  source: packages/maker_web/static/js/chat_mention_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_collab_discipline_journey.spec.ts
 - test_id: maker-chat-model-drawer-btn
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_model_drawer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-model-swap-dialog
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_agent_popover_ui.js
+  source: packages/maker_web/static/js/tabs/chat_agent_popover_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-my-models
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_ui.js
+  source: packages/maker_web/static/js/tabs/chat_collab_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-new-session
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_shell_html.js
+  source: packages/maker_web/static/js/tabs/chat_shell_html.js
   label: New session
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-open-preview
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  source: packages/maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-optimizer-panel
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_optimizer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_optimizer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-optimizer-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_optimizer_ui.js
+  source: packages/maker_web/static/js/tabs/chat_optimizer_ui.js
   label: Save priority
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-participants
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  source: packages/maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-readonly-banner
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_session_ui.js
+  source: packages/maker_web/static/js/tabs/chat_session_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-recommend-for-me
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-run-card-header
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  source: packages/maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-run-preview
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  source: packages/maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-run-theater
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_run_card_ui.js
+  source: packages/maker_web/static/js/tabs/chat_run_card_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-scope-confirm
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-scope-confirmed
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-scope-manifest
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-scope-manifest-plain
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-scope-share-manager
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-scope-surface-bindings
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js
+  source: packages/maker_web/static/js/tabs/chat_discovery_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-chat-solo-hat-coach
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js
+  source: packages/maker_web/static/js/tabs/chat_solo_hat_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_solo_hat_coach.spec.ts
 - test_id: maker-chat-solo-hat-coach-dismiss
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js
+  source: packages/maker_web/static/js/tabs/chat_solo_hat_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_solo_hat_coach.spec.ts
   visible_only_in: []
 - test_id: maker-chat-solo-hat-none
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js
+  source: packages/maker_web/static/js/tabs/chat_solo_hat_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-start
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat_shell_html.js
+  source: packages/maker_web/static/js/tabs/chat_shell_html.js
   label: Send
   clicked_in:
   - tests/e2e/web/maker_archetype_product_journey.spec.ts
@@ -432,7 +432,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-compact-save-artifact
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Save compaction as artifact
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -440,93 +440,93 @@ buttons:
   - tests/e2e/web/maker_context_artifacts.spec.ts
 - test_id: maker-compaction-preview-toggle
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Show summary
   clicked_in: []
   visible_only_in: []
 - test_id: maker-completion-launch-hint
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-completion-run-launch-check
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Run launch check
   clicked_in: []
   visible_only_in: []
 - test_id: maker-completion-terminal
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-context-artifact
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/context-panels.js
+  source: packages/maker_web/static/js/tabs/progress/context-panels.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_context_artifacts.spec.ts
   visible_only_in: []
 - test_id: maker-context-artifact-insert
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/context-panels.js
+  source: packages/maker_web/static/js/tabs/progress/context-panels.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_context_artifacts.spec.ts
   visible_only_in: []
 - test_id: maker-context-budget-chip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-apply-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Apply deploy
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-approve-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Approve deploy
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-refresh-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Refresh
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-rollback-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Rollback deploy
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-smoke-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Run smoke test
   clicked_in: []
   visible_only_in: []
 - test_id: maker-deploy-validate-${scope}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/deploy_cockpit.js
+  source: packages/maker_web/static/js/deploy_cockpit.js
   label: Run Terraform validate
   clicked_in: []
   visible_only_in: []
 - test_id: maker-dev-env-regression
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Run regression
   clicked_in: []
   visible_only_in: []
 - test_id: maker-dev-env-start
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Start session
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
@@ -534,45 +534,45 @@ buttons:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
 - test_id: maker-dev-env-stop
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Stop session
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-enforcement-profile-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/enforcement-ribbon.js
+  source: packages/maker_web/static/js/enforcement-ribbon.js
   label: Save profile
   clicked_in: []
   visible_only_in: []
 - test_id: maker-enforcement-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/enforcement-ribbon.js
+  source: packages/maker_web/static/js/enforcement-ribbon.js
   label: Apply to run
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
   visible_only_in: []
 - test_id: maker-enterprise-strict-chips
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
+  source: packages/maker_web/static/js/tabs/progress/progress_status_chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-factory-evidence-download
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
+  source: packages/maker_web/static/js/tabs/progress/progress_status_chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-factory-tier-promotion
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
+  source: packages/maker_web/static/js/tabs/progress/progress_status_chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-finding-action-interject
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
@@ -580,154 +580,154 @@ buttons:
   - tests/e2e/web/maker_progress_gate_actions.spec.ts
 - test_id: maker-finding-action-widen
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_progress_gate_actions.spec.ts
   visible_only_in: []
 - test_id: maker-finding-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-finding-headline
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-finding-repro
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-finding-summary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-findings-empty
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_session_hub.spec.ts
 - test_id: maker-gate-fail-steps-list
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-gate-fail-steps-title
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-gate-summary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-guided-start-campaign
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/wizard.js
+  source: packages/maker_web/static/js/tabs/wizard.js
   label: Start guided campaign
   clicked_in: []
   visible_only_in: []
 - test_id: maker-guided-start-quick
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/wizard.js
+  source: packages/maker_web/static/js/tabs/wizard.js
   label: Open Chat
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-home-compliance-summary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  source: packages/maker_web/static/js/tabs/home_enterprise_policy_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-deploy-allowlist
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  source: packages/maker_web/static/js/tabs/home_enterprise_policy_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-discovery-required
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  source: packages/maker_web/static/js/tabs/home_enterprise_policy_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-fleet-governance
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_enterprise_policy_ui.js
+  source: packages/maker_web/static/js/tabs/home_enterprise_policy_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-inference-mode
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-install-profile
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-model-hub-cta
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-model-pick
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-models-first
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-models-wizard
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-readiness
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-readiness-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
+  source: packages/maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-start-factory
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/maker_web/static/js/tabs/home.js
   label: Custom app prompt…
   clicked_in: []
   visible_only_in: []
 - test_id: maker-integrator-stitch-promote-batch
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Promote pending batch
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -735,7 +735,7 @@ buttons:
   - tests/e2e/web/maker_integrator_ribbon.spec.ts
 - test_id: maker-integrator-stitch-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Refresh stitch candidates
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
@@ -743,7 +743,7 @@ buttons:
   - tests/e2e/web/maker_integrator_ribbon.spec.ts
 - test_id: maker-interjection-last
   app: maker
-  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  source: packages/maker_web/static/js/interjection-ribbon.js
   label: '${compact ? "Last" : "Last in queue"}'
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
@@ -751,38 +751,38 @@ buttons:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
 - test_id: maker-interjection-next
   app: maker
-  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  source: packages/maker_web/static/js/interjection-ribbon.js
   label: '${compact ? "Next" : "Next in queue"}'
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
   visible_only_in: []
 - test_id: maker-interjection-prefix-${prefix.slice(1, -1)}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  source: packages/maker_web/static/js/interjection-ribbon.js
   label: ${prefix}
   clicked_in: []
   visible_only_in: []
 - test_id: maker-latest-handoff
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-learnings-ribbon-prominent
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/findings-gates.js
+  source: packages/maker_web/static/js/tabs/progress/findings-gates.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-manager-scope-approve
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
+  source: packages/maker_web/static/js/tabs/manager_scope_ui.js
   label: Approve manifest
   clicked_in: []
   visible_only_in: []
 - test_id: maker-manager-scope-load
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
+  source: packages/maker_web/static/js/tabs/manager_scope_ui.js
   label: Load pending
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
@@ -790,147 +790,147 @@ buttons:
   - tests/e2e/web/maker_product_polish_smoke.spec.ts
 - test_id: maker-manager-scope-plain
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/manager_scope_ui.js
+  source: packages/maker_web/static/js/tabs/manager_scope_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-memory-influence-row
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/context-panels.js
+  source: packages/maker_web/static/js/tabs/progress/context-panels.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-mobile-push-enable
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
+  source: packages/maker_web/static/js/tabs/progress/template.js
   label: Enable push notifications
   clicked_in: []
   visible_only_in: []
 - test_id: maker-model-hub
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/models.js
+  source: packages/maker_web/static/js/tabs/models.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_model_hub.spec.ts
 - test_id: maker-ollama-install
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/models_ollama_ui.js
+  source: packages/maker_web/static/js/tabs/models_ollama_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_model_hub.spec.ts
 - test_id: maker-plan-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/plan.js
+  source: packages/maker_web/static/js/tabs/plan.js
   label: Refresh
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-plan-steer-${slice.slice_id}
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/plan.js
+  source: packages/maker_web/static/js/tabs/plan.js
   label: Steer
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-approve-plan
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-review-commit-chip-ticket
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  source: packages/maker_web/static/js/tabs/review_commit_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-commit-chips
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  source: packages/maker_web/static/js/tabs/review_commit_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-commit-policy
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  source: packages/maker_web/static/js/tabs/review_commit_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-commit-preview
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_commit_ui.js
+  source: packages/maker_web/static/js/tabs/review_commit_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-copy-branch
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-deploy-audit-empty
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-deploy-audit-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Refresh audit timeline
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
   visible_only_in: []
 - test_id: maker-review-deploy-audit-row
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-deploy-audit-rows
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
 - test_id: maker-review-factory-evidence-load
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Load scorecard
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-review-gate-recover-link
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-gate-summary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-git-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-last-snapshot
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_apply_flow.spec.ts
 - test_id: maker-review-launch-scorecard
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Load scorecard
   clicked_in:
   - tests/e2e/web/maker_full_replay.spec.ts
@@ -939,57 +939,57 @@ buttons:
   - tests/e2e/web/maker_build_review.spec.ts
 - test_id: maker-review-load-diff
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Slice diff
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
   visible_only_in: []
 - test_id: maker-review-load-stitch
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Load stitch summary
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-open-pr
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_apply_flow.spec.ts
 - test_id: maker-review-pending-gate-fail
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-paths
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-rationale
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-plan-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Refresh approval
   clicked_in:
   - tests/e2e/web/maker_apply_flow.spec.ts
@@ -998,14 +998,14 @@ buttons:
   - tests/e2e/web/maker_build_review.spec.ts
 - test_id: maker-review-revert
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Revert workspace
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
   visible_only_in: []
 - test_id: maker-review-run-launch-eval
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/maker_web/static/js/tabs/review.js
   label: Run launch check
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -1013,31 +1013,31 @@ buttons:
   - tests/e2e/web/maker_launch_scorecard.spec.ts
 - test_id: maker-review-slice-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-status-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
+  source: packages/maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-view-pr
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
+  source: packages/maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-role-cost-chip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-safe-coding-prepare
   app: maker
-  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  source: packages/maker_web/static/js/safe-coding-wizard.js
   label: Prepare workspace
   clicked_in:
   - tests/e2e/web/maker_safe_coding_full_journey.spec.ts
@@ -1045,131 +1045,131 @@ buttons:
   - tests/e2e/web/maker_safe_coding_onboarding.spec.ts
 - test_id: maker-safe-coding-readiness-ribbon
   app: maker
-  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  source: packages/maker_web/static/js/safe-coding-wizard.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-safe-coding-wizard
   app: maker
-  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  source: packages/maker_web/static/js/safe-coding-wizard.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-safe-coding-wizard-skip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
+  source: packages/maker_web/static/js/safe-coding-wizard.js
   label: Skip for now
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-agent-models-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Save bindings
   clicked_in:
   - tests/e2e/web/maker_settings_agent_models.spec.ts
   visible_only_in: []
 - test_id: maker-settings-agent-overlay-clear
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_agent_overlay_ui.js
+  source: packages/maker_web/static/js/tabs/settings_agent_overlay_ui.js
   label: Clear overlay
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-agent-overlay-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_agent_overlay_ui.js
+  source: packages/maker_web/static/js/tabs/settings_agent_overlay_ui.js
   label: Save overlay
   clicked_in:
   - tests/e2e/web/maker_settings_agent_overlay.spec.ts
   visible_only_in: []
 - test_id: maker-settings-critic-probation
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Load probation reliability
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-deploy-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_deploy_ui.js
+  source: packages/maker_web/static/js/tabs/settings_deploy_ui.js
   label: Save deploy labels
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-industry-critic-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Save pack
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-memory-chunk
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
+  source: packages/maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-memory-insert
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
+  source: packages/maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-memory-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Refresh chunks
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-optimizer-save
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Save weights
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-routing-apply
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Apply routing preset
   clicked_in:
   - tests/e2e/web/maker_settings_routing.spec.ts
   visible_only_in: []
 - test_id: maker-settings-run-launch-eval
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Run launch check
   clicked_in:
   - tests/e2e/web/maker_settings_launch_check.spec.ts
   visible_only_in: []
 - test_id: maker-settings-stitch-batch-promote
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Promote pending stitch batch
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-stitch-candidate
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
+  source: packages/maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-stitch-promote-one
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
+  source: packages/maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-stitch-refresh
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Load candidates
   clicked_in: []
   visible_only_in: []
 - test_id: maker-surface-launch-summary
   app: maker
-  source: packages/nimbusware_maker_web/static/js/launch-scorecard.js
+  source: packages/maker_web/static/js/launch-scorecard.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-variant-candidate
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_ribbon_refresh.js
+  source: packages/maker_web/static/js/tabs/progress/progress_ribbon_refresh.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

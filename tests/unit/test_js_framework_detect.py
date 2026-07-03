@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
+from orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
 
 
 def test_detect_react_vite_from_frontend_package(tmp_path: Path) -> None:

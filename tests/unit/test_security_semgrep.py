@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.security_semgrep import run_semgrep_scan, semgrep_enabled
+from orchestrator.security_semgrep import run_semgrep_scan, semgrep_enabled
 
 
 def test_semgrep_disabled() -> None:
@@ -14,7 +14,7 @@ def test_semgrep_disabled() -> None:
     assert "skipped" in msg.lower()
 
 
-@patch("nimbusware_orchestrator.security_semgrep.shutil.which", return_value=None)
+@patch("orchestrator.security_semgrep.shutil.which", return_value=None)
 def test_semgrep_missing_binary(_which: object) -> None:
     with patch.dict(os.environ, {"NIMBUSWARE_RUN_SEMGREP": "1"}, clear=False):
         code, msg = run_semgrep_scan(Path("."))

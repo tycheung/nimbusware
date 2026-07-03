@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_api.routes.provider_subscription_oauth import _config_for_provider
+from api.routes.provider_subscription_oauth import _config_for_provider
 
 REPO = Path(__file__).resolve().parents[2]
 

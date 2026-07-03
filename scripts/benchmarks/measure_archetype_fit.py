@@ -13,7 +13,7 @@ _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO / "packages") not in sys.path:
     sys.path.insert(0, str(_REPO / "packages"))
 
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 _TARGET_SCORE = 0.95
 
@@ -21,33 +21,33 @@ _SAFE_CODING_STATIC: tuple[str, ...] = (
     "configs/workflows/safe_coding.yaml",
     "docs/product/safe-coding.md",
     "docs/product/journeys/safe-coding-first-app.md",
-    "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js",
-    "packages/nimbusware_maker_web/static/js/safe-coding-ux.js",
-    "packages/nimbusware_api/routes/platform.py",
+    "packages/maker_web/static/js/safe-coding-wizard.js",
+    "packages/maker_web/static/js/safe-coding-ux.js",
+    "packages/api/routes/platform.py",
 )
 
 _SAFE_CODING_BEHAVIORAL: tuple[str, ...] = (
-    "packages/nimbusware_maker/consumer_test_scaffold.py",
-    "packages/nimbusware_maker/playwright_bootstrap.py",
+    "packages/maker/consumer_test_scaffold.py",
+    "packages/maker/playwright_bootstrap.py",
     "tests/e2e/web/maker_safe_coding_onboarding.spec.ts",
     "tests/e2e/web/maker_safe_coding_full_journey.spec.ts",
 )
 
 _ENGINEER_STATIC: tuple[str, ...] = (
-    "packages/nimbusware_orchestrator/collab_binding_resolver.py",
-    "packages/nimbusware_api/routes/platform.py",
-    "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
-    "packages/nimbusware_maker_web/static/js/tabs/chat_solo_hat_ui.js",
+    "packages/orchestrator/collab_binding_resolver.py",
+    "packages/api/routes/platform.py",
+    "packages/maker_web/static/js/tabs/chat_model_drawer_ui.js",
+    "packages/maker_web/static/js/tabs/chat_solo_hat_ui.js",
     "docs/product/journeys/engineer-first-app.md",
     "configs/install/bundles/default.config.yaml",
-    "packages/nimbusware_config/collab_settings_store.py",
+    "packages/config/collab_settings_store.py",
 )
 
 _ENGINEER_BEHAVIORAL: tuple[str, ...] = (
-    "packages/nimbusware_maker_web/static/js/archetype-picker.js",
-    "packages/nimbusware_orchestrator/host_collab_mesh_hydrate.py",
-    "tests/api/test_collab_settings_api.py",
-    "tests/api/test_collab_model_routing_api.py",
+    "packages/maker_web/static/js/archetype-picker.js",
+    "packages/orchestrator/host_collab_mesh_hydrate.py",
+    "tests/api_http/test_collab_settings_api.py",
+    "tests/api_http/test_collab_model_routing_api.py",
     "tests/e2e/web/collab_model_routing.spec.ts",
     "tests/e2e/web/maker_solo_hat_coach.spec.ts",
 )
@@ -55,30 +55,30 @@ _ENGINEER_BEHAVIORAL: tuple[str, ...] = (
 _ENTERPRISE_STATIC: tuple[str, ...] = (
     "configs/install/bundles/enterprise.env.yaml",
     "docs/product/journeys/enterprise-first-app.md",
-    "packages/nimbusware_api/routes/enterprise/compliance.py",
-    "packages/nimbusware_api/routes/enterprise/audit_export.py",
-    "packages/nimbusware_api/routes/enterprise/audit_policy.py",
+    "packages/api/routes/enterprise/compliance.py",
+    "packages/api/routes/enterprise/audit_export.py",
+    "packages/api/routes/enterprise/audit_policy.py",
 )
 
 _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
-    "packages/nimbusware_maker_web/static/js/tabs/home.js",
+    "packages/maker_web/static/js/tabs/home.js",
     "tests/e2e/web/maker_enterprise_journey.spec.ts",
     "tests/e2e/web/maker_enterprise_install_journey.spec.ts",
-    "packages/nimbusware_memory/embeddings.py",
+    "packages/memory/embeddings.py",
     "scripts/benchmarks/measure_gate_comprehension.py",
 )
 
 _POLISH_BEHAVIORAL: tuple[str, ...] = (
-    "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js",
+    "packages/maker_web/static/js/tabs/chat_discovery_ui.js",
     "tests/e2e/web/maker_product_polish_smoke.spec.ts",
     ".github/workflows/product_polish_smoke.yml",
     ".github/workflows/archetype_fit_weekly.yml",
 )
 
 _FS6_BEHAVIORAL: tuple[str, ...] = (
-    "packages/nimbusware_orchestrator/stack_agent_scaffold.py",
+    "packages/orchestrator/stack_agent_scaffold.py",
     "configs/personas/surface_critics.yaml",
-    "packages/nimbusware_orchestrator/factory_put_e2e.py",
+    "packages/orchestrator/factory_put_e2e.py",
     "tests/unit/test_fs6_scaffold_polish.py",
 )
 
@@ -103,26 +103,26 @@ def _score_paths(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
 
 
 def _content_checks(root: Path) -> dict[str, dict[str, object]]:
-    wizard = (root / "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js").read_text(
+    wizard = (root / "packages/maker_web/static/js/safe-coding-wizard.js").read_text(
         encoding="utf-8",
     )
-    bootstrap = (root / "packages/nimbusware_maker/playwright_bootstrap.py").read_text(
+    bootstrap = (root / "packages/maker/playwright_bootstrap.py").read_text(
         encoding="utf-8"
     )
-    compliance = (root / "packages/nimbusware_api/routes/enterprise/compliance.py").read_text(
+    compliance = (root / "packages/api/routes/enterprise/compliance.py").read_text(
         encoding="utf-8",
     )
     fleet = (
-        root / "packages/nimbusware_admin_ui/src/pages/fleet/FleetCompliancePanel.tsx"
+        root / "packages/admin_ui/src/pages/fleet/FleetCompliancePanel.tsx"
     ).read_text(encoding="utf-8")
-    hydrate = (root / "packages/nimbusware_orchestrator/host_collab_mesh_hydrate.py").read_text(
+    hydrate = (root / "packages/orchestrator/host_collab_mesh_hydrate.py").read_text(
         encoding="utf-8",
     )
-    collab_store = (root / "packages/nimbusware_config/collab_settings_store.py").read_text(
+    collab_store = (root / "packages/config/collab_settings_store.py").read_text(
         encoding="utf-8",
     )
     discovery_ui = (
-        root / "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js"
+        root / "packages/maker_web/static/js/tabs/chat_discovery_ui.js"
     ).read_text(
         encoding="utf-8",
     )
@@ -135,7 +135,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "collab_persist": "save_persisted_collab_enabled" in collab_store,
             "host_hydrate": "ensure_mesh_binding_for_llm" in hydrate,
             "campaign_parallel": "ThreadPoolExecutor"
-            in (root / "packages/nimbusware_orchestrator/campaign_driver_execute.py").read_text(
+            in (root / "packages/orchestrator/campaign_driver_execute.py").read_text(
                 encoding="utf-8"
             ),
         },
@@ -143,7 +143,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
             "fleet_semantic_embedding": (
-                root / "packages/nimbusware_memory/embeddings.py"
+                root / "packages/memory/embeddings.py"
             ).is_file(),
             "gate_comprehension_harness": (
                 root / "scripts/benchmarks/measure_gate_comprehension.py"
@@ -156,7 +156,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
                 root / "tests/e2e/web/maker_product_polish_smoke.spec.ts"
             ).is_file(),
             "fs6_scaffold": (
-                root / "packages/nimbusware_orchestrator/stack_agent_scaffold.py"
+                root / "packages/orchestrator/stack_agent_scaffold.py"
             ).is_file(),
             "archetype_weekly": (root / ".github/workflows/archetype_fit_weekly.yml").is_file(),
         },
@@ -181,7 +181,7 @@ def _run_behavioral_pytest(root: Path) -> bool:
     modules = [
         "tests/unit/test_collab_settings_store.py",
         "tests/unit/test_host_collab_mesh_hydrate.py",
-        "tests/api/test_playwright_bootstrap_api.py",
+        "tests/api_http/test_playwright_bootstrap_api.py",
     ]
     existing = [m for m in modules if (root / m).is_file()]
     if not existing:

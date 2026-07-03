@@ -5,8 +5,8 @@ from uuid import UUID
 import httpx
 import pytest
 
-from nimbusware_executor.egress import assert_egress_allowed, host_matches_allowlist
-from nimbusware_executor.fetch import EgressResponseTooLarge, egress_checked_httpx_get
+from executor.egress import assert_egress_allowed, host_matches_allowlist
+from executor.fetch import EgressResponseTooLarge, egress_checked_httpx_get
 
 
 def test_host_suffix_allowlist() -> None:

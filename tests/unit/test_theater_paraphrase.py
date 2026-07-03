@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from nimbusware_projections.builders.theater_paraphrase import (
+from projections.builders.theater_paraphrase import (
     apply_theater_paraphrase,
     theater_enabled,
     theater_llm_summary_enabled,

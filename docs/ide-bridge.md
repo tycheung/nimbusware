@@ -59,7 +59,7 @@ Example MCP args:
 
 | Tool | Description |
 |------|-------------|
-| `nimbusware_maker_pending` | `GET /v1/runs/{run_id}/maker/pending` |
+| `maker_pending` | `GET /v1/runs/{run_id}/maker/pending` |
 | `nimbusware_prepare_slice` | `POST /v1/runs/{run_id}/maker/slices/prepare` |
 | `nimbusware_apply_slice` | `POST /v1/runs/{run_id}/maker/slices/apply` |
 | `nimbusware_skip_slice` | `POST /v1/runs/{run_id}/maker/slices/skip` |

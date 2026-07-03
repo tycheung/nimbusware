@@ -17,7 +17,7 @@ Shared event models and cross-package read helpers for Nimbusware.
 | `read/critic_matrix.py` | Live critic matrix rows from gate events |
 | `yaml_io.py` | YAML load/dump helpers |
 
-`nimbusware_orchestrator` re-exports `stage_graph`, `prompt_tiers`, and `critic_matrix_live` for backward compatibility.
+`orchestrator` re-exports `stage_graph`, `prompt_tiers`, and `critic_matrix_live` for backward compatibility.
 
 ## Wire format
 

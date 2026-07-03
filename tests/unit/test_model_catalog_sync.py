@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_hw.catalog_sync import (
+from hw.catalog_sync import (
     build_catalog_from_source,
     catalog_info_from_path,
     merge_catalog,

@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from nimbusware_orchestrator.mesh_optimizer import (
+from orchestrator.mesh_optimizer import (
     normalize_optimizer_weights,
     pick_optimize_node,
     score_node,

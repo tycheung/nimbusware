@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from nimbusware_console.services.oauth_connector import (
+from console.services.oauth_connector import (
     accept_oauth_callback,
     build_pkce_authorize_url,
     exchange_authorization_code,
     validate_callback_state,
 )
-from nimbusware_env.subscription_oauth_config import SubscriptionOAuthConfig
+from env.subscription_oauth_config import SubscriptionOAuthConfig
 
 
 def _cfg() -> SubscriptionOAuthConfig:
@@ -46,14 +46,14 @@ def test_accept_oauth_callback_validates_state() -> None:
 def test_exchange_authorization_code_posts_to_token_endpoint() -> None:
     cfg = _cfg()
     with patch(
-        "nimbusware_console.services.oauth_connector.issuer_endpoints",
+        "console.services.oauth_connector.issuer_endpoints",
         return_value={
             "authorization_endpoint": "https://tenant.auth0.com/authorize",
             "token_endpoint": "https://tenant.auth0.com/oauth/token",
         },
     ):
         with patch(
-            "nimbusware_console.services.oauth_connector.post_form_external",
+            "console.services.oauth_connector.post_form_external",
             return_value={
                 "access_token": "at",
                 "refresh_token": "rt",

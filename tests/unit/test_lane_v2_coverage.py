@@ -7,14 +7,14 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.post_verify_role_bindings import (
+from api.app import app
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.llm.post_verify_role_bindings import (
     emit_stub_test_writer_critique_panel,
     execute_test_writer_critique_llm,
 )
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.registry import RoleRegistry
+from store.memory import InMemoryEventStore
 
 _ROOT = __import__("pathlib").Path(__file__).resolve().parents[2]
 
@@ -26,7 +26,7 @@ def _router() -> UniversalCritiqueRouter:
 
 
 def test_request_log_includes_request_id(caplog: pytest.LogCaptureFixture) -> None:
-    caplog.set_level(logging.INFO, logger="nimbusware_api.request")
+    caplog.set_level(logging.INFO, logger="api.request")
     client = TestClient(app)
     client.get("/v1/platform/edition", headers={"X-Request-Id": "log-req-99"})
     assert any("request_id=log-req-99" in rec.message for rec in caplog.records)
@@ -68,7 +68,7 @@ def test_execute_test_writer_role_critique_llm_success() -> None:
         }
 
     with patch(
-        "nimbusware_orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_test_writer_critique_llm(
@@ -87,7 +87,7 @@ def test_execute_test_writer_role_critique_llm_success() -> None:
 
 
 def test_lane_v2_config_notify_smoke() -> None:
-    from nimbusware_config.notify import (
+    from config.notify import (
         ConfigDocumentUpdated,
         encode_notify_payload,
         parse_notify_payload,

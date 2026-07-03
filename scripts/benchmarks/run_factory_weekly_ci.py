@@ -17,7 +17,7 @@ REPOS_ROOT = REPO_ROOT / "tests" / "fixtures" / "repos"
 
 def _playwright_ready() -> tuple[bool, str]:
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from nimbusware_orchestrator.put_e2e_runner import _playwright_module_ready
+    from orchestrator.put_e2e_runner import _playwright_module_ready
 
     return _playwright_module_ready()
 
@@ -44,14 +44,14 @@ def run_factory_golden_entry(
     repo = repo_root or REPO_ROOT
     sys.path.insert(0, str(repo / "packages"))
 
-    from nimbusware_orchestrator.factory_completion import (
+    from orchestrator.factory_completion import (
         evaluate_factory_gates,
         resolve_factory_tier,
     )
-    from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_static
-    from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
-    from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
-    from nimbusware_projections.builders.factory_status import factory_status_from_events
+    from orchestrator.interaction_surface_map import discover_surfaces_static
+    from orchestrator.put_e2e_runner import run_put_e2e_flow
+    from orchestrator.put_runtime import start_put_preview, stop_put_preview
+    from projections.builders.factory_status import factory_status_from_events
 
     ws_name = str(spec.get("workspace_fixture") or "tiny_api_app")
     repos_root = (repo_root or REPO_ROOT) / "tests" / "fixtures" / "repos"

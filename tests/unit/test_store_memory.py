@@ -16,8 +16,8 @@ from agent_core.models import (
     RunStartedEvent,
     RunStartedPayload,
 )
-from nimbusware_iam.constants import DEFAULT_TENANT_ID
-from nimbusware_store.memory import InMemoryEventStore
+from iam.constants import DEFAULT_TENANT_ID
+from store.memory import InMemoryEventStore
 
 
 def _append_run_created(

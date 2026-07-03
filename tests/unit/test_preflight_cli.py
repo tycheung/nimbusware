@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from nimbusware_orchestrator import preflight_cli, preflight_histogram
-from nimbusware_orchestrator.preflight import PreflightError
+from orchestrator import preflight_cli, preflight_histogram
+from orchestrator.preflight import PreflightError
 
 # build_histogram
 

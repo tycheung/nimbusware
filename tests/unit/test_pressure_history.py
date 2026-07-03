@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType
-from nimbusware_hw.pressure_history import pressure_history_from_event_rows
+from hw.pressure_history import pressure_history_from_event_rows
 
 
 def test_pressure_history_from_event_rows() -> None:

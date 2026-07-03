@@ -3,13 +3,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_store.allowed_types import allowed_event_type_values
+from env import find_repo_root
+from store.allowed_types import allowed_event_type_values
 
 _SCHEMA_SQL = (
     find_repo_root(start=Path(__file__).resolve().parents[1])
     / "packages"
-    / "nimbusware_store"
+    / "store"
     / "schema"
     / "postgres.sql"
 )

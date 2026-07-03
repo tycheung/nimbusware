@@ -10,7 +10,7 @@ from agent_core.models import (
     ResearchBriefEmittedPayload,
     ResearchBriefReviewPayload,
 )
-from nimbusware_projections.builders.run_research import run_research_briefs_from_events
+from projections.builders.run_research import run_research_briefs_from_events
 
 
 def test_run_research_briefs_status_from_review_events() -> None:

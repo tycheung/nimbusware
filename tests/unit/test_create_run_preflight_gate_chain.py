@@ -7,11 +7,11 @@ from typing import Any
 
 import pytest
 
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
-# ``nimbusware_api.app`` requires these env vars at import time (mirrors
+# ``api.app`` requires these env vars at import time (mirrors
 # tests/test_api.py:11-13 and tests/test_workflow_profile_path_propagation.py).
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
 os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
@@ -21,12 +21,12 @@ os.environ.setdefault(
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from nimbusware_api.app import app  # noqa: E402
-from nimbusware_orchestrator.ingress import (  # noqa: E402
+from api.app import app  # noqa: E402
+from orchestrator.ingress import (  # noqa: E402
     assert_persona_shelves_valid,
     assert_taxonomy_keys_resolve,
 )
-from nimbusware_orchestrator.registry import RoleRegistry  # noqa: E402
+from orchestrator.registry import RoleRegistry  # noqa: E402
 
 _TAXONOMY_KEY_ERROR_PREFIX = "Unknown role taxonomy_key:"
 _SHELVES_FNF_PREFIX = "missing persona catalog shelves:"
@@ -107,7 +107,7 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
     """Pin ``assert_taxonomy_keys_resolve`` 2-axis contract (accept / KE).
 
     The function is a thin loop over ``RoleRegistry.resolve`` at
-    [ingress.py:58-61](packages\\nimbusware_orchestrator\\ingress.py):
+    [ingress.py:58-61](packages\\orchestrator\\ingress.py):
 
     ```python
     def assert_taxonomy_keys_resolve(registry, keys):
@@ -116,7 +116,7 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
     ```
 
     Reject contract from
-    [registry.py:67-72](packages\\nimbusware_orchestrator\\registry.py):
+    [registry.py:67-72](packages\\orchestrator\\registry.py):
     ``Unknown role taxonomy_key: {taxonomy_key!r}``. Zero existing
     direct tests anywhere in ``tests/`` (only mentioned in fo80
     docstrings) -- fo81 Part A is the first.
@@ -155,12 +155,12 @@ def test_assert_persona_shelves_valid_3_axis_wrapper_contract(tmp_path: Path) ->
     Existing tests only hit the happy path (real repo); the
     wrapper-level ``FileNotFoundError`` (missing file) and
     ``ValueError`` (invalid structure) axes are unpinned. Wrapper at
-    [ingress.py:22-28](packages\\nimbusware_orchestrator\\ingress.py)
+    [ingress.py:22-28](packages\\orchestrator\\ingress.py)
     formats ``f"missing persona catalog shelves: {path}"`` for the
     FNF arm; ``PersonaShelf.validate_structure`` at
-    [personas.py:14-37](packages\\nimbusware_extensions\\personas.py)
+    [personas.py:14-37](packages\\extensions\\personas.py)
     + ``load_yaml`` at
-    [merge.py:19-24](packages\\nimbusware_orchestrator\\merge.py)
+    [merge.py:19-24](packages\\orchestrator\\merge.py)
     contribute the 4 ``ValueError`` sub-arms.
 
     All wrapper-layer errors are pinned as ``ValueError`` (not

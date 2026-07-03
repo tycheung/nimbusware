@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.tenant_policy_store import (
+from config.tenant_policy_store import (
     _tenant_key,
     audit_redaction,
     load_tenant_collab_policy,
@@ -12,7 +12,7 @@ from nimbusware_config.tenant_policy_store import (
     save_tenant_collab_policy,
     save_tenant_model_policy,
 )
-from nimbusware_maker.consumer_test_scaffold import scaffold_consumer_tests
+from maker.consumer_test_scaffold import scaffold_consumer_tests
 
 
 def test_scaffold_consumer_tests(tmp_path: Path) -> None:
@@ -71,7 +71,7 @@ def test_load_tenant_collab_policy_file_fallback() -> None:
 
 
 def test_maybe_scaffold_safe_coding_workspace_skips_when_present(tmp_path: Path) -> None:
-    from nimbusware_maker.consumer_test_scaffold import (
+    from maker.consumer_test_scaffold import (
         SMOKE_SPEC_REL,
         maybe_scaffold_safe_coding_workspace,
         scaffold_consumer_tests,

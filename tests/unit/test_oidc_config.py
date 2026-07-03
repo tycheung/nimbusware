@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_console.services.oauth_pkce import (
+from console.services.oauth_pkce import (
     accept_oidc_callback,
     build_authorize_url,
     validate_callback_state,
 )
-from nimbusware_env.oidc_config import OidcConfig, load_oidc_config
+from env.oidc_config import OidcConfig, load_oidc_config
 
 
 def test_oidc_config_issuer_valid() -> None:

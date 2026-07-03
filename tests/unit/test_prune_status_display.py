@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from nimbusware_console.prune_status_display import (
+from console.prune_status_display import (
     SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH,
     load_prune_status,
     prune_scraper_artifact_prune_workflow_caption,

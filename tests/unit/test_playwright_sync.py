@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
-from nimbusware_orchestrator.playwright_sync import run_without_asyncio_loop
+from orchestrator.playwright_sync import run_without_asyncio_loop
 
 
 def test_run_without_asyncio_loop_inline_without_asyncio() -> None:

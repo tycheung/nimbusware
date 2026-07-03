@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_iam.store import PostgresIamStore
+from iam.store import PostgresIamStore
 
 pytestmark = pytest.mark.integration
 

@@ -9,7 +9,7 @@ pytestmark = pytest.mark.skipif(sys.platform != "win32", reason="Windows-only su
 
 
 def test_run_subprocess_cmd_echo() -> None:
-    from nimbusware_executor.windows import run_subprocess
+    from executor.windows import run_subprocess
 
     proc = run_subprocess(
         ["cmd", "/c", "echo", "nimbusware-smoke"],

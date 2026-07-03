@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_env.edition import (
+from api.app import app
+from env.edition import (
     DEFAULT_EDITION,
     ENTERPRISE_EDITION,
     ENV_EDITION,
@@ -100,8 +100,8 @@ def test_enterprise_routes_available_when_enterprise(
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
-    from nimbusware_api.app import app
-    from nimbusware_iam.constants import API_KEY_HEADER
+    from api.app import app
+    from iam.constants import API_KEY_HEADER
 
     with TestClient(app) as client:
         boot = client.post(

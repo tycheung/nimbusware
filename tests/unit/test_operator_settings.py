@@ -4,20 +4,20 @@ import os
 
 import pytest
 
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env.settings_catalog import (
+from config.store import InMemoryConfigStore
+from env.settings_catalog import (
     CATALOG,
     KEY_USER,
     NS_OPERATOR_SETTINGS,
     SettingScope,
 )
-from nimbusware_env.settings_resolve import (
+from env.settings_resolve import (
     refresh_scope_caches,
     resolve_bool,
     resolve_raw,
     set_run_operator_settings,
 )
-from nimbusware_env.settings_store import (
+from env.settings_store import (
     apply_scope_to_environ,
     merge_scope_values,
     validate_patch,
@@ -26,7 +26,7 @@ from nimbusware_env.settings_store import (
 
 @pytest.fixture(autouse=True)
 def _clear_caches() -> None:
-    import nimbusware_env.settings_resolve as mod
+    import env.settings_resolve as mod
 
     mod._user_cache = None
     mod._system_cache = None
@@ -60,7 +60,7 @@ def test_resolve_precedence_user_over_env(monkeypatch: pytest.MonkeyPatch) -> No
         {"values": {"NIMBUSWARE_USE_LLM": "1"}},
     )
     monkeypatch.setattr(
-        "nimbusware_env.settings_store._load_store",
+        "env.settings_store._load_store",
         lambda: store,
     )
     refresh_scope_caches()
@@ -71,11 +71,11 @@ def test_resolve_run_override(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_MICRO_SLICE_COUNT", raising=False)
     token = set_run_operator_settings({"NIMBUSWARE_MICRO_SLICE_COUNT": "5"})
     try:
-        from nimbusware_env.settings_resolve import resolve_int
+        from env.settings_resolve import resolve_int
 
         assert resolve_int("NIMBUSWARE_MICRO_SLICE_COUNT", default=2) == 5
     finally:
-        from nimbusware_env.settings_resolve import reset_run_operator_settings
+        from env.settings_resolve import reset_run_operator_settings
 
         reset_run_operator_settings(token)
 
@@ -83,7 +83,7 @@ def test_resolve_run_override(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_merge_system_applies_to_environ(monkeypatch: pytest.MonkeyPatch) -> None:
     store = InMemoryConfigStore()
     monkeypatch.setattr(
-        "nimbusware_env.settings_store._load_store",
+        "env.settings_store._load_store",
         lambda: store,
     )
     key = "NIMBUSWARE_RERESARCH_MISSING_CONTEXT"
@@ -104,13 +104,13 @@ def test_merge_system_applies_to_environ(monkeypatch: pytest.MonkeyPatch) -> Non
 def test_env_over_yaml_resolved_after_postgres_sync(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from nimbusware_env.settings_resolve import env_over_yaml_resolved
+    from env.settings_resolve import env_over_yaml_resolved
 
     key = "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS"
     monkeypatch.delenv(key, raising=False)
     store = InMemoryConfigStore()
     monkeypatch.setattr(
-        "nimbusware_env.settings_store._load_store",
+        "env.settings_store._load_store",
         lambda: store,
     )
     try:

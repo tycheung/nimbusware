@@ -14,11 +14,11 @@ from agent_core.models import (
     serialize_event_persistent,
     validate_event_dict,
 )
-from nimbusware_store.allowed_types import (
+from store.allowed_types import (
     allowed_event_type_values,
     assert_event_type_registered,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def _ok_payload(**overrides: object) -> PersonaShelfUpdatedPayload:

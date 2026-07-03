@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from nimbusware_orchestrator.registry import RoleRegistry
+from orchestrator.registry import RoleRegistry
 
 
 def test_from_mapping_normalizes_keys() -> None:

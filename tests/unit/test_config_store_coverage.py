@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_config import keys
-from nimbusware_config.store import (
+from config import keys
+from config.store import (
     InMemoryConfigStore,
     PostgresConfigStore,
     _content_digest,
@@ -59,14 +59,14 @@ def test_row_from_record_rejects_non_object_content() -> None:
 
 
 def test_maybe_publish_config_notify_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: False)
+    monkeypatch.setattr("config.config_notify_enabled", lambda: False)
     _maybe_publish_config_notify("ns", "key", 1)
 
 
 def test_maybe_publish_config_notify_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     hub = MagicMock()
-    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: True)
-    monkeypatch.setattr("nimbusware_config.notify.get_config_notify_hub", lambda: hub)
+    monkeypatch.setattr("config.config_notify_enabled", lambda: True)
+    monkeypatch.setattr("config.notify.get_config_notify_hub", lambda: hub)
     _maybe_publish_config_notify("roles", "registry", 3)
     hub.publish_local.assert_called_once_with(namespace="roles", document_key="registry", version=3)
 
@@ -120,7 +120,7 @@ class _FakeConn:
 
 def test_postgres_config_store_get_miss(monkeypatch: pytest.MonkeyPatch) -> None:
     cur = _FakeCursor(fetchone=None)
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
     store = PostgresConfigStore("postgresql://x")
     assert store.get("workflows", "missing") is None
 
@@ -135,7 +135,7 @@ def test_postgres_config_store_get_hit(monkeypatch: pytest.MonkeyPatch) -> None:
         "updated_at": None,
     }
     cur = _FakeCursor(fetchone=rec)
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
     store = PostgresConfigStore("postgresql://x")
     row = store.get("workflows", "default")
     assert row is not None
@@ -144,14 +144,14 @@ def test_postgres_config_store_get_hit(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_postgres_config_store_list_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     cur = _FakeCursor(fetchall=[("a",), ("b",)])
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
     store = PostgresConfigStore("postgresql://x")
     assert store.list_keys("workflows") == ["a", "b"]
 
 
 def test_postgres_config_store_delete(monkeypatch: pytest.MonkeyPatch) -> None:
     cur = _FakeCursor(rowcount=1)
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
     store = PostgresConfigStore("postgresql://x")
     assert store.delete("workflows", "default") is True
 
@@ -166,8 +166,8 @@ def test_postgres_config_store_upsert_insert(monkeypatch: pytest.MonkeyPatch) ->
         "updated_at": datetime.now(timezone.utc),
     }
     cur = _FakeCursor(fetchone=rec)
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
-    with patch("nimbusware_config.store._maybe_publish_config_notify"):
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    with patch("config.store._maybe_publish_config_notify"):
         store = PostgresConfigStore("postgresql://x")
         row = store.upsert("workflows", "default", {"stages": []})
     assert row.version == 1
@@ -175,7 +175,7 @@ def test_postgres_config_store_upsert_insert(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_postgres_config_store_upsert_version_conflict(monkeypatch: pytest.MonkeyPatch) -> None:
     cur = _FakeCursor(fetchone=None)
-    monkeypatch.setattr("nimbusware_config.store.psycopg.connect", lambda _: _FakeConn(cur))
+    monkeypatch.setattr("config.store.psycopg.connect", lambda _: _FakeConn(cur))
     store = PostgresConfigStore("postgresql://x")
     with pytest.raises(ValueError, match="version conflict"):
         store.upsert("workflows", "default", {"x": 1}, expected_version=99)

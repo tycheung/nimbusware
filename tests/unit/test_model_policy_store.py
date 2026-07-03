@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.model_policy_store import (
+from config.model_policy_store import (
     load_model_policy,
     policy_allows_cloud_provider,
     policy_allows_model,

@@ -5,17 +5,17 @@ from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
-from nimbusware_maker.deploy_approval_enforcement import (
+from maker.deploy_approval_enforcement import (
     deploy_dual_control_satisfied,
     user_may_record_deploy_approval,
 )
-from nimbusware_maker.deploy_pipeline_events import deploy_apply_ready, emit_deploy_approved
-from nimbusware_orchestrator.fleet_policies import (
+from maker.deploy_pipeline_events import deploy_apply_ready, emit_deploy_approved
+from orchestrator.fleet_policies import (
     FleetDeployApprovalPolicy,
     load_fleet_deploy_approval_policies,
     save_fleet_deploy_approval_policies,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_fleet_deploy_approval_policies_round_trip(tmp_path) -> None:

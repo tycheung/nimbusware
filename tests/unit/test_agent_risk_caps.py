@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_agent_tools.risk_caps import AgentRiskCaps, resolve_agent_risk_caps
-from nimbusware_agent_tools.runtime import execute_slice_implement_agent
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.slice_implement import slice_implement_mode
+from agent_tools.risk_caps import AgentRiskCaps, resolve_agent_risk_caps
+from agent_tools.runtime import execute_slice_implement_agent
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice_implement import slice_implement_mode
 
 
 def test_resolve_agent_risk_caps_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_compute.work_unit import InMemoryWorkUnitQueue
+from compute.work_unit import InMemoryWorkUnitQueue
 
 
 def test_queued_count_filters_by_session() -> None:

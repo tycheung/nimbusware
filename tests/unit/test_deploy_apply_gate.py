@@ -8,13 +8,13 @@ from fastapi.testclient import TestClient
 
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
-from nimbusware_api.app import app
-from nimbusware_maker.deploy_pipeline_events import (
+from api.app import app
+from maker.deploy_pipeline_events import (
     autopilot_may_auto_approve_deploy,
     deploy_approved_from_events,
     emit_deploy_approved,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def _seed_run() -> tuple[InMemoryEventStore, str]:
@@ -78,7 +78,7 @@ def test_deploy_apply_skips_without_credentials(client: TestClient, monkeypatch,
     approve = client.post("/v1/platform/deploy/approve", json={"run_id": run_id})
     assert approve.status_code == 200, approve.text
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
+        "api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "", "github_repo": ""},
     )
     ws = tmp_path / "infra"
@@ -108,11 +108,11 @@ def test_deploy_apply_denied_when_target_not_allowed(
 
     monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
     monkeypatch.setattr(
-        "nimbusware_orchestrator.fleet_policy_loader.find_repo_root",
+        "orchestrator.fleet_policy_loader.find_repo_root",
         lambda *_a, **_k: tmp_path,
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
+        "api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {"aws_profile": "prod", "github_repo": ""},
     )
 

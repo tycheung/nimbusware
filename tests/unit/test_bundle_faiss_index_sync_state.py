@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from nimbusware_extensions.catalog import bundle_faiss_index_sync_state
+from extensions.catalog import bundle_faiss_index_sync_state
 
 
 def _touch(p: Path, *, age_sec: float = 0.0) -> None:

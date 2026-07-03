@@ -1,6 +1,6 @@
 # Agent runtime
 
-The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial agentic workflows: multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages.
+The orchestrator (`orchestrator`, `agent_core`) drives adversarial agentic workflows: multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages.
 
 ## Core loop
 
@@ -55,6 +55,6 @@ When `hardware_tier=strong`, set `NIMBUSWARE_ALLOW_PARALLEL_CRITICS=1` to run se
 
 ## Configuration
 
-Workflow YAML, personas, roles, `model-routing.yaml`, bundles, critic packs, and skills live under [`configs/`](../../configs/). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup.
+Workflow YAML, personas, roles, `model-routing.yaml`, bundles, critic packs, and skills live under [`configs/`](../../configs/). With Postgres, operator edits persist to `config_document` and materialize at API startup.
 
 Critic packs: `GET /v1/config/critic-packs/{id}/workflows` for blast-radius preview.

@@ -10,7 +10,7 @@ Normative plan fo586 discussed Postgres persistence for context artifacts. Indiv
 
 ## Decision
 
-1. **Ship** context artifacts via `nimbusware_orchestrator.context_artifacts`:
+1. **Ship** context artifacts via `orchestrator.context_artifacts`:
    - In-memory bucket for unit tests
    - Optional on-disk JSON sidecars per artifact (`_persist_record` / `_load_project_from_disk`)
 2. **Defer** dedicated Postgres table to Enterprise / fleet deployments where project metadata already lives in Postgres.

@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from nimbusware_env.settings_catalog import CATALOG, SettingScope
+from env.settings_catalog import CATALOG, SettingScope
 
 
 def test_audit_operator_env_passes() -> None:
@@ -29,7 +29,7 @@ def test_catalog_has_internal_and_install_scopes() -> None:
 def test_env_over_yaml_resolved_honors_explicit_env(
     monkeypatch,
 ) -> None:
-    from nimbusware_env.settings_resolve import env_over_yaml_resolved
+    from env.settings_resolve import env_over_yaml_resolved
 
     monkeypatch.delenv("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", raising=False)
     assert env_over_yaml_resolved("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", True) is True
@@ -38,7 +38,7 @@ def test_env_over_yaml_resolved_honors_explicit_env(
 
 
 def test_catalog_tri_state_parallel_writers(monkeypatch) -> None:
-    from nimbusware_env.env_flags import env_force_on
+    from env.env_flags import env_force_on
 
     monkeypatch.setenv("NIMBUSWARE_PARALLEL_WRITERS", "1")
     assert env_force_on("NIMBUSWARE_PARALLEL_WRITERS") is True

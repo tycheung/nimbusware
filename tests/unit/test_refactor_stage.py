@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_refactor import (
+from env import find_repo_root
+from orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )

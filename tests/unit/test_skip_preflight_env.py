@@ -6,7 +6,7 @@ from unittest.mock import patch
 import httpx
 import pytest
 
-from nimbusware_orchestrator.preflight import PreflightError, run_model_preflight
+from orchestrator.preflight import PreflightError, run_model_preflight
 
 _PRIMARY_MODEL_ID = "dev:primary"
 _FALLBACK_MODEL_IDS: list[str] = ["dev:fallback"]
@@ -48,7 +48,7 @@ def test_skip_preflight_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #1 ``NIMBUSWARE_SKIP_PREFLIGHT`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:115](packages\\nimbusware_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:115](packages\\orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")`` so truthy variants short-circuit
     BEFORE any ``httpx.get`` call. No network mocking is needed -- if
     the env-gate had rejected a variant, the test would fall through to
@@ -179,7 +179,7 @@ def test_skip_preflight_env_fail_closed_string_arm_contract(
         else:
             monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", raw)
         with patch(
-            "nimbusware_orchestrator.preflight.httpx.get",
+            "orchestrator.preflight.httpx.get",
             side_effect=httpx.ConnectError("connection refused"),
         ):
             try:

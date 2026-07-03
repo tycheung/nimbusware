@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from agent_core.models.slice_handoff import SliceHandoffSummary
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
-from nimbusware_orchestrator.slice_handoff import (
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
+from orchestrator.slice_handoff import (
     build_slice_handoff_summary,
     handoff_markdown_capped,
     latest_handoff_from_events,

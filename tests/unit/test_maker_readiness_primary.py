@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_maker.readiness import _check_ollama, _primary_model_id
+from maker.readiness import _check_ollama, _primary_model_id
 
 
 def test_primary_model_id_from_dict() -> None:

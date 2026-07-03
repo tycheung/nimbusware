@@ -1,6 +1,6 @@
 # External CI bridge (GitHub Checks / GitLab)
 
-Maps gate outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect those verdicts. Entrypoint: `notify_gate_decision_external` / `attach_external_ci_metadata` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py). Env reads go through `nimbusware_env.env_flags` (`nimbusware_github_token`, `nimbusware_gitlab_token`, `nimbusware_ci_github_repo`, …).
+Maps gate outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect those verdicts. Entrypoint: `notify_gate_decision_external` / `attach_external_ci_metadata` in [`packages/orchestrator/ci_bridge/external_ci.py`](../../packages/orchestrator/ci_bridge/external_ci.py). Env reads go through `env.env_flags` (`nimbusware_github_token`, `nimbusware_gitlab_token`, `nimbusware_ci_github_repo`, …).
 
 ## When it fires
 
@@ -8,9 +8,9 @@ The bridge runs **best-effort** (never raises) after these stages emit:
 
 | Stage | Emitter |
 |-------|---------|
-| `bundle_compatibility` (integrator) | [`optional_stages_integrator.py`](../../packages/nimbusware_orchestrator/_pipeline/optional_stages_integrator.py) |
-| `slice.gate` | [`_pipeline/micro_slice.py`](../../packages/nimbusware_orchestrator/_pipeline/micro_slice.py) `record_micro_slice_gate` |
-| `factory.gate` | [`factory_cadence.py`](../../packages/nimbusware_orchestrator/factory_cadence.py) maintenance cadence pass |
+| `bundle_compatibility` (integrator) | [`optional_stages_integrator.py`](../../packages/orchestrator/_pipeline/optional_stages_integrator.py) |
+| `slice.gate` | [`_pipeline/micro_slice.py`](../../packages/orchestrator/_pipeline/micro_slice.py) `record_micro_slice_gate` |
+| `factory.gate` | [`factory_cadence.py`](../../packages/orchestrator/factory_cadence.py) maintenance cadence pass |
 
 Successful posts attach `metadata.external_ci` on the stage event. Other gates remain visible via the Nimbusware timeline and audit export.
 

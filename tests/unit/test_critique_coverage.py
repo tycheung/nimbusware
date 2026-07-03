@@ -13,14 +13,14 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from nimbusware_api.app import app
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.critique_routing import (
+from api.app import app
+from env import find_repo_root
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.critique_routing import (
     CRITIQUE_STAGE_TO_PRODUCER,
     critique_coverage_snapshot,
 )
-from nimbusware_orchestrator.registry import RoleRegistry
+from orchestrator.registry import RoleRegistry
 
 
 @pytest.fixture

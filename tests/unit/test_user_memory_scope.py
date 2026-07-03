@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_memory.user_scope import memory_retrieval_policy, user_memory_index_dir
+from memory.user_scope import memory_retrieval_policy, user_memory_index_dir
 
 
 def test_user_memory_index_dir() -> None:

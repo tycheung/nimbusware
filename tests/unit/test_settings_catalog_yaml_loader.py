@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_env.settings_catalog import CATALOG
-from nimbusware_env.settings_catalog_extended.core_legacy_runtime import core_legacy_runtime_defs
+from env.settings_catalog import CATALOG
+from env.settings_catalog_extended.core_legacy_runtime import core_legacy_runtime_defs
 
 
 def test_core_legacy_runtime_settings_loaded_from_yaml() -> None:

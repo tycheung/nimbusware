@@ -4,8 +4,8 @@ from pathlib import Path
 
 import yaml
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.escalation_threshold import (
+from env import find_repo_root
+from orchestrator.escalation_threshold import (
     load_auto_escalate_after_cumulative_findings,
     load_escalate_after_cumulative_gate_failures,
     load_escalate_after_cumulative_high_severity_findings,

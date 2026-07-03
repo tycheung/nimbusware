@@ -16,13 +16,13 @@ from agent_core.models import (
     RunCreatedEvent,
     RunCreatedPayload,
 )
-from nimbusware_orchestrator.outbound_http import (
+from orchestrator.outbound_http import (
     egress_checked_get_for_run,
     network_egress_from_run_created,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.scraper_stage import ScraperFetchConfig
+from store.memory import InMemoryEventStore
 
 # follow-on 65: shared fixtures + helper for NIMBUSWARE_OUTBOUND_FETCH_ENABLED
 # string-arm contract tests at both call sites in ``pipeline.py``.
@@ -188,7 +188,7 @@ def test_outbound_fetch_env_force_on_at_egress_checked_fetch_url_contract(
     """Pin §14 #10 ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED`` force-on contract at site 1.
 
     :meth:`RunOrchestrator.egress_checked_fetch_url` ([pipeline.py lines
-    214-218](packages\\nimbusware_orchestrator\\pipeline.py)) gates the
+    214-218](packages\\orchestrator\\pipeline.py)) gates the
     outbound GET on ``os.environ.get("NIMBUSWARE_OUTBOUND_FETCH_ENABLED",
     "").lower() not in ("1", "true", "yes")``. Existing
     ``test_orchestrator_egress_fetch_requires_env`` only pins the
@@ -240,7 +240,7 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
     """Pin §14 #10 ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED`` force-on contract at site 2.
 
     :meth:`RunOrchestrator.run_optional_scraper_fetch_stage` ([pipeline.py
-    lines 379-398](packages\\nimbusware_orchestrator\\pipeline.py))
+    lines 379-398](packages\\orchestrator\\pipeline.py))
     uses the **identical** coercion as site 1 to decide whether to emit a
     ``stage.failed`` ``outbound_fetch_disabled`` and return early. This
     test mirrors Part A across the same force-on variants asserting NO
@@ -270,7 +270,7 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
+            "orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             mock_resp = MagicMock(spec=httpx.Response)
@@ -349,7 +349,7 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
         orch2, mem2 = make_dev_orchestrator()
         rid2 = orch2.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
+            "orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             orch2.run_optional_scraper_fetch_stage(rid2)

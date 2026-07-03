@@ -4,8 +4,8 @@ import json
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
-from nimbusware_maker.push_subscriptions import clear_push_subscriptions, register_push_subscription
-from nimbusware_maker.web_push_notify import send_campaign_push
+from maker.push_subscriptions import clear_push_subscriptions, register_push_subscription
+from maker.web_push_notify import send_campaign_push
 
 
 def test_send_campaign_push_skips_without_vapid(monkeypatch) -> None:

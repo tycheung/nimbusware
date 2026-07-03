@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agent_core.models import EventType
-from nimbusware_projections.builders.context_budget import (
+from projections.builders.context_budget import (
     advisory_level_for_ratio,
     estimate_context_budget,
     window_tokens_from_events,
@@ -56,7 +56,7 @@ def test_window_tokens_fallback_to_hw_tier(monkeypatch) -> None:
         tier = "medium"
 
     monkeypatch.setattr(
-        "nimbusware_hw.cache.get_cached_profile",
+        "hw.cache.get_cached_profile",
         lambda **_: _Profile(),
     )
     assert window_tokens_from_events([]) == 32768

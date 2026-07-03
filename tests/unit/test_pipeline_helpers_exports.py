@@ -6,7 +6,7 @@ from pathlib import Path
 _HELPERS = (
     Path(__file__).resolve().parents[2]
     / "packages"
-    / "nimbusware_orchestrator"
+    / "orchestrator"
     / "_pipeline"
     / "_helpers.py"
 )
@@ -40,7 +40,7 @@ def _defined_or_imported(path: Path) -> set[str]:
 
 
 def test_pipeline_helpers_exports_core_symbols() -> None:
-    import nimbusware_orchestrator._pipeline._helpers as helpers
+    import orchestrator._pipeline._helpers as helpers
 
     missing = sorted(name for name in _REQUIRED if not hasattr(helpers, name))
     assert not missing, f"_helpers facade missing exports: {missing}"
@@ -61,6 +61,6 @@ def test_pipeline_mixins_use_explicit_helpers_imports() -> None:
         }:
             continue
         text = path.read_text(encoding="utf-8")
-        if "from nimbusware_orchestrator._pipeline._helpers import *" in text:
+        if "from orchestrator._pipeline._helpers import *" in text:
             offenders.append(path.name)
     assert not offenders, "Mixins must not star-import _helpers:\n" + "\n".join(offenders)

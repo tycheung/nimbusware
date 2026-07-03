@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-COMMON = ROOT / "packages" / "nimbusware_orchestrator" / "llm" / "common.py"
-HYDRATE = ROOT / "packages" / "nimbusware_orchestrator" / "host_collab_mesh_hydrate.py"
+COMMON = ROOT / "packages" / "orchestrator" / "llm" / "common.py"
+HYDRATE = ROOT / "packages" / "orchestrator" / "host_collab_mesh_hydrate.py"
 
 
 def main() -> int:

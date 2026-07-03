@@ -166,7 +166,7 @@ def explicitize_file(path: Path, *, dry_run: bool = False) -> bool:
 
 
 def _console_targets() -> list[Path]:
-    console = PACKAGES / "nimbusware_console"
+    console = PACKAGES / "console"
     targets: list[Path] = []
     thin_shim_paths = (
         "persona_catalog/summary.py",

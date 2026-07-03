@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import (
+from env.env_flags import (
     nimbusware_handoff_max_chars,
     nimbusware_slice_packet_max_chars,
 )
-from nimbusware_orchestrator.micro_slice_executor import slice_replan_max_for_run
-from nimbusware_orchestrator.slice_budget_presets import (
+from orchestrator.micro_slice_executor import slice_replan_max_for_run
+from orchestrator.slice_budget_presets import (
     resolve_slice_budget_preset,
     slice_budget_preset,
 )

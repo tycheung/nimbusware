@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_env.env_flags import env_over_yaml
-from nimbusware_orchestrator.workflow_universal_critique import (
+from env import find_repo_root
+from env.env_flags import env_over_yaml
+from orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     effective_universal_critique,
     parse_universal_critique_workflow_block,

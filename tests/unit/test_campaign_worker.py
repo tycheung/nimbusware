@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.run_dispatch import InMemoryRunQueue, set_run_queue
-from nimbusware_orchestrator.run_worker import run_worker_loop
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.run_dispatch import InMemoryRunQueue, set_run_queue
+from orchestrator.run_worker import run_worker_loop
 
 
 @pytest.fixture(autouse=True)

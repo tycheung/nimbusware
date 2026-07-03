@@ -4,7 +4,7 @@ import os
 import time
 from pathlib import Path
 
-from nimbusware_orchestrator.scraper_artifacts import (
+from orchestrator.scraper_artifacts import (
     _matches_any,
     prune_scraper_artifacts,
 )

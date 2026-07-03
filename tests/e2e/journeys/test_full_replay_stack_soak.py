@@ -7,8 +7,8 @@ import httpx
 import pytest
 
 from e2e.harness.stack import start_api_subprocess, stop_api_subprocess
-from nimbusware_env import find_repo_root
-from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+from env import find_repo_root
+from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 pytestmark = [
     pytest.mark.e2e,

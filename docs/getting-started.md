@@ -83,7 +83,7 @@ Set `NIMBUSWARE_RUN_DISPATCH=redis` and `NIMBUSWARE_REDIS_URL` for multi-worker 
 
 ## Linux desktop
 
-`run.py` can install GTK/WebKit deps via `nimbusware_env.linux_desktop_deps`. Skip during install:
+`run.py` can install GTK/WebKit deps via `env.linux_desktop_deps`. Skip during install:
 
 ```bash
 python scripts/install_nimbusware.py --skip-linux-desktop-deps

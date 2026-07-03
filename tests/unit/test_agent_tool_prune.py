@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_projections.builders.agent_tool_prune import (
+from projections.builders.agent_tool_prune import (
     projection_prune_agent_tools_enabled,
     prune_agent_tool_log_text,
     prune_all_agent_tool_lines,
@@ -52,7 +52,7 @@ def test_projection_prune_flag_off(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_timeline_summary_respects_flag(monkeypatch: pytest.MonkeyPatch) -> None:
-    from nimbusware_projections.builders.stage_timeline import agent_tool_timeline_summary
+    from projections.builders.stage_timeline import agent_tool_timeline_summary
 
     events = [
         {

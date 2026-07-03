@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_maker.chat_store import InMemoryChatStore
-from nimbusware_projections.builders.chat_turn_analytics import build_chat_turn_summary
+from maker.chat_store import InMemoryChatStore
+from projections.builders.chat_turn_analytics import build_chat_turn_summary
 
 
 def test_chat_turn_summary_classifier_rate() -> None:

@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from nimbusware_orchestrator.test_writer_stage import run_test_writer_stage
+from orchestrator.test_writer_stage import run_test_writer_stage
 
 
 def test_run_test_writer_stage_passes_exit_code_and_output() -> None:

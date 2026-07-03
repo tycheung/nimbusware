@@ -7,10 +7,10 @@ _PYPROJECT = _REPO / "pyproject.toml"
 
 _STRICT_MODULES = frozenset(
     {
-        "nimbusware_console.services",
-        "nimbusware_console.services.*",
-        "nimbusware_maker.services",
-        "nimbusware_maker.services.*",
+        "console.services",
+        "console.services.*",
+        "maker.services",
+        "maker.services.*",
     },
 )
 

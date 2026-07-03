@@ -5,15 +5,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.critique_routing import (
+from env import find_repo_root
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.critique_routing import (
     default_critique_pairings_path,
     load_critique_router,
     registry_producer_taxonomy_keys,
     taxonomy_keys_for_run_lifecycle,
 )
-from nimbusware_orchestrator.registry import RoleRegistry
+from orchestrator.registry import RoleRegistry
 from unit.composite_orchestrator_fixtures import (
     CANONICAL_CRITICS,
     CANONICAL_DEFAULT_CRITICS,

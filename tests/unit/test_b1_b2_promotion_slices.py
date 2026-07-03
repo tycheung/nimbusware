@@ -4,23 +4,23 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
-from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from nimbusware_orchestrator.security_scan import (
+from env import find_repo_root
+from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
+from orchestrator.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from orchestrator.workflow_agent_evaluator import (
     agent_evaluator_production_default_on,
 )
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-from nimbusware_orchestrator.workflow_self_refinement import (
+from orchestrator.workflow_self_refinement import (
     self_refinement_production_ungated_effective,
 )
-from nimbusware_orchestrator.workflow_universal_critique import (
+from orchestrator.workflow_universal_critique import (
     universal_critique_production_default_on,
 )
 
@@ -73,7 +73,7 @@ def test_escalation_policy_breadth() -> None:
 
 
 def test_create_run_freezes_production_effective_metadata() -> None:
-    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from orchestrator.pipeline import make_dev_orchestrator
 
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("nimbusware_production")

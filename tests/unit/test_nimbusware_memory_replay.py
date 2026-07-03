@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.replay_harness import (
+from orchestrator.replay_harness import (
     build_replay_snapshot,
     diff_replay_snapshots,
     stable_replay_hash,

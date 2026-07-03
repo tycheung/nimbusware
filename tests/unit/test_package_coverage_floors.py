@@ -19,10 +19,10 @@ def test_package_floors_include_core_contract_packages() -> None:
     text = _FLOORS_SCRIPT.read_text(encoding="utf-8")
     for pkg in (
         "agent_core",
-        "nimbusware_store",
-        "nimbusware_executor",
-        "nimbusware_config",
-        "nimbusware_projections",
+        "store",
+        "executor",
+        "config",
+        "projections",
     ):
         assert f'"{pkg}"' in text, f"missing package floor for {pkg}"
 

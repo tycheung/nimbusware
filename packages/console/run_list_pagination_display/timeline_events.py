@@ -1,0 +1,187 @@
+from __future__ import annotations
+
+import json
+from collections.abc import Mapping, Sequence
+from functools import partial
+from typing import Any
+
+from agent_core.coercion import is_strict_int
+from console.components.operator_metrics import table_rows_csv
+from console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from console.explainer_core.operator_metrics_exports import (
+    install_operator_metrics_module,
+)
+from console.explainer_core.schema_metrics import build_operator_metrics
+from console.run_list_pagination_display.run_detail_summary import (
+    run_detail_summary_export_filename_slug,
+)
+
+_TIMELINE_EVENTS_DEFAULTS: dict[str, Any] = {
+    "event_count": 0,
+    "distinct_event_type_count": 0,
+    "top_event_type": None,
+    "top_event_type_count": 0,
+}
+
+_TIMELINE_EVENTS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Event count", "event_count"),
+    ("Distinct event types", "distinct_event_type_count"),
+)
+
+
+def timeline_events_from_body(body: Mapping[str, Any] | None) -> list[Any]:
+    if not isinstance(body, Mapping):
+        return []
+    raw = body.get("events")
+    if not isinstance(raw, list):
+        return []
+    return raw
+
+
+def _timeline_event_stringify(value: Any) -> str:
+    if value is None:
+        return "—"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def timeline_events_table_rows(events: Sequence[Any]) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        rows.append(
+            {
+                "store_seq": _timeline_event_stringify(ev.get("store_seq")),
+                "event_type": _timeline_event_stringify(ev.get("event_type")),
+                "occurred_at": _timeline_event_stringify(ev.get("occurred_at")),
+                "event_id": _timeline_event_stringify(ev.get("event_id")),
+            },
+        )
+    return rows
+
+
+def timeline_events_near_store_seq(
+    events: Sequence[Any],
+    focus_seq: int,
+    *,
+    window: int = 5,
+) -> list[Any]:
+    if focus_seq <= 0:
+        return list(events)
+    lo = focus_seq - window
+    hi = focus_seq + window
+    out: list[Any] = []
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        raw_seq = ev.get("store_seq")
+        if isinstance(raw_seq, int):
+            seq = raw_seq
+        elif isinstance(raw_seq, str) and raw_seq.strip().isdigit():
+            seq = int(raw_seq.strip())
+        else:
+            continue
+        if lo <= seq <= hi:
+            out.append(ev)
+    return out
+
+
+_TIMELINE_EVENTS_CSV_COLUMNS: tuple[str, ...] = (
+    "store_seq",
+    "event_type",
+    "occurred_at",
+    "event_id",
+)
+
+
+timeline_events_table_rows_csv = partial(table_rows_csv, columns=_TIMELINE_EVENTS_CSV_COLUMNS)
+
+
+def timeline_events_export_json(body: Mapping[str, Any] | None) -> str:
+    events = timeline_events_from_body(body)
+    return json.dumps(events, indent=2, ensure_ascii=False)
+
+
+def timeline_events_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
+    return run_detail_summary_export_filename_slug(run_id, max_len=max_len)
+
+
+def timeline_events_operator_metrics(
+    events: Sequence[Any] | None,
+) -> dict[str, Any]:
+    metrics = build_operator_metrics(None, _TIMELINE_EVENTS_DEFAULTS)
+    if not events:
+        return metrics
+    type_counts: dict[str, int] = {}
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        metrics["event_count"] = int(metrics["event_count"]) + 1
+        et = ev.get("event_type")
+        if isinstance(et, str) and et.strip():
+            key = et.strip()
+            type_counts[key] = type_counts.get(key, 0) + 1
+    metrics["distinct_event_type_count"] = len(type_counts)
+    if type_counts:
+        top_type, top_count = max(type_counts.items(), key=lambda x: (x[1], x[0]))
+        metrics["top_event_type"] = top_type
+        metrics["top_event_type_count"] = top_count
+    return metrics
+
+
+def timeline_events_operator_metrics_table_rows(
+    metrics: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not isinstance(metrics, Mapping):
+        return []
+    rows = metrics_table_rows(metrics, _TIMELINE_EVENTS_TABLE_ROWS, bool_lower=False)
+    top = metrics.get("top_event_type")
+    tc = metrics.get("top_event_type_count", 0)
+    if isinstance(top, str) and top.strip() and is_strict_int(tc):
+        rows.append({"field": "Top event type", "value": f"{top.strip()} ({tc})"})
+    return rows
+
+
+def timeline_events_operator_metrics_caption(
+    metrics: Mapping[str, Any] | None,
+) -> str | None:
+    if not isinstance(metrics, Mapping):
+        return None
+    ec = metrics.get("event_count")
+    if isinstance(ec, bool) or not isinstance(ec, int) or ec < 1:
+        return None
+    parts = [f"**{ec}** event(s)"]
+    det = metrics.get("distinct_event_type_count", 0)
+    if is_strict_int(det) and det > 0:
+        parts.append(f"**{det}** distinct type(s)")
+    top = metrics.get("top_event_type")
+    if isinstance(top, str) and top.strip():
+        parts.append(f"top type `{top.strip()}`")
+    return metrics_caption("Timeline events metrics: ", parts)
+
+
+(
+    timeline_events_operator_metrics,
+    timeline_events_operator_metrics_table_rows,
+    timeline_events_operator_metrics_caption,
+    timeline_events_operator_metrics_export_json,
+    timeline_events_operator_metrics_table_rows_csv,
+    _timeline_events_operator_metrics_exports_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix="timeline_events",
+    metrics=timeline_events_operator_metrics,
+    table_rows=timeline_events_operator_metrics_table_rows,
+    caption=timeline_events_operator_metrics_caption,
+    export_slug="timeline_events_operator_metrics",
+)
+
+
+def timeline_events_operator_metrics_export_filename_slug(
+    run_id: str,
+    *,
+    max_len: int = 36,
+) -> str:
+    return timeline_events_export_filename_slug(run_id, max_len=max_len)

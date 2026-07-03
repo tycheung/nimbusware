@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from nimbusware_compute.work_unit import WorkUnitRecord
-from nimbusware_compute.work_unit_execute import execute_work_unit_on_worker
+from compute.work_unit import WorkUnitRecord
+from compute.work_unit_execute import execute_work_unit_on_worker
 
 
 def test_execute_work_unit_on_worker_mesh_acks_without_workspace() -> None:

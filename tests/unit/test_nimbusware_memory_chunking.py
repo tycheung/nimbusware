@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import EventType, Verdict
-from nimbusware_memory.chunking import chunks_from_event_rows, run_index_contribution_enabled
+from memory.chunking import chunks_from_event_rows, run_index_contribution_enabled
 
 
 def test_run_index_contribution_defaults_true() -> None:

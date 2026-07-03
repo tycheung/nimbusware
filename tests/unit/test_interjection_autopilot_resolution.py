@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.autopilot_profiles import preset_for_level, resolve_autopilot_profile
-from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
-from nimbusware_orchestrator.resolution_council import (
+from orchestrator.autopilot_profiles import preset_for_level, resolve_autopilot_profile
+from orchestrator.interjection_queue import InterjectionPriority, queue_for_run
+from orchestrator.resolution_council import (
     aggregate_resolution_soak_metrics,
     classify_hard_block,
     run_resolution_council,
@@ -27,7 +27,7 @@ def test_autopilot_preset_levels() -> None:
 
 
 def test_default_autopilot_level_for_work_type() -> None:
-    from nimbusware_orchestrator.autopilot_profiles import (
+    from orchestrator.autopilot_profiles import (
         autopilot_effective_metadata,
         default_autopilot_level_for_work_type,
     )

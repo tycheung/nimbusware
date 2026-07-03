@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from nimbusware_agent_tools.runtime import (
+from agent_tools.runtime import (
     AgentStep,
     _allowed_paths,
     _execute_step,
@@ -11,8 +11,8 @@ from nimbusware_agent_tools.runtime import (
     _parse_steps,
     re_escape_simple,
 )
-from nimbusware_agent_tools.tools import ToolResult
-from nimbusware_orchestrator.micro_slice import SlicePlan
+from agent_tools.tools import ToolResult
+from orchestrator.micro_slice import SlicePlan
 
 
 def test_allowed_paths_normalizes() -> None:

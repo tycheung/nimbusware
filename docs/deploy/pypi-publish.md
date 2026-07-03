@@ -16,8 +16,8 @@ The helper prints clone/install hints. Full monorepo installs remain via `script
 ## Local build (pre-publish validation)
 
 ```bash
-python -m build packages/nimbusware_bootstrap
-pip install packages/nimbusware_bootstrap/dist/nimbusware_bootstrap-*.whl
+python -m build packages/bootstrap
+pip install packages/bootstrap/dist/bootstrap-*.whl
 nimbusware-bootstrap --print-only
 ```
 
@@ -31,7 +31,7 @@ poetry run python scripts/publish/publish_bootstrap_release.py
 ## Publish with twine (manual)
 
 1. Create a PyPI API token (account → **API tokens**). Store as `PYPI_API_TOKEN` in GitHub Actions secrets for CI, or export locally for manual upload only.
-2. Bump version in `packages/nimbusware_bootstrap/pyproject.toml` when releasing.
+2. Bump version in `packages/bootstrap/pyproject.toml` when releasing.
 3. Build and validate:
 
 ```bash
@@ -55,8 +55,8 @@ poetry run python scripts/publish/publish_bootstrap_release.py --pypi
 Or use twine directly after build:
 
 ```bash
-python -m build packages/nimbusware_bootstrap
-TWINE_USERNAME=__token__ TWINE_PASSWORD=<pypi-api-token> python -m twine upload packages/nimbusware_bootstrap/dist/*
+python -m build packages/bootstrap
+TWINE_USERNAME=__token__ TWINE_PASSWORD=<pypi-api-token> python -m twine upload packages/bootstrap/dist/*
 ```
 
 ## GitHub Actions (preferred)
@@ -68,4 +68,4 @@ Workflow: [`.github/workflows/publish_bootstrap.yml`](../../.github/workflows/pu
 3. Leave `publish_pypi` / `publish_testpypi` **false** for build-only validation.
 4. Set `publish_pypi=true` only when ready to release — the workflow fails fast if the token is missing.
 
-See also: [`packages/nimbusware_bootstrap/README.md`](../../packages/nimbusware_bootstrap/README.md).
+See also: [`packages/bootstrap/README.md`](../../packages/bootstrap/README.md).

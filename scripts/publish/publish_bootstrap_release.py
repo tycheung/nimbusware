@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
-_PKG = _ROOT / "packages" / "nimbusware_bootstrap"
+_PKG = _ROOT / "packages" / "bootstrap"
 _DIST = _PKG / "dist"
 
 
@@ -34,7 +34,7 @@ def _build() -> None:
     _run([sys.executable, "-m", "build", str(_PKG)])
     wheels = list(_DIST.glob("*.whl"))
     if not wheels:
-        raise SystemExit("build produced no wheel in packages/nimbusware_bootstrap/dist/")
+        raise SystemExit("build produced no wheel in packages/bootstrap/dist/")
     _run([sys.executable, "-m", "twine", "check", *map(str, _DIST.iterdir())])
 
 
@@ -88,7 +88,7 @@ def _smoke(*, testpypi: bool) -> None:
     else:
         wheel = sorted(_DIST.glob("*.whl"))[-1]
         _run([sys.executable, "-m", "pip", "install", str(wheel)])
-    _run([sys.executable, "-m", "nimbusware_bootstrap", "--print-only"])
+    _run([sys.executable, "-m", "bootstrap", "--print-only"])
 
 
 def main() -> int:

@@ -1,8 +1,8 @@
 from uuid import uuid4
 
-from nimbusware_compute.work_unit import get_work_unit_queue
-from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_stages
-from nimbusware_orchestrator.mesh_scheduler import MeshScheduler
+from compute.work_unit import get_work_unit_queue
+from orchestrator.mesh_pipeline_hook import mesh_assign_parallel_stages
+from orchestrator.mesh_scheduler import MeshScheduler
 
 
 def test_mesh_scheduler_spreads_across_nodes() -> None:
@@ -53,7 +53,7 @@ def test_host_only_skips_enqueue() -> None:
 
 
 def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
-    from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_campaign_slices
+    from orchestrator.mesh_pipeline_hook import mesh_assign_campaign_slices
 
     sid = uuid4()
     run_id = uuid4()
@@ -71,7 +71,7 @@ def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
 
 
 def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
-    from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_critics
+    from orchestrator.mesh_pipeline_hook import mesh_assign_parallel_critics
 
     sid = uuid4()
     run_id = uuid4()
@@ -95,7 +95,7 @@ def test_mesh_pipeline_hook_includes_agent_overlay_in_payload(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from nimbusware_maker.user_agent_overlay import save_user_agent_overlay
+    from maker.user_agent_overlay import save_user_agent_overlay
 
     repo = tmp_path
     (repo / "configs" / "collab").mkdir(parents=True)
@@ -114,7 +114,7 @@ disciplines:
         prompt_extension="Prefer thin handlers on mesh workers.",
         repo_root=repo,
     )
-    monkeypatch.setattr("nimbusware_env.find_repo_root", lambda: repo)
+    monkeypatch.setattr("env.find_repo_root", lambda: repo)
     sid = uuid4()
     run_id = uuid4()
     n1 = uuid4()

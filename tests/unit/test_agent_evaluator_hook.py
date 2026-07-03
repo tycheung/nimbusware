@@ -6,8 +6,8 @@ from unittest.mock import patch
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorAutoCreatePersonaBlock,
     AgentEvaluatorWorkflowBlock,
 )
@@ -58,12 +58,12 @@ def test_agent_evaluator_llm_policy_branch_metadata(
     rid = orch.create_run("agent_evaluator_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator.parse_agent_evaluator_workflow_block",
+            "orchestrator._pipeline.optional_stages_agent_evaluator.parse_agent_evaluator_workflow_block",
             return_value=block,
         ),
         patch.object(orch, "_selected_model_for_run", return_value="stub-model"),
         patch(
-            "nimbusware_orchestrator._pipeline.agent_evaluator_policy_llm_emit.execute_agent_evaluator_policy_llm",
+            "orchestrator._pipeline.agent_evaluator_policy_llm_emit.execute_agent_evaluator_policy_llm",
             return_value=None,
         ),
     ):

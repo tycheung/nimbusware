@@ -6,8 +6,8 @@ import ast
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-WF = REPO / "packages/nimbusware_console/pages/config_tooling/workflows/_shared.py"
-BUNDLES = REPO / "packages/nimbusware_console/pages/config_tooling/bundles/_shared.py"
+WF = REPO / "packages/console/pages/config_tooling/workflows/_shared.py"
+BUNDLES = REPO / "packages/console/pages/config_tooling/bundles/_shared.py"
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
     joined = ",\n    ".join(names)
     text = f'''"""Re-export workflow shared helpers for bundle pages."""
 
-from nimbusware_console.pages.config_tooling.workflows._shared import (
+from console.pages.config_tooling.workflows._shared import (
     {joined},
 )
 '''

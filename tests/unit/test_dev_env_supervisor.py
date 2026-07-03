@@ -3,21 +3,21 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_orchestrator.dev_env_adapters import (
+from orchestrator.dev_env_adapters import (
     build_adapter_command,
     resolve_adapter_name,
 )
-from nimbusware_orchestrator.dev_env_session import (
+from orchestrator.dev_env_session import (
     DevEnvironmentSession,
     load_session,
     persist_session,
 )
-from nimbusware_orchestrator.dev_env_supervisor import (
+from orchestrator.dev_env_supervisor import (
     dev_env_status,
     start_dev_environment,
     stop_dev_environment,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_resolve_adapter_fastapi_reload(tmp_path: Path) -> None:

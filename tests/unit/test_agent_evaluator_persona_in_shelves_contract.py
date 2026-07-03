@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+from env import find_repo_root
+from orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 from unit.composite_repo_fixtures import (
     write_agent_evaluator_workflow_profile,
     write_persona_shelves,

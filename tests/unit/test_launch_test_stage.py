@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.launch_test_llm import launch_test_llm_enabled
-from nimbusware_orchestrator.launch_test_stage import (
+from orchestrator.launch_test_llm import launch_test_llm_enabled
+from orchestrator.launch_test_stage import (
     MAX_LAUNCH_TEST_WRITE_ATTEMPTS,
     build_launch_test_writer_prompt,
     run_launch_test_critique,
@@ -60,7 +60,7 @@ def test_launch_test_write_replans_on_critique_fail(tmp_path: Path) -> None:
         return run_launch_test_critique(workspace, flow_id=flow_id)
 
     with patch(
-        "nimbusware_orchestrator.launch_test_stage.run_launch_test_critique",
+        "orchestrator.launch_test_stage.run_launch_test_critique",
         side_effect=fake_critique,
     ):
         result = run_launch_test_write(tmp_path, flow_id="launch_draft")
@@ -84,7 +84,7 @@ def test_launch_test_write_exhausts_replan_attempts(tmp_path: Path) -> None:
         )()
 
     with patch(
-        "nimbusware_orchestrator.launch_test_stage.run_launch_test_critique",
+        "orchestrator.launch_test_stage.run_launch_test_critique",
         side_effect=always_fail,
     ):
         result = run_launch_test_write(tmp_path, flow_id="launch_draft")

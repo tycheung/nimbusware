@@ -2,20 +2,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.dev_env_policy import (
+from env import find_repo_root
+from orchestrator.dev_env_policy import (
     human_fidelity_profile_enabled,
     persistent_dev_env_enabled,
 )
-from nimbusware_orchestrator.simplification_rubric_critique import (
+from orchestrator.simplification_rubric_critique import (
     emit_simplification_rubric_stage,
     run_simplification_rubric,
 )
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow_blocks_simple import (
     dev_env_effective_metadata,
     parse_dev_env_workflow_block,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 ROOT = find_repo_root()
 

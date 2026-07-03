@@ -5,7 +5,7 @@ from uuid import UUID
 import pytest
 from fastapi import HTTPException
 
-from nimbusware_api import access
+from api import access
 
 
 def test_run_created_metadata_extracts_first_created() -> None:

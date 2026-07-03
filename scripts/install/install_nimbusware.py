@@ -13,7 +13,7 @@ from pathlib import Path
 DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 MIN_PYTHON = (3, 10)
 REC_PYTHON = (3, 11)
-SCHEMA_REL = Path("packages/nimbusware_store/schema/postgres.sql")
+SCHEMA_REL = Path("packages/store/schema/postgres.sql")
 COMPOSE_FILE = "docker-compose.yml"
 INSTALL_PROFILE_RECOMMENDED = "recommended"
 INSTALL_PROFILE_BAREBONES = "barebones"
@@ -498,7 +498,7 @@ def _enable_slice_lsp_in_env(repo: Path, *, log) -> None:
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import set_env_var  # noqa: PLC0415
+    from env import set_env_var  # noqa: PLC0415
 
     path = set_env_var("NIMBUSWARE_SLICE_LSP_ENABLED", "1", repo_root=repo)
     os.environ["NIMBUSWARE_SLICE_LSP_ENABLED"] = "1"
@@ -519,7 +519,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from nimbusware_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
                 "import sys; sys.exit(0 if resolve_lsp_command_argv() else 1)"
             ),
         ],
@@ -540,7 +540,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from nimbusware_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
                 "argv = resolve_lsp_command_argv() or []; print(' '.join(argv))"
             ),
         ],
@@ -591,12 +591,12 @@ def _configure_edition(args: argparse.Namespace, repo: Path) -> str:
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import set_env_var  # noqa: PLC0415
-    from nimbusware_env.edition import enterprise_install_hints, normalize_edition  # noqa: PLC0415
+    from env import set_env_var  # noqa: PLC0415
+    from env.edition import enterprise_install_hints, normalize_edition  # noqa: PLC0415
 
     edition_name = normalize_edition(args.edition, strict=True)
     env_path = set_env_var("NIMBUSWARE_EDITION", edition_name, repo_root=repo)
-    from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN  # noqa: PLC0415
+    from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN  # noqa: PLC0415
 
     set_env_var("NIMBUSWARE_ADMIN_TOKEN", DEFAULT_NIMBUSWARE_ADMIN_TOKEN, repo_root=repo)
     _log(f"\nProduct edition: {edition_name}")
@@ -657,7 +657,7 @@ def _apply_setup_bundle(args: argparse.Namespace, repo: Path, bundle_id: str) ->
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env.install_setup_bundles import (  # noqa: PLC0415
+    from env.install_setup_bundles import (  # noqa: PLC0415
         apply_setup_bundle_env,
         bundle_edition,
         load_setup_bundle,
@@ -742,7 +742,7 @@ def _persist_install_profile(repo: Path, profile: str) -> None:
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import set_env_var  # noqa: PLC0415
+    from env import set_env_var  # noqa: PLC0415
 
     path = set_env_var("NIMBUSWARE_INSTALL_PROFILE", profile, repo_root=repo)
     _log(f"  Install profile: {profile} ({path})")
@@ -852,7 +852,7 @@ def _print_next_steps(
     _log("  nimbusware-admin        # Admin at /v1/admin/app/")
     _print_one_command_install(repo)
     _print_happy_path(repo)
-    _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
+    _log("  cd packages/admin_ui && npm ci && npm run build")
     _log("Model catalog (optional):")
     _log("  python scripts/codegen/sync_model_catalog.py --help")
     if install_profile == INSTALL_PROFILE_BAREBONES:
@@ -929,7 +929,7 @@ def _load_repo_dotenv() -> None:
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import load_dotenv  # noqa: PLC0415
+    from env import load_dotenv  # noqa: PLC0415
 
     load_dotenv(repo_root=repo)
 
@@ -1237,8 +1237,8 @@ def main(argv: list[str] | None = None) -> int:
         packages = repo / "packages"
         if str(packages) not in sys.path:
             sys.path.insert(0, str(packages))
-        from nimbusware_env.desktop_common import resolve_python_command
-        from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps
+        from env.desktop_common import resolve_python_command
+        from env.linux_desktop_deps import ensure_linux_desktop_deps
 
         py_cmd = resolve_python_command(repo)
         ok, detail = ensure_linux_desktop_deps(repo, py_cmd, log=_log)

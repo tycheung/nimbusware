@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.interaction_surface_map import discover_interactive_surfaces_from_html
+from orchestrator.interaction_surface_map import discover_interactive_surfaces_from_html
 
 
 def test_discover_buttons_and_inputs() -> None:

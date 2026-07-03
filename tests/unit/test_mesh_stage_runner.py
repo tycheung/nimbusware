@@ -4,9 +4,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 from uuid import UUID
 
-from nimbusware_compute.mesh_stage_runner import execute_mesh_stage_on_worker
-from nimbusware_compute.work_unit import WorkUnitRecord
-from nimbusware_orchestrator.parallel_writers import WriterStageResult
+from compute.mesh_stage_runner import execute_mesh_stage_on_worker
+from compute.work_unit import WorkUnitRecord
+from orchestrator.parallel_writers import WriterStageResult
 
 
 def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
@@ -27,7 +27,7 @@ def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
     orch = MagicMock()
     orch._store.list_run_events.return_value = []
     with patch(
-        "nimbusware_compute.mesh_stage_runner._mesh_orchestrator",
+        "compute.mesh_stage_runner._mesh_orchestrator",
         return_value=orch,
     ):
         with patch.object(
@@ -84,7 +84,7 @@ def test_execute_mesh_stage_sets_agent_overlay_context(tmp_path: Path) -> None:
     orch = MagicMock()
     orch._store.list_run_events.return_value = []
     with patch(
-        "nimbusware_compute.mesh_stage_runner._mesh_orchestrator",
+        "compute.mesh_stage_runner._mesh_orchestrator",
         return_value=orch,
     ):
         with patch.object(
@@ -97,7 +97,7 @@ def test_execute_mesh_stage_sets_agent_overlay_context(tmp_path: Path) -> None:
             ),
         ):
             with patch(
-                "nimbusware_orchestrator.collab_mesh_context.set_mesh_binding_context",
+                "orchestrator.collab_mesh_context.set_mesh_binding_context",
             ) as set_ctx:
                 execute_mesh_stage_on_worker(rec)
     set_ctx.assert_called_once()

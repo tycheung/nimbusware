@@ -7,14 +7,14 @@ _PYPROJECT = _REPO / "pyproject.toml"
 
 _STRICT_MODULES = frozenset(
     {
-        "nimbusware_api.*",
-        "nimbusware_api.schemas.ollama",
-        "nimbusware_api.routes.ollama",
-        "nimbusware_api.errors",
+        "api.*",
+        "api.schemas.ollama",
+        "api.routes.ollama",
+        "api.errors",
     },
 )
 
-_PIPELINE_BLANKET_IGNORE = 'module = ["nimbusware_orchestrator._pipeline.*"]'
+_PIPELINE_BLANKET_IGNORE = 'module = ["orchestrator._pipeline.*"]'
 
 
 def test_api_listed_in_mypy_strict_override() -> None:

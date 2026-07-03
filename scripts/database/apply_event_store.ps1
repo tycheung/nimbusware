@@ -8,7 +8,7 @@ if (-not $url) {
     Write-Error "NIMBUSWARE_DATABASE_URL is not set."
 }
 $root = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
-$sql = Join-Path $root "packages\nimbusware_store\schema\postgres.sql"
+$sql = Join-Path $root "packages\store\schema\postgres.sql"
 if (-not (Test-Path $sql)) {
     Write-Error "Schema not found: $sql"
 }

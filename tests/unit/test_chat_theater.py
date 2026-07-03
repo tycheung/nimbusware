@@ -3,12 +3,12 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import EventType
-from nimbusware_compute.mesh_host_sync import (
+from compute.mesh_host_sync import (
     campaign_mesh_stage_name,
     campaign_slice_passed_from_mesh,
 )
-from nimbusware_compute.work_unit import InMemoryWorkUnitQueue, set_work_unit_queue
-from nimbusware_projections.builders.chat_theater import (
+from compute.work_unit import InMemoryWorkUnitQueue, set_work_unit_queue
+from projections.builders.chat_theater import (
     CHAT_THEATER_DEFAULT_CAP,
     build_chat_theater_digest,
     build_theater_messages_for_profile,

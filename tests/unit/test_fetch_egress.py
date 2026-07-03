@@ -5,7 +5,7 @@ from uuid import UUID
 
 import httpx
 
-from nimbusware_executor.fetch import egress_checked_httpx_get
+from executor.fetch import egress_checked_httpx_get
 
 
 def test_egress_checked_get_invokes_httpx_after_policy() -> None:

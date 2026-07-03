@@ -5,14 +5,14 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.ingress import assert_persona_assignment_valid
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_store.memory import InMemoryEventStore
+from api.app import app
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.ingress import assert_persona_assignment_valid
+from orchestrator.pipeline import RunOrchestrator, default_paths
+from store.memory import InMemoryEventStore
 
 
 def test_create_run_freezes_persona_assignment_metadata() -> None:
@@ -59,7 +59,7 @@ def test_unknown_business_area_persona_rejected() -> None:
 
 
 def test_assert_persona_assignment_wrong_shelf() -> None:
-    from nimbusware_config.persist import load_persona_shelf
+    from config.persist import load_persona_shelf
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     shelf = load_persona_shelf(root)
@@ -71,7 +71,7 @@ def test_assert_persona_assignment_wrong_shelf() -> None:
 
 
 def test_api_create_run_with_persona_assignment() -> None:
-    from nimbusware_api.deps import get_orchestrator
+    from api.deps import get_orchestrator
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     base, _ = default_paths(root)

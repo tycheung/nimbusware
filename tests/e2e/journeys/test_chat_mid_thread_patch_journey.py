@@ -11,11 +11,11 @@ pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_
 
 def test_chat_mid_thread_patch_to_slice(journey_client, tmp_path: Path) -> None:
     ws = copy_fixture_repo("tiny_python_app", tmp_path / "chat-mid")
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text(
+    (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text(
         "# stub\n", encoding="utf-8"
     )
-    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws, name="chat-mid-thread")
     project_id = journey_client.project_id

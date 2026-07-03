@@ -6,25 +6,25 @@ from typing import Any
 
 import pytest
 
-from nimbusware_orchestrator.integrator_gate import _integrator_gate_workflow_dict
-from nimbusware_orchestrator.scraper_stage import load_scraper_fetch_config
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from orchestrator.integrator_gate import _integrator_gate_workflow_dict
+from orchestrator.scraper_stage import load_scraper_fetch_config
+from orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow_blocks_simple import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_path
-from nimbusware_orchestrator.workflow_security_metadata import (
+from orchestrator.workflow_profiles import workflow_profile_path
+from orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from nimbusware_orchestrator.workflow_self_refinement import (
+from orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )
-from nimbusware_orchestrator.workflow_universal_critique import (
+from orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     parse_universal_critique_workflow_block,
 )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models.backlog import SliceStatus
-from nimbusware_orchestrator.campaign_driver_execute import (
+from orchestrator.campaign_driver_execute import (
     _parallel_slice_count_for_run,
     _select_slices_for_tick,
 )

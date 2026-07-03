@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_config.store import InMemoryConfigStore
+from config.store import InMemoryConfigStore
 
 
 def test_in_memory_upsert_get_round_trip() -> None:

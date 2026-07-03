@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_env.collab_runtime import (
+from env.collab_runtime import (
     clear_runtime_collab_override,
     collab_settings_snapshot,
     runtime_collab_override,

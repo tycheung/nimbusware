@@ -41,9 +41,9 @@ def _write_critic_reliability_snapshot() -> Path:
                 return critic_path
         except json.JSONDecodeError:
             pass
-    from nimbusware_iam.constants import DEFAULT_TENANT_ID
-    from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
-    from nimbusware_store.memory import InMemoryEventStore
+    from iam.constants import DEFAULT_TENANT_ID
+    from orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+    from store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     metrics = tenant_critic_reliability_metrics(

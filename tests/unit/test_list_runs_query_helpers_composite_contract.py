@@ -8,7 +8,7 @@ from uuid import UUID
 
 import pytest
 
-from nimbusware_api.routes.runs import (
+from api.routes.runs import (
     _decode_run_list_cursor,
     _encode_run_list_cursor,
     _parse_query_datetime,

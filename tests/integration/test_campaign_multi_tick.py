@@ -11,13 +11,13 @@ from agent_core.models import EventType
 from agent_core.models.events_payloads import StagePassedPayload
 from agent_core.models.events_records import StagePassedEvent
 from e2e.harness.timeline import assert_timeline_golden
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog
-from nimbusware_orchestrator.campaign import CampaignDriverState
-from nimbusware_orchestrator.campaign_driver import campaign_driver_tick
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.slice_gate import SliceGateChainResult
-from nimbusware_orchestrator.workflow_campaign import CompletionWorkflowBlock
+from env import find_repo_root
+from orchestrator.backlog_generator import generate_heuristic_backlog
+from orchestrator.campaign import CampaignDriverState
+from orchestrator.campaign_driver import campaign_driver_tick
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice_gate import SliceGateChainResult
+from orchestrator.workflow_campaign import CompletionWorkflowBlock
 
 CAMPAIGN_GOLDEN = (
     Path(__file__).resolve().parents[1]
@@ -64,7 +64,7 @@ def _emit_slice_gate_pass(store: object, run_id: UUID, *, backlog_slice_id: str)
 def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) -> None:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     monkeypatch.setattr(
-        "nimbusware_orchestrator.completion_evaluator._completion_policy_from_rows",
+        "orchestrator.completion_evaluator._completion_policy_from_rows",
         _relaxed_policy,
     )
 
@@ -72,7 +72,7 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
         return generate_heuristic_backlog(campaign_id, max_slices=2)
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.backlog_generator.generate_heuristic_backlog",
+        "orchestrator.backlog_generator.generate_heuristic_backlog",
         _two_slice_backlog,
     )
 
@@ -87,14 +87,14 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
     ) -> SliceGateChainResult:
         del slice_index, workspace, plan
         sid = backlog_slice_id or "slice-001"
-        from nimbusware_orchestrator.pipeline import RunOrchestrator
+        from orchestrator.pipeline import RunOrchestrator
 
         assert isinstance(orchestrator_host, RunOrchestrator)
         _emit_slice_gate_pass(orchestrator_host._store, run_id, backlog_slice_id=sid)
         return SliceGateChainResult(slice_id=sid, passed=True, steps=(), status="passed")
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.micro_slice_executor.execute_single_micro_slice",
+        "orchestrator.micro_slice_executor.execute_single_micro_slice",
         _fast_slice,
     )
 

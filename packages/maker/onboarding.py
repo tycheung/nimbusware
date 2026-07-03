@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from env.env_flags import env_str
+
+SESSION_ONBOARDED = "maker_onboarded"
+SESSION_WIZARD_STEP = "maker_wizard_step"
+
+
+def is_onboarded(session_state: object) -> bool:
+    get = getattr(session_state, "get", None)
+    if callable(get) and get(SESSION_ONBOARDED):
+        return True
+    flag_file = onboarding_flag_path()
+    return flag_file.is_file()
+
+
+def mark_onboarded_server() -> None:
+    flag = onboarding_flag_path()
+    flag.parent.mkdir(parents=True, exist_ok=True)
+    flag.write_text("1\n", encoding="utf-8")
+
+
+def is_onboarded_server() -> bool:
+    return onboarding_flag_path().is_file()
+
+
+def mark_onboarded(session_state: object) -> None:
+    setattr(session_state, SESSION_ONBOARDED, True)
+    mark_onboarded_server()
+
+
+def onboarding_flag_path() -> Path:
+    base = env_str("NIMBUSWARE_MAKER_STATE_DIR")
+    root = Path(base) if base else Path(".cache/maker")
+    return root.resolve() / "onboarded"

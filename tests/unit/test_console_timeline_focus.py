@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_console.run_list_pagination_display.timeline_events import (
+from console.run_list_pagination_display.timeline_events import (
     timeline_events_near_store_seq,
     timeline_events_table_rows,
 )

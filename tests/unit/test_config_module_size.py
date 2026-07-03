@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_CONFIG_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_config"
+_CONFIG_ROOT = Path(__file__).resolve().parents[2] / "packages" / "config"
 
 _ALLOWLIST_OVER_450: frozenset[str] = frozenset()
 

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_auth.crypto import hash_password, verify_password
-from nimbusware_auth.store import InMemoryUserStore
+from auth.crypto import hash_password, verify_password
+from auth.store import InMemoryUserStore
 
 
 def test_password_hash_roundtrip() -> None:

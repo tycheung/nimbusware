@@ -56,9 +56,9 @@ PR **e2e** job (Postgres) retries flaky journeys once: `pytest tests/e2e -m e2e 
 
 Architecture is enforced by [`tests/unit/test_import_graph.py`](tests/unit/test_import_graph.py):
 
-- `nimbusware_orchestrator` must not import `nimbusware_api` at module level
-- `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level
-- Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
+- `orchestrator` must not import `api` at module level
+- `extensions` must not import `orchestrator` at module level
+- Web UIs call `/v1` via `fetch` or `client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repository and product). Use **agent runtime** or **run pipeline** when you need to name the orchestration layer without repeating the product name.
 
@@ -69,7 +69,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclatu
 
 ### Typing
 
-Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py` and currently passes with **0** errors. All `nimbusware_orchestrator._pipeline` modules are strict-checked islands (including `dev_factory`); there is no blanket `_pipeline.*` ignore.
+Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py` and currently passes with **0** errors. All `orchestrator._pipeline` modules are strict-checked islands (including `dev_factory`); there is no blanket `_pipeline.*` ignore.
 
 Docker agent sandbox (`NIMBUSWARE_SANDBOX_BACKEND=docker`) requires a local Docker CLI; it is the Individual v1 container backend (multi-tenant VM sandboxes are deferred).
 
@@ -95,6 +95,6 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` (CI enforces prune gate; review diff before bulk local runs)
 - Console display metrics: prefer `explainer_core.build_operator_metrics` + `install_operator_metrics_module` (or `install_named_operator_metrics_exports` when exports-only) over hand-written CSV/JSON export blocks; CSV serialization lives in `explainer_core.table_rows_csv` (explainer export lint gate allowlist is zero)
 - Explainer captions: use `explainer_core.field_caption` helpers and `env_captions.ENV_*_TEMPLATES` registry lookups instead of duplicating load-error / int guards
-- Maker operator ribbons live under `packages/nimbusware_maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
+- Maker operator ribbons live under `packages/maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

@@ -6,7 +6,7 @@ _REPO = Path(__file__).resolve().parents[2]
 
 _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
-        "packages/nimbusware_env",
+        "packages/env",
         450,
         frozenset(),
     ),

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.stack_catalog import (
+from env import find_repo_root
+from orchestrator.stack_catalog import (
     load_stack_catalog,
     resolve_manifest_stacks,
     stack_for_surface,

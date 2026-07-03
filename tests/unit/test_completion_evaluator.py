@@ -14,14 +14,14 @@ from agent_core.models.backlog import (
 )
 from agent_core.models.events_payloads import GateDecisionEmittedPayload
 from agent_core.models.events_records import GateDecisionEmittedEvent
-from nimbusware_env import find_repo_root
-from nimbusware_maker.deploy_pipeline_events import emit_deploy_smoke_stages
-from nimbusware_orchestrator.backlog_generator import emit_backlog_generated
-from nimbusware_orchestrator.completion_evaluator import (
+from env import find_repo_root
+from maker.deploy_pipeline_events import emit_deploy_smoke_stages
+from orchestrator.backlog_generator import emit_backlog_generated
+from orchestrator.completion_evaluator import (
     evaluate_and_finalize_campaign,
     evaluate_completion,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def _sample_passed_backlog(run_id: object) -> DeliveryBacklog:

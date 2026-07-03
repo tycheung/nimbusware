@@ -8,26 +8,26 @@ import pytest
 import yaml
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
-from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_orchestrator.persona_probation_automation import (
+from extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from extensions.personas import PersonaShelf
+from orchestrator.persona_probation_automation import (
     emit_probation_promotion_notice,
     run_probation_automation,
 )
-from nimbusware_orchestrator.persona_probation_reliability import (
+from orchestrator.persona_probation_reliability import (
     ProbationReliabilityMetrics,
     collect_persona_eval_metrics,
     reliability_decision,
 )
-from nimbusware_orchestrator.persona_shelf_promotion import (
+from orchestrator.persona_shelf_promotion import (
     auto_shelve_probation_correlation_id,
     try_auto_shelve_probation_persona,
 )
-from nimbusware_orchestrator.workflow_probation_automation import (
+from orchestrator.workflow_probation_automation import (
     ProbationAutomationWorkflowBlock,
     parse_probation_automation_workflow_block,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def _minimal_shelves(tmp: Path, *, commerce_on_probation: bool) -> None:

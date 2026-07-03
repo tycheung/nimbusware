@@ -23,7 +23,7 @@ from agent_core.models.events_records import (
     CampaignCreatedEvent,
     DeliveryBacklogGeneratedEvent,
 )
-from nimbusware_store.allowed_types import allowed_event_type_values
+from store.allowed_types import allowed_event_type_values
 
 
 def _sample_backlog() -> DeliveryBacklog:

@@ -4,7 +4,7 @@ import hashlib
 import json
 from typing import Any
 
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
+from projections.builders.run_theater import build_run_theater_messages
 
 
 def canonical_theater_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:

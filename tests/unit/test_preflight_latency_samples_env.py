@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_orchestrator.preflight import _latency_sample_count
+from orchestrator.preflight import _latency_sample_count
 
 _ENV_NAME = "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES"
 _FLOOR = 1

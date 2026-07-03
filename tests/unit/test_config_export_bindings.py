@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.export import (
+from config.export import (
     export_config_to_repo,
     export_provider_connections_metadata,
     list_store_documents,
 )
-from nimbusware_config.keys import KEY_USER_DEFAULTS, NS_MODEL_BINDINGS, NS_WORKFLOWS
-from nimbusware_config.store import InMemoryConfigStore
+from config.keys import KEY_USER_DEFAULTS, NS_MODEL_BINDINGS, NS_WORKFLOWS
+from config.store import InMemoryConfigStore
 
 
 def test_list_store_documents_respects_namespace_filter() -> None:
@@ -47,7 +47,7 @@ def test_export_provider_connections_metadata_empty(tmp_path: Path, monkeypatch)
             return []
 
     monkeypatch.setattr(
-        "nimbusware_config.provider_connections.ProviderConnectionStore",
+        "config.provider_connections.ProviderConnectionStore",
         _FakeStore,
     )
     assert export_provider_connections_metadata("postgresql://local/test", tmp_path) == 0

@@ -1,6 +1,6 @@
 import pytest
 
-from nimbusware_compute.work_unit import get_work_unit_queue, set_work_unit_queue
+from compute.work_unit import get_work_unit_queue, set_work_unit_queue
 
 
 def test_get_work_unit_queue_postgres_requires_url(monkeypatch: pytest.MonkeyPatch) -> None:

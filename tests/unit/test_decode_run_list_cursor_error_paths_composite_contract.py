@@ -7,8 +7,8 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_api.routes.runs import _decode_run_list_cursor
+from api.app import app
+from api.routes.runs import _decode_run_list_cursor
 from unit.composite_contract_fixtures import urlsafe_b64_encode
 
 _SAMPLE_UUID_STR = "11111111-1111-4111-8111-111111111111"
@@ -269,14 +269,14 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     )
     assert body_d1.get("message") == "cursor is not a valid keyset token", (
         f"D1: problem ``message`` must be the exact literal at "
-        f"[runs.py:478](packages/nimbusware_api/routes/runs.py). Got: "
+        f"[runs.py:478](packages/api/routes/runs.py). Got: "
         f"{body_d1.get('message')!r}"
     )
     details_d1 = body_d1.get("details") or {}
     assert isinstance(details_d1, dict) and "reason" in details_d1, (
         f"D1: ``details.reason`` must be present (carries ``str(exc)`` "
         f"for operator-visible diagnostics per [runs.py:479]"
-        f"(packages/nimbusware_api/routes/runs.py)). Got details: "
+        f"(packages/api/routes/runs.py)). Got details: "
         f"{details_d1!r}"
     )
     reason_d1 = details_d1["reason"]
@@ -336,7 +336,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     r_d5_empty = client.get("/v1/runs", params={"cursor": "", "limit": 5})
     assert r_d5_empty.status_code == 200, (
         f"D5a: empty cursor (``cursor=``) must short-circuit BEFORE "
-        f"the helper at [runs.py:449](packages/nimbusware_api/routes/runs.py) "
+        f"the helper at [runs.py:449](packages/api/routes/runs.py) "
         f"and return 200 (NOT 422). A refactor that dropped the "
         f"``str(cursor).strip() != ''`` check would call the helper "
         f"on ``''``, which would raise ``binascii.Error`` from "

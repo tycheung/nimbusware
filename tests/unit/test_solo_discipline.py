@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_maker.intent import build_requirements_artifact
-from nimbusware_maker.solo_discipline import parse_discipline_mentions, solo_discipline_routes
+from maker.intent import build_requirements_artifact
+from maker.solo_discipline import parse_discipline_mentions, solo_discipline_routes
 
 
 def test_parse_discipline_mentions_aliases() -> None:

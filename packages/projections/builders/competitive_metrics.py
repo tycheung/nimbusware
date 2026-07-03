@@ -1,0 +1,415 @@
+from __future__ import annotations
+
+import json
+from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from agent_core.mapping import mapping_or_empty
+from agent_core.models import EventType
+from projections.builders.maker_progress import _slice_gate_rows, _stage_name
+from projections.builders.policy_compare_outcome import load_policy_compare_outcome
+from projections.builders.run_research import run_research_briefs_from_events
+from research.stitch_outcome_stats import (
+    compute_stitch_transplant_stats,
+    fetch_stitch_analytics_event_rows,
+)
+
+_SLICE_APPLIED = "slice.applied"
+_PLAN_STAGES = frozenset({"plan", "slice.plan"})
+
+
+def _parse_ts(raw: object) -> datetime | None:
+    if isinstance(raw, datetime):
+        return raw if raw.tzinfo else raw.replace(tzinfo=timezone.utc)
+    if isinstance(raw, str) and raw.strip():
+        text = raw.strip().replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(text)
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except ValueError:
+            return None
+    return None
+
+
+def fetch_recent_run_event_rows(
+    store: Any,
+    *,
+    limit_runs: int,
+) -> tuple[list[dict[str, Any]], int]:
+    cap = max(1, min(limit_runs, 5000))
+    if not hasattr(store, "list_all_event_rows"):
+        return [], 0
+    all_rows = store.list_all_event_rows()
+    created: list[tuple[int, str]] = []
+    for row in all_rows:
+        if str(row.get("event_type") or "") != EventType.RUN_CREATED.value:
+            continue
+        created.append((int(row.get("store_seq") or 0), str(row.get("run_id"))))
+    created.sort(reverse=True)
+    run_ids: list[str] = []
+    seen: set[str] = set()
+    for _seq, rid in created:
+        if rid in seen:
+            continue
+        seen.add(rid)
+        run_ids.append(rid)
+        if len(run_ids) >= cap:
+            break
+    if not run_ids:
+        return [], 0
+    grouped = store.list_run_events_many(run_ids)
+    out: list[dict[str, Any]] = []
+    for rid in run_ids:
+        out.extend(grouped.get(rid, []))
+    return out, len(run_ids)
+
+
+def _rows_by_run(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    by_run: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        rid = row.get("run_id")
+        if rid is not None:
+            by_run[str(rid)].append(row)
+    for run_rows in by_run.values():
+        run_rows.sort(key=lambda r: int(r.get("store_seq") or 0))
+    return by_run
+
+
+def _slice_gate_pass_rate(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    gates = _slice_gate_rows(rows)
+    if not gates:
+        return {"pass_count": 0, "fail_count": 0, "total": 0, "rate": None}
+    pass_n = sum(1 for g in gates.values() if g.get("verdict") == "PASS")
+    fail_n = sum(1 for g in gates.values() if g.get("verdict") == "FAIL")
+    total = len(gates)
+    rate = pass_n / total if total else None
+    return {"pass_count": pass_n, "fail_count": fail_n, "total": total, "rate": rate}
+
+
+def _slices_per_completed_run(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    counts: list[int] = []
+    for run_rows in by_run.values():
+        if not any(r.get("event_type") == EventType.RUN_COMPLETED.value for r in run_rows):
+            continue
+        applied = sum(
+            1
+            for r in run_rows
+            if r.get("event_type") == EventType.STAGE_PASSED.value
+            and _stage_name(r) == _SLICE_APPLIED
+        )
+        counts.append(applied)
+    if not counts:
+        return {"completed_runs": 0, "mean_slices": None, "sample": []}
+    return {
+        "completed_runs": len(counts),
+        "mean_slices": sum(counts) / len(counts),
+        "sample": counts[:20],
+    }
+
+
+def _run_created_row(run_rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    for row in run_rows:
+        if str(row.get("event_type") or "") == EventType.RUN_CREATED.value:
+            return row
+    return None
+
+
+def _is_patch_run(run_rows: list[dict[str, Any]]) -> bool:
+    row = _run_created_row(run_rows)
+    if not row:
+        return False
+    meta: dict[str, Any] = mapping_or_empty(row.get("metadata"))
+    payload: dict[str, Any] = mapping_or_empty(row.get("payload"))
+    work_type = str(meta.get("work_type") or "").strip().lower()
+    profile = str(payload.get("workflow_profile") or "").strip().lower()
+    return work_type == "patch" or profile.startswith("patch")
+
+
+def _first_slice_delta_ms(run_rows: list[dict[str, Any]]) -> float | None:
+    created_at: datetime | None = None
+    first_applied: datetime | None = None
+    for row in run_rows:
+        et = str(row.get("event_type") or "")
+        ts = _parse_ts(row.get("occurred_at"))
+        if et == EventType.RUN_CREATED.value and created_at is None:
+            created_at = ts
+        if (
+            et == EventType.STAGE_PASSED.value
+            and _stage_name(row) == _SLICE_APPLIED
+            and first_applied is None
+        ):
+            first_applied = ts
+    if created_at and first_applied:
+        return (first_applied - created_at).total_seconds() * 1000.0
+    return None
+
+
+def _timing_summary(deltas: list[float], *, target_median_ms: int | None = None) -> dict[str, Any]:
+    if not deltas:
+        out: dict[str, Any] = {"sample_size": 0, "mean_ms": None, "median_ms": None}
+        if target_median_ms is not None:
+            out["target_median_ms"] = target_median_ms
+        return out
+    ordered = sorted(deltas)
+    mid = len(ordered) // 2
+    median = ordered[mid] if len(ordered) % 2 else (ordered[mid - 1] + ordered[mid]) / 2.0
+    out = {
+        "sample_size": len(deltas),
+        "mean_ms": sum(deltas) / len(deltas),
+        "median_ms": median,
+    }
+    if target_median_ms is not None:
+        out["target_median_ms"] = target_median_ms
+        out["meets_target"] = median <= float(target_median_ms)
+    return out
+
+
+def _intent_to_first_slice_ms(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    deltas: list[float] = []
+    for run_rows in by_run.values():
+        delta = _first_slice_delta_ms(run_rows)
+        if delta is not None:
+            deltas.append(delta)
+    return _timing_summary(deltas)
+
+
+def _intent_to_first_patch_ms(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    deltas: list[float] = []
+    for run_rows in by_run.values():
+        if not _is_patch_run(run_rows):
+            continue
+        delta = _first_slice_delta_ms(run_rows)
+        if delta is not None:
+            deltas.append(delta)
+    return _timing_summary(deltas, target_median_ms=180_000)
+
+
+def _classifier_acceptance_rate(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    classifier = 0
+    override = 0
+    for run_rows in by_run.values():
+        row = _run_created_row(run_rows)
+        if not row:
+            continue
+        meta: dict[str, Any] = mapping_or_empty(row.get("metadata"))
+        source = str(meta.get("work_type_source") or "").strip().lower()
+        if source == "classifier":
+            classifier += 1
+        elif source == "operator_override":
+            override += 1
+    total = classifier + override
+    rate = classifier / total if total else None
+    return {
+        "classifier_count": classifier,
+        "override_count": override,
+        "sample_size": total,
+        "rate": rate,
+        "target_rate": 0.70,
+        "meets_target": rate is not None and rate >= 0.70,
+    }
+
+
+def _research_brief_utilization(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    plan_count = 0
+    with_brief = 0
+    for run_rows in by_run.values():
+        for row in run_rows:
+            if row.get("event_type") != EventType.STAGE_PASSED.value:
+                continue
+            sn = _stage_name(row)
+            if sn not in _PLAN_STAGES:
+                continue
+            plan_count += 1
+            seq = int(row.get("store_seq") or 0)
+            prior = [r for r in run_rows if int(r.get("store_seq") or 0) < seq]
+            briefs = run_research_briefs_from_events(prior).get("briefs") or []
+            if any(b.get("status") == "approved" for b in briefs):
+                with_brief += 1
+    rate = with_brief / plan_count if plan_count else None
+    return {
+        "plan_stage_count": plan_count,
+        "plan_with_approved_brief": with_brief,
+        "rate": rate,
+    }
+
+
+def _load_benchmark_snapshot(repo_root: Path | None, filename: str) -> dict[str, Any] | None:
+    if repo_root is None:
+        return None
+    path = repo_root / "benchmarks" / filename
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _load_swe_bench_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_swe_bench.json")
+
+
+def _load_factory_weekly_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_factory_weekly.json")
+
+
+def _load_archetype_metrics_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_archetype_metrics.json")
+
+
+def _load_critic_reliability_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_critic_reliability.json")
+
+
+def _classifier_acceptance_drift(
+    live: dict[str, Any],
+    benchmark: dict[str, Any] | None,
+) -> dict[str, Any]:
+    live_rate = live.get("rate")
+    bench_rate = benchmark.get("rate") if benchmark else None
+    delta = None
+    if isinstance(live_rate, (int, float)) and isinstance(bench_rate, (int, float)):
+        delta = float(live_rate) - float(bench_rate)
+    return {
+        "live_rate": live_rate,
+        "benchmark_rate": bench_rate,
+        "delta": delta,
+        "live_meets_target": live.get("meets_target"),
+        "benchmark_meets_target": benchmark.get("meets_target") if benchmark else None,
+        "drift_ok": delta is None or abs(delta) <= 0.15,
+    }
+
+
+def _policy_outcome_summary(
+    slice_gate: dict[str, Any],
+    critic_snap: dict[str, Any] | None,
+    *,
+    repo_root: Path | None = None,
+) -> dict[str, Any]:
+    critic_fail = critic_snap.get("critic_fail_rate") if critic_snap else None
+    last_compare = load_policy_compare_outcome(repo_root)
+    out: dict[str, Any] = {
+        "slice_gate_pass_rate": slice_gate.get("rate"),
+        "slice_gate_sample": slice_gate.get("total"),
+        "critic_fail_rate_snapshot": critic_fail,
+    }
+    if last_compare:
+        out["last_policy_compare"] = last_compare
+        delta = last_compare.get("gate_pass_rate_delta")
+        if isinstance(delta, (int, float)):
+            out["gate_pass_rate_delta"] = delta
+            out["hint"] = (
+                f"Last Admin policy compare ({last_compare.get('run_a', '?')} vs "
+                f"{last_compare.get('run_b', '?')}): gate pass rate delta "
+                f"{delta * 100:+.1f} pp (run_b minus run_a)."
+            )
+        else:
+            out["hint"] = "Last policy compare recorded; gate samples too small for delta."
+    else:
+        out["hint"] = (
+            "Run Admin run detail Policy compare to record a before/after gate-rate delta."
+        )
+    return out
+
+
+def build_competitive_summary(
+    store: Any,
+    *,
+    limit_runs: int = 500,
+    repo_root: Path | None = None,
+) -> dict[str, Any]:
+    rows, runs_scanned = fetch_recent_run_event_rows(store, limit_runs=limit_runs)
+    by_run = _rows_by_run(rows)
+    stitch_rows = fetch_stitch_analytics_event_rows(store, limit_runs=limit_runs)
+    stitch_stats = compute_stitch_transplant_stats(stitch_rows)
+    slice_gate = _slice_gate_pass_rate(rows)
+    critic_snap = _load_critic_reliability_snapshot(repo_root)
+    classifier_live = _classifier_acceptance_rate(by_run)
+    classifier_bench = _load_benchmark_snapshot(repo_root, "latest_classifier_acceptance.json")
+    generated = datetime.now(timezone.utc).isoformat()
+    return {
+        "generated_at": generated,
+        "limit_runs": limit_runs,
+        "runs_scanned": runs_scanned,
+        "snapshot": True,
+        "metrics": {
+            "slice_gate_pass_rate": slice_gate,
+            "policy_outcome": _policy_outcome_summary(slice_gate, critic_snap, repo_root=repo_root),
+            "slices_per_completed_run": _slices_per_completed_run(by_run),
+            "intent_to_first_slice_ms": _intent_to_first_slice_ms(by_run),
+            "intent_to_first_patch_ms": _intent_to_first_patch_ms(by_run),
+            "classifier_acceptance_rate": classifier_live,
+            "classifier_acceptance_drift": _classifier_acceptance_drift(
+                classifier_live,
+                classifier_bench,
+            ),
+            "stitch_transplant": stitch_stats,
+            "research_brief_utilization": _research_brief_utilization(by_run),
+            "swe_bench": _load_swe_bench_snapshot(repo_root),
+            "factory_weekly": _load_factory_weekly_snapshot(repo_root),
+            "critic_reliability": _load_critic_reliability_snapshot(repo_root),
+            "intent_to_patch_benchmark": _load_benchmark_snapshot(
+                repo_root,
+                "latest_intent_to_patch.json",
+            ),
+            "classifier_acceptance_benchmark": _load_benchmark_snapshot(
+                repo_root,
+                "latest_classifier_acceptance.json",
+            ),
+            "archetype_fit": _load_archetype_metrics_snapshot(repo_root),
+        },
+        "sources": {
+            "event_store": "recent_run_events",
+            "stitch": "stitch.applied + downstream gate/run terminal",
+            "swe_bench": "benchmarks/latest_swe_bench.json (optional, local)",
+            "factory_weekly": "benchmarks/latest_factory_weekly.json (optional, local)",
+            "archetype_fit": "benchmarks/latest_archetype_metrics.json (optional, local)",
+            "critic_reliability": "benchmarks/latest_critic_reliability.json (optional, local)",
+            "intent_to_patch_benchmark": "benchmarks/latest_intent_to_patch.json (optional, local)",
+            "classifier_acceptance_benchmark": (
+                "benchmarks/latest_classifier_acceptance.json (optional, local)"
+            ),
+        },
+    }
+
+
+def build_compliance_dashboard_metrics(
+    store: Any,
+    *,
+    limit_runs: int = 200,
+) -> dict[str, Any]:
+    rows, runs_scanned = fetch_recent_run_event_rows(store, limit_runs=limit_runs)
+    by_run = _rows_by_run(rows)
+    slice_gate = _slice_gate_pass_rate(rows)
+    slices = _slices_per_completed_run(by_run)
+    commit_events = sum(
+        1 for r in rows if str(r.get("event_type") or "") == EventType.STAGE_PASSED.value
+    )
+    last_event_at: str | None = None
+    if rows:
+        ts = _parse_ts(rows[-1].get("occurred_at"))
+        if ts is not None:
+            last_event_at = ts.isoformat()
+    buckets: dict[str, int] = {"1": 0, "2-3": 0, "4+": 0}
+    for count in slices.get("sample") or []:
+        n = int(count)
+        if n <= 1:
+            buckets["1"] += 1
+        elif n <= 3:
+            buckets["2-3"] += 1
+        else:
+            buckets["4+"] += 1
+    return {
+        "gate_pass_rate": slice_gate.get("rate"),
+        "gate_pass_count": slice_gate.get("pass_count"),
+        "gate_fail_count": slice_gate.get("fail_count"),
+        "slice_size_histogram": buckets,
+        "mean_slices_per_run": slices.get("mean_slices"),
+        "completed_runs": slices.get("completed_runs"),
+        "commit_stage_events": commit_events,
+        "runs_scanned": runs_scanned,
+        "last_event_at": last_event_at,
+    }

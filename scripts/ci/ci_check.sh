@@ -54,12 +54,12 @@ poetry run python scripts/ci/run_llm_resolver_ci_gate.py
 poetry run python scripts/ci/run_first_publish_ci_gate.py
 
 if [[ "${SKIP_WEB}" -eq 0 ]] && command -v node >/dev/null 2>&1; then
-  if [[ -f packages/nimbusware_maker_web/package.json ]]; then
-    (cd packages/nimbusware_maker_web && npm ci --silent && npm test --silent)
+  if [[ -f packages/maker_web/package.json ]]; then
+    (cd packages/maker_web && npm ci --silent && npm test --silent)
   fi
-  if [[ -f packages/nimbusware_admin_ui/package.json ]]; then
+  if [[ -f packages/admin_ui/package.json ]]; then
     NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL=1 poetry run python scripts/codegen/openapi_to_ts.py
-    (cd packages/nimbusware_admin_ui && npm ci --silent && npm run build --silent && npm test --silent)
+    (cd packages/admin_ui && npm ci --silent && npm run build --silent && npm test --silent)
   fi
   if [[ -f extensions/nimbusware-status/package.json ]]; then
     (cd extensions/nimbusware-status && npm ci --silent && npm run compile --silent)

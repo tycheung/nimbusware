@@ -7,18 +7,18 @@ from uuid import uuid4
 
 import yaml
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.audit_export import (
+from env import find_repo_root
+from orchestrator.audit_export import (
     build_audit_bundle_bytes,
     scope_snapshot_from_requirements,
     surface_outcomes_from_events,
 )
-from nimbusware_orchestrator.binding_preflight import surface_binding_rows
-from nimbusware_orchestrator.critique_routing import extra_critics_for_surface
-from nimbusware_orchestrator.put_e2e_factory_flows import match_factory_flow_id
-from nimbusware_orchestrator.put_runtime import resolve_put_stack_from_manifest
-from nimbusware_orchestrator.stack_agent_scaffold import scaffold_agents_for_manifest
-from nimbusware_research.bundle_promotion import (
+from orchestrator.binding_preflight import surface_binding_rows
+from orchestrator.critique_routing import extra_critics_for_surface
+from orchestrator.put_e2e_factory_flows import match_factory_flow_id
+from orchestrator.put_runtime import resolve_put_stack_from_manifest
+from orchestrator.stack_agent_scaffold import scaffold_agents_for_manifest
+from research.bundle_promotion import (
     list_catalog_candidates_for_stack,
     primary_stack_id_from_requirements,
     write_catalog_candidate,

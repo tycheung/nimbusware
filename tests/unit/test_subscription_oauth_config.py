@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_env.subscription_oauth_config import (
+from env.subscription_oauth_config import (
     load_subscription_oauth_config,
     subscription_oauth_mock_enabled,
 )

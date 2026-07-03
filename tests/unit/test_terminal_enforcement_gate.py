@@ -3,15 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_orchestrator.enforcement_pipeline import (
+from orchestrator.enforcement_pipeline import (
     emit_terminal_enforcement_gate,
     terminal_enforcement_emitted,
 )
-from nimbusware_orchestrator.enforcement_profiles import (
+from orchestrator.enforcement_profiles import (
     persist_run_enforcement,
     resolve_enforcement_profile,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_terminal_enforcement_emitted_detects_stage() -> None:

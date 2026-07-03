@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_memory.embeddings import resolve_fleet_embedding_mode
+from memory.embeddings import resolve_fleet_embedding_mode
 
 
 def test_resolve_fleet_embedding_mode_explicit() -> None:

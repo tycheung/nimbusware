@@ -4,7 +4,7 @@ from uuid import UUID
 
 import pytest
 
-from nimbusware_executor.egress import assert_egress_allowed, host_matches_allowlist
+from executor.egress import assert_egress_allowed, host_matches_allowlist
 
 
 def test_host_suffix_and_exact() -> None:

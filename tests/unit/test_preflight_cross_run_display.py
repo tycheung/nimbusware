@@ -4,7 +4,7 @@ import json
 
 import httpx
 
-from nimbusware_console.preflight_cross_run_display import (
+from console.preflight_cross_run_display import (
     fetch_preflight_history,
     preflight_cross_run_checks_passed_coverage_caption,
     preflight_cross_run_latency_sample_count_coverage_caption,
@@ -222,7 +222,7 @@ def test_preflight_history_response_p95_coverage_extractor_and_caption() -> None
 
 def test_preflight_pairs_from_history_matches_timeline_shape() -> None:
     """Equivalent preflight dict produces the same trend rows as timeline extraction."""
-    from nimbusware_console.preflight_history_display import preflight_history_from_timeline
+    from console.preflight_history_display import preflight_history_from_timeline
 
     pf = {
         "p95_latency_ms": 120,

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_security_metadata import (
+from env import find_repo_root
+from orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 from unit.composite_repo_fixtures import write_workflow_profile

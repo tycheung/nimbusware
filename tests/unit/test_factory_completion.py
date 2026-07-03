@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 
 from agent_core.models.backlog import SliceStatus
-from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog
-from nimbusware_orchestrator.factory_completion import (
+from orchestrator.backlog_generator import generate_heuristic_backlog
+from orchestrator.factory_completion import (
     PUT_E2E_FIX_CATEGORY,
     append_put_e2e_fix_slice,
     build_put_e2e_fix_slice,
@@ -15,14 +15,14 @@ from nimbusware_orchestrator.factory_completion import (
     resolve_factory_tier,
     tier_config,
 )
-from nimbusware_orchestrator.interaction_surface_critic import critique_interaction_surfaces
-from nimbusware_orchestrator.interaction_surface_map import (
+from orchestrator.interaction_surface_critic import critique_interaction_surfaces
+from orchestrator.interaction_surface_map import (
     InteractionSurfaceMap,
     ISMSurface,
 )
-from nimbusware_orchestrator.put_e2e_runner import PutE2EFinding, PutE2EResult
-from nimbusware_projections.builders.factory_status import factory_status_from_events
-from nimbusware_projections.builders.maker_progress import maker_progress_from_events
+from orchestrator.put_e2e_runner import PutE2EFinding, PutE2EResult
+from projections.builders.factory_status import factory_status_from_events
+from projections.builders.maker_progress import maker_progress_from_events
 
 REPO = Path(__file__).resolve().parents[2]
 

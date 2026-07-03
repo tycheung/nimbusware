@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_projections.builders.chat_journey_coverage import (
+from projections.builders.chat_journey_coverage import (
     build_chat_journey_coverage,
     chat_journey_scenarios_path,
 )

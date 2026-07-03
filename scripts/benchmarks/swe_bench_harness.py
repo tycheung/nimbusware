@@ -49,7 +49,7 @@ def _write_benchmark_snapshots(
 
     if store is None or not summary.run_id:
         return
-    from nimbusware_orchestrator.fleet_critic_reliability import (
+    from orchestrator.fleet_critic_reliability import (
         critic_reliability_summary_from_events,
     )
 
@@ -158,7 +158,7 @@ def _isolated_benchmark_env(
 
 
 def _fixture_slice_plan_factory(target_paths: list[str]):
-    from nimbusware_orchestrator.micro_slice import parse_slice_plan
+    from orchestrator.micro_slice import parse_slice_plan
 
     def _plan(slice_index: int):
         return parse_slice_plan(
@@ -183,7 +183,7 @@ def _run_micro_slice_benchmark(
     checks: list[str] = ["benchmark_start"]
     from unittest.mock import patch
 
-    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from orchestrator.pipeline import make_dev_orchestrator
 
     target_paths = ["calc.py"]
     if manifest:
@@ -199,15 +199,15 @@ def _run_micro_slice_benchmark(
         plan_factory = _fixture_slice_plan_factory(target_paths)
         with (
             patch(
-                "nimbusware_orchestrator.micro_slice_plan.default_stub_slice_plan",
+                "orchestrator.micro_slice_plan.default_stub_slice_plan",
                 plan_factory,
             ),
             patch(
-                "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
+                "orchestrator.micro_slice_executor.default_stub_slice_plan",
                 plan_factory,
             ),
             patch(
-                "nimbusware_orchestrator.verify_fanout.run_writer_verifier_resolved",
+                "orchestrator.verify_fanout.run_writer_verifier_resolved",
                 return_value=(0, "benchmark verify ok"),
             ),
         ):

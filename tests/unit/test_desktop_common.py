@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env.desktop_common import (
+from env.desktop_common import (
     default_clone_target,
     default_install_script_args,
     git_subprocess_kwargs,
@@ -22,7 +22,7 @@ from nimbusware_env.desktop_common import (
     updates_supported,
     venv_python_candidates,
 )
-from nimbusware_env.run_app import _reject_legacy_ui_backend
+from env.run_app import _reject_legacy_ui_backend
 
 
 def test_read_poetry_version_from_repo() -> None:
@@ -92,7 +92,7 @@ def test_legacy_streamlit_ui_backend_rejected(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> None:
-    from nimbusware_env.run_app import _resolve_ui_mode
+    from env.run_app import _resolve_ui_mode
 
     monkeypatch.delenv("NIMBUSWARE_UI", raising=False)
     assert _resolve_ui_mode() == "maker"
@@ -103,7 +103,7 @@ def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_launcher_module_imports() -> None:
-    from nimbusware_env import launcher_app
+    from env import launcher_app
 
     assert callable(launcher_app.main)
 
@@ -153,7 +153,7 @@ def test_updates_supported_requires_git_checkout(tmp_path: Path) -> None:
 
 
 def test_linux_desktop_deps_skipped_off_linux() -> None:
-    from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps
+    from env.linux_desktop_deps import ensure_linux_desktop_deps
 
     root = repo_root(start=Path(__file__).resolve().parent)
     ok, msg = ensure_linux_desktop_deps(root, [sys.executable])
@@ -165,7 +165,7 @@ def test_linux_desktop_deps_skipped_off_linux() -> None:
 
 
 def test_linux_desktop_system_packages_apt() -> None:
-    from nimbusware_env.linux_desktop_deps import linux_desktop_system_packages
+    from env.linux_desktop_deps import linux_desktop_system_packages
 
     pkgs = linux_desktop_system_packages("apt")
     assert "python3-gi" in pkgs
@@ -173,7 +173,7 @@ def test_linux_desktop_system_packages_apt() -> None:
 
 
 def test_linux_desktop_manual_hint_non_empty() -> None:
-    from nimbusware_env.linux_desktop_deps import linux_desktop_manual_hint
+    from env.linux_desktop_deps import linux_desktop_manual_hint
 
     hint = linux_desktop_manual_hint()
     assert hint

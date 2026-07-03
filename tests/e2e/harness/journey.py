@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 from .env import journey_env_summary
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-_STATIC = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker_web" / "static"
+_STATIC = Path(__file__).resolve().parents[2] / "packages" / "maker_web" / "static"
 
 
 def test_maker_web_has_pwa_manifest_and_mobile_shell() -> None:

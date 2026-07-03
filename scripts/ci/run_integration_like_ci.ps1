@@ -1,4 +1,4 @@
-# Match CI integration job: apply packages/nimbusware_store/schema/postgres.sql then pytest -m integration.
+# Match CI integration job: apply packages/store/schema/postgres.sql then pytest -m integration.
 # Prerequisites: PostgreSQL reachable, psql on PATH, Poetry env installed.
 # Usage:
 #   $env:NIMBUSWARE_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"

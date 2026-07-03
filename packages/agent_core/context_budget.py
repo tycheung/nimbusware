@@ -44,18 +44,18 @@ def estimate_tokens(text: str) -> int:
 
 
 def _default_llm_history_max_chars() -> int:
-    from nimbusware_env.env_flags import nimbusware_llm_history_max_chars
+    from env.env_flags import nimbusware_llm_history_max_chars
 
     return nimbusware_llm_history_max_chars()
 
 
 def _default_read_max_chars() -> int:
-    from nimbusware_env.env_flags import nimbusware_read_max_chars
+    from env.env_flags import nimbusware_read_max_chars
 
     return nimbusware_read_max_chars()
 
 
 def _default_shell_output_max_chars() -> int:
-    from nimbusware_env.env_flags import nimbusware_shell_output_max_chars
+    from env.env_flags import nimbusware_shell_output_max_chars
 
     return nimbusware_shell_output_max_chars()

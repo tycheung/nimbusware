@@ -4,15 +4,15 @@ from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
 
-from nimbusware_env import find_repo_root
-from nimbusware_maker.user_agent_overlay import prompt_addon_for_run_claims, save_user_agent_overlay
-from nimbusware_orchestrator.collab_mesh_context import (
+from env import find_repo_root
+from maker.user_agent_overlay import prompt_addon_for_run_claims, save_user_agent_overlay
+from orchestrator.collab_mesh_context import (
     clear_mesh_binding_context,
     set_mesh_binding_context,
 )
-from nimbusware_orchestrator.critique_routing import load_critique_router
-from nimbusware_orchestrator.llm_slice import _custom_agent_prompt_from_rows
-from nimbusware_orchestrator.registry import RoleRegistry
+from orchestrator.critique_routing import load_critique_router
+from orchestrator.llm_slice import _custom_agent_prompt_from_rows
+from orchestrator.registry import RoleRegistry
 
 ROOT = find_repo_root()
 
@@ -68,7 +68,7 @@ def test_overlay_composes_with_bound_role_custom_agent(tmp_path: Path) -> None:
     ]
     addon = prompt_addon_for_run_claims({"planner": "claimer-1"}, repo_root=tmp_path)
     assert "acceptance criteria" in addon
-    with patch("nimbusware_env.find_repo_root", return_value=tmp_path):
+    with patch("env.find_repo_root", return_value=tmp_path):
         prompt = _custom_agent_prompt_from_rows(rows)
     assert "team planner" in prompt
     assert "acceptance criteria" in prompt

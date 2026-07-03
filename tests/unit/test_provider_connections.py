@@ -6,15 +6,15 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_config.provider_connections import (
+from config.provider_connections import (
     ProviderConnectionRow,
     _row_from_record,
     _row_to_public,
     decode_secret_payload,
     encode_secret_payload,
 )
-from nimbusware_config.provider_vault import decrypt_secret, encrypt_secret
-from nimbusware_orchestrator.provider_registry import (
+from config.provider_vault import decrypt_secret, encrypt_secret
+from orchestrator.provider_registry import (
     load_provider_presets,
     probe_connection_row,
     probe_subscription_connection,

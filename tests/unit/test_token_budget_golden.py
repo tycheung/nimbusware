@@ -5,12 +5,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models.slice_handoff import SliceHandoffSummary
-from nimbusware_agent_tools.agent_loop import _stable_system_prompt, _volatile_user_prompt
-from nimbusware_agent_tools.runtime import _gather_context
-from nimbusware_orchestrator.context_compaction import compact_campaign_context
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.prompt_tiers import assemble_prompt
-from nimbusware_orchestrator.slice_handoff import handoff_markdown_capped
+from agent_tools.agent_loop import _stable_system_prompt, _volatile_user_prompt
+from agent_tools.runtime import _gather_context
+from orchestrator.context_compaction import compact_campaign_context
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.prompt_tiers import assemble_prompt
+from orchestrator.slice_handoff import handoff_markdown_capped
 
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "token_budget"
 
@@ -47,8 +47,8 @@ def test_agent_jit_prompt_within_baselines_and_beats_legacy_preload() -> None:
     assert total <= baselines["agent_stable_max_chars"] + baselines["agent_volatile_max_chars"]
     assert volatile_chars <= legacy * baselines["jit_vs_legacy_max_ratio"]
 
-    with patch("nimbusware_agent_tools.runtime._gather_context") as mock_gather:
-        from nimbusware_agent_tools import agent_loop
+    with patch("agent_tools.runtime._gather_context") as mock_gather:
+        from agent_tools import agent_loop
 
         agent_loop.run(
             ws,

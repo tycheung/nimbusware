@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.micro_slice import parse_slice_plan, validate_diff_budget
-from nimbusware_orchestrator.slice_diff import (
+from env import find_repo_root
+from orchestrator.micro_slice import parse_slice_plan, validate_diff_budget
+from orchestrator.slice_diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
     subdivide_slice_plan,
 )
-from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
+from orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 
 def test_subdivide_slice_plan_reduces_file_count() -> None:
@@ -20,7 +20,7 @@ def test_subdivide_slice_plan_reduces_file_count() -> None:
         },
     )
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=500)
-    from nimbusware_orchestrator.micro_slice import DiffBudgetResult
+    from orchestrator.micro_slice import DiffBudgetResult
 
     budget = DiffBudgetResult(
         ok=False,
@@ -48,7 +48,7 @@ def test_collect_slice_diff_stats_plan_estimate() -> None:
     plan = parse_slice_plan(
         {
             "slice_id": "s1",
-            "target_paths": ["packages/nimbusware_orchestrator/micro_slice.py"],
+            "target_paths": ["packages/orchestrator/micro_slice.py"],
         },
     )
     stats = collect_slice_diff_stats(root, plan)

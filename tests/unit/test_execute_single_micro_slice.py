@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.micro_slice_executor import (
+from env import find_repo_root
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.micro_slice_executor import (
     execute_micro_slice_pass,
     execute_single_micro_slice,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 @pytest.fixture(autouse=True)
@@ -38,7 +38,7 @@ def test_execute_single_micro_slice_accepts_explicit_plan() -> None:
     plan = parse_slice_plan(
         {
             "slice_id": "custom-001",
-            "target_paths": ["packages/nimbusware_orchestrator/micro_slice.py"],
+            "target_paths": ["packages/orchestrator/micro_slice.py"],
             "acceptance_criteria": "exists",
         },
     )

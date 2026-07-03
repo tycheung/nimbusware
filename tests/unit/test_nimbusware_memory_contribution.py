@@ -6,13 +6,13 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_env import find_repo_root
-from nimbusware_memory import InMemoryMemoryChunkStore
-from nimbusware_memory.contribution import maybe_rebuild_memory_index_for_run
-from nimbusware_memory.embeddings import deterministic_embed, embed_text
-from nimbusware_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_store.memory import InMemoryEventStore
+from env import find_repo_root
+from memory import InMemoryMemoryChunkStore
+from memory.contribution import maybe_rebuild_memory_index_for_run
+from memory.embeddings import deterministic_embed, embed_text
+from memory.sync import memory_index_sync_state, memory_sync_manifest_stub
+from orchestrator.pipeline import make_dev_orchestrator
+from store.memory import InMemoryEventStore
 
 
 def test_embed_text_deterministic_stable() -> None:
@@ -55,9 +55,9 @@ def test_maybe_rebuild_defers_under_ram_pressure(
     def _fake_pressure(_gov):
         return pressure_level, {"reason": "ram_over_cap"}
 
-    monkeypatch.setattr("nimbusware_hw.pressure.sample_pressure", _fake_pressure)
+    monkeypatch.setattr("hw.pressure.sample_pressure", _fake_pressure)
     monkeypatch.setattr(
-        "nimbusware_hw.governor.governor_from_metadata",
+        "hw.governor.governor_from_metadata",
         lambda _meta: object(),
     )
     result = maybe_rebuild_memory_index_for_run(
@@ -79,11 +79,11 @@ def test_maybe_rebuild_defers_under_ram_pressure(
 def test_maybe_rebuild_emits_memory_indexed(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        "nimbusware_hw.pressure.sample_pressure",
+        "hw.pressure.sample_pressure",
         lambda _gov: ("ok", {}),
     )
     monkeypatch.setattr(
-        "nimbusware_hw.governor.governor_from_metadata",
+        "hw.governor.governor_from_metadata",
         lambda _meta: object(),
     )
     store = InMemoryEventStore()

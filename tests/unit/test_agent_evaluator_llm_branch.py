@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_agent_evaluator import (
+from env import find_repo_root
+from orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     agent_evaluator_llm_branch_effective,
     persona_coverage_critique_llm_branch_effective,
@@ -28,7 +28,7 @@ def test_agent_evaluator_llm_branch_kill_switch(
 
 
 def test_persona_coverage_llm_branch_yaml_only() -> None:
-    from nimbusware_orchestrator.workflow_agent_evaluator import PersonaCoverageCritiqueBlock
+    from orchestrator.workflow_agent_evaluator import PersonaCoverageCritiqueBlock
 
     block = AgentEvaluatorWorkflowBlock(
         enabled=True,

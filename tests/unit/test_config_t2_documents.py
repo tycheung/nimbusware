@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.merge import load_yaml
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.merge import load_yaml
 
 
 def test_t2_getters_match_on_disk_after_seed() -> None:

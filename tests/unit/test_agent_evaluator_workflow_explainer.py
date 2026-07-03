@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from nimbusware_console.workflow_explainers.agent_evaluator import (
+from console.workflow_explainers.agent_evaluator import (
     agent_evaluator_workflow_explainer_operator_metrics_table_rows,
 )
 from unit.workflow_explainer_case_runner import (
@@ -53,7 +53,7 @@ def test_agent_evaluator_env_payload_case(
 
 
 def test_agent_evaluator_workflow_explainer_operator_metrics_load_error() -> None:
-    from nimbusware_console.workflow_explainers.agent_evaluator import (
+    from console.workflow_explainers.agent_evaluator import (
         agent_evaluator_workflow_explainer_operator_metrics,
     )
 

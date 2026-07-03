@@ -7,13 +7,13 @@ _PYPROJECT = _REPO / "pyproject.toml"
 
 _STRICT_MODULES = frozenset(
     {
-        "nimbusware_api.schemas.ollama",
-        "nimbusware_api.routes.ollama",
-        "nimbusware_api.errors",
-        "nimbusware_orchestrator.ollama_manage",
-        "nimbusware_orchestrator.ollama_user_policy",
-        "nimbusware_console.services.ollama",
-        "nimbusware_maker.services.ollama",
+        "api.schemas.ollama",
+        "api.routes.ollama",
+        "api.errors",
+        "orchestrator.ollama_manage",
+        "orchestrator.ollama_user_policy",
+        "console.services.ollama",
+        "maker.services.ollama",
     },
 )
 

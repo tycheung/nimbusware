@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.interaction_surface_map import (
+from orchestrator.interaction_surface_map import (
     InteractionSurfaceMap,
     coverage_pct,
     discover_surfaces_from_html,
     discover_surfaces_from_openapi,
     discover_surfaces_static,
 )
-from nimbusware_orchestrator.put_runtime import (
+from orchestrator.put_runtime import (
     collect_put_artifacts,
     detect_put_stack,
     put_runtime_summary,
@@ -150,13 +150,13 @@ def test_coverage_pct_helper() -> None:
 def test_campaign_driver_tick_includes_put_stack_note(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.campaign import (
+    from env import find_repo_root
+    from orchestrator.campaign import (
         campaign_policy_from_workflow,
         emit_campaign_created,
     )
-    from nimbusware_orchestrator.campaign_driver import campaign_driver_tick
-    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from orchestrator.campaign_driver import campaign_driver_tick
+    from orchestrator.pipeline import make_dev_orchestrator
 
     monkeypatch.setenv("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])

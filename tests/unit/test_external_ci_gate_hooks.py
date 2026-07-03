@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_orchestrator.ci_bridge.external_ci import attach_external_ci_metadata
+from orchestrator.ci_bridge.external_ci import attach_external_ci_metadata
 
 
 def test_attach_external_ci_metadata_skipped_without_config(
@@ -31,7 +31,7 @@ def test_attach_external_ci_metadata_posts_gitlab(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("NIMBUSWARE_CI_GITLAB_PROJECT", "acme/widget")
     monkeypatch.setenv("NIMBUSWARE_CI_HEAD_SHA", "abc123")
     monkeypatch.setattr(
-        "nimbusware_orchestrator.ci_bridge.external_ci._post_json",
+        "orchestrator.ci_bridge.external_ci._post_json",
         lambda *a, **k: {},
     )
     meta: dict = {}

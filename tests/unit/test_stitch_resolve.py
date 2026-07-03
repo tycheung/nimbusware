@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_research.stages_stitch import resolve_stitch_manifest
+from research.stages_stitch import resolve_stitch_manifest
 
 
 def test_resolve_stitch_manifest_empty_without_catalog(tmp_path: Path) -> None:

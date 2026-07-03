@@ -6,15 +6,15 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_env import find_repo_root
-from nimbusware_store.allowed_types import allowed_event_type_values, assert_event_type_registered
-from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_store.protocol import EventStore
+from env import find_repo_root
+from store.allowed_types import allowed_event_type_values, assert_event_type_registered
+from store.memory import InMemoryEventStore
+from store.protocol import EventStore
 
 _SCHEMA_SQL = (
     find_repo_root(start=Path(__file__).resolve().parents[1])
     / "packages"
-    / "nimbusware_store"
+    / "store"
     / "schema"
     / "postgres.sql"
 )

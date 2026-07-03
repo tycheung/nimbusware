@@ -1,6 +1,6 @@
 # Maker app
 
-Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](../../packages/nimbusware_maker_web/static/)).
+Web entry: `GET /v1/maker/app/` ([`packages/maker_web`](../../packages/maker_web/static/)).
 
 Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`). On Enterprise, set `NIMBUSWARE_API_KEY` (user-scoped key).
 

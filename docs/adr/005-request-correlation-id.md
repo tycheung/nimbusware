@@ -12,7 +12,7 @@ API access logs (ADR 004) lacked a correlation identifier, making it hard to tie
 
 - Every HTTP response includes `X-Request-Id`.
 - Clients may supply `X-Request-Id`; when absent or blank the API generates a UUID.
-- `nimbusware_api.request` logs include `request_id=<value>` on each line.
+- `api.request` logs include `request_id=<value>` on each line.
 
 ## Consequences
 

@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_orchestrator.interjection_queue import queue_for_run
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_interjection import (
+from orchestrator.interjection_queue import queue_for_run
+from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice_interjection import (
     InterjectionCycle,
     apply_surface_steer_to_plan,
     process_interjection_cycle,
     steer_excerpt_from_cycle,
 )
-from nimbusware_orchestrator.surface_interjection_routing import (
+from orchestrator.surface_interjection_routing import (
     enqueue_surface_steers,
     surface_steer_routes,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_surface_steer_routes_from_mention() -> None:

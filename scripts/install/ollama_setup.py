@@ -411,7 +411,7 @@ def enable_nimbusware_llm_in_env(repo_root: Path, *, log) -> None:
     packages = repo_root / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import set_env_var  # noqa: PLC0415
+    from env import set_env_var  # noqa: PLC0415
 
     path = set_env_var(ENV_USE_LLM, "1", repo_root=repo_root)
     os.environ[ENV_USE_LLM] = "1"

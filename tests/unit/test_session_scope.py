@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_maker.session_scope import (
+from maker.session_scope import (
     approve_scope_pending,
     get_scope_pending,
     publish_scope_pending,

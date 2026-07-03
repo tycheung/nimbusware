@@ -1,0 +1,62 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+from client.http import get_response, post_response, user_headers
+
+if TYPE_CHECKING:
+    from httpx import Response
+
+
+def create_run(payload: dict[str, Any], *, timeout: float = 30.0) -> Response:
+    return post_response(
+        "/runs",
+        payload=payload,
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )
+
+
+def fetch_timeline_response(run_id: str, *, timeout: float = 30.0) -> Response:
+    return get_response(
+        f"/runs/{run_id}/timeline",
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )
+
+
+def classify_intent(message: str, *, timeout: float = 30.0) -> Response:
+    return post_response(
+        "/chat/classify",
+        payload={"message": message},
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )
+
+
+def enqueue_interjection(
+    run_id: str,
+    message: str,
+    *,
+    priority: str = "next",
+    timeout: float = 30.0,
+) -> Response:
+    return post_response(
+        f"/runs/{run_id}/interjection-queue",
+        payload={"message": message, "priority": priority},
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )
+
+
+def fetch_interjection_queue(run_id: str, *, timeout: float = 30.0) -> Response:
+    return get_response(
+        f"/runs/{run_id}/interjection-queue",
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )

@@ -8,7 +8,7 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
+from orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 
 
 def _resp_with_cl(value: str | None) -> httpx.Response:

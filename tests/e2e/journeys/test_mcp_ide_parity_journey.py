@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from e2e.harness.workspace import copy_fixture_repo
-from nimbusware_mcp.tools import call_tool
+from mcp.tools import call_tool
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_repo]
 
@@ -31,9 +31,9 @@ def mcp_http(journey_client, monkeypatch: pytest.MonkeyPatch):
         assert resp.status_code < 400, resp.text
         return resp
 
-    monkeypatch.setattr("nimbusware_mcp.tools.get_json", _get_json)
-    monkeypatch.setattr("nimbusware_mcp.tools.post_json", _post_json)
-    monkeypatch.setattr("nimbusware_mcp.tools.put_response", _put_response)
+    monkeypatch.setattr("mcp.tools.get_json", _get_json)
+    monkeypatch.setattr("mcp.tools.post_json", _post_json)
+    monkeypatch.setattr("mcp.tools.put_response", _put_response)
 
 
 def test_mcp_classify_patch_and_chat_graph_round_trip(

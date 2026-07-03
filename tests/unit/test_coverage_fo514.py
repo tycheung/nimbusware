@@ -4,20 +4,20 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_api.routes.ollama import _routing_models
-from nimbusware_api.schemas.ollama import (
+from api.routes.ollama import _routing_models
+from api.schemas.ollama import (
     OllamaModelEntry,
     OllamaModelsResponse,
     OllamaPullRequest,
     OllamaUserPolicyBody,
 )
-from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
-from nimbusware_orchestrator.ollama_manage import (
+from config.persist import load_model_routing_dict, persist_model_routing_dict
+from orchestrator.ollama_manage import (
     OllamaModelRow,
     filter_models,
     runtime_base_url_from_routing,
 )
-from nimbusware_orchestrator.ollama_user_policy import policy_from_routing
+from orchestrator.ollama_user_policy import policy_from_routing
 
 
 def test_load_and_persist_model_routing_roundtrip(tmp_path: Path) -> None:
@@ -75,7 +75,7 @@ def test_ollama_pull_request_validation() -> None:
 
 
 def test_openapi_access_ollama_routes() -> None:
-    from nimbusware_api.openapi_access import (
+    from api.openapi_access import (
         ACCESS_TAG_ADMIN,
         ACCESS_TAG_USER,
         access_tag_for_operation,
@@ -87,20 +87,20 @@ def test_openapi_access_ollama_routes() -> None:
 
 
 def test_config_flags_and_listener_status() -> None:
-    from nimbusware_config import config_from_db_enabled, config_notify_enabled
-    from nimbusware_config.listener import config_notify_listener_enabled, listener_status
-    from nimbusware_config.notify import ConfigNotifyHub
+    from config import config_from_db_enabled, config_notify_enabled
+    from config.listener import config_notify_listener_enabled, listener_status
+    from config.notify import ConfigNotifyHub
 
     assert isinstance(config_from_db_enabled(), bool)
     assert isinstance(config_notify_enabled(), bool)
     assert isinstance(config_notify_listener_enabled(), bool)
     status = listener_status(ConfigNotifyHub())
-    assert status["channel"] == "nimbusware_config_document"
+    assert status["channel"] == "config_document"
 
 
 def test_seed_preview_from_repo() -> None:
-    from nimbusware_config.seed import preview_seed_from_repo
-    from nimbusware_env import find_repo_root
+    from config.seed import preview_seed_from_repo
+    from env import find_repo_root
 
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     preview = preview_seed_from_repo(repo)
@@ -109,7 +109,7 @@ def test_seed_preview_from_repo() -> None:
 
 
 def test_workflow_read_profile_path(tmp_path: Path) -> None:
-    from nimbusware_config import workflow_read
+    from config import workflow_read
 
     workflows = tmp_path / "configs" / "workflows"
     workflows.mkdir(parents=True)
@@ -120,20 +120,20 @@ def test_workflow_read_profile_path(tmp_path: Path) -> None:
 
 
 def test_workflow_read_escalation_policy_breadth(repo_root: Path) -> None:
-    from nimbusware_config import workflow_read
+    from config import workflow_read
 
     assert isinstance(workflow_read.escalation_policy_breadth(repo_root), dict)
 
 
 @pytest.fixture
 def repo_root() -> Path:
-    from nimbusware_env import find_repo_root
+    from env import find_repo_root
 
     return find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
 def test_materializer_model_routing(repo_root: Path) -> None:
-    from nimbusware_config.materializer import ConfigMaterializer
+    from config.materializer import ConfigMaterializer
 
     mat = ConfigMaterializer(repo_root, use_db=False)
     routing = mat.get_model_routing_base()
@@ -142,7 +142,7 @@ def test_materializer_model_routing(repo_root: Path) -> None:
 
 
 def test_materializer_workflow_bundle_and_agents(repo_root: Path) -> None:
-    from nimbusware_config.materializer import ConfigMaterializer
+    from config.materializer import ConfigMaterializer
 
     mat = ConfigMaterializer(repo_root, use_db=False)
     profile = mat.get_workflow_profile_dict("default")
@@ -154,8 +154,8 @@ def test_materializer_workflow_bundle_and_agents(repo_root: Path) -> None:
 
 
 def test_persist_model_routing_db_materializer(tmp_path: Path) -> None:
-    from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
-    from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
+    from config.keys import KEY_MODEL_ROUTING, NS_POLICY
+    from config.persist import load_model_routing_dict, persist_model_routing_dict
 
     class _Mat:
         use_db = True
@@ -177,10 +177,10 @@ def test_persist_model_routing_db_materializer(tmp_path: Path) -> None:
 
 
 def test_export_config_to_repo_in_memory(tmp_path: Path) -> None:
-    from nimbusware_config.export import export_config_to_repo
-    from nimbusware_config.seed import seed_config_from_repo
-    from nimbusware_config.store import InMemoryConfigStore
-    from nimbusware_env import find_repo_root
+    from config.export import export_config_to_repo
+    from config.seed import seed_config_from_repo
+    from config.store import InMemoryConfigStore
+    from env import find_repo_root
 
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryConfigStore()
@@ -192,7 +192,7 @@ def test_export_config_to_repo_in_memory(tmp_path: Path) -> None:
 
 
 def test_preview_seed_skips_duplicate_workflow_stem(tmp_path: Path) -> None:
-    from nimbusware_config.seed import preview_seed_from_repo
+    from config.seed import preview_seed_from_repo
 
     wf = tmp_path / "configs" / "workflows"
     wf.mkdir(parents=True)
@@ -203,8 +203,8 @@ def test_preview_seed_skips_duplicate_workflow_stem(tmp_path: Path) -> None:
 
 
 def test_seed_policy_documents_from_repo_accepts_extra(tmp_path: Path) -> None:
-    from nimbusware_config.seed import seed_policy_documents_from_repo
-    from nimbusware_config.store import InMemoryConfigStore
+    from config.seed import seed_policy_documents_from_repo
+    from config.store import InMemoryConfigStore
 
     store = InMemoryConfigStore()
     counts = seed_policy_documents_from_repo(tmp_path, store, extra={})

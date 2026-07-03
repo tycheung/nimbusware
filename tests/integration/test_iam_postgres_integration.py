@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_iam.store import PostgresIamStore, hash_api_key
+from iam.store import PostgresIamStore, hash_api_key
 
 pytestmark = pytest.mark.integration
 

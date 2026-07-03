@@ -24,7 +24,7 @@ Normative mitigations for peanut-gallery sessions. Scope: invite links, LAN expo
 ## Residual risk
 
 - Host machine compromise exposes local Postgres and event store (same as single-operator).
-- Session SSE theater fan-out — mitigated by server-side redaction and **fo1867** API + Playwright dual-browser scan (`tests/api/test_collab_sse_secret_scan.py`, `tests/e2e/web/collab_sse_secret_scan.spec.ts`).
+- Session SSE theater fan-out — mitigated by server-side redaction and **fo1867** API + Playwright dual-browser scan (`tests/api_http/test_collab_sse_secret_scan.py`, `tests/e2e/web/collab_sse_secret_scan.spec.ts`).
 
 ## Out of scope (v1.2)
 

@@ -5,14 +5,14 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from nimbusware_orchestrator.scraper_artifacts import (
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from orchestrator.scraper_artifacts import (
     persist_scraper_artifact,
     prune_scraper_artifacts,
     scraper_artifact_inventory,
     scraper_artifact_storage_backend_signals,
 )
-from nimbusware_orchestrator.scraper_object_store import (
+from orchestrator.scraper_object_store import (
     object_store_list_artifacts,
     object_store_primary_enabled,
     object_store_put_artifact,
@@ -81,7 +81,7 @@ def test_prune_primary_file_backend(
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "artifacts")
 
     now = datetime.now(timezone.utc)
-    from nimbusware_orchestrator.scraper_object_store import _file_object_path
+    from orchestrator.scraper_object_store import _file_object_path
 
     put = object_store_put_artifact("stale/old.bin", b"x")
     assert put["stored"] is True

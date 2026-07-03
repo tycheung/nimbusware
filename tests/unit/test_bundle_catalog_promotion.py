@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_research.bundle_promotion import (
+from research.bundle_promotion import (
     candidate_to_bundle_entry,
     load_catalog_candidate,
     mark_catalog_candidate_promoted,

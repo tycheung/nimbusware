@@ -14,14 +14,14 @@ os.environ.setdefault(
 )
 
 
-def test_nimbusware_api_app_importable() -> None:
-    from nimbusware_api.app import app
+def test_api_app_importable() -> None:
+    from api.app import app
 
     assert app.title
     assert any(path.startswith("/v1") for path in app.openapi().get("paths", {}))
 
 
-def test_nimbusware_maker_web_importable() -> None:
-    from nimbusware_maker_web import STATIC_DIR
+def test_maker_web_importable() -> None:
+    from maker_web import STATIC_DIR
 
     assert (STATIC_DIR / "index.html").is_file()

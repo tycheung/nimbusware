@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.integrator_workflow_preview import (
+from console.integrator_workflow_preview import (
     integrator_preview_payload,
     list_workflow_profile_keys,
     parse_integrator_gate_yaml_fragment,
     parse_synthetic_tags_json,
     validate_integrator_gate_block,
 )
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

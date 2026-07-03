@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.custom_agents import CustomAgent
+from config.materializer import ConfigMaterializer
+from config.persist import load_custom_agent_registry, persist_custom_agent_registry
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from extensions.custom_agents import CustomAgent
 
 
 def test_custom_agents_roundtrip_via_materializer() -> None:

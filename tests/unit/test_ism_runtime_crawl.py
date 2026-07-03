@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.interaction_surface_map import (
+from orchestrator.interaction_surface_map import (
     InteractionSurfaceMap,
     discover_surfaces_runtime,
 )

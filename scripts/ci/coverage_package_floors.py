@@ -10,10 +10,10 @@ from pathlib import Path
 
 _FLOORS: dict[str, float] = {
     "agent_core": 85.0,
-    "nimbusware_store": 85.0,
-    "nimbusware_executor": 85.0,
-    "nimbusware_config": 85.0,
-    "nimbusware_projections": 85.0,
+    "store": 85.0,
+    "executor": 85.0,
+    "config": 85.0,
+    "projections": 85.0,
 }
 
 

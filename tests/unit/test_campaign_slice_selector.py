@@ -9,8 +9,8 @@ from agent_core.models.backlog import (
     EpicStatus,
     SliceStatus,
 )
-from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog
-from nimbusware_orchestrator.campaign_slice_selector import select_next_slice, select_next_slices
+from orchestrator.backlog_generator import generate_heuristic_backlog
+from orchestrator.campaign_slice_selector import select_next_slice, select_next_slices
 
 
 def _parallel_backlog(count: int = 3) -> DeliveryBacklog:

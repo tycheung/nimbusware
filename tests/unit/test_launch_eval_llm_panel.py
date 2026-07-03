@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_orchestrator.launch_evaluator import evaluate_workspace_rubric, llm_panel_enabled
+from orchestrator.launch_evaluator import evaluate_workspace_rubric, llm_panel_enabled
 
 
 def test_launch_eval_llm_panel_off_by_default(
@@ -18,7 +18,7 @@ def test_launch_eval_llm_panel_off_by_default(
 def test_launch_eval_llm_panel_opt_in(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.setenv("NIMBUSWARE_LAUNCH_EVAL_LLM", "1")
     monkeypatch.setattr(
-        "nimbusware_orchestrator.launch_evaluator.fetch_llm_rubric_panel",
+        "orchestrator.launch_evaluator.fetch_llm_rubric_panel",
         lambda _workspace: None,
     )
     (tmp_path / "src").mkdir()
@@ -42,7 +42,7 @@ def test_launch_eval_llm_panel_uses_ollama_when_available(
         }
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.launch_evaluator.fetch_llm_rubric_panel",
+        "orchestrator.launch_evaluator.fetch_llm_rubric_panel",
         _fake_panel,
     )
     (tmp_path / "README.md").write_text("# demo\n", encoding="utf-8")

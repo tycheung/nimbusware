@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.factory_cadence import (
+from orchestrator.factory_cadence import (
     FACTORY_CADENCE_STAGE,
     FACTORY_COMPLETE_STAGE,
     FACTORY_GATE_STAGE,
@@ -12,9 +12,9 @@ from nimbusware_orchestrator.factory_cadence import (
     maybe_run_factory_cadence_pass,
     should_run_factory_cadence,
 )
-from nimbusware_orchestrator.factory_completion import factory_ui_flow_required
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_campaign import parse_completion_workflow_block
+from orchestrator.factory_completion import factory_ui_flow_required
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_campaign import parse_completion_workflow_block
 
 REPO = Path(__file__).resolve().parents[2]
 

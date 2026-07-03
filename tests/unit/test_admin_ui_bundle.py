@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_DIST = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_admin_ui" / "dist"
+_DIST = Path(__file__).resolve().parents[2] / "packages" / "admin_ui" / "dist"
 _MAX_JS_KB = 160
 
 

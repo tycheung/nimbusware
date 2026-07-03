@@ -17,11 +17,11 @@ def test_micro_slice_happy_apply(
     tmp_path: Path,
 ) -> None:
     ws = copy_fixture_repo("tiny_python_app", tmp_path / "ws")
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text(
+    (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text(
         "# stub\n", encoding="utf-8"
     )
-    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws)
     journey_client.start_micro_slice_run()
@@ -46,9 +46,9 @@ def test_micro_slice_skip_after_plan(
 ) -> None:
     ws = tmp_path / "skip-ws"
     ws.mkdir()
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
-    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# y\n", encoding="utf-8")
+    (ws / "packages/orchestrator").mkdir(parents=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
+    (ws / "packages/orchestrator/slice_gate.py").write_text("# y\n", encoding="utf-8")
 
     journey_client.attach_project(ws)
     journey_client.start_micro_slice_run()
@@ -68,7 +68,7 @@ def test_micro_slice_revert_after_apply(
 ) -> None:
     ws = tmp_path / "revert-ws"
     ws.mkdir()
-    target_dir = ws / "packages/nimbusware_orchestrator"
+    target_dir = ws / "packages/orchestrator"
     target_dir.mkdir(parents=True)
     target = target_dir / "micro_slice.py"
     target.write_text("# before\n", encoding="utf-8")

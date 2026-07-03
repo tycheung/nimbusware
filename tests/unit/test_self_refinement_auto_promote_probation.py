@@ -8,12 +8,12 @@ import pytest
 import yaml
 
 from agent_core.models import EventType
-from nimbusware_api.routes.runs import self_refinement_timeline_summary
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.persona_catalog_audit import persona_catalog_run_id
-from nimbusware_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_self_refinement import parse_self_refinement_workflow_block
+from api.routes.runs import self_refinement_timeline_summary
+from env import find_repo_root
+from orchestrator.persona_catalog_audit import persona_catalog_run_id
+from orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_self_refinement import parse_self_refinement_workflow_block
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -65,7 +65,7 @@ def test_parse_self_refinement_auto_promote_probation(tmp_path: Path) -> None:
 def test_try_auto_promote_with_self_refinement_actor(tmp_path: Path) -> None:
     _minimal_shelves(tmp_path, commerce_on_probation=True)
     mem = __import__(
-        "nimbusware_store.memory", fromlist=["InMemoryEventStore"]
+        "store.memory", fromlist=["InMemoryEventStore"]
     ).InMemoryEventStore()
     run_id = uuid4()
     meta = try_auto_promote_probation_persona(

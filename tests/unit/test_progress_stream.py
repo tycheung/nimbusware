@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.services.progress_stream import _parse_sse_chunk
+from maker.services.progress_stream import _parse_sse_chunk
 
 
 def test_parse_sse_progress_event() -> None:

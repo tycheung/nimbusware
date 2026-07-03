@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
-from nimbusware_config.notify import get_config_notify_hub
-from nimbusware_config.store import InMemoryConfigStore
+from config.keys import KEY_MODEL_ROUTING, NS_POLICY
+from config.notify import get_config_notify_hub
+from config.store import InMemoryConfigStore
 
 
 @pytest.mark.integration
 def test_config_store_upsert_publishes_notify_event(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: True)
+    monkeypatch.setattr("config.config_notify_enabled", lambda: True)
     store = InMemoryConfigStore()
     hub = get_config_notify_hub()
     before = hub.delivery_count

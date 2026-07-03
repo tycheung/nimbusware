@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.registry import RoleRegistry
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.registry import RoleRegistry
 
 
 def test_db_registry_matches_yaml_seed() -> None:
@@ -22,7 +22,7 @@ def test_db_registry_matches_yaml_seed() -> None:
 
 
 def test_unknown_taxonomy_fails_create_run_ingress() -> None:
-    from nimbusware_orchestrator.ingress import assert_taxonomy_keys_resolve
+    from orchestrator.ingress import assert_taxonomy_keys_resolve
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryConfigStore()

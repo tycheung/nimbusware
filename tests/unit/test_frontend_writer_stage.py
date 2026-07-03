@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.frontend_writer_stage import (
+from orchestrator.frontend_writer_stage import (
     discover_frontend_files,
     run_frontend_writer_stage,
 )

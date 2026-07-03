@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_compute.minimal_worker import probe_minimal_worker_capabilities
+from compute.minimal_worker import probe_minimal_worker_capabilities
 
 
 def test_probe_minimal_worker_capabilities_flags() -> None:

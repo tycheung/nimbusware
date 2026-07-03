@@ -14,7 +14,7 @@ jobs:
           python-version: "3.11"
       - run: pip install poetry && poetry install
       - name: OIDC mock route tests
-        run: poetry run pytest tests/api/test_admin_oauth.py tests/unit/test_oidc_config.py -q
+        run: poetry run pytest tests/api_http/test_admin_oauth.py tests/unit/test_oidc_config.py -q
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_EDITION: enterprise

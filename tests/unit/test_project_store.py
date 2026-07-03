@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_maker.store import InMemoryProjectStore
+from maker.store import InMemoryProjectStore
 
 
 def test_create_attach_project_requires_existing_dir(tmp_path: Path) -> None:

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_PKG = _REPO / "packages" / "nimbusware_bootstrap"
+_PKG = _REPO / "packages" / "bootstrap"
 
 
 def test_bootstrap_wheel_builds() -> None:

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_agent_tools.prompts import (
+from agent_tools.prompts import (
     build_agent_stable_prompt,
     load_agent_implement_stable_prompt,
 )
-from nimbusware_orchestrator.prompt_tiers import assemble_prompt
+from orchestrator.prompt_tiers import assemble_prompt
 
 
 def test_load_agent_implement_stable_from_config() -> None:

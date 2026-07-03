@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_projections.builders.maker_progress import (
+from projections.builders.maker_progress import (
     maker_progress_from_events,
     pytest_bullets,
     strip_operator_fields,
@@ -146,7 +146,7 @@ def test_maker_progress_gate_summary_on_block() -> None:
 
 
 def test_maker_progress_role_cost_summary() -> None:
-    from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
+    from orchestrator.role_telemetry import merge_role_telemetry_metadata
 
     events = [
         {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "x"}}},
@@ -169,12 +169,12 @@ def test_maker_progress_role_cost_summary() -> None:
 def test_maker_progress_surface_aware_slice_headlines() -> None:
     from pathlib import Path
 
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.backlog_generator import (
+    from env import find_repo_root
+    from orchestrator.backlog_generator import (
         emit_backlog_generated,
         generate_heuristic_backlog,
     )
-    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from orchestrator.pipeline import make_dev_orchestrator
 
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     orch, store = make_dev_orchestrator(repo)

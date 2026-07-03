@@ -5,7 +5,7 @@ import os
 import pytest
 
 from e2e.harness.env import DEFAULT_E2E_ENV
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 _REPO = find_repo_root()
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))

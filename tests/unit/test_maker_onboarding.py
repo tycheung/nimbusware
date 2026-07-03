@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_maker.onboarding import is_onboarded, mark_onboarded, onboarding_flag_path
-from nimbusware_maker.readiness_smoke import readiness_smoke_ok
+from maker.onboarding import is_onboarded, mark_onboarded, onboarding_flag_path
+from maker.readiness_smoke import readiness_smoke_ok
 
 
 class _FakeSession:
@@ -40,8 +40,8 @@ def test_readiness_smoke_ok_accepts_ready_and_degraded() -> None:
 
 
 def test_preview_diff_for_plan_lists_targets(tmp_path: Path) -> None:
-    from nimbusware_maker.slice_engine import preview_diff_for_plan
-    from nimbusware_orchestrator.micro_slice import SlicePlan
+    from maker.slice_engine import preview_diff_for_plan
+    from orchestrator.micro_slice import SlicePlan
 
     ws = tmp_path / "ws"
     ws.mkdir()

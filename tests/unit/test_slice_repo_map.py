@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.slice_repo_map import (
+from orchestrator.slice_repo_map import (
     build_import_graph_excerpt,
     build_repo_map_excerpt,
     build_repo_tree_excerpt,

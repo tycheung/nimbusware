@@ -67,8 +67,8 @@ SKIP_PATH_PREFIXES = (
     "configs/memory/index/",
     "configs/memory/fleet/",
     "configs/bundles/index/",
-    "packages/nimbusware_maker/ui/",
-    "packages/nimbusware_console/pages/",
+    "packages/maker/ui/",
+    "packages/console/pages/",
     ".streamlit/",
 )
 

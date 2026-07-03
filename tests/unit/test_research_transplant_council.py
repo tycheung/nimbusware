@@ -3,11 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_orchestrator.improvement_council import ImprovementTrack, run_improvement_council
-from nimbusware_research.bundle_promotion import write_stitch_catalog_candidate
-from nimbusware_research.pattern_index import append_pattern_index, pattern_index_path
-from nimbusware_research.stitch_manifests import persist_transplant_manifest
-from nimbusware_research.stitch_models import TransplantManifest
+from orchestrator.improvement_council import ImprovementTrack, run_improvement_council
+from research.bundle_promotion import write_stitch_catalog_candidate
+from research.pattern_index import append_pattern_index, pattern_index_path
+from research.stitch_manifests import persist_transplant_manifest
+from research.stitch_models import TransplantManifest
 
 
 def _healthy_repo(ws: Path) -> None:
@@ -61,8 +61,8 @@ def test_council_votes_research_transplant_for_pattern_index(tmp_path: Path) -> 
 
 
 def test_run_research_transplant_skips_without_source(tmp_path: Path) -> None:
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.slice_cycle_integration import run_research_transplant_track
+    from env import find_repo_root
+    from orchestrator.slice_cycle_integration import run_research_transplant_track
 
     ws = tmp_path / "proj"
     _healthy_repo(ws)
@@ -111,8 +111,8 @@ def test_run_research_transplant_skips_without_source(tmp_path: Path) -> None:
 
 
 def test_run_research_transplant_uses_catalog_url(tmp_path: Path) -> None:
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.slice_cycle_integration import run_research_transplant_track
+    from env import find_repo_root
+    from orchestrator.slice_cycle_integration import run_research_transplant_track
 
     ws = tmp_path / "proj"
     _healthy_repo(ws)

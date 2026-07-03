@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.scraper_artifacts import (
+from orchestrator.scraper_artifacts import (
     prune_scraper_artifacts,
     resolve_scraper_artifact_base_dir,
 )

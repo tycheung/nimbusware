@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.verifiers import run_pytest_targets
+from env import find_repo_root
+from orchestrator.verifiers import run_pytest_targets
 
 
 def test_run_pytest_targets_on_existing_test() -> None:

@@ -4,8 +4,8 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
-from nimbusware_orchestrator.put_e2e_runner import PutE2EResult, run_put_e2e_flow
+from orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
+from orchestrator.put_e2e_runner import PutE2EResult, run_put_e2e_flow
 
 
 def test_write_evidence_includes_trace_zip_when_live(tmp_path: Path) -> None:
@@ -29,7 +29,7 @@ def test_run_put_e2e_flow_attaches_live_trace_metadata(tmp_path: Path) -> None:
     trace_path.parent.mkdir(parents=True, exist_ok=True)
     trace_path.write_bytes(b"trace")
     with patch(
-        "nimbusware_orchestrator.put_e2e_browser.capture_failure_browser_trace",
+        "orchestrator.put_e2e_browser.capture_failure_browser_trace",
         return_value={
             "trace_mode": "live",
             "trace_path": str(trace_path),

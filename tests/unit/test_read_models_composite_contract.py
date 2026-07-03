@@ -8,7 +8,7 @@ import pytest
 from pydantic import ValidationError
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.read_models import (
+from orchestrator.read_models import (
     RUN_LIST_FILTER_STATUSES,
     build_run_summary,
     run_has_started,

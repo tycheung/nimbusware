@@ -7,8 +7,8 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.registry_db import load_registry_from_postgres
+from orchestrator.registry import RoleRegistry
+from orchestrator.registry_db import load_registry_from_postgres
 from unit.composite_repo_fixtures import write_tmp_yaml
 
 
@@ -186,7 +186,7 @@ def test_load_registry_from_postgres_failure_and_happy_path_parity_5_axis() -> N
     D5 -- non-empty rows -> yaml_version == 0 (asymmetric vs from_yaml file-driven).
     """
     empty_connect = _mock_psycopg_connect([])
-    with patch("nimbusware_orchestrator.registry_db.psycopg.connect", new=empty_connect):
+    with patch("orchestrator.registry_db.psycopg.connect", new=empty_connect):
         with pytest.raises(ValueError, match="nimbusware_roles_registry is empty") as exc_d1:
             load_registry_from_postgres("postgresql://fake")
     assert "schema/postgres.sql" in str(exc_d1.value), (
@@ -197,7 +197,7 @@ def test_load_registry_from_postgres_failure_and_happy_path_parity_5_axis() -> N
     uuid_b = str(uuid4())
     rows = [("  BackendWriter  ", uuid_a), ("Planner", uuid_b)]
     happy_connect = _mock_psycopg_connect(rows)
-    with patch("nimbusware_orchestrator.registry_db.psycopg.connect", new=happy_connect):
+    with patch("orchestrator.registry_db.psycopg.connect", new=happy_connect):
         reg_d = load_registry_from_postgres("postgresql://fake")
 
     assert reg_d.known_taxonomy_keys() == frozenset({"backendwriter", "planner"}), (

@@ -4,9 +4,9 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_self_refinement import (
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_self_refinement import (
     parse_self_refinement_workflow_block,
     self_refinement_production_ungated_effective,
     self_refinement_ungated_loop_effective,

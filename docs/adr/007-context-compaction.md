@@ -11,7 +11,7 @@ without summarizing older handoffs. Raw events remain authoritative in the event
 
 ## Decision
 
-- `compact_campaign_context` in `nimbusware_orchestrator.context_compaction` walks
+- `compact_campaign_context` in `orchestrator.context_compaction` walks
   handoff events backward, keeps recent summaries within `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS`
   (minus reserve), and merges older `SliceHandoffSummary` blobs deterministically.
 - Compaction emits `stage.started` with `stage_name=campaign.context.compacted` and

@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended/` (**256** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
+- Catalog: `packages/env/settings_catalog.py` + `settings_catalog_extended/` (**256** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
 
 ### Context budget (`*_MAX_CHARS`)
 
@@ -55,9 +55,9 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 **Tri-state system keys** (empty = follow workflow YAML): optional stages and universal-critique panel overrides. Prefer workflow profile YAML in `configs/workflows/` for defaults; use env only for operator overrides.
 
 **Parallelism:** `NIMBUSWARE_PARALLEL_WRITERS` (system), `NIMBUSWARE_MAX_PARALLEL_WRITERS` (user governor) — different layers; not duplicates.
-- Store: `packages/nimbusware_env/settings_store.py`
-- Resolver: `packages/nimbusware_env/settings_resolve.py`
-- Helpers: `packages/nimbusware_env/env_flags.py` (`nimbusware_database_url`, `nimbusware_repo_root_path`, `nimbusware_clone_url`, `nimbusware_workspace_path`, `nimbusware_api_key`, `nimbusware_sandbox_backend`, `nimbusware_tenant_id`, `nimbusware_bundle_memory_rank_weight`, `nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, `nimbusware_github_token`, `nimbusware_gitlab_token`, `env_var_tri_state_summary`, `env_truthy`, `env_force_on` / `env_force_off`, …)
+- Store: `packages/env/settings_store.py`
+- Resolver: `packages/env/settings_resolve.py`
+- Helpers: `packages/env/env_flags.py` (`nimbusware_database_url`, `nimbusware_repo_root_path`, `nimbusware_clone_url`, `nimbusware_workspace_path`, `api_key`, `nimbusware_sandbox_backend`, `nimbusware_tenant_id`, `nimbusware_bundle_memory_rank_weight`, `api_base_url`, `nimbusware_ollama_base_url`, `api_port`, `nimbusware_github_token`, `nimbusware_gitlab_token`, `env_var_tri_state_summary`, `env_truthy`, `env_force_on` / `env_force_off`, …)
 
 Add new tunables to the catalog first, then read via `env_flags` / `settings_resolve`.
 
@@ -98,7 +98,7 @@ Patch and micro-slice runs do not set `open_pr_on_complete` by default. Global f
 
 **Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC).
 
-Helpers: `agent_core.context_budget`, `nimbusware_orchestrator.prompt_tiers`, `nimbusware_orchestrator.context_compaction`.
+Helpers: `agent_core.context_budget`, `orchestrator.prompt_tiers`, `orchestrator.context_compaction`.
 
 ## Production workflow profile (`nimbusware_production`)
 

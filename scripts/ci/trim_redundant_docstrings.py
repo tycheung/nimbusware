@@ -8,8 +8,8 @@ _ROOT = Path(__file__).resolve().parents[2]
 _TARGETS = (_ROOT / "packages", _ROOT / "tests", _ROOT / "scripts")
 
 _SKIP_REL = {
-    "packages/nimbusware_api/schemas/openapi_problem.py",
-    "packages/nimbusware_api/schemas/openapi_route_docs.py",
+    "packages/api/schemas/openapi_problem.py",
+    "packages/api/schemas/openapi_route_docs.py",
     "scripts/ci/coverage_package_floors.py",
     "scripts/ci/mypy_ci_targets.py",
     "scripts/ops/e2e_smoke.py",

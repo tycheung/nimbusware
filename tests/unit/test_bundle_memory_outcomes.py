@@ -4,15 +4,15 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType, Verdict
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.bundle_memory import (
+from env import find_repo_root
+from extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     aggregate_bundle_success_stats,
     build_bundle_outcome_from_gate,
     bundle_outcome_metadata,
     extract_bundle_outcomes_from_event_rows,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_build_bundle_outcome_metadata() -> None:

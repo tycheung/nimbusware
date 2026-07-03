@@ -1,0 +1,77 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+from uuid import UUID
+
+from env.edition import is_enterprise
+from env.env_flags import nimbusware_tenant_id
+
+
+def enterprise_research_enabled() -> bool:
+    return is_enterprise()
+
+
+def tenant_namespace() -> str:
+    return nimbusware_tenant_id(default="default")
+
+
+def _enterprise_jsonl_path(repo_root: Path, filename: str) -> Path:
+    return repo_root / ".nimbusware" / "enterprise" / tenant_namespace() / filename
+
+
+def _read_jsonl_rows(path: Path, *, limit: int | None = None) -> list[dict[str, Any]]:
+    if not path.is_file():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+        if limit is not None and len(rows) >= limit:
+            break
+    return rows
+
+
+def append_enterprise_research_index(
+    repo_root: Path,
+    *,
+    run_id: UUID,
+    pattern_id: str,
+    domain_tag: str,
+) -> dict[str, Any] | None:
+    if not enterprise_research_enabled():
+        return None
+    ns = tenant_namespace()
+    rel = Path(".nimbusware") / "enterprise" / ns / "research_index.jsonl"
+    abs_path = _enterprise_jsonl_path(repo_root, "research_index.jsonl")
+    abs_path.parent.mkdir(parents=True, exist_ok=True)
+    row = {
+        "run_id": str(run_id),
+        "pattern_id": pattern_id,
+        "domain_tag": domain_tag,
+        "tenant_id": ns,
+    }
+    with abs_path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row) + "\n")
+    return {"enterprise_index_path": str(rel).replace("\\", "/"), "tenant_id": ns}
+
+
+def export_egress_audit_rows(repo_root: Path) -> list[dict[str, Any]]:
+    if not enterprise_research_enabled():
+        return []
+    return _read_jsonl_rows(_enterprise_jsonl_path(repo_root, "egress_audit.jsonl"))
+
+
+def list_enterprise_research_index(repo_root: Path, *, limit: int = 500) -> list[dict[str, Any]]:
+    if not enterprise_research_enabled():
+        return []
+    return _read_jsonl_rows(
+        _enterprise_jsonl_path(repo_root, "research_index.jsonl"),
+        limit=limit,
+    )

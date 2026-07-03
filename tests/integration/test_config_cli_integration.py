@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.export import export_config_to_repo
-from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.merge import load_yaml
+from config.export import export_config_to_repo
+from config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+from config.seed import seed_config_from_repo
+from env import find_repo_root
+from orchestrator.merge import load_yaml
 
 
 @pytest.mark.integration
@@ -18,7 +18,7 @@ def test_postgres_seed_export_personas_round_trip() -> None:
     if not url:
         pytest.skip("NIMBUSWARE_DATABASE_URL not set")
 
-    from nimbusware_config.store import PostgresConfigStore
+    from config.store import PostgresConfigStore
 
     repo = find_repo_root(start=Path(__file__).resolve().parents[2])
     store = PostgresConfigStore(url)

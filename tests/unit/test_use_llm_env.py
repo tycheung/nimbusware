@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
+from orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 
 _MODEL_ID = "dev:primary"
 
@@ -28,7 +28,7 @@ def _patched_execute(
 
     ``llm_raises``: when True, the patched LLM raises ``Exception("simulated
     llm failure")`` so the ``except Exception: pass`` arm at
-    [pipeline.py:696](packages\\nimbusware_orchestrator\\pipeline.py)
+    [pipeline.py:696](packages\\orchestrator\\pipeline.py)
     swallows it and the stub fallback fires (Part B's LLM-raises branch).
     """
     llm_kwargs: dict[str, Any] = (
@@ -37,10 +37,10 @@ def _patched_execute(
     with (
         patch.object(orch, "_selected_model_for_run", return_value=model_id),
         patch(
-            "nimbusware_orchestrator._pipeline.lifecycle_plan.execute_plan_stage_llm", **llm_kwargs
+            "orchestrator._pipeline.lifecycle_plan.execute_plan_stage_llm", **llm_kwargs
         ) as mock_llm,
         patch(
-            "nimbusware_orchestrator._pipeline.lifecycle_plan.emit_stub_plan_stage",
+            "orchestrator._pipeline.lifecycle_plan.emit_stub_plan_stage",
         ) as mock_stub,
     ):
         yield mock_llm, mock_stub
@@ -51,7 +51,7 @@ def test_use_llm_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #16 ``NIMBUSWARE_USE_LLM`` force-on truthy tuple membership.
 
-    The env-gate at [pipeline.py:679](packages\\nimbusware_orchestrator\\pipeline.py)
+    The env-gate at [pipeline.py:679](packages\\orchestrator\\pipeline.py)
     uses ``in ("1", "true", "yes")``. With ``_selected_model_for_run``
     returning a valid model and the LLM mock returning normally, truthy
     variants must reach the LLM-ok branch where ``execute_plan_stage_llm``

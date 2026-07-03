@@ -40,6 +40,6 @@ console.log(JSON.stringify(out));
     assert data["routes"][0]["source"] == "mention"
     assert data["solo"][0]["source"] == "solo_hat"
 
-    from nimbusware_maker.collab_disciplines import parse_discipline_mentions
+    from maker.collab_disciplines import parse_discipline_mentions
 
     assert parse_discipline_mentions("Please @fe fix the form") == data["mentions"]

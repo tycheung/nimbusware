@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from agent_core.slice_plan import SlicePlan
-from nimbusware_orchestrator.stack_diff_budget import merge_stack_diff_budget
-from nimbusware_orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
+from orchestrator.stack_diff_budget import merge_stack_diff_budget
+from orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
 
 
 def test_merge_stack_diff_budget_tightens_web_stack() -> None:

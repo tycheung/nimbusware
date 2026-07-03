@@ -5,9 +5,9 @@ from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
 
-from nimbusware_orchestrator.run_dispatch import InMemoryRunQueue, set_run_queue
-from nimbusware_orchestrator.run_worker import run_worker_loop
-from nimbusware_orchestrator.verify_fanout import (
+from orchestrator.run_dispatch import InMemoryRunQueue, set_run_queue
+from orchestrator.run_worker import run_worker_loop
+from orchestrator.verify_fanout import (
     dispatch_verify_shards,
     merge_verify_fanout,
     record_verify_shard_result,
@@ -26,7 +26,7 @@ def test_verify_fanout_dispatches_three_shards(tmp_path: Path) -> None:
     run_id = str(uuid4())
     fanout_id = dispatch_verify_shards(run_id, tmp_path)
     assert fanout_id is not None
-    from nimbusware_orchestrator.run_dispatch import get_run_queue
+    from orchestrator.run_dispatch import get_run_queue
 
     tasks = []
     while True:
@@ -51,7 +51,7 @@ def test_verify_fanout_worker_merge(tmp_path: Path) -> None:
     fanout_id = dispatch_verify_shards(run_id, tmp_path)
     assert fanout_id is not None
     with patch(
-        "nimbusware_orchestrator.verify_fanout.run_writer_verifier_shard",
+        "orchestrator.verify_fanout.run_writer_verifier_shard",
         side_effect=[(0, "pytest ok"), (0, "ruff ok"), (0, "bandit ok")],
     ):
         processed = run_worker_loop(queue, object(), max_tasks=3, idle_sleep_seconds=0.0)
@@ -65,7 +65,7 @@ def test_verify_fanout_worker_merge(tmp_path: Path) -> None:
 
 def test_verify_fanout_sync_fallback_without_dispatch(tmp_path: Path) -> None:
     with patch(
-        "nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle",
+        "orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "sync bundle"),
     ):
         code, log = run_writer_verifier_resolved(tmp_path, run_id=str(uuid4()))
@@ -85,11 +85,11 @@ def test_verify_fanout_timeout_merges_partial_shards(tmp_path: Path) -> None:
     record_verify_shard_result(fanout_id, "ruff", 0, "ruff ok")
     with (
         patch(
-            "nimbusware_orchestrator.verify_fanout.dispatch_verify_shards",
+            "orchestrator.verify_fanout.dispatch_verify_shards",
             return_value=fanout_id,
         ),
         patch(
-            "nimbusware_orchestrator.verify_fanout.wait_verify_fanout",
+            "orchestrator.verify_fanout.wait_verify_fanout",
             return_value=False,
         ),
     ):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from nimbusware_maker.github_workflow_poll import poll_github_workflow_run
+from maker.github_workflow_poll import poll_github_workflow_run
 
 
 def test_poll_github_workflow_run_passed(monkeypatch) -> None:
@@ -24,7 +24,7 @@ def test_poll_github_workflow_run_passed(monkeypatch) -> None:
 
     monkeypatch.setattr("shutil.which", lambda _cmd: "/usr/bin/gh")
     monkeypatch.setattr(
-        "nimbusware_maker.github_workflow_poll.subprocess.run",
+        "maker.github_workflow_poll.subprocess.run",
         lambda *_a, **_k: _Proc(),
     )
     result = poll_github_workflow_run(

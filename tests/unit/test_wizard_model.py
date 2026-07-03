@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.wizard_model import (
+from maker.wizard_model import (
     fit_level_caption,
     model_options_for_select,
     pick_recommended_model,

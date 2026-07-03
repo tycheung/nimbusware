@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_orchestrator.backlog_generator import effective_backlog_generator_mode
+from orchestrator.backlog_generator import effective_backlog_generator_mode
 
 
 def test_effective_backlog_heuristic_without_llm(monkeypatch: pytest.MonkeyPatch) -> None:

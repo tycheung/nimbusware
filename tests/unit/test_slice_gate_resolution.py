@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_gate import run_slice_gate_chain
+from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice_gate import run_slice_gate_chain
 
 
 def test_slice_gate_resolution_accord_passes_remediable_critique_fail() -> None:

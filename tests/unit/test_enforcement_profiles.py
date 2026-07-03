@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.enforcement_profiles import (
+from orchestrator.enforcement_profiles import (
     default_enforcement_level_for_work_type,
     enforcement_effective_metadata,
     enforcement_profile_from_rows,
@@ -38,7 +38,7 @@ def test_resolve_custom_overrides() -> None:
 def test_persist_and_read_from_rows() -> None:
     from uuid import uuid4
 
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     run_id = uuid4()

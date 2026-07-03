@@ -6,21 +6,21 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_maker.slice_workflow.approval_panel import revert_workspace
-from nimbusware_maker.workspace import project_metadata_block
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_research.stitch_manifests import (
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from maker.slice_workflow.approval_panel import revert_workspace
+from maker.workspace import project_metadata_block
+from orchestrator.pipeline import RunOrchestrator, default_paths
+from research.stitch_manifests import (
     persist_transplant_manifest,
     read_transplant_manifest,
 )
-from nimbusware_research.stitch_models import TransplantManifest
-from nimbusware_research.stitch_read_model import stitch_applied_snapshot_from_events
-from nimbusware_store.allowed_types import allowed_event_type_values
-from nimbusware_store.memory import InMemoryEventStore
+from research.stitch_models import TransplantManifest
+from research.stitch_read_model import stitch_applied_snapshot_from_events
+from store.allowed_types import allowed_event_type_values
+from store.memory import InMemoryEventStore
 
 
 def test_stitch_event_types_in_db_allowlist() -> None:
@@ -36,21 +36,21 @@ def test_stitch_event_types_in_db_allowlist() -> None:
 
 
 def test_license_check_passes_for_mit_allowlist() -> None:
-    from nimbusware_research.stitch_verifiers import license_check_passes
+    from research.stitch_verifiers import license_check_passes
 
     result = license_check_passes(("MIT",), ["MIT", "Apache-2.0"])
     assert result.passed is True
 
 
 def test_license_check_fails_for_disallowed_license() -> None:
-    from nimbusware_research.stitch_verifiers import license_check_passes
+    from research.stitch_verifiers import license_check_passes
 
     result = license_check_passes(("GPL-3.0",), ["MIT"])
     assert result.passed is False
 
 
 def test_dependency_check_fails_when_max_zero() -> None:
-    from nimbusware_research.stitch_verifiers import dependency_diff_check
+    from research.stitch_verifiers import dependency_diff_check
 
     result = dependency_diff_check(["stub-transplant-runtime"], max_new_dependencies=0)
     assert result.passed is False
@@ -73,9 +73,9 @@ def test_transplant_manifest_round_trip(tmp_path: Path) -> None:
 
 
 def test_stitch_budget_max_files_emits_failed(tmp_path: Path) -> None:
-    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-    from nimbusware_orchestrator.registry import RoleRegistry
-    from nimbusware_research.stages_stitch import emit_stitch_stages_stub
+    from extensions.extension_runtime import UniversalCritiqueRouter
+    from orchestrator.registry import RoleRegistry
+    from research.stages_stitch import emit_stitch_stages_stub
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
@@ -204,10 +204,10 @@ def test_revert_workspace_restores_pre_stitch_snapshot(
 
 
 def test_stitch_license_fail_blocks_plan(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-    from nimbusware_orchestrator.registry import RoleRegistry
-    from nimbusware_research import stages_stitch
-    from nimbusware_research.stages_stitch import emit_stitch_stages_stub
+    from extensions.extension_runtime import UniversalCritiqueRouter
+    from orchestrator.registry import RoleRegistry
+    from research import stages_stitch
+    from research.stages_stitch import emit_stitch_stages_stub
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
@@ -263,7 +263,7 @@ def test_require_refactor_pass_false_skips_post_stitch(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from nimbusware_config.keys import NS_WORKFLOWS
+    from config.keys import NS_WORKFLOWS
 
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     base, _ = default_paths(root)

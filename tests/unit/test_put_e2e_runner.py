@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from nimbusware_orchestrator.put_e2e_runner import (
+from orchestrator.put_e2e_runner import (
     list_factory_flow_ids,
     load_factory_flow,
     match_factory_flow_id,
@@ -66,7 +66,7 @@ def test_run_put_e2e_flow_passes_on_mock_client() -> None:
         status=200,
         json_body={"openapi": "3.0.0", "paths": {}},
     )
-    with patch("nimbusware_orchestrator.put_e2e_runner.httpx.Client") as client_cls:
+    with patch("orchestrator.put_e2e_runner.httpx.Client") as client_cls:
         client_cls.return_value.__enter__.return_value = client
         result = run_put_e2e_flow("http://127.0.0.1:9", "crm", repo_root=REPO)
     assert result.verdict == "PASS"
@@ -78,7 +78,7 @@ def test_run_put_e2e_flow_passes_on_mock_client() -> None:
 def test_run_put_e2e_flow_fails_on_bad_status() -> None:
     client = MagicMock()
     client.get.return_value = _mock_response(status=500)
-    with patch("nimbusware_orchestrator.put_e2e_runner.httpx.Client") as client_cls:
+    with patch("orchestrator.put_e2e_runner.httpx.Client") as client_cls:
         client_cls.return_value.__enter__.return_value = client
         result = run_put_e2e_flow("http://127.0.0.1:9", "crm", repo_root=REPO)
     assert result.verdict == "FAIL"

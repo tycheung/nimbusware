@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from nimbusware_console.run_list_pagination_display import (
+from console.run_list_pagination_display import (
     run_detail_summary_export_filename_slug,
     run_detail_summary_export_json,
     run_detail_summary_operator_metrics,

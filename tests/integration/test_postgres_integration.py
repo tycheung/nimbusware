@@ -20,7 +20,7 @@ from agent_core.models import (
     RunStartedPayload,
     Severity,
 )
-from nimbusware_store.postgres import PostgresEventStore
+from store.postgres import PostgresEventStore
 
 pytestmark = pytest.mark.integration
 
@@ -353,7 +353,7 @@ def test_nimbusware_roles_registry_seeded(store: PostgresEventStore) -> None:
 
 
 def test_load_registry_from_postgres_roundtrip(store: PostgresEventStore) -> None:
-    from nimbusware_orchestrator.registry_db import load_registry_from_postgres
+    from orchestrator.registry_db import load_registry_from_postgres
 
     reg = load_registry_from_postgres(_url())
     assert reg.resolve("backend_writer") == UUID("44444444-4444-4444-8444-444444444404")

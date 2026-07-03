@@ -15,9 +15,9 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 
 | Control | Implementation |
 |---------|----------------|
-| Run auditability | Append-only event store (`nimbusware_store`); per-run `GET /v1/runs/{id}/audit-export` |
+| Run auditability | Append-only event store (`store`); per-run `GET /v1/runs/{id}/audit-export` |
 | Enterprise export | `GET /v1/enterprise/audit-export` — IAM actions, events, policy snapshots, slice commits, learnings index |
-| Egress policy | Role-gated allowlists in `nimbusware_executor.egress` |
+| Egress policy | Role-gated allowlists in `executor.egress` |
 | Research index | Tenant JSONL under `.nimbusware/enterprise/{tenant}/` — `docs/enterprise-research-index.md` |
 
 ## Fleet and operations
@@ -54,7 +54,7 @@ For teams that cannot use SaaS coding agents or cloud LLM defaults:
 | Requirement | Nimbusware control |
 |-------------|-------------------|
 | No cloud LLM by default | Individual edition uses Ollama-only `model-routing.yaml`; hybrid cloud is **opt-in** via routing presets |
-| Egress control | `nimbusware_executor.egress` role allowlists + domain budgets |
+| Egress control | `executor.egress` role allowlists + domain budgets |
 | Agent sandbox | [deploy/agent-sandbox.md](deploy/agent-sandbox.md) — jail + tool caps on writer roles |
 | Audit trail | Per-run `GET /v1/runs/{id}/audit-export`; fleet `GET /v1/enterprise/audit-export` |
 | Self-hosted deploy | Helm chart [`charts/nimbusware`](../charts/nimbusware) — set `edition: enterprise`, wire `secrets.databaseUrl`, disable external object stores unless approved |

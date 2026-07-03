@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.scan_critique_handlers import (
+from env import find_repo_root
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.scan_critique_handlers import (
     SECURITY_CRITIQUE_STAGE,
     emit_stub_security_critique_panel,
     run_security_scan_summary,
     security_critique_timeline_summary,
     security_scan_tools_failed,
 )
-from nimbusware_orchestrator.workflow_scan_critique import (
+from orchestrator.workflow_scan_critique import (
     SecurityCritiqueBlock,
     parse_security_critique_workflow_block,
     security_critique_effective,

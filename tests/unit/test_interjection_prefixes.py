@@ -2,20 +2,20 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_orchestrator.interjection_queue import (
+from orchestrator.interjection_queue import (
     InterjectionPriority,
     parse_interjection_prefix,
     queue_for_run,
 )
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_interjection import (
+from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice_interjection import (
     apply_interjection_to_plan,
     gate_result_for_skip_slice,
     handle_patch_from_chat_interjection,
     process_interjection_cycle,
     steer_excerpt_from_cycle,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_parse_interjection_prefixes() -> None:
@@ -90,7 +90,7 @@ def test_patch_from_chat_inserts_backlog_slice() -> None:
         BacklogSlice,
         DeliveryBacklog,
     )
-    from nimbusware_orchestrator.backlog_generator import emit_backlog_generated
+    from orchestrator.backlog_generator import emit_backlog_generated
 
     run_id = uuid4()
     store = InMemoryEventStore()

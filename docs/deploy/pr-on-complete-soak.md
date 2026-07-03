@@ -36,7 +36,7 @@ Without `gh`: endpoint returns **422** with `gh_not_found` or skip reason — ex
 ## Automated coverage
 
 - Unit: `tests/unit/test_git_outputs.py` (`maybe_open_gh_pr`, branch naming)
-- API: `tests/api/test_maker_open_pr.py` (mocked `gh` success path)
+- API: `tests/api_http/test_maker_open_pr.py` (mocked `gh` success path)
 - Settings: [operator-settings.md](../operator-settings.md) (`git.open_pr_on_complete`)
 
 ## Troubleshooting

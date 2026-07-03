@@ -6,8 +6,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from nimbusware_orchestrator.fleet_ollama_sli import (
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from orchestrator.fleet_ollama_sli import (
     merge_preflight_history_aggregate,
     probe_health_latency_ms,
     read_sli_export,
@@ -75,7 +75,7 @@ def test_merge_preflight_history_aggregate() -> None:
 
 def test_fleet_ollama_sli_disabled_on_individual(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, DEFAULT_EDITION)
-    from nimbusware_orchestrator.fleet_ollama_sli import fleet_ollama_sli_enabled
+    from orchestrator.fleet_ollama_sli import fleet_ollama_sli_enabled
 
     assert not fleet_ollama_sli_enabled()
 
@@ -93,8 +93,8 @@ def test_enterprise_fleet_ollama_sli_api(
     )
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
-    from nimbusware_iam.constants import API_KEY_HEADER
+    from api.app import app
+    from iam.constants import API_KEY_HEADER
 
     with TestClient(app) as client:
         boot = client.post(
@@ -128,7 +128,7 @@ def test_cli_stdout_only(
             return None
 
     monkeypatch.setattr(httpx, "get", lambda *_a, **_k: _Resp())
-    from nimbusware_orchestrator.fleet_ollama_sli_cli import main
+    from orchestrator.fleet_ollama_sli_cli import main
 
     code = main(["--stdout-only", "--base-url", "http://example"])
     assert code == 0

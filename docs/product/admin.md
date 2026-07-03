@@ -2,11 +2,11 @@
 
 **Admin/dev only** — not part of the default product path.
 
-Web app: `GET /v1/admin/app/` ([`packages/nimbusware_admin_ui`](../../packages/nimbusware_admin_ui/)). Sign in with `NIMBUSWARE_ADMIN_TOKEN` (stored in `sessionStorage`).
+Web app: `GET /v1/admin/app/` ([`packages/admin_ui`](../../packages/admin_ui/)). Sign in with `NIMBUSWARE_ADMIN_TOKEN` (stored in `sessionStorage`).
 
 Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or launcher **Admin Console** button.
 
-After UI changes: `cd packages/nimbusware_admin_ui && npm ci && npm run build`
+After UI changes: `cd packages/admin_ui && npm ci && npm run build`
 
 ## Runs & timeline
 

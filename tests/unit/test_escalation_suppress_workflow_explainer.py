@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from nimbusware_console.workflow_explainers.escalation_suppress import (
+from console.workflow_explainers.escalation_suppress import (
     escalation_policy_export_filename_slug,
     escalation_policy_yaml_age_caption,
     escalation_policy_yaml_file_bytes_caption,
@@ -21,7 +21,7 @@ from nimbusware_console.workflow_explainers.escalation_suppress import (
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
     escalation_suppress_workflow_explainer_payload,
 )
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 from unit.composite_repo_fixtures import write_workflow_profile
 from unit.workflow_explainer_case_runner import (
     assert_payload_expectations,

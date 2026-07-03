@@ -3,16 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.loc_accord_stage import (
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.loc_accord_stage import (
     REFACTOR_LOC_ACCORD_STAGE,
     emit_refactor_loc_accord_stage,
     evaluate_loc_accord,
 )
-from nimbusware_orchestrator.refactor_stage import emit_refactor_stage_and_critique
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.workflow_refactor import RefactorWorkflowBlock
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.refactor_stage import emit_refactor_stage_and_critique
+from orchestrator.registry import RoleRegistry
+from orchestrator.workflow_refactor import RefactorWorkflowBlock
+from store.memory import InMemoryEventStore
 
 _REPO = Path(__file__).resolve().parents[2]
 

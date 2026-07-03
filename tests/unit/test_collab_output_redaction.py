@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.collab_output_redaction import redact_collab_output
+from orchestrator.collab_output_redaction import redact_collab_output
 
 
 def test_redact_collab_output_strips_api_key() -> None:

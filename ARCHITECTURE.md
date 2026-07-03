@@ -4,7 +4,7 @@
 
 | Name | Meaning |
 |------|---------|
-| **Nimbusware** | This repository and product: local-first adversarial agent platform (API, Maker, Admin Console, orchestrator, event store, config, IAM). Use `NIMBUSWARE_*` env vars and `nimbusware_*` packages. |
+| **Nimbusware** | This repository and product: local-first adversarial agent platform (API, Maker, Admin Console, orchestrator, event store, config, IAM). Use `NIMBUSWARE_*` env vars; Python packages are short names (`api`, `orchestrator`, `env`, …) under `packages/`. |
 
 One-page map of packages, data flow, and auth. Normative Nimbusware agent contract: gitignored `nimbusware-orchestrator-local-plan.md` (repo root, §1–§20.32). Maturity backlog: gitignored `PLAN_GAP.md`. ADR index: [docs/architecture.md](docs/architecture.md).
 
@@ -13,21 +13,21 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  UI (web + pywebview desktop)                                │
-│  nimbusware_maker_web (/v1/maker/app)  nimbusware_admin_ui   │
-│  nimbusware_console (services + display modules for Admin BFF) │
+│  maker_web (/v1/maker/app)  admin_ui   │
+│  console (services + display modules for Admin BFF) │
 └────────────────────────────┬────────────────────────────────┘
                              │ HTTP /v1
 ┌────────────────────────────▼────────────────────────────────┐
-│  nimbusware_api (FastAPI)                                    │
+│  api (FastAPI)                                    │
 │  UserDep / AdminDep · OpenAPI user/admin tags                │
 └─────┬──────────────────┬──────────────────┬─────────────────┘
       │                  │                  │
       ▼                  ▼                  ▼
- nimbusware_orchestrator  nimbusware_projections  nimbusware_iam
+ orchestrator  projections  iam
  (RunOrchestrator)    (timeline read models)   (Enterprise keys)
       │
       ▼
- nimbusware_store (append-only events)  +  nimbusware_config (YAML→Postgres)
+ store (append-only events)  +  config (YAML→Postgres)
       │
       ▼
  PostgreSQL (or InMemoryEventStore without NIMBUSWARE_DATABASE_URL)
@@ -38,27 +38,27 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | Package | Role |
 |---------|------|
 | `agent_core` | Event models (`events_payloads_*` modules), `context_budget`, slice handoff models, `stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/campaign`, `read/critic_matrix` |
-| `nimbusware_store` | Event store (Postgres / memory) |
-| `nimbusware_orchestrator` | Pipeline (`_pipeline/` mixins), critics (`critique/` barrel + `scan_critique_kinds`), gates, fleet tenant policies (`fleet_policies.py` + `fleet_policy_loader.py`), **micro-slice-only verify** (`execute_writer_verifier_pass` → slice loop; optional integrator/IAW/evaluator/self-refinement tail when all slices pass), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export, **`hybrid_routing`** (optional stage-level cloud fallback presets; Individual default Ollama-only), **mesh host sync** (`mesh_event_replay`, `mesh_workspace_merge`) |
-| `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
-| `nimbusware_extensions` | Personas, bundles, escalation helpers |
-| `nimbusware_executor` | Role-gated outbound HTTP |
-| `nimbusware_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
-| `nimbusware_agent_tools` | JIT `agent_loop`, dual `ToolResult` output, tool allowlist, stable prompt file; jail + sandbox + risk caps |
-| `nimbusware_config` | Versioned config documents + materializer; canonical **`configs/model-routing.yaml`** (policy, providers, bindings, presets) |
-| `nimbusware_projections` | Events → timeline, maker-progress, theater (`run_theater` + **`fields/theater_metadata`**), context budget, `factory_status`, agent-tool prune (+ export, research briefs); gate-family builders share `builders/timeline_history.py` |
-| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings, operator ribbons) at `/v1/maker/app` |
-| `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
-| `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; classify, patch / patch-from-selection, interject, chat graph/fork; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
-| `nimbusware_api` | REST control plane; run-list cursor encoding in `run_list_cursor.py` |
-| `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
-| `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
-| `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
-| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `repo_yaml`, `operator_metrics_exports.install_operator_metrics_module`, `workflow_exports.run_id_export_filename_slug`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `nimbusware_projections/fields/` where possible; BFF via `admin_ui_bff.py` |
-| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **~256-key** settings catalog + `settings_facade` / `settings_resolve` / `env_flags`, admin token guards |
-| `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
-| `nimbusware_auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
-| `nimbusware_compute` | Compute mesh node registry, work-unit queue, worker policy (`nimbusware-compute-worker` CLI) |
+| `store` | Event store (Postgres / memory) |
+| `orchestrator` | Pipeline (`_pipeline/` mixins), critics (`critique/` barrel + `scan_critique_kinds`), gates, fleet tenant policies (`fleet_policies.py` + `fleet_policy_loader.py`), **micro-slice-only verify** (`execute_writer_verifier_pass` → slice loop; optional integrator/IAW/evaluator/self-refinement tail when all slices pass), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export, **`hybrid_routing`** (optional stage-level cloud fallback presets; Individual default Ollama-only), **mesh host sync** (`mesh_event_replay`, `mesh_workspace_merge`) |
+| `memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
+| `extensions` | Personas, bundles, escalation helpers |
+| `executor` | Role-gated outbound HTTP |
+| `research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
+| `agent_tools` | JIT `agent_loop`, dual `ToolResult` output, tool allowlist, stable prompt file; jail + sandbox + risk caps |
+| `config` | Versioned config documents + materializer; canonical **`configs/model-routing.yaml`** (policy, providers, bindings, presets) |
+| `projections` | Events → timeline, maker-progress, theater (`run_theater` + **`fields/theater_metadata`**), context budget, `factory_status`, agent-tool prune (+ export, research briefs); gate-family builders share `builders/timeline_history.py` |
+| `maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings, operator ribbons) at `/v1/maker/app` |
+| `admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
+| `mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; classify, patch / patch-from-selection, interject, chat graph/fork; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
+| `api` | REST control plane; run-list cursor encoding in `run_list_cursor.py` |
+| `client` | Shared HTTP client for Maker + Admin UIs |
+| `iam` | Enterprise tenants, API keys, IAM action log for audit export |
+| `maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
+| `console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `repo_yaml`, `operator_metrics_exports.install_operator_metrics_module`, `workflow_exports.run_id_export_filename_slug`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `projections/fields/` where possible; BFF via `admin_ui_bff.py` |
+| `env` | Edition gate, OIDC config, desktop launchers, dotenv, **~256-key** settings catalog + `settings_facade` / `settings_resolve` / `env_flags`, admin token guards |
+| `hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
+| `auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
+| `compute` | Compute mesh node registry, work-unit queue, worker policy (`nimbusware-compute-worker` CLI) |
 
 ## v1.2 extensions (Jun 2026)
 
@@ -76,10 +76,10 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 ## Data flow
 
-1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `nimbusware_store`.
+1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `store`.
 2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress from the event log.
-3. **Read** — Shared row parsers and read-model helpers live in `agent_core.read` (`campaign`, `critic_matrix`) and `agent_core.stage_graph`. HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
-4. **Maker loop** — Pending slices, research approve/reject, stitch summary, and launch readiness scorecards are read models over the same event log (`nimbusware_maker` + maker web tabs). **Chat sessions** (`nimbusware_chat_session` / `nimbusware_chat_turn`, or in-memory `ChatStore`) persist operator turns and DAG branches; runs started from Chat append to the event store as usual.
+3. **Read** — Shared row parsers and read-model helpers live in `agent_core.read` (`campaign`, `critic_matrix`) and `agent_core.stage_graph`. HTTP handlers use `projections` / `read_models/`; Admin BFF routes call `console` display formatters.
+4. **Maker loop** — Pending slices, research approve/reject, stitch summary, and launch readiness scorecards are read models over the same event log (`maker` + maker web tabs). **Chat sessions** (`nimbusware_chat_session` / `nimbusware_chat_turn`, or in-memory `ChatStore`) persist operator turns and DAG branches; runs started from Chat append to the event store as usual.
 
 ## Config authority
 
@@ -95,10 +95,10 @@ When `NIMBUSWARE_CONFIG_FROM_DB=1`, hot paths (orchestrator `_base_cfg`, integra
 
 ## Import rules (enforced)
 
-- `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
-- `nimbusware_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
-- `nimbusware_projections` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
-- Legacy `packages/nimbusware_{api,console,config,env}/` shims removed (Lane R-B).
+- `extensions` must not import `orchestrator` at module level (`tests/unit/test_import_graph.py`).
+- `orchestrator` must not import `api` (Lane R-C — use `projections`).
+- `projections` must not import `orchestrator` at module level (`tests/unit/test_import_graph.py`).
+- Legacy package-name shims (`nimbusware_*` → short names) removed; import `api`, `orchestrator`, `env`, etc. directly.
 
 ## Architecture decision records
 
@@ -117,21 +117,21 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/ci/coverage_package_floors.py`. Web static assets (`nimbusware_maker_web`, `nimbusware_admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
+**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `store`, `executor`, `config`, `projections` via `scripts/ci/coverage_package_floors.py`. Web static assets (`maker_web`, `admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
 
 **Typing:** Global mypy `strict = true`. CI checks paths from `scripts/ci/mypy_ci_targets.py`:
 
 | Tranche | Packages / paths |
 |---------|------------------|
-| B | `nimbusware_projections`, `nimbusware_client`, `nimbusware_agent_tools` |
-| C | `agent_core`, `nimbusware_store`, `nimbusware_config`, `nimbusware_executor`, `nimbusware_extensions`, `nimbusware_memory`, `nimbusware_iam`, `nimbusware_env` |
-| D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
+| B | `projections`, `client`, `agent_tools` |
+| C | `agent_core`, `store`, `config`, `executor`, `extensions`, `memory`, `iam`, `env` |
+| D | `api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
 | E | Orchestrator islands: orchestrator root modules plus full `_pipeline/*` (including `dev_factory`, `compose`, `protocol_hosts`, `pipeline_scraper`); probation/fast-slice workflow metadata on `run.created` (see `scripts/ci/mypy_ci_targets.py` `_TRANCHE_E`) |
 | F | Orchestrator root (`autopilot_profiles`, `micro_slice_*`, `workflow_universal_critique`); API `routes/bundles*`, `routes/chat*` (see `_TRANCHE_F`; console covered by UI tranche) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
-| UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
+| UI | Full `console` and `maker` under narrowed ignore list; `services/*` strict |
 
-All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `nimbusware_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
 **Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Mid-run governor sampling may append rate-limited `resource.pressure.warn` events (projections: pressure headline + pressure-history timeline). Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
 
@@ -143,7 +143,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **Pipeline typing:** All `_pipeline` mixin modules import `_helpers` symbols without `attr-defined` ignores; `_helpers.py` re-exports from `_helpers_std.py`, `_helpers_bundle_*`, and `_helpers_runtime.py` with an explicit `__all__`.
 
-**PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
+**PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `store`, `orchestrator`, `config`, `projections`, `executor`, `iam`, `env`, plus UI/API packages).
 
 **CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present; Admin `openapi.json` / `schema.d.ts` are **generated** at build via `npm run codegen:openapi` and gitignored), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (**~4256** collected / **~3355+** in the default unit job, ≥75% line coverage; packages LOC baseline **102,713** max via `scripts/ci/loc_baseline.json`; module size guards cover orchestrator, API, memory, projections, auth, MCP (≤450 lines) and console (≤400); see `tests/README.md`). Enterprise fleet tenant policies live in `fleet_policies.py` with YAML I/O via `fleet_policy_loader.py` and enforcement in `fleet_policy_guards.py`. Workflow block parsers for micro-slice, theater, dev-env, fast-slice, escalation, and integration-adapter-writer live in `workflow_blocks_simple.py`. `load_create_run_workflow_blocks` uses `workflow_registry.parse_workflow_block`; campaign requirement helpers live in `runs/create.py`; deploy models and policy helpers colocate in `platform_deploy.py`; collab discipline/settings routes inline in `platform.py`; intent classifier keyword tables in `intent_classifier_rules.py`; chat scope discovery, session-start, and compute routes colocate in `chat_session.py`; host-transfer and chat library ACL/folder routes colocate in `chat_collab.py`; chat participants + invite/join routes colocate in `chat_participants.py`; seven workflow explainers use YAML metric specs under `configs/explainers/` with caption parts resolved from `explainer_caption_parts` by slug. Optional workflow profiles should `extends: default` instead of copying the full default header block. Enterprise model policy is the `model_policy` section of `configs/model-routing.yaml` (standalone `configs/model_policy.yaml` is optional override on save).
 

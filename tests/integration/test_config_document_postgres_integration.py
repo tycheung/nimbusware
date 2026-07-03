@@ -5,7 +5,7 @@ import uuid
 
 import pytest
 
-from nimbusware_config.store import PostgresConfigStore
+from config.store import PostgresConfigStore
 
 pytestmark = pytest.mark.integration
 

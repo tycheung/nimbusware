@@ -12,7 +12,7 @@ results must not pollute the stable block.
 
 ## Decision
 
-Use three tiers via `nimbusware_orchestrator.prompt_tiers`:
+Use three tiers via `orchestrator.prompt_tiers`:
 
 | Tier | Contents | Example call sites |
 |------|----------|-------------------|

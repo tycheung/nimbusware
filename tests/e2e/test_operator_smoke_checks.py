@@ -5,7 +5,7 @@ import os
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
+from api.app import app
 
 pytestmark = pytest.mark.e2e
 
@@ -29,5 +29,5 @@ def test_api_create_run_timeline(client: TestClient) -> None:
 def test_console_package_importable() -> None:
     import importlib
 
-    mod = importlib.import_module("nimbusware_console")
+    mod = importlib.import_module("console")
     assert getattr(mod, "WEB_ENTRY", "").endswith("/v1/admin/app/")

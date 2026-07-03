@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.collab_mesh_bindings import (
+from orchestrator.collab_mesh_bindings import (
     executor_binding_hint,
     participant_overrides_from_hint,
 )

@@ -5,8 +5,8 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.role_execute import dispatch_role_execute, resolve_taxonomy_key
+from orchestrator.registry import RoleRegistry
+from orchestrator.role_execute import dispatch_role_execute, resolve_taxonomy_key
 
 
 class _FakeOrch:

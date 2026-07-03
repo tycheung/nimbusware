@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from nimbusware_api.routes.runs import _parse_query_datetime
+from api.routes.runs import _parse_query_datetime
 
 _EXPECTED_ERROR_SUFFIX = " must be a valid ISO-8601 datetime"
 

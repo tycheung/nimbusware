@@ -11,16 +11,16 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from nimbusware_orchestrator.llm_plan import (
+from orchestrator.llm_plan import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 if TYPE_CHECKING:
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
 
 def _make_eff(**overrides: bool) -> EffectiveUniversalCritique:

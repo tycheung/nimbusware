@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_config import config_notify_enabled
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.notify import (
+from config import config_notify_enabled
+from config.materializer import ConfigMaterializer
+from config.notify import (
     NOTIFY_EVENT_TYPE,
     encode_notify_payload,
     get_config_notify_hub,
     parse_notify_payload,
 )
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from config.store import InMemoryConfigStore
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 
 
 def test_parse_notify_payload_roundtrip() -> None:
@@ -83,8 +83,8 @@ def test_enterprise_config_notify_status_api(
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
-    from nimbusware_iam.constants import API_KEY_HEADER
+    from api.app import app
+    from iam.constants import API_KEY_HEADER
 
     with TestClient(app) as client:
         boot = client.post(

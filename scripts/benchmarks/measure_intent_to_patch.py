@@ -25,7 +25,7 @@ os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))
 
 
 def _bind_inmemory_chat(client) -> None:
-    from nimbusware_maker.chat_store import InMemoryChatStore
+    from maker.chat_store import InMemoryChatStore
 
     client.app.state.chat_store = InMemoryChatStore()
 
@@ -34,11 +34,11 @@ def _prepare_workspace(tmp: Path) -> Path:
     from e2e.harness.workspace import copy_fixture_repo
 
     ws = copy_fixture_repo("tiny_python_app", tmp / "ws")
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text(
+    (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text(
         "# stub\n", encoding="utf-8"
     )
-    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
     return ws
 
 
@@ -58,7 +58,7 @@ def _run_once_direct(tmp: Path) -> float | None:
     from fastapi.testclient import TestClient
 
     from e2e.harness.journey import JourneyClient
-    from nimbusware_api.app import app
+    from api.app import app
 
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()
@@ -90,7 +90,7 @@ def _run_once_via_chat(tmp: Path) -> float | None:
     from fastapi.testclient import TestClient
 
     from e2e.harness.journey import JourneyClient
-    from nimbusware_api.app import app
+    from api.app import app
 
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()

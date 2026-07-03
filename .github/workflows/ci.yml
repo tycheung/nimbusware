@@ -109,12 +109,12 @@ jobs:
           NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL: "1"
       - name: Vitest maker_web
         run: |
-          cd packages/nimbusware_maker_web
+          cd packages/maker_web
           npm ci
           npm test
       - name: Vitest admin_ui
         run: |
-          cd packages/nimbusware_admin_ui
+          cd packages/admin_ui
           npm ci
           npm run build
           npm test

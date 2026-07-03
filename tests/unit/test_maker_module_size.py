@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_MAKER_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
+_MAKER_ROOT = Path(__file__).resolve().parents[2] / "packages" / "maker"
 
 _ALLOWLIST_OVER_400: frozenset[str] = frozenset({"intent_classifier.py"})
 

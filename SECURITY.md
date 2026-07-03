@@ -9,7 +9,7 @@ If you discover a security issue, report it privately to the repository maintain
 | Asset | Policy |
 |-------|--------|
 | `.env` | Gitignored. Copy from [`.env.example`](.env.example); never commit real credentials. |
-| `NIMBUSWARE_ADMIN_TOKEN` | Dev default is `nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD`. Rotate before binding the API to non-loopback hosts. `nimbusware-api` refuses the dev default on public interfaces ([`packages/nimbusware_env/admin_token.py`](packages/nimbusware_env/admin_token.py)). |
+| `NIMBUSWARE_ADMIN_TOKEN` | Dev default is `nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD`. Rotate before binding the API to non-loopback hosts. `nimbusware-api` refuses the dev default on public interfaces ([`packages/env/admin_token.py`](packages/env/admin_token.py)). |
 | Enterprise API keys | Stored as SHA-256 hashes; plaintext shown once at creation. Use a secret manager in production. |
 | Postgres DSN | Set via `NIMBUSWARE_DATABASE_URL`; use TLS and least-privilege roles in production. |
 
@@ -20,7 +20,7 @@ If you discover a security issue, report it privately to the repository maintain
 
 ## Network egress
 
-Slice implement agents and scraper stages use role-gated egress allowlists in [`packages/nimbusware_executor/egress.py`](packages/nimbusware_executor/egress.py). Outbound HTTP is denied unless the actor role and target host match configured allowlists.
+Slice implement agents and scraper stages use role-gated egress allowlists in [`packages/executor/egress.py`](packages/executor/egress.py). Outbound HTTP is denied unless the actor role and target host match configured allowlists.
 
 ## Dependency and static analysis
 

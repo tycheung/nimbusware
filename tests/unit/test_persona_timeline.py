@@ -4,20 +4,20 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_api.deps import get_orchestrator, get_store
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_console.persona_assignment_display import (
+from api.app import app
+from api.deps import get_orchestrator, get_store
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from console.persona_assignment_display import (
     persona_assignment_caption,
     persona_assignment_from_timeline,
     persona_assignment_summary_rows,
 )
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_orchestrator.read_models import persona_assignment_from_run_created_metadata
-from nimbusware_store.memory import InMemoryEventStore
+from env import find_repo_root
+from orchestrator.pipeline import RunOrchestrator, default_paths
+from orchestrator.read_models import persona_assignment_from_run_created_metadata
+from store.memory import InMemoryEventStore
 
 
 def test_persona_assignment_from_run_created_metadata_normalizes_ids() -> None:

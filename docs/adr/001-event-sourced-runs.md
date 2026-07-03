@@ -10,7 +10,7 @@ Run lifecycle state must be auditable, replayable, and consistent across API, wo
 
 ## Decision
 
-Persist all run state as an append-only event log in `nimbusware_store`. HTTP handlers and `RunOrchestrator` append typed events from `agent_core.models`; read paths project timelines via `nimbusware_projections` and `nimbusware_api.read_models`.
+Persist all run state as an append-only event log in `store`. HTTP handlers and `RunOrchestrator` append typed events from `agent_core.models`; read paths project timelines via `projections` and `api.read_models`.
 
 ## Consequences
 

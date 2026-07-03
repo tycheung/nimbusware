@@ -6,14 +6,14 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from nimbusware_orchestrator.fleet_worker import (
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from orchestrator.fleet_worker import (
     collect_fleet_worker_metrics,
     evaluate_backpressure,
     fleet_redis_worker_enabled,
     read_worker_heartbeat,
 )
-from nimbusware_orchestrator.run_dispatch import InMemoryRunQueue, RedisRunQueue, RunDispatchTask
+from orchestrator.run_dispatch import InMemoryRunQueue, RedisRunQueue, RunDispatchTask
 
 
 class _FakeRedis:
@@ -109,9 +109,9 @@ def test_enterprise_fleet_worker_health_api(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
-    from nimbusware_iam.constants import API_KEY_HEADER
-    from nimbusware_orchestrator.run_dispatch import set_run_queue
+    from api.app import app
+    from iam.constants import API_KEY_HEADER
+    from orchestrator.run_dispatch import set_run_queue
 
     set_run_queue(RedisRunQueue("redis://example", client=_FakeRedis()))
     with TestClient(app) as client:
@@ -136,7 +136,7 @@ def test_worker_heartbeat_includes_fleet_metrics(
     monkeypatch.setenv("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0")
     from datetime import datetime, timezone
 
-    from nimbusware_orchestrator.run_worker import _write_worker_heartbeat
+    from orchestrator.run_worker import _write_worker_heartbeat
 
     fake = _FakeRedis()
     q = RedisRunQueue("redis://example", client=fake)

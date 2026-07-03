@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agent_core.models import EventType
-from nimbusware_maker.approval import STAGE_SLICE_APPLIED, last_git_commit_from_rows
+from maker.approval import STAGE_SLICE_APPLIED, last_git_commit_from_rows
 
 
 def _stage_passed(stage_name: str, metadata: dict, store_seq: int) -> dict:

@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     cmd = [
         sys.executable,
         "-m",
-        "nimbusware_orchestrator.run_worker",
+        "orchestrator.run_worker",
         "--max-idle-loops",
         str(ns.max_idle_loops),
         "--idle-sleep-seconds",

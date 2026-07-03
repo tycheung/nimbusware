@@ -445,13 +445,13 @@ def _load_nimbusware_dotenv(repo_root: Path | None) -> Path | None:
     packages = repo_root / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from nimbusware_env import load_dotenv  # noqa: PLC0415
+    from env import load_dotenv  # noqa: PLC0415
 
     return load_dotenv(repo_root=repo_root)
 
 
 def _save_postgres_password_to_env(repo_root: Path, password: str, *, log) -> None:
-    from nimbusware_env import set_env_var  # noqa: PLC0415
+    from env import set_env_var  # noqa: PLC0415
 
     path = set_env_var(ENV_POSTGRES_PASSWORD, password, repo_root=repo_root)
     log(f"Saved {ENV_POSTGRES_PASSWORD} to {path}")

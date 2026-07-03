@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_research.bundle_promotion import (
+from research.bundle_promotion import (
     load_catalog_candidate,
     write_stitch_catalog_candidate,
 )

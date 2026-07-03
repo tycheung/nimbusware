@@ -11,26 +11,26 @@ license = "GPL-3.0-only"
 package-mode = true
 packages = [
   { include = "agent_core", from = "packages" },
-  { include = "nimbusware_store", from = "packages" },
-  { include = "nimbusware_orchestrator", from = "packages" },
-  { include = "nimbusware_api", from = "packages" },
-  { include = "nimbusware_executor", from = "packages" },
-  { include = "nimbusware_console", from = "packages" },
-  { include = "nimbusware_extensions", from = "packages" },
-  { include = "nimbusware_config", from = "packages" },
-  { include = "nimbusware_env", from = "packages" },
-  { include = "nimbusware_iam", from = "packages" },
-  { include = "nimbusware_auth", from = "packages" },
-  { include = "nimbusware_memory", from = "packages" },
-  { include = "nimbusware_research", from = "packages" },
-  { include = "nimbusware_projections", from = "packages" },
-  { include = "nimbusware_maker", from = "packages" },
-  { include = "nimbusware_maker_web", from = "packages" },
-  { include = "nimbusware_mcp", from = "packages" },
-  { include = "nimbusware_client", from = "packages" },
-  { include = "nimbusware_agent_tools", from = "packages" },
-  { include = "nimbusware_hw", from = "packages" },
-  { include = "nimbusware_compute", from = "packages" },
+  { include = "store", from = "packages" },
+  { include = "orchestrator", from = "packages" },
+  { include = "api", from = "packages" },
+  { include = "executor", from = "packages" },
+  { include = "console", from = "packages" },
+  { include = "extensions", from = "packages" },
+  { include = "config", from = "packages" },
+  { include = "env", from = "packages" },
+  { include = "iam", from = "packages" },
+  { include = "auth", from = "packages" },
+  { include = "memory", from = "packages" },
+  { include = "research", from = "packages" },
+  { include = "projections", from = "packages" },
+  { include = "maker", from = "packages" },
+  { include = "maker_web", from = "packages" },
+  { include = "mcp", from = "packages" },
+  { include = "client", from = "packages" },
+  { include = "agent_tools", from = "packages" },
+  { include = "hw", from = "packages" },
+  { include = "compute", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -79,24 +79,24 @@ optional = true
 e2b = ">=1.0,<3"
 
 [tool.poetry.scripts]
-nimbusware-api = "nimbusware_api.cli:main"
-nimbusware-preflight = "nimbusware_orchestrator.preflight_cli:main"
-nimbusware-config = "nimbusware_config.cli:main"
-nimbusware-run-worker = "nimbusware_orchestrator.run_worker:main"
-nimbusware-memory-index = "nimbusware_memory.cli:main"
-nimbusware-memory-sync = "nimbusware_memory.sync_cli:main"
-nimbusware-memory-replay = "nimbusware_orchestrator.replay_cli:main"
-nimbusware-role-telemetry = "nimbusware_orchestrator.telemetry_cli:main"
-nimbusware-routing-suggest = "nimbusware_orchestrator.routing_suggestions_cli:main"
-nimbusware-fleet-ollama-sli = "nimbusware_orchestrator.fleet_ollama_sli_cli:main"
-nimbusware-run = "nimbusware_env.run_app:main"
-nimbusware-admin = "nimbusware_env.admin_app:main"
-nimbusware-maker = "nimbusware_maker.cli:main"
-nimbusware-mcp = "nimbusware_mcp.cli:main"
-nimbusware-git-pr = "nimbusware_env.git_pr_cli:main"
-nimbusware-launcher = "nimbusware_env.launcher_app:main"
-nimbusware-compute-worker = "nimbusware_compute.worker_cli:main"
-nimbusware-mesh-worker-minimal = "nimbusware_compute.minimal_worker_cli:main"
+nimbusware-api = "api.cli:main"
+nimbusware-preflight = "orchestrator.preflight_cli:main"
+nimbusware-config = "config.cli:main"
+nimbusware-run-worker = "orchestrator.run_worker:main"
+nimbusware-memory-index = "memory.cli:main"
+nimbusware-memory-sync = "memory.sync_cli:main"
+nimbusware-memory-replay = "orchestrator.replay_cli:main"
+nimbusware-role-telemetry = "orchestrator.telemetry_cli:main"
+nimbusware-routing-suggest = "orchestrator.routing_suggestions_cli:main"
+nimbusware-fleet-ollama-sli = "orchestrator.fleet_ollama_sli_cli:main"
+nimbusware-run = "env.run_app:main"
+nimbusware-admin = "env.admin_app:main"
+nimbusware-maker = "maker.cli:main"
+nimbusware-mcp = "mcp.cli:main"
+nimbusware-git-pr = "env.git_pr_cli:main"
+nimbusware-launcher = "env.launcher_app:main"
+nimbusware-compute-worker = "compute.worker_cli:main"
+nimbusware-mesh-worker-minimal = "compute.minimal_worker_cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -125,39 +125,39 @@ ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "packages/**/__init__.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/**/*_display.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/*_display.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/*_explainer.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/bundle_catalog.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/integrator_workflow_preview.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/bundle_catalog/__init__.py" = ["F811"]
-"packages/nimbusware_console/bundle_catalog/catalog_local/__init__.py" = ["F811"]
-"packages/nimbusware_console/bundle_catalog/faiss_status/__init__.py" = ["F811"]
-"packages/nimbusware_console/pages/_state.py" = ["F403", "F405"]
-"packages/nimbusware_orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
-"packages/nimbusware_orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405", "F822"]
-"packages/nimbusware_orchestrator/llm/**" = ["F401", "F403", "F405"]
-"packages/nimbusware_api/app.py" = ["E402"]
-"packages/nimbusware_console/custom_agents_ui.py" = ["E402"]
-"packages/nimbusware_console/agent_evaluator_display/metrics.py" = ["E402"]
-"packages/nimbusware_console/prune_status_display/*.py" = ["E402"]
-"packages/nimbusware_api/routes/preflight.py" = ["E402"]
-"packages/nimbusware_maker/app.py" = ["E402"]
-"packages/nimbusware_orchestrator/merge.py" = ["F401"]
-"packages/nimbusware_orchestrator/run_worker.py" = ["F401"]
-"packages/nimbusware_client/http.py" = ["F401"]
-"packages/nimbusware_memory/store.py" = ["F401"]
+"packages/console/**/*_display.py" = ["F401", "F403", "F405"]
+"packages/console/*_display.py" = ["F401", "F403", "F405"]
+"packages/console/*_explainer.py" = ["F401", "F403", "F405"]
+"packages/console/bundle_catalog.py" = ["F401", "F403", "F405"]
+"packages/console/integrator_workflow_preview.py" = ["F401", "F403", "F405"]
+"packages/console/bundle_catalog/__init__.py" = ["F811"]
+"packages/console/bundle_catalog/catalog_local/__init__.py" = ["F811"]
+"packages/console/bundle_catalog/faiss_status/__init__.py" = ["F811"]
+"packages/console/pages/_state.py" = ["F403", "F405"]
+"packages/orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
+"packages/orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405", "F822"]
+"packages/orchestrator/llm/**" = ["F401", "F403", "F405"]
+"packages/api/app.py" = ["E402"]
+"packages/console/custom_agents_ui.py" = ["E402"]
+"packages/console/agent_evaluator_display/metrics.py" = ["E402"]
+"packages/console/prune_status_display/*.py" = ["E402"]
+"packages/api/routes/preflight.py" = ["E402"]
+"packages/maker/app.py" = ["E402"]
+"packages/orchestrator/merge.py" = ["F401"]
+"packages/orchestrator/run_worker.py" = ["F401"]
+"packages/client/http.py" = ["F401"]
+"packages/memory/store.py" = ["F401"]
 "packages/agent_core/models/events.py" = ["F403", "F405"]
-"packages/nimbusware_api/schemas/openapi.py" = ["F401"]
-"packages/nimbusware_orchestrator/scraper_artifacts.py" = ["F401"]
-"packages/nimbusware_orchestrator/scraper_artifacts_inventory.py" = ["F401"]
-"packages/nimbusware_orchestrator/scraper_artifacts_prune.py" = ["F401"]
-"packages/nimbusware_orchestrator/scraper_artifacts_retention.py" = ["F401"]
-"packages/nimbusware_console/bundle_catalog/catalog_local/search.py" = ["F401"]
-"packages/nimbusware_console/bundle_catalog/faiss_status/drilldown.py" = ["F401"]
-"packages/nimbusware_console/integrator_gate/latest_delta.py" = ["F401"]
-"packages/nimbusware_console/integrator_preview/merge.py" = ["F401"]
-"packages/nimbusware_maker/main.py" = ["E402"]
+"packages/api/schemas/openapi.py" = ["F401"]
+"packages/orchestrator/scraper_artifacts.py" = ["F401"]
+"packages/orchestrator/scraper_artifacts_inventory.py" = ["F401"]
+"packages/orchestrator/scraper_artifacts_prune.py" = ["F401"]
+"packages/orchestrator/scraper_artifacts_retention.py" = ["F401"]
+"packages/console/bundle_catalog/catalog_local/search.py" = ["F401"]
+"packages/console/bundle_catalog/faiss_status/drilldown.py" = ["F401"]
+"packages/console/integrator_gate/latest_delta.py" = ["F401"]
+"packages/console/integrator_preview/merge.py" = ["F401"]
+"packages/maker/main.py" = ["E402"]
 "tests/**" = ["E402"]
 
 [tool.coverage.run]
@@ -168,32 +168,32 @@ omit = [
   "*/__main__.py",
   "packages/**/*_cli.py",
   # Postgres adapter: integration tests only (fo742).
-  "packages/nimbusware_store/postgres.py",
-  "packages/nimbusware_api/cli.py",
-  "packages/nimbusware_config/cli.py",
-  "packages/nimbusware_maker/cli.py",
-  "packages/nimbusware_maker/protocol.py",
-  "packages/nimbusware_maker/session.py",
-  "packages/nimbusware_maker/readiness.py",
-  "packages/nimbusware_maker/store.py",
-  "packages/nimbusware_maker/slice_preview.py",
-  "packages/nimbusware_console/*_workflow_explainer/**",
-  "packages/nimbusware_console/**/*_workflow_explainer/**",
-  "packages/nimbusware_console/*_explainer/**",
-  "packages/nimbusware_console/**/*_explainer/**",
-  "packages/nimbusware_console/integrator_*/**",
-  "packages/nimbusware_console/bundle_catalog/**",
-  "packages/nimbusware_console/persona_catalog/**",
-  "packages/nimbusware_console/run_escalated/**",
-  "packages/nimbusware_console/security_scan_on_verify/**",
-  "packages/nimbusware_console/self_refinement/**",
-  "packages/nimbusware_console/*_display.py",
-  "packages/nimbusware_console/**/*_display.py",
-  "packages/nimbusware_env/launcher_app.py",
-  "packages/nimbusware_env/run_app.py",
-  "packages/nimbusware_env/desktop_common.py",
-  "packages/nimbusware_env/linux_desktop_deps.py",
-  "packages/nimbusware_env/admin_app.py",
+  "packages/store/postgres.py",
+  "packages/api/cli.py",
+  "packages/config/cli.py",
+  "packages/maker/cli.py",
+  "packages/maker/protocol.py",
+  "packages/maker/session.py",
+  "packages/maker/readiness.py",
+  "packages/maker/store.py",
+  "packages/maker/slice_preview.py",
+  "packages/console/*_workflow_explainer/**",
+  "packages/console/**/*_workflow_explainer/**",
+  "packages/console/*_explainer/**",
+  "packages/console/**/*_explainer/**",
+  "packages/console/integrator_*/**",
+  "packages/console/bundle_catalog/**",
+  "packages/console/persona_catalog/**",
+  "packages/console/run_escalated/**",
+  "packages/console/security_scan_on_verify/**",
+  "packages/console/self_refinement/**",
+  "packages/console/*_display.py",
+  "packages/console/**/*_display.py",
+  "packages/env/launcher_app.py",
+  "packages/env/run_app.py",
+  "packages/env/desktop_common.py",
+  "packages/env/linux_desktop_deps.py",
+  "packages/env/admin_app.py",
 ]
 
 [tool.coverage.report]
@@ -211,134 +211,134 @@ python_version = "3.10"
 strict = true
 packages = [
   "agent_core",
-  "nimbusware_store",
-  "nimbusware_orchestrator",
-  "nimbusware_api",
-  "nimbusware_executor",
-  "nimbusware_console",
-  "nimbusware_extensions",
-  "nimbusware_config",
-  "nimbusware_env",
-  "nimbusware_iam",
-  "nimbusware_memory",
-  "nimbusware_research",
-  "nimbusware_projections",
-  "nimbusware_maker",
-  "nimbusware_client",
-  "nimbusware_agent_tools",
+  "store",
+  "orchestrator",
+  "api",
+  "executor",
+  "console",
+  "extensions",
+  "config",
+  "env",
+  "iam",
+  "memory",
+  "research",
+  "projections",
+  "maker",
+  "client",
+  "agent_tools",
 ]
 mypy_path = "packages"
 
 # Pipeline mypy strict islands.
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_orchestrator._pipeline.base",
-  "nimbusware_orchestrator._pipeline._helpers",
-  "nimbusware_orchestrator._pipeline.create_run",
-  "nimbusware_orchestrator._pipeline.micro_slice",
-  "nimbusware_orchestrator._pipeline.lifecycle_verify",
-  "nimbusware_orchestrator._pipeline.writers",
-  "nimbusware_orchestrator._pipeline.lifecycle_plan",
-  "nimbusware_orchestrator._pipeline.optional_critique",
-  "nimbusware_orchestrator._pipeline.escalation",
-  "nimbusware_orchestrator._pipeline.critique_gates_helpers",
-  "nimbusware_orchestrator._pipeline.critique_gates_optional_emit",
-  "nimbusware_orchestrator._pipeline.critique_gates_stage_failed",
-  "nimbusware_orchestrator._pipeline.critique_gates",
-  "nimbusware_orchestrator._pipeline.lifecycle",
-  "nimbusware_orchestrator._pipeline.lifecycle_start",
-  "nimbusware_orchestrator._pipeline.optional_stages_research",
-  "nimbusware_orchestrator._pipeline.optional_stages_stitch",
-  "nimbusware_orchestrator._pipeline.optional_stages_integrator",
-  "nimbusware_orchestrator._pipeline.optional_stages_integration",
-  "nimbusware_orchestrator._pipeline.optional_stages_self_refinement",
-  "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator",
-  "nimbusware_orchestrator._pipeline.optional_stages",
-  "nimbusware_orchestrator._pipeline.compose",
-  "nimbusware_orchestrator._pipeline.protocol_hosts",
-  "nimbusware_orchestrator._pipeline.pipeline_scraper",
-  "nimbusware_orchestrator._pipeline.dev_factory",
-  "nimbusware_orchestrator._pipeline.__init__",
+  "orchestrator._pipeline.base",
+  "orchestrator._pipeline._helpers",
+  "orchestrator._pipeline.create_run",
+  "orchestrator._pipeline.micro_slice",
+  "orchestrator._pipeline.lifecycle_verify",
+  "orchestrator._pipeline.writers",
+  "orchestrator._pipeline.lifecycle_plan",
+  "orchestrator._pipeline.optional_critique",
+  "orchestrator._pipeline.escalation",
+  "orchestrator._pipeline.critique_gates_helpers",
+  "orchestrator._pipeline.critique_gates_optional_emit",
+  "orchestrator._pipeline.critique_gates_stage_failed",
+  "orchestrator._pipeline.critique_gates",
+  "orchestrator._pipeline.lifecycle",
+  "orchestrator._pipeline.lifecycle_start",
+  "orchestrator._pipeline.optional_stages_research",
+  "orchestrator._pipeline.optional_stages_stitch",
+  "orchestrator._pipeline.optional_stages_integrator",
+  "orchestrator._pipeline.optional_stages_integration",
+  "orchestrator._pipeline.optional_stages_self_refinement",
+  "orchestrator._pipeline.optional_stages_agent_evaluator",
+  "orchestrator._pipeline.optional_stages",
+  "orchestrator._pipeline.compose",
+  "orchestrator._pipeline.protocol_hosts",
+  "orchestrator._pipeline.pipeline_scraper",
+  "orchestrator._pipeline.dev_factory",
+  "orchestrator._pipeline.__init__",
 ]
 ignore_errors = false
 
 # fo512 / fo526–fo530: explicit strict islands (documented in test_mypy_*_surface.py).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_api.*",
-  "nimbusware_api.schemas.ollama",
-  "nimbusware_api.routes.ollama",
-  "nimbusware_api.errors",
-  "nimbusware_orchestrator.ollama_manage",
-  "nimbusware_orchestrator.ollama_user_policy",
-  "nimbusware_orchestrator.preflight",
-  "nimbusware_orchestrator.merge",
-  "nimbusware_orchestrator.workflow_profiles",
-  "nimbusware_console.services.ollama",
-  "nimbusware_maker.services.ollama",
+  "api.*",
+  "api.schemas.ollama",
+  "api.routes.ollama",
+  "api.errors",
+  "orchestrator.ollama_manage",
+  "orchestrator.ollama_user_policy",
+  "orchestrator.preflight",
+  "orchestrator.merge",
+  "orchestrator.workflow_profiles",
+  "console.services.ollama",
+  "maker.services.ollama",
 ]
 ignore_errors = false
 
-# fo731 (Lane X2): UI ignore narrowed (replaces blanket nimbusware_console.* / nimbusware_maker.*).
+# fo731 (Lane X2): UI ignore narrowed (replaces blanket console.* / maker.*).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_maker.slice_workflow",
-  "nimbusware_maker.slice_workflow.*",
-  "nimbusware_console.bundle_catalog",
-  "nimbusware_console.bundle_catalog.*",
-  "nimbusware_console.integrator_gate",
-  "nimbusware_console.integrator_gate.*",
-  "nimbusware_console.integrator_preview",
-  "nimbusware_console.integrator_preview.*",
-  "nimbusware_console.persona_catalog",
-  "nimbusware_console.persona_catalog.*",
-  "nimbusware_console.escalation_suppress_workflow_explainer",
-  "nimbusware_console.escalation_suppress_workflow_explainer.*",
-  "nimbusware_console.integrator_threshold_explainer",
-  "nimbusware_console.integrator_threshold_explainer.*",
-  "nimbusware_console.self_refinement_workflow_explainer",
-  "nimbusware_console.self_refinement_workflow_explainer.*",
-  "nimbusware_console.enterprise_console",
-  "nimbusware_console.enterprise_console_ui",
-  "nimbusware_console.integrator_gate_display",
-  "nimbusware_console.integrator_workflow_apply",
-  "nimbusware_console.integrator_workflow_preview",
-  "nimbusware_console.security_scan_on_verify_display",
-  "nimbusware_console.self_refinement_display",
+  "maker.slice_workflow",
+  "maker.slice_workflow.*",
+  "console.bundle_catalog",
+  "console.bundle_catalog.*",
+  "console.integrator_gate",
+  "console.integrator_gate.*",
+  "console.integrator_preview",
+  "console.integrator_preview.*",
+  "console.persona_catalog",
+  "console.persona_catalog.*",
+  "console.escalation_suppress_workflow_explainer",
+  "console.escalation_suppress_workflow_explainer.*",
+  "console.integrator_threshold_explainer",
+  "console.integrator_threshold_explainer.*",
+  "console.self_refinement_workflow_explainer",
+  "console.self_refinement_workflow_explainer.*",
+  "console.enterprise_console",
+  "console.enterprise_console_ui",
+  "console.integrator_gate_display",
+  "console.integrator_workflow_apply",
+  "console.integrator_workflow_preview",
+  "console.security_scan_on_verify_display",
+  "console.self_refinement_display",
 ]
 ignore_errors = true
 
 # fo610 (Lane V1): strict services plane.
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_console.services",
-  "nimbusware_console.services.*",
-  "nimbusware_maker.services",
-  "nimbusware_maker.services.*",
+  "console.services",
+  "console.services.*",
+  "maker.services",
+  "maker.services.*",
 ]
 ignore_errors = false
 
 # fo720 (Lane W2): typing tranche B — small leaf packages checked in CI mypy.
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_projections",
-  "nimbusware_projections.*",
-  "nimbusware_client",
-  "nimbusware_client.*",
-  "nimbusware_agent_tools",
-  "nimbusware_agent_tools.*",
+  "projections",
+  "projections.*",
+  "client",
+  "client.*",
+  "agent_tools",
+  "agent_tools.*",
 ]
 ignore_errors = false
 
 # fo732 (Lane X2): typing tranche D — API list helpers + strict enterprise routes (CI mypy).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_api.routes.runs.list_helpers",
-  "nimbusware_api.facade",
-  "nimbusware_api.deps",
-  "nimbusware_api.routes.enterprise",
-  "nimbusware_api.routes.enterprise.*",
-  "nimbusware_api.routes.personas_helpers",
+  "api.routes.runs.list_helpers",
+  "api.facade",
+  "api.deps",
+  "api.routes.enterprise",
+  "api.routes.enterprise.*",
+  "api.routes.personas_helpers",
 ]
 ignore_errors = false
 
@@ -347,30 +347,30 @@ ignore_errors = false
 module = [
   "agent_core",
   "agent_core.*",
-  "nimbusware_store",
-  "nimbusware_store.*",
-  "nimbusware_config",
-  "nimbusware_config.*",
-  "nimbusware_executor",
-  "nimbusware_executor.*",
-  "nimbusware_extensions",
-  "nimbusware_extensions.*",
-  "nimbusware_memory",
-  "nimbusware_memory.*",
-  "nimbusware_iam",
-  "nimbusware_iam.*",
-  "nimbusware_env",
-  "nimbusware_env.*",
+  "store",
+  "store.*",
+  "config",
+  "config.*",
+  "executor",
+  "executor.*",
+  "extensions",
+  "extensions.*",
+  "memory",
+  "memory.*",
+  "iam",
+  "iam.*",
+  "env",
+  "env.*",
 ]
 ignore_errors = false
 
-# fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in nimbusware_env.
+# fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in env.
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_env.linux_desktop_deps",
-  "nimbusware_env.desktop_common",
-  "nimbusware_env.launcher_app",
-  "nimbusware_env.run_app",
+  "env.linux_desktop_deps",
+  "env.desktop_common",
+  "env.launcher_app",
+  "env.run_app",
 ]
 disable_error_code = [
   "attr-defined",

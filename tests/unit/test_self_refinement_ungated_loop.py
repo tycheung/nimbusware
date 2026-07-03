@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from nimbusware_api.routes.runs import self_refinement_timeline_summary
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from api.routes.runs import self_refinement_timeline_summary
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 @patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)

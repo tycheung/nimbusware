@@ -5,7 +5,7 @@ from collections import Counter, OrderedDict, UserDict, defaultdict
 from dataclasses import dataclass
 from types import MappingProxyType, SimpleNamespace
 
-from nimbusware_api.routes.runs import (
+from api.routes.runs import (
     _finding_has_security_scan_metadata,
     security_scan_on_verify_timeline_summary,
 )

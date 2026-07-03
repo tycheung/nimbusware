@@ -6,27 +6,27 @@ from unittest.mock import patch
 
 import pytest
 
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
 def test_default_workflow_profile_is_micro_slice() -> None:
-    from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
+    from orchestrator.default_workflow_profile import default_workflow_profile
 
     os.environ.pop("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", None)
     assert default_workflow_profile() == "micro_slice"
 
 
 def test_default_workflow_profile_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
+    from orchestrator.default_workflow_profile import default_workflow_profile
 
     monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "default")
     assert default_workflow_profile() == "default"
 
 
 def test_self_refinement_production_llm_without_global_use_llm() -> None:
-    from nimbusware_orchestrator.workflow_self_refinement import (
+    from orchestrator.workflow_self_refinement import (
         self_refinement_production_llm_critique_effective,
     )
 
@@ -41,7 +41,7 @@ def test_self_refinement_production_llm_without_global_use_llm() -> None:
 
 
 def test_scan_n_plus_one_heuristic_clean_repo() -> None:
-    from nimbusware_orchestrator.performance_scan import scan_n_plus_one_heuristic
+    from orchestrator.performance_scan import scan_n_plus_one_heuristic
 
     code, out = scan_n_plus_one_heuristic(ROOT)
     assert code in (0, 1)
@@ -50,7 +50,7 @@ def test_scan_n_plus_one_heuristic_clean_repo() -> None:
 
 @patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
 @patch(
-    "nimbusware_orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
+    "orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
     return_value={
         "verdict": "PASS",
         "gate_decision": "proceed",
@@ -58,11 +58,11 @@ def test_scan_n_plus_one_heuristic_clean_repo() -> None:
     },
 )
 @patch(
-    "nimbusware_orchestrator.pipeline.RunOrchestrator._selected_model_for_run",
+    "orchestrator.pipeline.RunOrchestrator._selected_model_for_run",
     return_value="test-model",
 )
 @patch(
-    "nimbusware_extensions.self_refinement.SelfRefinementEvaluator.evaluate",
+    "extensions.self_refinement.SelfRefinementEvaluator.evaluate",
     return_value={"status": "gap", "gaps": ["missing persona depth"]},
 )
 def test_production_sr_llm_path_without_nimbusware_use_llm(
@@ -70,7 +70,7 @@ def test_production_sr_llm_path_without_nimbusware_use_llm(
     _mock_llm: object,
     _mock_model: object,
 ) -> None:
-    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from orchestrator.pipeline import make_dev_orchestrator
 
     os.environ.pop("NIMBUSWARE_USE_LLM", None)
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
@@ -86,7 +86,7 @@ def test_production_sr_llm_path_without_nimbusware_use_llm(
 
 
 def test_bundle_editor_tags_from_text() -> None:
-    from nimbusware_console.bundle_catalog_editor import bundle_editor_tags_from_text
+    from console.bundle_catalog_editor import bundle_editor_tags_from_text
 
     assert bundle_editor_tags_from_text("auth, rbac\nstripe") == [
         "auth",

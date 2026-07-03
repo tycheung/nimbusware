@@ -30,4 +30,4 @@ def test_publish_bootstrap_release_build_only() -> None:
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "build + twine check OK" in proc.stdout
-    assert (_REPO / "packages" / "nimbusware_bootstrap" / "dist").is_dir()
+    assert (_REPO / "packages" / "bootstrap" / "dist").is_dir()

@@ -1,28 +1,28 @@
 # Table-driven caption guard contracts (bad payloads and load-error suppression).
 bad_payload:
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
     inputs: [null, "x", [1, 2, 3]]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_mtime_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_mtime_caption
     inputs: [null, "x", [1, 2, 3]]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_suppress_flag_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_suppress_flag_caption
     inputs: [null, "x", [1, 2, 3]]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_key_count_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_key_count_caption
     inputs: [null, "x", [1, 2]]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_version_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_version_caption
     inputs: [null, "x"]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_max_retries_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_max_retries_caption
     inputs: [null]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_keys_sample_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_keys_sample_caption
     inputs: [null, "x", [1, 2]]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_relpath_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_relpath_caption
     inputs: [null]
-  - fn: nimbusware_console.workflow_explainers.security_scan_metadata.security_scan_metadata_yaml_effective_mismatch_caption
+  - fn: console.workflow_explainers.security_scan_metadata.security_scan_metadata_yaml_effective_mismatch_caption
     inputs: [null, "x"]
-  - fn: nimbusware_console.workflow_explainers.security_scan_metadata.security_scan_metadata_mapping_key_count_caption
+  - fn: console.workflow_explainers.security_scan_metadata.security_scan_metadata_mapping_key_count_caption
     inputs: [null, "x"]
 
 load_error_payload:
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
@@ -31,42 +31,42 @@ load_error_payload:
         scalar: 0
         list: 0
         other: 0
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_mtime_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_mtime_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_mtime_iso: "2020-01-01T00:00:00Z"
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_suppress_flag_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_suppress_flag_caption
     payload:
       load_error: "boom"
       suppress_automatic_escalation_effective: true
       suppress_automatic_escalation_yaml_raw_type: "bool"
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_key_count_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_key_count_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_top_level_key_count: 3
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_version_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_version_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_version: 2
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_max_retries_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_max_retries_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_max_retries_per_stage: 5
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_keys_sample_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_keys_sample_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_top_level_keys_sample: ["a", "b"]
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_relpath_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_relpath_caption
     payload:
       escalation_policy_yaml_load_error: "boom"
       escalation_policy_yaml_path_exists: true
       escalation_policy_yaml_relpath: configs/escalation/policy.yaml
 
 tmp_path_load_error:
-  - fn: nimbusware_console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
+  - fn: console.workflow_explainers.escalation_suppress.escalation_policy_yaml_top_level_kinds_caption
     setup: malformed_escalation_policy

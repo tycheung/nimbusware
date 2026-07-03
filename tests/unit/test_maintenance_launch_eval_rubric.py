@@ -4,10 +4,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from nimbusware_orchestrator.factory_cadence import launch_eval_completed
-from nimbusware_orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
-from nimbusware_orchestrator.maintenance_refactor import run_maintenance_refactor
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.factory_cadence import launch_eval_completed
+from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+from orchestrator.maintenance_refactor import run_maintenance_refactor
+from store.memory import InMemoryEventStore
 
 REPO = Path(__file__).resolve().parents[2]
 

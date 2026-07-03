@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
+from orchestrator.model_binding_resolver import ModelBindingResolver
 
 REPO = Path(__file__).resolve().parents[2]
 

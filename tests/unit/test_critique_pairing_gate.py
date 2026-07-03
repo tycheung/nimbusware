@@ -7,15 +7,15 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_env import find_repo_root
-from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.critique_routing import (
+from api.app import app
+from env import find_repo_root
+from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.critique_routing import (
     assert_critique_coverage_complete,
     critique_coverage_snapshot,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.registry import RoleRegistry
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.registry import RoleRegistry
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

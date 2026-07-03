@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.collab_disciplines import (
+from maker.collab_disciplines import (
     discipline_routes,
     list_disciplines,
     normalize_discipline,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.collab_policy_store import load_collab_policy, save_collab_policy
+from config.collab_policy_store import load_collab_policy, save_collab_policy
 
 
 def test_load_collab_policy_defaults_when_missing(tmp_path: Path) -> None:

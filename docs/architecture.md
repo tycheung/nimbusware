@@ -10,7 +10,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 |-----|--------|
 | [001-event-sourced-runs.md](adr/001-event-sourced-runs.md) | Append-only run events |
 | [002-edition-gate.md](adr/002-edition-gate.md) | Individual vs Enterprise |
-| [003-projections-layer.md](adr/003-projections-layer.md) | `nimbusware_projections` read models |
+| [003-projections-layer.md](adr/003-projections-layer.md) | `projections` read models |
 | [004-api-request-logging.md](adr/004-api-request-logging.md) | Request logging |
 | [005-request-correlation-id.md](adr/005-request-correlation-id.md) | Correlation IDs |
 | [006-prompt-tiers.md](adr/006-prompt-tiers.md) | Stable/context/volatile LLM prompt tiers |
@@ -37,7 +37,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [026-enforcement-depth-slider.md](adr/026-enforcement-depth-slider.md) | Enforcement depth 0–10 (workspace CI strictness) |
 | [026-host-transfer.md](adr/026-host-transfer.md) | Collaborative session host transfer MVP |
 
-Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
+Tier 3 context-efficiency modules (Pi transplant): `agent_tools` (dual tool output, allowlist, stable prompt file), `projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
 
 ## v1.2 operator docs
 

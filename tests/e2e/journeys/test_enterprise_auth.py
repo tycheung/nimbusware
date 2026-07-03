@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from e2e.harness.env import apply_e2e_unit_profile
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey]
 
@@ -20,7 +20,7 @@ def enterprise_client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
         extra={"NIMBUSWARE_EDITION": "enterprise"},
     )
     os.environ["NIMBUSWARE_EDITION"] = "enterprise"
-    from nimbusware_api.app import app
+    from api.app import app
 
     with TestClient(app) as client:
         yield client

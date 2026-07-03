@@ -6,8 +6,8 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_maker.chat_store import PostgresChatStore
-from nimbusware_maker.store import PostgresProjectStore
+from maker.chat_store import PostgresChatStore
+from maker.store import PostgresProjectStore
 
 pytestmark = pytest.mark.integration
 

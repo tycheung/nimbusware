@@ -6,24 +6,24 @@ from uuid import UUID, uuid4
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from nimbusware_iam.context import set_auth_context
-from nimbusware_iam.store import InMemoryIamStore
-from nimbusware_memory.fleet_index import rebuild_fleet_memory_index
-from nimbusware_memory.fleet_sync import (
+from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
+from iam.context import set_auth_context
+from iam.store import InMemoryIamStore
+from memory.fleet_index import rebuild_fleet_memory_index
+from memory.fleet_sync import (
     pull_fleet_memory_from_canonical,
     push_fleet_memory_to_canonical,
 )
-from nimbusware_memory.org_scope import (
+from memory.org_scope import (
     fleet_scope_hash,
     memory_namespace_for_repo,
     require_fleet_memory_feature,
     resolve_fleet_scope,
 )
-from nimbusware_memory.remote_store import FileFleetMemoryCanonicalStore
-from nimbusware_memory.search import search_fleet_memory
-from nimbusware_memory.store import InMemoryMemoryChunkStore
-from nimbusware_memory.sync_cli import main as sync_cli_main
+from memory.remote_store import FileFleetMemoryCanonicalStore
+from memory.search import search_fleet_memory
+from memory.store import InMemoryMemoryChunkStore
+from memory.sync_cli import main as sync_cli_main
 
 
 def _sample_rows(run_id: UUID | None = None) -> list[dict]:
@@ -166,8 +166,8 @@ def test_enterprise_fleet_memory_api(
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
-    from nimbusware_iam.constants import API_KEY_HEADER
+    from api.app import app
+    from iam.constants import API_KEY_HEADER
 
     with TestClient(app) as client:
         boot = client.post(

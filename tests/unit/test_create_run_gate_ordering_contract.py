@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from env import find_repo_root
+from orchestrator.pipeline import make_dev_orchestrator
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -21,7 +21,7 @@ _GATE_NAMES: list[str] = [
     "assert_critique_coverage_complete",
 ]
 
-_GATE_MODULE = "nimbusware_orchestrator._pipeline.create_run_preflight"
+_GATE_MODULE = "orchestrator._pipeline.create_run_preflight"
 
 
 # Sentinel exception classes/messages, one per gate, so each test

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.approval import git_outputs_from_rows
+from maker.approval import git_outputs_from_rows
 
 
 def test_git_outputs_from_finalize_stage() -> None:

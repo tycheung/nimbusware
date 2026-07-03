@@ -7,12 +7,12 @@ _PYPROJECT = _REPO / "pyproject.toml"
 
 _TRANCHE_B_MODULES = frozenset(
     {
-        "nimbusware_projections",
-        "nimbusware_projections.*",
-        "nimbusware_client",
-        "nimbusware_client.*",
-        "nimbusware_agent_tools",
-        "nimbusware_agent_tools.*",
+        "projections",
+        "projections.*",
+        "client",
+        "client.*",
+        "agent_tools",
+        "agent_tools.*",
     },
 )
 

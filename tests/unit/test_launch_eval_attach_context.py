@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.launch_eval_catalog import (
+from orchestrator.launch_eval_catalog import (
     attach_context_from_run,
     match_prompt_id,
 )

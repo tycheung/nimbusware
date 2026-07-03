@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
-from nimbusware_maker.scope_discovery import (
+from maker.autopilot_defer_matrix import autopilot_may_auto_defer
+from maker.scope_discovery import (
     discovery_complete_for_start,
     recommend_for_me,
     scope_discover,
@@ -62,7 +62,7 @@ def test_recommend_for_me_applies_regulated_stack_guard(tmp_path, monkeypatch) -
         encoding="utf-8",
     )
     monkeypatch.setattr(
-        "nimbusware_env.find_repo_root",
+        "env.find_repo_root",
         lambda: tmp_path,
     )
     state = scope_discover("Build a todo app")
@@ -82,7 +82,7 @@ def test_manifest_from_answers_clamps_backend_stack_for_regulated_tenant(
         encoding="utf-8",
     )
     monkeypatch.setattr(
-        "nimbusware_env.find_repo_root",
+        "env.find_repo_root",
         lambda: tmp_path,
     )
     state = scope_discover("Build a todo app")

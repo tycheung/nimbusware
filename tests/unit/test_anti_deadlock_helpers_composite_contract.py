@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from nimbusware_orchestrator.anti_deadlock import (
+from orchestrator.anti_deadlock import (
     _PROGRESS_IGNORE,
     _first_run_created_at,
     count_progress_events,

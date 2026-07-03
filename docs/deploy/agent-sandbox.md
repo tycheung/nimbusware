@@ -21,7 +21,7 @@ Configure in Maker **Settings** or `.env` (see [env vars reference](../../docs/r
 | `kubernetes` | `NIMBUSWARE_SANDBOX_K8S_EXEC_POD`, optional `NIMBUSWARE_SANDBOX_K8S_NAMESPACE`, `NIMBUSWARE_SANDBOX_K8S_WORKDIR` |
 | `e2b` | `NIMBUSWARE_E2B_API_KEY` (install scope) |
 
-Implementation: `packages/nimbusware_agent_tools/fleet_sandbox.py`. When fleet pod or E2B is unavailable, commands fall back to host+jail with a stderr prefix so operators can detect misconfiguration.
+Implementation: `packages/agent_tools/fleet_sandbox.py`. When fleet pod or E2B is unavailable, commands fall back to host+jail with a stderr prefix so operators can detect misconfiguration.
 
 ## Security notes
 
@@ -33,4 +33,4 @@ Implementation: `packages/nimbusware_agent_tools/fleet_sandbox.py`. When fleet p
 
 - [Enterprise buyer checklist](../enterprise-buyer.md)
 - [Run dispatch fleet runbook](../../scripts/runbooks/run_dispatch_fleet_runbook.md)
-- Package reference: [nimbusware_agent_tools README](../../packages/nimbusware_agent_tools/README.md)
+- Package reference: [agent_tools README](../../packages/agent_tools/README.md)

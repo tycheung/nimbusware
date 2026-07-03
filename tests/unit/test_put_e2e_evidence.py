@@ -3,8 +3,8 @@ from __future__ import annotations
 import zipfile
 from pathlib import Path
 
-from nimbusware_orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
-from nimbusware_orchestrator.put_e2e_runner import PutE2EFinding, PutE2EResult
+from orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
+from orchestrator.put_e2e_runner import PutE2EFinding, PutE2EResult
 
 
 def test_write_put_e2e_failure_evidence_creates_zip(tmp_path: Path) -> None:
@@ -28,7 +28,7 @@ def test_write_put_e2e_failure_evidence_creates_zip(tmp_path: Path) -> None:
 
 
 def test_run_put_e2e_flow_writes_evidence_on_failure(tmp_path: Path) -> None:
-    from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
+    from orchestrator.put_e2e_runner import run_put_e2e_flow
 
     result = run_put_e2e_flow(
         "http://127.0.0.1:9",

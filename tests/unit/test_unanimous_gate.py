@@ -8,11 +8,11 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
-from nimbusware_orchestrator.critic_matrix_live import (
+from orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )
-from nimbusware_orchestrator.unanimous_gate import (
+from orchestrator.unanimous_gate import (
     critic_verdict_payloads_for_stage,
     failing_critics_from_gate_payload,
     gate_decision_from_critic_verdicts,

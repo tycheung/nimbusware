@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_memory.faiss_index import memory_faiss_index_ready
-from nimbusware_memory.manifest import default_memory_index_dir
-from nimbusware_orchestrator.context_artifacts import (
+from memory.faiss_index import memory_faiss_index_ready
+from memory.manifest import default_memory_index_dir
+from orchestrator.context_artifacts import (
     bridge_artifact_to_memory_index,
     create_context_artifact,
     maybe_rebuild_memory_faiss_from_bridges,

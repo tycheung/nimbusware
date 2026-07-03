@@ -4,13 +4,13 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_orchestrator.context_compaction import maybe_emit_compaction_event
-from nimbusware_orchestrator.replay_from import (
+from orchestrator.context_compaction import maybe_emit_compaction_event
+from orchestrator.replay_from import (
     ReplayPolicy,
     compaction_allowed,
     emit_replay_started_event,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def _handoff_event(seq: int, summary: str) -> dict:
@@ -48,7 +48,7 @@ def test_replay_policy_disables_compaction() -> None:
 def test_replay_from_api_route() -> None:
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
+    from api.app import app
 
     with TestClient(app) as tc:
         create = tc.post("/v1/runs", json={"workflow_profile": "default"})
@@ -74,8 +74,8 @@ def test_replay_from_enqueues_campaign_tick(monkeypatch: pytest.MonkeyPatch) -> 
 
     from fastapi.testclient import TestClient
 
-    from nimbusware_api.app import app
-    from nimbusware_orchestrator.run_dispatch import InMemoryRunQueue, get_run_queue, set_run_queue
+    from api.app import app
+    from orchestrator.run_dispatch import InMemoryRunQueue, get_run_queue, set_run_queue
 
     monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "memory")
     queue = InMemoryRunQueue()

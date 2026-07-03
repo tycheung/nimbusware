@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.verifier_escalation import (
+from orchestrator.verifier_escalation import (
     load_escalate_on_first_verifier_failure,
 )
 from unit.composite_repo_fixtures import write_escalation_policy_repo

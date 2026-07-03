@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.self_refinement import self_refinement_snapshot_from_compare_paste
-from nimbusware_console.workflow_explainers.self_refinement import (
+from console.self_refinement import self_refinement_snapshot_from_compare_paste
+from console.workflow_explainers.self_refinement import (
     self_refinement_marker_merge_compare_export_filename_slug,
     self_refinement_marker_merge_compare_export_json,
     self_refinement_marker_merge_compare_snapshot,

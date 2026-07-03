@@ -25,7 +25,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    from nimbusware_store.retention_policy import (
+    from store.retention_policy import (
         purge_blocked_by_legal_hold,
         purge_eligible_before,
         purge_execute_enabled,
@@ -56,7 +56,7 @@ def main() -> int:
         if not purge_execute_enabled():
             print("Execute blocked: set NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1")
             return 1
-        from nimbusware_store.purge import purge_events_before
+        from store.purge import purge_events_before
 
         deleted = purge_events_before(conn, cutoff)
     print(f"Purged {deleted} row(s) before {cutoff.isoformat()}")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.archetype_workflow import (
+from maker.archetype_workflow import (
     campaign_profile_for_archetype,
     resolve_start_workflow_profile,
 )

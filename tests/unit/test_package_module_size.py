@@ -6,15 +6,15 @@ _REPO = Path(__file__).resolve().parents[2]
 
 _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
-        "packages/nimbusware_orchestrator",
+        "packages/orchestrator",
         450,
         frozenset({"fleet_policies.py"}),
     ),
-    ("packages/nimbusware_api", 450, frozenset({"routes/chat_collab.py", "routes/chat_session.py"})),
-    ("packages/nimbusware_memory", 450, frozenset()),
-    ("packages/nimbusware_projections", 450, frozenset()),
-    ("packages/nimbusware_auth", 450, frozenset({"store.py"})),
-    ("packages/nimbusware_mcp", 450, frozenset()),
+    ("packages/api", 450, frozenset({"routes/chat_collab.py", "routes/chat_session.py"})),
+    ("packages/memory", 450, frozenset()),
+    ("packages/projections", 450, frozenset()),
+    ("packages/auth", 450, frozenset({"store.py"})),
+    ("packages/mcp", 450, frozenset()),
 )
 
 

@@ -5,16 +5,16 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 
 _MIN_LINES: dict[str, int] = {
-    "packages/nimbusware_orchestrator/_pipeline/_helpers_bundle_runtime.py": 130,
+    "packages/orchestrator/_pipeline/_helpers_bundle_runtime.py": 130,
     "packages/agent_core/models/events_foundation.py": 50,
-    "packages/nimbusware_maker_web/static/js/app-shell.js": 20,
+    "packages/maker_web/static/js/app-shell.js": 20,
 }
 
 _REQUIRED_SNIPPETS: dict[str, tuple[str, ...]] = {
-    "packages/nimbusware_orchestrator/_pipeline/_helpers_bundle_runtime.py": (
+    "packages/orchestrator/_pipeline/_helpers_bundle_runtime.py": (
         "InMemoryEventStore",
     ),
-    "packages/nimbusware_maker_web/static/js/api-client.js": ("apiJson",),
+    "packages/maker_web/static/js/api-client.js": ("apiJson",),
 }
 
 

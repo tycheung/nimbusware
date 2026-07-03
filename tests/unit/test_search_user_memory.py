@@ -3,11 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_memory.embeddings import embed_text
-from nimbusware_memory.models import MemoryChunkRecord
-from nimbusware_memory.search import search_user_memory
-from nimbusware_memory.store import InMemoryMemoryChunkStore
-from nimbusware_memory.user_scope import user_scope_hash
+from memory.embeddings import embed_text
+from memory.models import MemoryChunkRecord
+from memory.search import search_user_memory
+from memory.store import InMemoryMemoryChunkStore
+from memory.user_scope import user_scope_hash
 
 
 def test_search_user_memory_returns_hits(tmp_path: Path) -> None:

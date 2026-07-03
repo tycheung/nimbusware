@@ -11,8 +11,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 UI_ROOTS = (
-    ROOT / "packages" / "nimbusware_maker_web",
-    ROOT / "packages" / "nimbusware_admin_ui",
+    ROOT / "packages" / "maker_web",
+    ROOT / "packages" / "admin_ui",
 )
 PLAYWRIGHT_DIR = ROOT / "tests" / "e2e" / "web"
 DEFAULT_OUT = ROOT / "tests" / "web" / "playwright_button_inventory.yaml"
@@ -56,7 +56,7 @@ def _rel(path: Path) -> str:
 
 
 def _app_for(path: Path) -> str:
-    return "maker" if "nimbusware_maker_web" in path.parts else "admin"
+    return "maker" if "maker_web" in path.parts else "admin"
 
 
 def _scan_ui_buttons() -> list[ButtonRow]:

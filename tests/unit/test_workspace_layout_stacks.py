@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.workspace_layout import detect_workspace_layout
+from orchestrator.workspace_layout import detect_workspace_layout
 
 
 def test_detect_node_layout(tmp_path: Path) -> None:

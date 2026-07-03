@@ -13,7 +13,7 @@ os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 
 def main() -> int:
-    from nimbusware_api.app import app
+    from api.app import app
 
     with TestClient(app) as client:
         r = client.post("/v1/runs", json={"workflow_profile": "default"})

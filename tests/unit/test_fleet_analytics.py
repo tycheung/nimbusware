@@ -12,12 +12,12 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from nimbusware_console import enterprise_console as ent_console
-from nimbusware_iam.constants import DEFAULT_TENANT_ID
-from nimbusware_iam.context import reset_auth_context, set_auth_context
-from nimbusware_iam.models import AuthContext
-from nimbusware_orchestrator.fleet_analytics import compare_tenant_metrics, tenant_run_metrics
-from nimbusware_store.memory import InMemoryEventStore
+from console import enterprise_console as ent_console
+from iam.constants import DEFAULT_TENANT_ID
+from iam.context import reset_auth_context, set_auth_context
+from iam.models import AuthContext
+from orchestrator.fleet_analytics import compare_tenant_metrics, tenant_run_metrics
+from store.memory import InMemoryEventStore
 
 
 def _auth(tenant_id) -> AuthContext:

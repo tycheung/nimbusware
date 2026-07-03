@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
+from env import find_repo_root
+from orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
 
 
 def test_micro_slice_workflow_profile_validates() -> None:

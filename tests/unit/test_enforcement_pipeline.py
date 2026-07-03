@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.enforcement_pipeline import (
+from orchestrator.enforcement_pipeline import (
     active_enforcement_profile,
     e2e_required_for_profile,
     enforcement_wired_for_run,
     normalize_e2e_for_enforcement,
     security_scan_required,
 )
-from nimbusware_orchestrator.enforcement_profiles import resolve_enforcement_profile
-from nimbusware_orchestrator.slice_gate import SliceGateStep, apply_skip_verdict_policy
+from orchestrator.enforcement_profiles import resolve_enforcement_profile
+from orchestrator.slice_gate import SliceGateStep, apply_skip_verdict_policy
 
 
 def test_apply_skip_verdict_policy_fail() -> None:

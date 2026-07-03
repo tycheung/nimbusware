@@ -5,15 +5,15 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.integration_adapter_writer_stage import (
+from env import find_repo_root
+from orchestrator.integration_adapter_writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
     emit_live_integration_adapter_writer_stage,
     emit_stub_integration_adapter_writer_stage,
     integration_adapter_writer_stage_would_emit,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_blocks_simple import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from unit.composite_repo_fixtures import write_workflow_profile
@@ -66,7 +66,7 @@ def test_explainer_would_emit_stage_started(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
-    from nimbusware_console.workflow_explainers.integration_adapter_writer import (
+    from console.workflow_explainers.integration_adapter_writer import (
         integration_adapter_writer_workflow_explainer_operator_metrics,
         integration_adapter_writer_workflow_explainer_payload,
     )
@@ -85,7 +85,7 @@ def test_explainer_would_emit_stage_started(
 def test_emit_live_integration_adapter_writer_stage_direct() -> None:
     from uuid import uuid4
 
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     rid = uuid4()
@@ -143,7 +143,7 @@ def test_explainer_live_path_payload_and_metrics(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
-    from nimbusware_console.workflow_explainers.integration_adapter_writer import (
+    from console.workflow_explainers.integration_adapter_writer import (
         integration_adapter_writer_workflow_explainer_operator_metrics,
         integration_adapter_writer_workflow_explainer_operator_metrics_caption,
         integration_adapter_writer_workflow_explainer_payload,
@@ -167,7 +167,7 @@ def test_explainer_live_path_payload_and_metrics(
 
 
 def test_emit_stub_integration_adapter_writer_stage_direct() -> None:
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     from uuid import uuid4

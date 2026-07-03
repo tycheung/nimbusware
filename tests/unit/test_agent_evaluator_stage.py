@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from nimbusware_extensions.extension_runtime import AgentEvaluator
-from nimbusware_store.memory import InMemoryEventStore
+from extensions.extension_runtime import AgentEvaluator
+from store.memory import InMemoryEventStore
 
 
 def test_emit_evaluation_stage_started() -> None:

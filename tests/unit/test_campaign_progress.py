@@ -7,13 +7,13 @@ from uuid import uuid4
 from agent_core.models import EventType
 from agent_core.models.events_payloads import CampaignPausedPayload, SliceQueuedPayload
 from agent_core.models.events_records import CampaignPausedEvent, SliceQueuedEvent
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import (
+from env import find_repo_root
+from orchestrator.backlog_generator import (
     emit_backlog_generated,
     generate_heuristic_backlog,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_projections.builders.campaign_progress import campaign_progress_from_events
+from orchestrator.pipeline import make_dev_orchestrator
+from projections.builders.campaign_progress import campaign_progress_from_events
 
 
 def test_campaign_progress_none_for_non_campaign_run() -> None:

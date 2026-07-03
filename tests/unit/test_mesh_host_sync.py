@@ -2,12 +2,12 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from nimbusware_compute.mesh_event_replay import (
+from compute.mesh_event_replay import (
     baseline_event_ids,
     collect_replay_events,
     replay_events_to_store,
 )
-from nimbusware_compute.mesh_host_sync import (
+from compute.mesh_host_sync import (
     absorb_completed_mesh_units,
     critic_gate_fail_from_mesh,
     local_stage_names,
@@ -15,14 +15,14 @@ from nimbusware_compute.mesh_host_sync import (
     wait_for_mesh_units,
     writer_stage_result_from_mesh,
 )
-from nimbusware_compute.mesh_workspace_merge import (
+from compute.mesh_workspace_merge import (
     apply_workspace_files,
     diff_workspace_files,
     workspace_file_digests,
 )
-from nimbusware_compute.work_unit import InMemoryWorkUnitQueue, set_work_unit_queue
-from nimbusware_orchestrator.mesh_scheduler import MeshScheduler
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from compute.work_unit import InMemoryWorkUnitQueue, set_work_unit_queue
+from orchestrator.mesh_scheduler import MeshScheduler
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_remote_and_local_stage_names() -> None:

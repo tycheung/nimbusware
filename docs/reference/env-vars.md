@@ -2,7 +2,7 @@
 
 Install-only variables: [`.env.example`](../.env.example). Runtime tunables in Postgres: [operator-settings.md](../operator-settings.md) (246-key catalog).
 
-Resolve via `packages/nimbusware_env/env_flags.py` helpers (`env_flag_bool`, `env_str`, `env_tri_state`, …) — not raw `os.environ` in feature code.
+Resolve via `packages/env/env_flags.py` helpers (`env_flag_bool`, `env_str`, `env_tri_state`, …) — not raw `os.environ` in feature code.
 
 | Variable | Scope | Purpose |
 |----------|-------|---------|

@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from nimbusware_store.retention_policy import (
+from store.retention_policy import (
     legal_hold_enabled,
     purge_execute_enabled,
 )
@@ -55,11 +55,11 @@ def test_purge_script_dry_run(
 
     cutoff = datetime(2026, 3, 1, tzinfo=timezone.utc)
     monkeypatch.setattr(
-        "nimbusware_store.retention_policy.purge_eligible_before",
+        "store.retention_policy.purge_eligible_before",
         lambda *, now=None: cutoff,
     )
     monkeypatch.setattr(
-        "nimbusware_store.retention_policy.purge_blocked_by_legal_hold",
+        "store.retention_policy.purge_blocked_by_legal_hold",
         lambda tenant_slug="default": False,
     )
 

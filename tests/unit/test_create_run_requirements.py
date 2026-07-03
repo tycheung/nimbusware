@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_maker.intent import build_requirements_artifact
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from env import find_repo_root
+from maker.intent import build_requirements_artifact
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_create_run_with_requirements_metadata() -> None:

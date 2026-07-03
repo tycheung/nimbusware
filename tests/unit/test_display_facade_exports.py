@@ -4,7 +4,7 @@ import ast
 import importlib
 from pathlib import Path
 
-_CONSOLE = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+_CONSOLE = Path(__file__).resolve().parents[2] / "packages" / "console"
 
 
 def _facade_paths() -> list[Path]:
@@ -22,10 +22,10 @@ def _facade_paths() -> list[Path]:
 def _package_module_name(facade_path: Path) -> str | None:
     stem = facade_path.stem
     if (_CONSOLE / stem).is_dir():
-        return f"nimbusware_console.{stem}"
+        return f"console.{stem}"
     alt = stem.removesuffix("_display").removesuffix("_explainer")
     if (_CONSOLE / alt).is_dir():
-        return f"nimbusware_console.{alt}"
+        return f"console.{alt}"
     return None
 
 
@@ -80,7 +80,7 @@ def test_display_facades_match_package_init_imports() -> None:
         expected = _package_module_name(facade)
         if expected is None:
             continue
-        pkg_init = _CONSOLE / expected.removeprefix("nimbusware_console.") / "__init__.py"
+        pkg_init = _CONSOLE / expected.removeprefix("console.") / "__init__.py"
         if not pkg_init.is_file():
             continue
         init_names = _imported_names_from_init(pkg_init)

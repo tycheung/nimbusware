@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.ollama_user_policy import merge_policy_into_routing
+from orchestrator.ollama_user_policy import merge_policy_into_routing
 
 
 def test_policy_merge_stamps_updated_at() -> None:

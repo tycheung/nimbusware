@@ -2,21 +2,21 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.keys import (
+from config.keys import (
     KEY_CRITIQUE_PAIRINGS,
     KEY_INTEGRATOR_THRESHOLDS,
     NS_PERSONAS,
     NS_POLICY,
 )
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.critique_routing import load_critique_router
-from nimbusware_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_orchestrator.workflow_blocks_simple import parse_escalation_workflow_block
-from nimbusware_store.memory import InMemoryEventStore
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.critique_routing import load_critique_router
+from orchestrator.integrator_gate import load_integrator_gate_emit_enabled
+from orchestrator.pipeline import RunOrchestrator, default_paths
+from orchestrator.workflow_blocks_simple import parse_escalation_workflow_block
+from store.memory import InMemoryEventStore
 
 
 def _seed_minimal_run_store(root: Path, tmp_path: Path) -> ConfigMaterializer:
@@ -40,7 +40,7 @@ def test_load_critique_router_from_db_only(tmp_path: Path) -> None:
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryConfigStore()
     pairings = root / "configs" / "personas" / "critique_pairings.yaml"
-    from nimbusware_orchestrator.merge import load_yaml
+    from orchestrator.merge import load_yaml
 
     store.upsert(NS_PERSONAS, KEY_CRITIQUE_PAIRINGS, load_yaml(pairings))
     mat = ConfigMaterializer(tmp_path, store=store, use_db=True)
@@ -75,7 +75,7 @@ def test_create_run_with_db_config_no_t2_files_on_disk(tmp_path: Path, monkeypat
 def test_integrator_thresholds_from_materializer_only(tmp_path: Path) -> None:
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryConfigStore()
-    from nimbusware_orchestrator.merge import load_yaml
+    from orchestrator.merge import load_yaml
 
     raw = load_yaml(root / "configs" / "integrator" / "thresholds.yaml")
     store.upsert(NS_POLICY, KEY_INTEGRATOR_THRESHOLDS, raw)

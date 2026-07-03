@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.enforcement_profiles import resolve_enforcement_profile
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
+from orchestrator.enforcement_profiles import resolve_enforcement_profile
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
 
 
 def test_slice_gate_chain_pass() -> None:
@@ -26,7 +26,7 @@ def test_slice_gate_chain_blocks_on_verify_fail() -> None:
 
 
 def test_map_paths_to_test_targets() -> None:
-    targets = map_paths_to_test_targets(("packages/nimbusware_api/app.py",))
+    targets = map_paths_to_test_targets(("packages/api/app.py",))
     assert any("test_" in t for t in targets)
 
 

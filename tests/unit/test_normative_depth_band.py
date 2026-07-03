@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.improvement_council import CouncilVote, ImprovementTrack
-from nimbusware_orchestrator.improvement_scope import (
+from orchestrator.improvement_council import CouncilVote, ImprovementTrack
+from orchestrator.improvement_scope import (
     RepoScope,
     filter_votes_by_scope,
     infer_repo_scope,
 )
-from nimbusware_orchestrator.resolution_council import (
+from orchestrator.resolution_council import (
     loc_accord_for_findings,
     run_resolution_council,
 )
-from nimbusware_orchestrator.variant_arena import (
+from orchestrator.variant_arena import (
     create_variant_worktree,
     promote_variant_to_workspace,
     score_variant,

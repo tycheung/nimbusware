@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_maker.intent_classifier import WorkType, classify_intent
+from maker.intent_classifier import WorkType, classify_intent
 
 GOLDEN_INTENTS: list[tuple[str, dict, dict, dict, WorkType, str]] = [
     (
@@ -138,8 +138,8 @@ def test_classify_intent_fullstack_template_campaign() -> None:
 def test_campaign_fullstack_workflow_parses() -> None:
     from pathlib import Path
 
-    from nimbusware_env import find_repo_root
-    from nimbusware_orchestrator.workflow_campaign import (
+    from env import find_repo_root
+    from orchestrator.workflow_campaign import (
         parse_backlog_workflow_block,
         parse_campaign_workflow_block,
     )
@@ -157,7 +157,7 @@ def test_classify_intent_llm_overridden_by_rules(monkeypatch: pytest.MonkeyPatch
     message = "fix imports in " + " ".join(paths)
 
     def fake_llm(*_args: object, **_kwargs: object) -> object:
-        from nimbusware_maker.intent_classifier import ClassificationResult
+        from maker.intent_classifier import ClassificationResult
 
         return ClassificationResult(
             work_type=WorkType.PATCH,
@@ -168,7 +168,7 @@ def test_classify_intent_llm_overridden_by_rules(monkeypatch: pytest.MonkeyPatch
         )
 
     monkeypatch.setattr(
-        "nimbusware_maker.intent_classifier._classify_intent_llm",
+        "maker.intent_classifier._classify_intent_llm",
         fake_llm,
     )
     result = classify_intent(message)
@@ -186,7 +186,7 @@ def test_classify_intent_use_llm_false_skips_llm(monkeypatch: pytest.MonkeyPatch
         return None
 
     monkeypatch.setattr(
-        "nimbusware_maker.intent_classifier._classify_intent_llm",
+        "maker.intent_classifier._classify_intent_llm",
         fake_llm,
     )
     classify_intent("fix bug in login", use_llm=False)

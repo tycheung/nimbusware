@@ -23,13 +23,13 @@ jobs:
       - name: Build nimbusware-bootstrap wheel
         run: |
           pip install build twine
-          python -m build packages/nimbusware_bootstrap
-          twine check packages/nimbusware_bootstrap/dist/*
+          python -m build packages/bootstrap
+          twine check packages/bootstrap/dist/*
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4
         with:
           name: nimbusware-bootstrap-wheel
-          path: packages/nimbusware_bootstrap/dist/*.whl
+          path: packages/bootstrap/dist/*.whl
           if-no-files-found: error
       - name: Require TestPyPI token
         if: inputs.publish_testpypi == true
@@ -45,7 +45,7 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_API_TOKEN }}
-        run: twine upload --repository testpypi --skip-existing packages/nimbusware_bootstrap/dist/*
+        run: twine upload --repository testpypi --skip-existing packages/bootstrap/dist/*
       - name: TestPyPI install smoke
         if: inputs.publish_testpypi == true
         run: |
@@ -65,10 +65,10 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --skip-existing packages/nimbusware_bootstrap/dist/*
+        run: twine upload --skip-existing packages/bootstrap/dist/*
       - name: Post-publish smoke
         if: inputs.publish_pypi == true
         run: |
-          WHEEL=$(ls packages/nimbusware_bootstrap/dist/*.whl | head -1)
+          WHEEL=$(ls packages/bootstrap/dist/*.whl | head -1)
           pip install "$WHEEL"
           nimbusware-bootstrap --print-only

@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import pytest
 
-from nimbusware_orchestrator.preflight import run_model_preflight
+from orchestrator.preflight import run_model_preflight
 
 _PRIMARY_MODEL_ID = "dev:primary"
 _FALLBACK_MODEL_IDS: list[str] = ["dev:fallback"]
@@ -59,11 +59,11 @@ def _mocked_httpx(*, probe_fails: bool = False) -> Iterator[None]:
 
     with (
         patch(
-            "nimbusware_orchestrator.preflight.httpx.get",
+            "orchestrator.preflight.httpx.get",
             return_value=_mock_response(_OLLAMA_TAGS_RESPONSE),
         ),
         patch(
-            "nimbusware_orchestrator.preflight.httpx.post",
+            "orchestrator.preflight.httpx.post",
             side_effect=post_side_effect,
         ),
     ):
@@ -75,7 +75,7 @@ def test_preflight_json_probe_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #1 ``NIMBUSWARE_PREFLIGHT_JSON_PROBE`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:194](packages\\nimbusware_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:194](packages\\orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")``. Truthy variants reach
     ``_optional_json_probe`` which, with ``_mocked_httpx`` returning the
     canonical OK response for ``/api/chat``, succeeds and adds two

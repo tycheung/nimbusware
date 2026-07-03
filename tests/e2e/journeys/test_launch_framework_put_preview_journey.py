@@ -7,15 +7,15 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
-from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
-from nimbusware_orchestrator.launch_flow_resolver import load_workspace_ui_flow
-from nimbusware_orchestrator.launch_test_stage import (
+from orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
+from orchestrator.human_fidelity import run_human_fidelity_suite
+from orchestrator.launch_flow_resolver import load_workspace_ui_flow
+from orchestrator.launch_test_stage import (
     run_launch_test_critique,
     run_launch_test_plan,
     run_launch_test_write,
 )
-from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
+from orchestrator.put_runtime import start_put_preview, stop_put_preview
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey]
 
@@ -45,7 +45,7 @@ def _free_port() -> int:
 
 
 def _playwright_available() -> bool:
-    from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
+    from orchestrator.playwright_probe import playwright_chromium_launchable
 
     if playwright_chromium_launchable():
         return True

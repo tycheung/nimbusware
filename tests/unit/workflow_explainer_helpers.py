@@ -65,7 +65,7 @@ def explainer_payload_for_slug(
     if workflow_yaml is not None:
         write_workflow_profile(repo_root, workflow_profile, workflow_yaml)
     if slug == "agent_evaluator":
-        from nimbusware_console.workflow_explainers.agent_evaluator import (
+        from console.workflow_explainers.agent_evaluator import (
             agent_evaluator_workflow_explainer_payload,
         )
 
@@ -74,7 +74,7 @@ def explainer_payload_for_slug(
             workflow_profile=workflow_profile,
         )
     if slug == "escalation_suppress":
-        from nimbusware_console.workflow_explainers.escalation_suppress import (
+        from console.workflow_explainers.escalation_suppress import (
             escalation_suppress_workflow_explainer_payload,
         )
 
@@ -83,7 +83,7 @@ def explainer_payload_for_slug(
             workflow_profile=workflow_profile,
         )
     if slug == "universal_critique":
-        from nimbusware_console.workflow_explainers.universal_critique import (
+        from console.workflow_explainers.universal_critique import (
             universal_critique_workflow_explainer_payload,
         )
 
@@ -92,7 +92,7 @@ def explainer_payload_for_slug(
             workflow_profile=workflow_profile,
         )
     if slug == "security_scan_metadata":
-        from nimbusware_console.workflow_explainers.security_scan_metadata import (
+        from console.workflow_explainers.security_scan_metadata import (
             security_scan_metadata_workflow_explainer_payload,
         )
 
@@ -101,7 +101,7 @@ def explainer_payload_for_slug(
             workflow_profile=workflow_profile,
         )
     if slug == "self_refinement":
-        from nimbusware_console.workflow_explainers.self_refinement import (
+        from console.workflow_explainers.self_refinement import (
             self_refinement_workflow_explainer_payload,
         )
 
@@ -119,7 +119,7 @@ def escalation_explainer_payload(
     workflow_profile: str = "wf",
     policy_yaml: str | None = None,
 ):
-    from nimbusware_console.workflow_explainers.escalation_suppress import (
+    from console.workflow_explainers.escalation_suppress import (
         escalation_suppress_workflow_explainer_payload,
     )
 

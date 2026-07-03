@@ -1,4 +1,4 @@
-from nimbusware_maker.chat_acl import effective_session_role, max_participant_role
+from maker.chat_acl import effective_session_role, max_participant_role
 
 
 def test_max_participant_role_picks_highest() -> None:

@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
+from console.explainer_core.metrics_scaffold import (
     apply_bool_payload_fields,
     default_operator_metrics,
     metrics_caption,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.payload import payload_mapping, payload_str_field
-from nimbusware_console.explainer_core.time import age_seconds_utc
-from nimbusware_console.explainer_core.universal_critique_counts import (
+from console.explainer_core.payload import payload_mapping, payload_str_field
+from console.explainer_core.time import age_seconds_utc
+from console.explainer_core.universal_critique_counts import (
     universal_critique_top_level_enabled_true_count,
     universal_critique_top_level_nonempty_count,
     universal_critique_yaml_value_nonempty,
@@ -66,7 +66,7 @@ def test_explainer_package_allowlist_frozen() -> None:
     root = (
         Path(__file__).resolve().parents[2]
         / "packages"
-        / "nimbusware_console"
+        / "console"
         / "workflow_explainers"
     )
     found = {p.name for p in root.iterdir() if p.is_dir() and not p.name.startswith("_")}

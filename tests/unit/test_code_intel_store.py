@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.code_intel_store import (
+from orchestrator.code_intel_store import (
     build_code_intel_bundle,
     code_intel_path,
     load_code_intel,

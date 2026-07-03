@@ -32,62 +32,62 @@ TRUTHY_ENV = re.compile(
 # Files allowed to read install vars before Postgres store is available.
 BOOTSTRAP_REL = frozenset(
     {
-        "nimbusware_env/settings_store.py",
-        "nimbusware_env/dotenv.py",
-        "nimbusware_env/admin_token.py",
-        "nimbusware_env/edition.py",
-        "nimbusware_env/run_app.py",
-        "nimbusware_orchestrator/preflight_cli.py",
-        "nimbusware_orchestrator/run_dispatch.py",
-        "nimbusware_orchestrator/fleet_worker.py",
-        "nimbusware_orchestrator/replay_cli.py",
-        "nimbusware_orchestrator/routing_suggestions_cli.py",
-        "nimbusware_orchestrator/telemetry_cli.py",
-        "nimbusware_orchestrator/scraper_object_store.py",
-        "nimbusware_orchestrator/ollama_manage.py",
-        "nimbusware_orchestrator/llm/common.py",
-        "nimbusware_memory/cli.py",
-        "nimbusware_memory/sync_cli.py",
-        "nimbusware_memory/embeddings.py",
-        "nimbusware_extensions/bundle_memory_factory.py",
-        "nimbusware_api/routes/runs/lifecycle.py",
-        "nimbusware_maker/onboarding.py",
-        "nimbusware_maker/session.py",
-        "nimbusware_maker/cli.py",
-        "nimbusware_env/admin_cli.py",
-        "nimbusware_env/launcher_app.py",
-        "nimbusware_env/desktop_common.py",
-        "nimbusware_client/http.py",
-        "nimbusware_orchestrator/runtime_bootstrap.py",
-        "nimbusware_config/cli.py",
-        "nimbusware_config/materializer.py",
-        "nimbusware_api/app.py",
-        "nimbusware_api/cli.py",
-        "nimbusware_maker/store.py",
-        "nimbusware_memory/factory.py",
-        "nimbusware_memory/contribution.py",
-        "nimbusware_memory/event_scan.py",
-        "nimbusware_memory/remote_store.py",
-        "nimbusware_memory/repo_scope.py",
-        "nimbusware_research/enterprise_index.py",
-        "nimbusware_api/routes/enterprise/fleet_memory.py",
-        "nimbusware_console/config_materializer.py",
-        "nimbusware_console/integrator_workflow_apply.py",
-        "nimbusware_console/settings.py",
-        "nimbusware_env/settings_resolve.py",
-        "nimbusware_env/env_flags.py",
+        "env/settings_store.py",
+        "env/dotenv.py",
+        "env/admin_token.py",
+        "env/edition.py",
+        "env/run_app.py",
+        "orchestrator/preflight_cli.py",
+        "orchestrator/run_dispatch.py",
+        "orchestrator/fleet_worker.py",
+        "orchestrator/replay_cli.py",
+        "orchestrator/routing_suggestions_cli.py",
+        "orchestrator/telemetry_cli.py",
+        "orchestrator/scraper_object_store.py",
+        "orchestrator/ollama_manage.py",
+        "orchestrator/llm/common.py",
+        "memory/cli.py",
+        "memory/sync_cli.py",
+        "memory/embeddings.py",
+        "extensions/bundle_memory_factory.py",
+        "api/routes/runs/lifecycle.py",
+        "maker/onboarding.py",
+        "maker/session.py",
+        "maker/cli.py",
+        "env/admin_cli.py",
+        "env/launcher_app.py",
+        "env/desktop_common.py",
+        "client/http.py",
+        "orchestrator/runtime_bootstrap.py",
+        "config/cli.py",
+        "config/materializer.py",
+        "api/app.py",
+        "api/cli.py",
+        "maker/store.py",
+        "memory/factory.py",
+        "memory/contribution.py",
+        "memory/event_scan.py",
+        "memory/remote_store.py",
+        "memory/repo_scope.py",
+        "research/enterprise_index.py",
+        "api/routes/enterprise/fleet_memory.py",
+        "console/config_materializer.py",
+        "console/integrator_workflow_apply.py",
+        "console/settings.py",
+        "env/settings_resolve.py",
+        "env/env_flags.py",
     },
 )
 
 # Managed keys may be written to os.environ only from the settings store sync.
 ENV_WRITE_ALLOW = frozenset(
     {
-        "nimbusware_env/settings_store.py",
-        "nimbusware_env/dotenv.py",
-        "nimbusware_env/admin_token.py",
-        "nimbusware_env/run_app.py",
-        "nimbusware_env/launcher_app.py",
-        "nimbusware_orchestrator/preflight_cli.py",
+        "env/settings_store.py",
+        "env/dotenv.py",
+        "env/admin_token.py",
+        "env/run_app.py",
+        "env/launcher_app.py",
+        "orchestrator/preflight_cli.py",
         "scripts/install/install_nimbusware.py",
         "scripts/install/ollama_setup.py",
     },
@@ -99,7 +99,7 @@ def _rel(path: Path) -> str:
 
 
 def audit(*, strict_writes: bool = True) -> list[str]:
-    from nimbusware_env.settings_catalog import CATALOG, SettingScope
+    from env.settings_catalog import CATALOG, SettingScope
 
     errors: list[str] = []
     for py in sorted(PACKAGES.rglob("*.py")):
@@ -137,7 +137,7 @@ def main() -> int:
     if errs:
         print("Operator env audit FAILED:\n" + "\n".join(errs), file=sys.stderr)
         return 1
-    from nimbusware_env.settings_catalog import CATALOG
+    from env.settings_catalog import CATALOG
 
     print(f"Operator env audit OK ({len(CATALOG)} catalog keys)")
     return 0

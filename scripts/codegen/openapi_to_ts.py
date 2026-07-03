@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "packages" / "nimbusware_admin_ui" / "src" / "api" / "schema.d.ts"
+OUT = ROOT / "packages" / "admin_ui" / "src" / "api" / "schema.d.ts"
 OPENAPI_JSON = OUT.parent / "openapi.json"
 
 
@@ -62,7 +62,7 @@ export type PolicyDiffResponse = {
 
 def _export_openapi() -> dict | None:
     try:
-        from nimbusware_api.app import app
+        from api.app import app
     except ImportError:
         return None
     return app.openapi()

@@ -2,23 +2,23 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_orchestrator.autopilot_profiles import (
+from orchestrator.autopilot_profiles import (
     autopilot_profile_from_rows,
     persist_run_autopilot,
     resolve_autopilot_profile,
 )
-from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_cycle_integration import (
+from orchestrator.interjection_queue import InterjectionPriority, queue_for_run
+from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice_cycle_integration import (
     apply_operator_pause,
     merge_pre_gate_into_verify,
 )
-from nimbusware_orchestrator.slice_interjection import (
+from orchestrator.slice_interjection import (
     apply_interjection_to_plan,
     gate_result_for_force_break,
     process_interjection_cycle,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_autopilot_persist_and_reload_from_events() -> None:
@@ -91,7 +91,7 @@ def test_operator_pause_on_gate_fail() -> None:
 
 
 def test_latest_learning_excerpt_from_diagnose_event() -> None:
-    from nimbusware_orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
+    from orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
 
     rows = [
         {
@@ -108,7 +108,7 @@ def test_latest_learning_excerpt_from_diagnose_event() -> None:
 
 
 def test_theater_visibility_filters_low_autopilot() -> None:
-    from nimbusware_orchestrator.autopilot_profiles import filter_theater_messages_for_autopilot
+    from orchestrator.autopilot_profiles import filter_theater_messages_for_autopilot
 
     messages = [
         {"severity": "info", "message_kind": "system", "headline": "a"},
@@ -120,7 +120,7 @@ def test_theater_visibility_filters_low_autopilot() -> None:
 
 
 def test_dev_env_milestone_gating() -> None:
-    from nimbusware_orchestrator.dev_env_milestones import (
+    from orchestrator.dev_env_milestones import (
         dev_env_auto_start_enabled,
         dev_env_http_regression_enabled,
     )
@@ -149,7 +149,7 @@ def test_dev_env_milestone_gating() -> None:
 
 
 def test_merge_pre_gate_regression_failures() -> None:
-    from nimbusware_orchestrator.slice_cycle_integration import PreGateRegression
+    from orchestrator.slice_cycle_integration import PreGateRegression
 
     ok, log = merge_pre_gate_into_verify(
         True,

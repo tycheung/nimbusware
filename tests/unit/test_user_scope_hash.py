@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_memory.user_scope import user_scope_hash
+from memory.user_scope import user_scope_hash
 
 
 def test_user_scope_hash_stable() -> None:

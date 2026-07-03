@@ -15,8 +15,8 @@ from agent_core.models import (
     ModelSelectedPrimaryEvent,
     ModelSelectedPrimaryPayload,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 
 def make_effective_universal_critique(**overrides: bool) -> EffectiveUniversalCritique:
@@ -87,11 +87,11 @@ TEST_WRITER_SPEC = OptionalCritiqueEmitterSpec(
     llm_key="tw_llm",
     stub_key="tw_stub",
     llm_patch=(
-        "nimbusware_orchestrator._pipeline.critique_gates_optional_emit."
+        "orchestrator._pipeline.critique_gates_optional_emit."
         "execute_test_writer_critique_llm"
     ),
     stub_patch=(
-        "nimbusware_orchestrator._pipeline.critique_gates_optional_emit."
+        "orchestrator._pipeline.critique_gates_optional_emit."
         "emit_stub_test_writer_critique_panel"
     ),
     emit_method="_emit_test_writer_critique_optional",
@@ -103,11 +103,11 @@ PLANNER_SPEC = OptionalCritiqueEmitterSpec(
     llm_key="pll_llm",
     stub_key="pll_stub",
     llm_patch=(
-        "nimbusware_orchestrator._pipeline.critique_gates_optional_emit."
+        "orchestrator._pipeline.critique_gates_optional_emit."
         "execute_planner_critique_llm"
     ),
     stub_patch=(
-        "nimbusware_orchestrator._pipeline.critique_gates_optional_emit."
+        "orchestrator._pipeline.critique_gates_optional_emit."
         "emit_stub_planner_critique_panel"
     ),
     emit_method="_emit_planner_critique_optional",

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
-from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
+from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice_patch_apply import apply_slice_file_edits
 
 
 def test_apply_slice_file_edits_allowlist(tmp_path: Path) -> None:

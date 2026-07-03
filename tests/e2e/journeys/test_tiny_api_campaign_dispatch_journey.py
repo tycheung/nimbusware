@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from api.app import app
 from e2e.harness.journey import JourneyClient
 from e2e.harness.stack import start_inprocess_dispatch_worker
 from e2e.harness.workspace import copy_fixture_repo
-from nimbusware_api.app import app
 
 pytestmark = [
     pytest.mark.e2e,
@@ -21,7 +21,7 @@ pytestmark = [
 
 def _prepare_tiny_api_workspace(tmp_path: Path) -> Path:
     ws = copy_fixture_repo("tiny_api_app", tmp_path / "api-campaign")
-    orch_dir = ws / "packages" / "nimbusware_orchestrator"
+    orch_dir = ws / "packages" / "orchestrator"
     orch_dir.mkdir(parents=True, exist_ok=True)
     (orch_dir / "micro_slice.py").write_text("# api campaign stub\n", encoding="utf-8")
     (orch_dir / "slice_gate.py").write_text("# gate stub\n", encoding="utf-8")

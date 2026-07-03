@@ -94,7 +94,7 @@ Session cookies are **HMAC-signed with the admin token secret**. Rotating the ad
 3. `POST /v1/admin/oauth/logout` → `session.authenticated=false`.
 4. API route with only SSO (no admin token) must still return `401` for protected admin APIs.
 
-Automated: `.github/workflows/oidc_smoke.yml` runs `tests/api/test_admin_oauth.py`.
+Automated: `.github/workflows/oidc_smoke.yml` runs `tests/api_http/test_admin_oauth.py`.
 
 ## Group mapping
 
@@ -110,11 +110,11 @@ Mock flow: `NIMBUSWARE_OIDC_MOCK_GROUPS` (default `nimbusware-admins`) feeds gro
 
 ## Code
 
-- [`packages/nimbusware_env/oidc_config.py`](../../packages/nimbusware_env/oidc_config.py)
-- [`packages/nimbusware_console/services/oauth_pkce.py`](../../packages/nimbusware_console/services/oauth_pkce.py)
-- [`packages/nimbusware_api/routes/admin_oauth.py`](../../packages/nimbusware_api/routes/admin_oauth.py)
+- [`packages/env/oidc_config.py`](../../packages/env/oidc_config.py)
+- [`packages/console/services/oauth_pkce.py`](../../packages/console/services/oauth_pkce.py)
+- [`packages/api/routes/admin_oauth.py`](../../packages/api/routes/admin_oauth.py)
 
 ## Non-goals
 
-- Replacing `nimbusware_iam` API keys for machine clients.
+- Replacing `iam` API keys for machine clients.
 - Embedding IdP tokens in `sessionStorage` for API calls.

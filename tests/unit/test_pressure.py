@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_hw.governor import ResourceGovernor
-from nimbusware_hw.pressure import pressure_limits_parallel, sample_pressure
+from hw.governor import ResourceGovernor
+from hw.pressure import pressure_limits_parallel, sample_pressure
 
 
 def test_pressure_limits_parallel_block() -> None:

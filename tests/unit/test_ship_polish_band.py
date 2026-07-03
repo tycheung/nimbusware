@@ -11,14 +11,14 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from nimbusware_orchestrator.diagnose_learn import write_learning_doc
-from nimbusware_orchestrator.learnings_catalog import list_workspace_learnings
-from nimbusware_orchestrator.user_autopilot_profiles import (
+from orchestrator.diagnose_learn import write_learning_doc
+from orchestrator.learnings_catalog import list_workspace_learnings
+from orchestrator.user_autopilot_profiles import (
     apply_user_autopilot_at_run_start,
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,
 )
-from nimbusware_projections.builders.run_theater import build_run_theater_messages
+from projections.builders.run_theater import build_run_theater_messages
 
 
 def test_theater_resolution_and_improvement_council_lines() -> None:
@@ -83,7 +83,7 @@ def test_user_autopilot_profiles_roundtrip(tmp_path: Path) -> None:
 
 
 def test_apply_user_autopilot_at_run_start(tmp_path: Path) -> None:
-    from nimbusware_store.memory import InMemoryEventStore
+    from store.memory import InMemoryEventStore
 
     upsert_user_autopilot_profile(
         profile_id="run_start",

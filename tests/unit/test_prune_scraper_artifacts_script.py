@@ -6,7 +6,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-CONSOLE = REPO / "packages" / "nimbusware_console"
+CONSOLE = REPO / "packages" / "console"
 
 
 def _imported_names(path: Path) -> list[str]:
@@ -26,11 +26,11 @@ def _facade_package_module(facade_path: Path) -> tuple[str, Path] | None:
     stem = facade_path.stem
     pkg_dir = CONSOLE / stem
     if pkg_dir.is_dir() and (pkg_dir / "__init__.py").is_file():
-        return f"nimbusware_console.{stem}", pkg_dir / "__init__.py"
+        return f"console.{stem}", pkg_dir / "__init__.py"
     alt = stem.removesuffix("_display").removesuffix("_explainer")
     alt_dir = CONSOLE / alt
     if alt_dir.is_dir() and (alt_dir / "__init__.py").is_file():
-        return f"nimbusware_console.{alt}", alt_dir / "__init__.py"
+        return f"console.{alt}", alt_dir / "__init__.py"
     return None
 
 

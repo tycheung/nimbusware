@@ -5,7 +5,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_integrator_gate_includes_live_context_from_adapter_writer_stage() -> None:
@@ -39,7 +39,7 @@ def test_integrator_gate_includes_live_context_from_adapter_writer_stage() -> No
         ),
     )
     with patch(
-        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+        "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=True,
     ):
         orch._emit_bundle_integrator_gate(run_id)  # noqa: SLF001

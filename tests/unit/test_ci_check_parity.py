@@ -53,8 +53,8 @@ def test_ci_yml_has_web_job_with_vitest_and_playwright() -> None:
     text = _CI.read_text(encoding="utf-8")
     web_start = text.index("  web:")
     web_block = text[web_start : text.index("  integration:")]
-    assert "nimbusware_maker_web" in web_block
-    assert "nimbusware_admin_ui" in web_block
+    assert "maker_web" in web_block
+    assert "admin_ui" in web_block
     assert "playwright install chromium" in web_block
 
 

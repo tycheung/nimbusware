@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.integrator_gate import (
+from orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
 )
 from unit.composite_repo_fixtures import (
@@ -92,7 +92,7 @@ def test_integrator_min_score_env_three_layer_precedence_contract(
       -> ``raw.get(..., 0.0)`` factory floor.
     * **Block 5** -- env-INVALID -> wf wins via the
       ``except ValueError: pass`` arm at
-      [integrator_gate.py:162-163](packages\\nimbusware_orchestrator\\integrator_gate.py).
+      [integrator_gate.py:162-163](packages\\orchestrator\\integrator_gate.py).
       A refactor narrowing or removing the ``except`` would surface
       ``ValueError`` to callers instead of degrading silently -- Block
       5 catches it.

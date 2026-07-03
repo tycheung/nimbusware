@@ -6,17 +6,17 @@ from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
-from nimbusware_maker.deploy_pipeline_events import emit_deploy_approved
-from nimbusware_maker.user_participant_context import (
+from maker.deploy_pipeline_events import emit_deploy_approved
+from maker.user_participant_context import (
     load_user_participant_context,
     save_user_participant_context,
 )
-from nimbusware_store.memory import InMemoryEventStore
+from store.memory import InMemoryEventStore
 
 
 def test_participant_context_round_trip(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(
-        "nimbusware_maker.user_participant_context.find_repo_root",
+        "maker.user_participant_context.find_repo_root",
         lambda: tmp_path,
     )
     saved = save_user_participant_context(

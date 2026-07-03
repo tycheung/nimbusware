@@ -25,7 +25,7 @@ def test_tiny_api_micro_slice_attach_journey(
     tmp_path: Path,
 ) -> None:
     ws = copy_fixture_repo("tiny_api_app", tmp_path / "api-journey")
-    orch_dir = ws / "packages" / "nimbusware_orchestrator"
+    orch_dir = ws / "packages" / "orchestrator"
     orch_dir.mkdir(parents=True, exist_ok=True)
     (orch_dir / "micro_slice.py").write_text("# api stub\n", encoding="utf-8")
     (orch_dir / "slice_gate.py").write_text("# gate stub\n", encoding="utf-8")

@@ -5,9 +5,9 @@ Pytest discovers **~4256** items under `tests/` with `pythonpath = ["packages", 
 | Directory | Purpose |
 |-----------|---------|
 | `tests/unit/` | Default CI bulk — pure helpers, contracts, env wiring (incl. `test_install_happy_path.py`) |
-| `tests/api/` | FastAPI route and OpenAPI tests |
-| `tests/console/` | Admin console display / explainer behavior |
-| `tests/orchestrator/` | `RunOrchestrator` integration paths |
+| `tests/api_http/` | FastAPI route and OpenAPI tests |
+| `tests/console_unit/` | Admin console display / explainer behavior |
+| `tests/orchestrator_pipeline/` | `RunOrchestrator` integration paths |
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, embed/in-process dispatch worker) |
@@ -28,7 +28,7 @@ Pytest discovers **~4256** items under `tests/` with `pythonpath = ["packages", 
 
 - Add new tests under the themed folder above, not at the `tests/` root (enforced by `tests/unit/test_test_layout.py`).
 - Mark slow suites with `@pytest.mark.slow`; integration with `@pytest.mark.integration`.
-- Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `nimbusware_env.admin_token` instead of hardcoding dev token strings.
+- Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `env.admin_token` instead of hardcoding dev token strings.
 - Composite contract tests share helpers in `tests/unit/composite_contract_fixtures.py` (dict event builders, gate/finding scans), `tests/unit/composite_store_fixtures.py` (`InMemoryEventStore` append helpers), `tests/unit/composite_orchestrator_fixtures.py` (canonical role registry / critique router), `tests/unit/composite_repo_fixtures.py` (config YAML writers for integrator, escalation, anti-deadlock policy, agent-evaluator workflows, critique pairings, persona shelves), `tests/unit/composite_api_fixtures.py` (cursor base64 and filesystem mtime helpers for API contract tests), `tests/unit/composite_contracts/optional_critique_emit_matrix.py` (parametrized optional critique emitter path matrices), and `tests/unit/workflow_explainer_case_runner.py` + YAML cases under `tests/fixtures/explainers/` (table-driven workflow explainer assertions, including caption-guard bad-payload matrices).
 
 **Composite fixture boundaries (round 7):**
@@ -45,18 +45,18 @@ Prefer `composite_repo_fixtures` helpers (`write_workflow_profile`, `write_anti_
 
 ## Postgres adapter coverage
 
-`packages/nimbusware_store/postgres.py` is **omitted from the unit-test coverage denominator** (`pyproject.toml` `[tool.coverage.run] omit`). It is exercised only via `@pytest.mark.integration` tests (for example `tests/integration/test_event_store_postgres_integration.py`, config/IAM/projection integration modules). Do not add unit tests that mock Postgres solely to inflate coverage on that module; extend integration tests when changing the adapter.
+`packages/store/postgres.py` is **omitted from the unit-test coverage denominator** (`pyproject.toml` `[tool.coverage.run] omit`). It is exercised only via `@pytest.mark.integration` tests (for example `tests/integration/test_event_store_postgres_integration.py`, config/IAM/projection integration modules). Do not add unit tests that mock Postgres solely to inflate coverage on that module; extend integration tests when changing the adapter.
 
 ## CI subsets
 
 - **Local / PR parity:** `scripts/ci/ci_check.ps1` or `ci_check.sh` — `ruff check`, `audit_operator_env.py`, `run_openapi_ts_ci_gate.py`, `ruff format --check`, mypy (`scripts/ci/mypy_ci_targets.py`: tranches B–E, UI packages under narrowed ignores, API pilot), bandit (`pyproject.toml` config), `pip-audit`, package coverage floors, framework-pack + intent-to-patch + classifier-acceptance SLO gates, pytest @ 75%, slice.e2e apply journey gate (`NIMBUSWARE_SLICE_E2E_COMMAND`); optional vitest, VS Code extension compile (`extensions/nimbusware-status`), and Playwright when Node is installed (`ci_check.sh --skip-web` to omit). Also: `run_workflow_yaml_ci_gate.py` (overlay profiles ≤35 lines or allowlisted), `run_loc_report.py` (JSON LOC summary), LOC budget **102,827** lines (`scripts/ci/loc_baseline.json`).
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=75` (see `.github/workflows/ci.yml` **unit** job).
 - **PR web job:** [`.github/workflows/web-tests.yml`](.github/workflows/web-tests.yml) — vitest + Playwright without Postgres (`NIMBUSWARE_DATABASE_URL=""`); Postgres-backed journeys stay in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) **e2e** job. Contract: `tests/web/test_web_workflow_env.py`.
-- Coverage omits desktop launcher modules, `*_cli.py` entrypoints, console display/explainer modules, and `nimbusware_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
-- **Per-package floors** (`scripts/ci/coverage_package_floors.py`, ≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.
-- **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api/test_api_runs.py`) and Maker flows (`tests/api/test_maker_approval_api.py`, `tests/api/test_projects_api.py`) run on every PR.
+- Coverage omits desktop launcher modules, `*_cli.py` entrypoints, console display/explainer modules, and `store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
+- **Per-package floors** (`scripts/ci/coverage_package_floors.py`, ≥85%): `agent_core`, `store`, `executor`, `config`, `projections`. Global floor remains 75% on all non-omitted `packages/**` code.
+- **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api_http/test_api_runs.py`) and Maker flows (`tests/api_http/test_maker_approval_api.py`, `tests/api_http/test_projects_api.py`) run on every PR.
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
-- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres; `--reruns 1` flake budget via `pytest-rerunfailures` and `NIMBUSWARE_E2E_FLAKE_RETRIES`. Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys; includes chat patch timing, mid-thread patch→slice, launch-test static HTML / unknown SPA / all framework detect paths / write-replan with keyboard + optional mouse fidelity). Stack + Postgres: `test_chat_postgres_persistence_journey.py`, `test_theater_stream_journey.py` (`-m "e2e_stack and integration"`). API theater SSE: `tests/api/test_api_theater_stream.py`. Chat parity wiring gate: `tests/web/test_parity_chat_wiring.py` (≥80% of Chat-related `web: true` rows, incl. `theater_sse_live` and `deep_link_run_id`). Admin parity wiring gate: `tests/web/test_parity_admin_wiring.py`. Operator smoke: `scripts/ops/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
+- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres; `--reruns 1` flake budget via `pytest-rerunfailures` and `NIMBUSWARE_E2E_FLAKE_RETRIES`. Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys; includes chat patch timing, mid-thread patch→slice, launch-test static HTML / unknown SPA / all framework detect paths / write-replan with keyboard + optional mouse fidelity). Stack + Postgres: `test_chat_postgres_persistence_journey.py`, `test_theater_stream_journey.py` (`-m "e2e_stack and integration"`). API theater SSE: `tests/api_http/test_api_theater_stream.py`. Chat parity wiring gate: `tests/web/test_parity_chat_wiring.py` (≥80% of Chat-related `web: true` rows, incl. `theater_sse_live` and `deep_link_run_id`). Admin parity wiring gate: `tests/web/test_parity_admin_wiring.py`. Operator smoke: `scripts/ops/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **E2E flake monitor (weekly):** [`.github/workflows/e2e_flake_monitor.yml`](../.github/workflows/e2e_flake_monitor.yml) — Postgres e2e with `--reruns 1`; log artifact + `e2e-flake-failure` issue on failure.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** [`.github/workflows/slow_tests.yml`](../.github/workflows/slow_tests.yml) — `-m slow`, **stack-soak**, **fullstack-weekly-soak** (`scripts/ops/run_fullstack_weekly_soak.py`), **dev-env-weekly-soak**, and **redis-fleet-soak** (dual Redis via `NIMBUSWARE_REDIS_FLEET_URLS`; see runbooks above).

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from nimbusware_extensions.persona_scope_overlap import (
+from extensions.persona_scope_overlap import (
     persona_scope_overlap_report,
     scope_in_overlaps_for_assignment,
 )
-from nimbusware_extensions.personas import PersonaShelf
+from extensions.personas import PersonaShelf
 
 
 def test_scope_in_overlap_detected() -> None:

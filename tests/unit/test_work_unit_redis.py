@@ -4,8 +4,8 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_compute.work_unit import get_work_unit_queue, set_work_unit_queue
-from nimbusware_compute.work_unit_redis import RedisWorkUnitQueue
+from compute.work_unit import get_work_unit_queue, set_work_unit_queue
+from compute.work_unit_redis import RedisWorkUnitQueue
 
 
 class _FakeRedis:

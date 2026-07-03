@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env.desktop_common import repo_root
+from env.desktop_common import repo_root
 
 
 @pytest.mark.integration
@@ -14,7 +14,7 @@ def test_run_app_smoke_starts_api_and_web_ui(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     root = repo_root(start=Path(__file__).resolve().parent)
-    from nimbusware_env import run_app
+    from env import run_app
 
     monkeypatch.setenv("NIMBUSWARE_UI_BACKEND", "web")
     monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)

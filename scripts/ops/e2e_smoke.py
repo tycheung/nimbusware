@@ -16,7 +16,7 @@ DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 try:
-    from nimbusware_env import load_dotenv
+    from env import load_dotenv
 
     load_dotenv(repo_root=REPO_ROOT)
 except ImportError:
@@ -105,7 +105,7 @@ def _schema_applied(url: str) -> bool:
 
 
 def _apply_schema(url: str) -> bool:
-    sql_path = REPO_ROOT / "packages/nimbusware_store/schema/postgres.sql"
+    sql_path = REPO_ROOT / "packages/store/schema/postgres.sql"
     scripts_dir = Path(__file__).resolve().parent.parent / "database"
     if str(scripts_dir) not in sys.path:
         sys.path.insert(0, str(scripts_dir))
@@ -124,11 +124,11 @@ def check_bootstrap() -> CheckResult:
 
 
 def check_poetry_env() -> CheckResult:
-    code = _poetry_run_python("import nimbusware_api, nimbusware_orchestrator")
+    code = _poetry_run_python("import api, orchestrator")
     return CheckResult(
         "poetry_env",
         code == 0,
-        "imports nimbusware_api, nimbusware_orchestrator",
+        "imports api, orchestrator",
         required=True,
     )
 
@@ -180,7 +180,7 @@ def check_unit_tests(*, full_suite: bool) -> CheckResult:
             _poetry(),
             "run",
             "pytest",
-            "tests/api/test_api_timeline.py::test_create_run_and_timeline",
+            "tests/api_http/test_api_timeline.py::test_create_run_and_timeline",
             "tests/unit/test_extensions_yaml.py",
             "tests/e2e/test_operator_smoke_checks.py",
             "-q",
@@ -230,7 +230,7 @@ import os
 os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
 from fastapi.testclient import TestClient
-from nimbusware_api.app import app
+from api.app import app
 with TestClient(app) as client:
     r = client.post("/v1/runs", json={"workflow_profile": "default"})
     assert r.status_code == 200, r.text
@@ -252,7 +252,7 @@ import os
 os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
 from fastapi.testclient import TestClient
-from nimbusware_api.app import app
+from api.app import app
 with TestClient(app) as client:
     m = client.get("/v1/maker/app/")
     assert m.status_code == 200, m.text

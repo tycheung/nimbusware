@@ -14,11 +14,11 @@ _TARGET_MS = 180_000
 
 def test_chat_patch_intent_to_first_slice(journey_client, tmp_path: Path) -> None:
     ws = copy_fixture_repo("tiny_python_app", tmp_path / "chat-patch")
-    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text(
+    (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text(
         "# stub\n", encoding="utf-8"
     )
-    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws, name="chat-patch-timing")
     t0 = time.perf_counter()

@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType, StageFailedEvent, StageFailedPayload
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_cumulative_stage_failures_emits_single_escalation() -> None:
@@ -28,7 +28,7 @@ def test_cumulative_stage_failures_emits_single_escalation() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)
@@ -58,7 +58,7 @@ def test_cumulative_stage_escalation_suppressed_by_workflow() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)
@@ -86,7 +86,7 @@ def test_cumulative_stage_failures_below_threshold_no_escalation(n_failures: int
             ),
         )
     with patch(
-        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
+        "orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)

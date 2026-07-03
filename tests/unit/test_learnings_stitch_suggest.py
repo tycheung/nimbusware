@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_orchestrator.learnings_stitch_suggest import stitch_suggestion_for_run
+from orchestrator.learnings_stitch_suggest import stitch_suggestion_for_run
 
 
 def _learn_event(fp: str, seq: int) -> dict:

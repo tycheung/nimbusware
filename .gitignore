@@ -23,8 +23,8 @@ env/
 /build/
 /develop-eggs/
 /dist/
-packages/nimbusware_bootstrap/dist/
-packages/nimbusware_bootstrap/**/*.egg-info/
+packages/bootstrap/dist/
+packages/bootstrap/**/*.egg-info/
 /downloads/
 /eggs/
 /.eggs/
@@ -51,7 +51,7 @@ node_modules/
 *.tsbuildinfo
 # Playwright (tests/e2e/web)
 tests/e2e/web/test-results/
-packages/nimbusware_maker_web/test-results/
+packages/maker_web/test-results/
 extensions/**/node_modules/
 extensions/**/package-lock.json
 extensions/**/*.vsix
@@ -66,8 +66,8 @@ tests/fixtures/repos/tiny_jvm_app/target/
 !.env.example
 
 # Retired Streamlit operator trees — do not re-commit if recreated locally
-packages/nimbusware_maker/ui/
-packages/nimbusware_console/pages/
+packages/maker/ui/
+packages/console/pages/
 .streamlit/
 
 /var/
@@ -135,13 +135,14 @@ secrets.json
 *~
 
 # Admin UI OpenAPI artifacts (generated at build/CI — scripts/codegen/openapi_to_ts.py)
-packages/nimbusware_admin_ui/src/api/openapi.json
-packages/nimbusware_admin_ui/src/api/schema.d.ts
+packages/admin_ui/src/api/openapi.json
+packages/admin_ui/src/api/schema.d.ts
 
-# Nimbusware planning docs (local only — two-file model: normative plan + backlog)
+# Nimbusware planning docs (local only — normative plan + backlog + efficiency)
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
+efficiency.md
 benchmarks/*
 !benchmarks/README.md
 !benchmarks/latest_*.json

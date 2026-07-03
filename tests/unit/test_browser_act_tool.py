@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from agent_tools.tools import tool_browser_act
 from e2e.harness.playwright_skip import require_playwright_chromium
-from nimbusware_agent_tools.tools import tool_browser_act
 
 
 def test_browser_act_rejects_unknown_action() -> None:

@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.cli import main
-from nimbusware_config.export import export_config_to_repo
-from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS, NS_WORKFLOWS
-from nimbusware_config.seed import preview_seed_from_repo, seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.merge import load_yaml
+from config.cli import main
+from config.export import export_config_to_repo
+from config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS, NS_WORKFLOWS
+from config.seed import preview_seed_from_repo, seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.merge import load_yaml
 
 pytestmark_integration = pytest.mark.integration
 
@@ -47,7 +47,7 @@ def test_import_dry_run_does_not_mutate_store(
     preview_before = preview_seed_from_repo(repo)
     assert preview_before
 
-    import nimbusware_config.cli as cli_mod
+    import config.cli as cli_mod
 
     original = cli_mod.PostgresConfigStore
 

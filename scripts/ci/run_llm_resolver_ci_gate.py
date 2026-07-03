@@ -10,17 +10,17 @@ ROOT = Path(__file__).resolve().parents[2]
 PACKAGES = ROOT / "packages"
 
 ALLOWLIST = {
-    PACKAGES / "nimbusware_orchestrator" / "ollama_chat.py",
-    PACKAGES / "nimbusware_orchestrator" / "stage_provider_routing.py",
-    PACKAGES / "nimbusware_orchestrator" / "llm_plan.py",
-    PACKAGES / "nimbusware_orchestrator" / "llm" / "common.py",
-    PACKAGES / "nimbusware_orchestrator" / "llm" / "providers" / "ollama_provider.py",
+    PACKAGES / "orchestrator" / "ollama_chat.py",
+    PACKAGES / "orchestrator" / "stage_provider_routing.py",
+    PACKAGES / "orchestrator" / "llm_plan.py",
+    PACKAGES / "orchestrator" / "llm" / "common.py",
+    PACKAGES / "orchestrator" / "llm" / "providers" / "ollama_provider.py",
 }
 
 PATTERNS = (
-    re.compile(r"from nimbusware_orchestrator\.ollama_chat import"),
-    re.compile(r"from nimbusware_orchestrator import ollama_chat\b"),
-    re.compile(r"import nimbusware_orchestrator\.ollama_chat\b"),
+    re.compile(r"from orchestrator\.ollama_chat import"),
+    re.compile(r"from orchestrator import ollama_chat\b"),
+    re.compile(r"import orchestrator\.ollama_chat\b"),
 )
 
 

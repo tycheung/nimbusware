@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nimbusware_mcp.tool_specs import TOOL_SPECS
-from nimbusware_mcp.tools import call_tool
+from mcp.tool_specs import TOOL_SPECS
+from mcp.tools import call_tool
 
 
 def test_tool_specs_include_required_tools() -> None:
@@ -18,7 +18,7 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_chat_select_branch",
         "nimbusware_classify_intent",
         "nimbusware_interject",
-        "nimbusware_maker_pending",
+        "maker_pending",
         "nimbusware_patch",
         "nimbusware_patch_from_selection",
         "nimbusware_prepare_slice",
@@ -46,15 +46,15 @@ def test_tool_specs_include_required_tools() -> None:
     }
 
 
-@patch("nimbusware_mcp.tools.get_json")
-def test_nimbusware_maker_pending(mock_get: Any) -> None:
+@patch("mcp.tools.get_json")
+def test_maker_pending(mock_get: Any) -> None:
     mock_get.return_value = {"plan_approved": False, "pending": None}
-    out = call_tool("nimbusware_maker_pending", {"run_id": "abc"})
+    out = call_tool("maker_pending", {"run_id": "abc"})
     mock_get.assert_called_once_with("/runs/abc/maker/pending")
     assert "plan_approved" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_resume_campaign(mock_post: Any) -> None:
     mock_post.return_value = {"status": "resumed"}
     out = call_tool("nimbusware_resume_campaign", {"campaign_id": "camp-1"})
@@ -62,7 +62,7 @@ def test_nimbusware_resume_campaign(mock_post: Any) -> None:
     assert "resumed" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.get_json")
+@patch("mcp.tools.get_json")
 def test_nimbusware_run_status(mock_get: Any) -> None:
     mock_get.return_value = {"run_id": "abc", "status": "running"}
     out = call_tool("nimbusware_run_status", {"run_id": "abc"})
@@ -71,7 +71,7 @@ def test_nimbusware_run_status(mock_get: Any) -> None:
     assert "running" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_approve_plan(mock_post: Any) -> None:
     mock_post.return_value = {"status": "approved"}
     out = call_tool("nimbusware_approve_plan", {"run_id": "abc"})
@@ -79,7 +79,7 @@ def test_nimbusware_approve_plan(mock_post: Any) -> None:
     assert "approved" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_apply_slice(mock_post: Any) -> None:
     mock_post.return_value = {"status": "applied"}
     out = call_tool("nimbusware_apply_slice", {"run_id": "abc", "slice_id": "s1"})
@@ -87,7 +87,7 @@ def test_nimbusware_apply_slice(mock_post: Any) -> None:
     assert "applied" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_prepare_slice(mock_post: Any) -> None:
     mock_post.return_value = {"status": "awaiting_approval"}
     out = call_tool("nimbusware_prepare_slice", {"run_id": "abc"})
@@ -95,7 +95,7 @@ def test_nimbusware_prepare_slice(mock_post: Any) -> None:
     assert "awaiting_approval" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_skip_slice(mock_post: Any) -> None:
     mock_post.return_value = {"status": "skipped"}
     out = call_tool("nimbusware_skip_slice", {"run_id": "abc", "slice_id": "s1"})
@@ -103,7 +103,7 @@ def test_nimbusware_skip_slice(mock_post: Any) -> None:
     assert "skipped" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_revert_workspace(mock_post: Any) -> None:
     mock_post.return_value = {"status": "reverted"}
     out = call_tool("nimbusware_revert_workspace", {"run_id": "abc"})
@@ -111,7 +111,7 @@ def test_nimbusware_revert_workspace(mock_post: Any) -> None:
     assert "reverted" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_compact_run(mock_post: Any) -> None:
     mock_post.return_value = {"compacted": True, "tokens_before": 100, "tokens_after": 40}
     out = call_tool("nimbusware_compact_run", {"run_id": "abc"})
@@ -119,7 +119,7 @@ def test_nimbusware_compact_run(mock_post: Any) -> None:
     assert "compacted" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_classify_intent(mock_post: Any) -> None:
     mock_post.return_value = {
         "classification": {"work_type": "patch", "confidence": 0.9, "suggested_profile": "patch"},
@@ -129,7 +129,7 @@ def test_nimbusware_classify_intent(mock_post: Any) -> None:
     assert "patch" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_interject(mock_post: Any) -> None:
     mock_post.return_value = {"queue": {"count": 1}}
     out = call_tool("nimbusware_interject", {"run_id": "abc", "message": "[steer] smaller diff"})
@@ -140,7 +140,7 @@ def test_nimbusware_interject(mock_post: Any) -> None:
     assert "count" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_run_tests(mock_post: Any) -> None:
     mock_post.return_value = {"tests_passed": True, "exit_code": 0}
     out = call_tool("nimbusware_run_tests", {"run_id": "abc"})
@@ -148,8 +148,8 @@ def test_nimbusware_run_tests(mock_post: Any) -> None:
     assert "tests_passed" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.get_json")
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.get_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_patch(mock_post: Any, mock_get: Any) -> None:
     mock_get.return_value = {"workspace_path": "/tmp/proj"}
     mock_post.side_effect = [
@@ -167,8 +167,8 @@ def test_nimbusware_patch(mock_post: Any, mock_get: Any) -> None:
     assert "run-patch-1" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.get_json")
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.get_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_patch_from_selection_alias(mock_post: Any, mock_get: Any) -> None:
     mock_get.return_value = {"workspace_path": "/tmp/proj"}
     mock_post.side_effect = [
@@ -191,8 +191,8 @@ def test_nimbusware_patch_from_selection_alias(mock_post: Any, mock_get: Any) ->
     assert "run-sel-1" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.get_json")
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.get_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_patch_selects_go_profile(mock_post: Any, mock_get: Any, tmp_path: Any) -> None:
     ws = tmp_path / "go-proj"
     ws.mkdir()
@@ -208,7 +208,7 @@ def test_nimbusware_patch_selects_go_profile(mock_post: Any, mock_get: Any, tmp_
     assert create_body["workflow_profile"] == "patch_go"
 
 
-@patch("nimbusware_mcp.tools.get_json")
+@patch("mcp.tools.get_json")
 def test_nimbusware_chat_graph(mock_get: Any) -> None:
     mock_get.return_value = {"session_id": "sess-1", "nodes": [], "edges": [], "branches": []}
     out = call_tool("nimbusware_chat_graph", {"session_id": "sess-1"})
@@ -216,7 +216,7 @@ def test_nimbusware_chat_graph(mock_get: Any) -> None:
     assert "sess-1" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.post_json")
+@patch("mcp.tools.post_json")
 def test_nimbusware_chat_fork(mock_post: Any) -> None:
     mock_post.return_value = {"active_leaf_turn_id": "turn-1"}
     out = call_tool("nimbusware_chat_fork", {"session_id": "sess-1", "turn_id": "turn-1"})
@@ -224,7 +224,7 @@ def test_nimbusware_chat_fork(mock_post: Any) -> None:
     assert "turn-1" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.put_response")
+@patch("mcp.tools.put_response")
 def test_nimbusware_chat_select_branch(mock_put: Any) -> None:
     mock_resp = mock_put.return_value
     mock_resp.json.return_value = {"leaf_turn_id": "turn-2"}
@@ -241,7 +241,7 @@ def test_unknown_tool_raises() -> None:
         call_tool("nope", {"run_id": "x"})
 
 
-@patch("nimbusware_mcp.tools.put_response")
+@patch("mcp.tools.put_response")
 def test_nimbusware_set_discipline(mock_put: Any) -> None:
     mock_resp = mock_put.return_value
     mock_resp.json.return_value = {"user_id": "u1", "default_discipline": "backend"}
@@ -253,7 +253,7 @@ def test_nimbusware_set_discipline(mock_put: Any) -> None:
     assert "backend" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.put_response")
+@patch("mcp.tools.put_response")
 def test_nimbusware_set_discipline_clear(mock_put: Any) -> None:
     mock_resp = mock_put.return_value
     mock_resp.json.return_value = {"user_id": "u1", "default_discipline": None}
@@ -261,7 +261,7 @@ def test_nimbusware_set_discipline_clear(mock_put: Any) -> None:
     mock_put.assert_called_once_with("/users/me/discipline-profile", {"default_discipline": None})
 
 
-@patch("nimbusware_mcp.tools.put_response")
+@patch("mcp.tools.put_response")
 def test_nimbusware_update_agent_overlay(mock_put: Any) -> None:
     mock_resp = mock_put.return_value
     mock_resp.json.return_value = {
@@ -279,7 +279,7 @@ def test_nimbusware_update_agent_overlay(mock_put: Any) -> None:
     assert "thin handlers" in out["content"][0]["text"]
 
 
-@patch("nimbusware_mcp.tools.put_response")
+@patch("mcp.tools.put_response")
 def test_nimbusware_update_agent_overlay_clear(mock_put: Any) -> None:
     mock_resp = mock_put.return_value
     mock_resp.json.return_value = {"user_id": "u1", "overlays": {}}

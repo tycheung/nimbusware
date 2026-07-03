@@ -3,13 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent_core.models import EventType
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import (
+from env import find_repo_root
+from orchestrator.backlog_generator import (
     emit_backlog_generated,
     generate_heuristic_backlog,
 )
-from nimbusware_orchestrator.maintenance_architecture import run_maintenance_architecture
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.maintenance_architecture import run_maintenance_architecture
+from orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_architecture_pass_revises_backlog() -> None:

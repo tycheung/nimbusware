@@ -85,7 +85,7 @@ def start_api_subprocess(
         sys.executable,
         "-m",
         "uvicorn",
-        "nimbusware_api.app:app",
+        "api.app:app",
         "--host",
         "127.0.0.1",
         "--port",
@@ -119,7 +119,7 @@ def start_inprocess_dispatch_worker(
     *,
     idle_sleep_seconds: float = 0.05,
 ) -> InProcessDispatchWorker:
-    from nimbusware_orchestrator.run_worker import start_embedded_dispatch_worker
+    from orchestrator.run_worker import start_embedded_dispatch_worker
 
     worker = start_embedded_dispatch_worker(
         orchestrator,  # type: ignore[arg-type]

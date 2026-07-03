@@ -9,7 +9,7 @@ from e2e.harness.stack import (
     start_api_subprocess,
     stop_api_subprocess,
 )
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 pytestmark = [
     pytest.mark.e2e,

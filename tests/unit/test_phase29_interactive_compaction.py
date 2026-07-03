@@ -19,20 +19,20 @@ from agent_core.models import (  # noqa: E402
     StageStartedPayload,
 )
 from agent_core.models.slice_handoff import SliceHandoffSummary  # noqa: E402
-from nimbusware_api.app import app  # noqa: E402
-from nimbusware_maker.workspace import project_metadata_block  # noqa: E402
-from nimbusware_orchestrator.context_artifacts import (  # noqa: E402
+from api.app import app  # noqa: E402
+from maker.workspace import project_metadata_block  # noqa: E402
+from orchestrator.context_artifacts import (  # noqa: E402
     clear_context_artifacts_memory,
     create_context_artifact,
     list_context_artifacts,
 )
-from nimbusware_orchestrator.context_compaction import (  # noqa: E402
+from orchestrator.context_compaction import (  # noqa: E402
     compact_campaign_context,
     emit_compaction_revert_event,
     reverted_compaction_ids,
 )
-from nimbusware_projections.builders.run_theater import build_run_theater_messages  # noqa: E402
-from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
+from projections.builders.run_theater import build_run_theater_messages  # noqa: E402
+from store.memory import InMemoryEventStore  # noqa: E402
 
 
 @pytest.fixture

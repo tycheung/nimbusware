@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_agent_tools.agent_loop import run
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from agent_tools.agent_loop import run
+from orchestrator.micro_slice import parse_slice_plan
 
 
 def test_agent_loop_reads_and_edits_via_tools(tmp_path: Path) -> None:
@@ -69,7 +69,7 @@ def test_agent_loop_respects_tool_step_cap(tmp_path: Path) -> None:
     def endless_read(**_kwargs: object) -> dict[str, object]:
         return {"done": False, "tool_calls": [{"tool": "read", "path": "a.py"}]}
 
-    from nimbusware_agent_tools.risk_caps import AgentRiskCaps
+    from agent_tools.risk_caps import AgentRiskCaps
 
     result = run(
         ws,
@@ -107,21 +107,21 @@ def test_jit_loop_skips_gather_context(
         return ""
 
     monkeypatch.setattr(
-        "nimbusware_agent_tools.runtime._gather_context",
+        "agent_tools.runtime._gather_context",
         spy_gather,
     )
 
-    from nimbusware_agent_tools.agent_loop import AgentLoopResult
+    from agent_tools.agent_loop import AgentLoopResult
 
     def fake_run(*_a: object, **_k: object) -> AgentLoopResult:
         return AgentLoopResult()
 
     monkeypatch.setattr(
-        "nimbusware_agent_tools.agent_loop.run",
+        "agent_tools.agent_loop.run",
         fake_run,
     )
 
-    from nimbusware_agent_tools.runtime import execute_slice_implement_agent
+    from agent_tools.runtime import execute_slice_implement_agent
 
     execute_slice_implement_agent(
         ws,

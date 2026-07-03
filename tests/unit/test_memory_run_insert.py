@@ -16,12 +16,12 @@ from agent_core.models import (  # noqa: E402
     RunCreatedEvent,
     RunCreatedPayload,
 )
-from nimbusware_api.app import app  # noqa: E402
-from nimbusware_maker.workspace import project_metadata_block  # noqa: E402
-from nimbusware_memory.models import MemoryChunkRecord  # noqa: E402
-from nimbusware_memory.repo_scope import repo_scope_hash  # noqa: E402
-from nimbusware_memory.store_memory import InMemoryMemoryChunkStore  # noqa: E402
-from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
+from api.app import app  # noqa: E402
+from maker.workspace import project_metadata_block  # noqa: E402
+from memory.models import MemoryChunkRecord  # noqa: E402
+from memory.repo_scope import repo_scope_hash  # noqa: E402
+from memory.store_memory import InMemoryMemoryChunkStore  # noqa: E402
+from store.memory import InMemoryEventStore  # noqa: E402
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def memory_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[T
     store = InMemoryEventStore()
     chunk_store = InMemoryMemoryChunkStore()
     monkeypatch.setattr(
-        "nimbusware_api.routes.runs.memory_insert.build_memory_chunk_store",
+        "api.routes.runs.memory_insert.build_memory_chunk_store",
         lambda **_: chunk_store,
     )
     with TestClient(app) as c:

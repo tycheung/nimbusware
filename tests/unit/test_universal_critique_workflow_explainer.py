@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.universal_critique_timeline_display import (
+from console.universal_critique_timeline_display import (
     universal_critique_snapshot_from_compare_paste,
 )
-from nimbusware_console.workflow_explainers.universal_critique import (
+from console.workflow_explainers.universal_critique import (
     universal_critique_default_enabled_caption,
     universal_critique_enabled_stages_caption,
     universal_critique_env_override_deltas,
@@ -27,7 +27,7 @@ from nimbusware_console.workflow_explainers.universal_critique import (
     universal_critique_yaml_top_level_mapping_child_count_caption,
     universal_critique_yaml_top_level_nonempty_count_caption,
 )
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 
 @pytest.fixture(autouse=True)

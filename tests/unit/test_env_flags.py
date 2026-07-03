@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_env.env_flags import (
+from env.env_flags import (
+    api_host,
+    config_from_db_enabled,
     env_bool,
     env_falsy,
     env_force_off,
     env_force_on,
     env_truthy,
     env_truthy_raw,
-    nimbusware_api_host,
-    nimbusware_config_from_db_enabled,
     nimbusware_preflight_latency_sample_count,
     nimbusware_run_bandit_enabled,
     nimbusware_run_semgrep_enabled,
@@ -96,28 +96,28 @@ def test_nimbusware_slice_implement_mode(monkeypatch) -> None:
     assert nimbusware_slice_implement_mode() == "agent"
 
 
-def test_nimbusware_config_from_db_enabled(monkeypatch) -> None:
+def test_config_from_db_enabled(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
     monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_DB", raising=False)
     monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
-    assert nimbusware_config_from_db_enabled() is False
+    assert config_from_db_enabled() is False
     monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://localhost/nimbusware")
-    assert nimbusware_config_from_db_enabled() is True
+    assert config_from_db_enabled() is True
     monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_FILES", "1")
-    assert nimbusware_config_from_db_enabled() is False
+    assert config_from_db_enabled() is False
 
 
-def test_nimbusware_config_from_files_enabled(monkeypatch) -> None:
-    from nimbusware_env.env_flags import nimbusware_config_from_files_enabled
+def test_config_from_files_enabled(monkeypatch) -> None:
+    from env.env_flags import config_from_files_enabled
 
     monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
-    assert nimbusware_config_from_files_enabled() is False
+    assert config_from_files_enabled() is False
     monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_FILES", "yes")
-    assert nimbusware_config_from_files_enabled() is True
+    assert config_from_files_enabled() is True
 
 
 def test_nimbusware_roles_from_db_enabled(monkeypatch) -> None:
-    from nimbusware_env.env_flags import nimbusware_roles_from_db_enabled
+    from env.env_flags import nimbusware_roles_from_db_enabled
 
     monkeypatch.delenv("NIMBUSWARE_ROLES_FROM_DB", raising=False)
     assert nimbusware_roles_from_db_enabled() is False
@@ -132,15 +132,15 @@ def test_nimbusware_use_llm_explicitly_off(monkeypatch) -> None:
     assert nimbusware_use_llm_explicitly_off() is True
 
 
-def test_nimbusware_api_host(monkeypatch) -> None:
+def test_api_host(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_API_HOST", raising=False)
-    assert nimbusware_api_host() == "0.0.0.0"
+    assert api_host() == "0.0.0.0"
     monkeypatch.setenv("NIMBUSWARE_API_HOST", "127.0.0.1")
-    assert nimbusware_api_host() == "127.0.0.1"
+    assert api_host() == "127.0.0.1"
 
 
 def test_nimbusware_ollama_base_url(monkeypatch) -> None:
-    from nimbusware_env.env_flags import nimbusware_ollama_base_url
+    from env.env_flags import nimbusware_ollama_base_url
 
     monkeypatch.delenv("NIMBUSWARE_OLLAMA_BASE_URL", raising=False)
     assert nimbusware_ollama_base_url() == "http://127.0.0.1:11434"
@@ -148,28 +148,28 @@ def test_nimbusware_ollama_base_url(monkeypatch) -> None:
     assert nimbusware_ollama_base_url() == "http://canonical:11434"
 
 
-def test_nimbusware_api_base_url(monkeypatch) -> None:
-    from nimbusware_env.env_flags import nimbusware_api_base_url
+def test_api_base_url(monkeypatch) -> None:
+    from env.env_flags import api_base_url
 
     monkeypatch.delenv("NIMBUSWARE_API_BASE", raising=False)
     monkeypatch.delenv("NIMBUSWARE_API_HOST", raising=False)
     monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)
     monkeypatch.delenv("PORT", raising=False)
-    assert nimbusware_api_base_url() == "http://127.0.0.1:8000/v1"
+    assert api_base_url() == "http://127.0.0.1:8000/v1"
     monkeypatch.setenv("NIMBUSWARE_API_BASE", "http://custom:9000/v1")
-    assert nimbusware_api_base_url() == "http://custom:9000/v1"
+    assert api_base_url() == "http://custom:9000/v1"
     monkeypatch.delenv("NIMBUSWARE_API_BASE", raising=False)
     monkeypatch.setenv("NIMBUSWARE_API_PORT", "9001")
-    assert nimbusware_api_base_url() == "http://127.0.0.1:9001/v1"
+    assert api_base_url() == "http://127.0.0.1:9001/v1"
 
 
-def test_nimbusware_api_port(monkeypatch) -> None:
-    from nimbusware_env.env_flags import nimbusware_api_port
+def test_api_port(monkeypatch) -> None:
+    from env.env_flags import api_port
 
     monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)
-    assert nimbusware_api_port() == 8000
+    assert api_port() == 8000
     monkeypatch.setenv("NIMBUSWARE_API_PORT", "9001")
-    assert nimbusware_api_port() == 9001
+    assert api_port() == 9001
 
 
 def test_nimbusware_workflow_profile(monkeypatch) -> None:

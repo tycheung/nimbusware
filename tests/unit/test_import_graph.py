@@ -10,17 +10,17 @@ def _module_level_orchestrator_imports(path: Path) -> list[str]:
     for node in tree.body:
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.startswith("nimbusware_orchestrator"):
+                if alias.name.startswith("orchestrator"):
                     hits.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
             mod = node.module or ""
-            if mod.startswith("nimbusware_orchestrator"):
+            if mod.startswith("orchestrator"):
                 hits.append(mod)
     return hits
 
 
 def test_extensions_has_no_module_level_orchestrator_imports() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_extensions"
+    root = Path(__file__).resolve().parents[2] / "packages" / "extensions"
     offenders: list[str] = []
     for path in sorted(root.glob("*.py")):
         hits = _module_level_orchestrator_imports(path)
@@ -45,10 +45,10 @@ def _module_level_imports_matching(path: Path, prefix: str) -> list[str]:
 
 
 def test_orchestrator_has_no_module_level_api_imports() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_orchestrator"
+    root = Path(__file__).resolve().parents[2] / "packages" / "orchestrator"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
-        hits = _module_level_imports_matching(path, "nimbusware_api")
+        hits = _module_level_imports_matching(path, "api")
         if hits:
             rel = path.relative_to(root)
             offenders.append(f"{rel}: {hits}")
@@ -84,15 +84,15 @@ def test_legacy_hermes_shim_packages_removed() -> None:
 
 
 def test_enterprise_console_uses_shared_http_client() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+    root = Path(__file__).resolve().parents[2] / "packages" / "console"
     service_path = root / "services" / "enterprise.py"
     text = service_path.read_text(encoding="utf-8")
     assert "import httpx" not in text
-    assert "nimbusware_client.http" in text
+    assert "client.http" in text
 
 
 def test_console_does_not_import_httpx_directly() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+    root = Path(__file__).resolve().parents[2] / "packages" / "console"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
         text = path.read_text(encoding="utf-8")
@@ -106,7 +106,7 @@ def test_run_detail_sections_do_not_star_import() -> None:
     root = (
         Path(__file__).resolve().parents[2]
         / "packages"
-        / "nimbusware_console"
+        / "console"
         / "pages"
         / "run_detail"
     )
@@ -121,7 +121,7 @@ def test_run_detail_sections_do_not_star_import() -> None:
         if path.name in skip:
             continue
         text = path.read_text(encoding="utf-8")
-        if "from nimbusware_console.pages.run_detail._imports import *" in text:
+        if "from console.pages.run_detail._imports import *" in text:
             offenders.append(path.name)
     assert not offenders, "\n".join(offenders)
 
@@ -130,20 +130,20 @@ _MAKER_HTTPX_ALLOWLIST = frozenset({"readiness.py"})
 
 
 def test_maker_slice_workflow_uses_slice_engine_boundary() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
+    root = Path(__file__).resolve().parents[2] / "packages" / "maker"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
         rel = path.relative_to(root).as_posix()
         if rel == "slice_engine.py":
             continue
-        hits = _module_level_imports_matching(path, "nimbusware_orchestrator")
+        hits = _module_level_imports_matching(path, "orchestrator")
         if hits:
             offenders.append(f"{rel}: {hits}")
     assert not offenders, "\n".join(offenders)
 
 
 def test_maker_does_not_import_httpx_directly() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
+    root = Path(__file__).resolve().parents[2] / "packages" / "maker"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
         rel = path.relative_to(root).as_posix()
@@ -157,11 +157,11 @@ def test_maker_does_not_import_httpx_directly() -> None:
 
 def test_api_runs_use_projections_run_summary() -> None:
     api_runs = (
-        Path(__file__).resolve().parents[2] / "packages" / "nimbusware_api" / "routes" / "runs"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "runs"
     )
     offenders: list[str] = []
     for path in sorted(api_runs.glob("*.py")):
-        hits = _module_level_imports_matching(path, "nimbusware_orchestrator.read_models")
+        hits = _module_level_imports_matching(path, "orchestrator.read_models")
         if hits:
             offenders.append(f"{path.name}: {hits}")
     assert not offenders, "\n".join(offenders)
@@ -178,13 +178,13 @@ _PROJECTIONS_ORCHESTRATOR_ALLOWLIST = frozenset()
 
 
 def test_projections_has_no_module_level_orchestrator_imports() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_projections"
+    root = Path(__file__).resolve().parents[2] / "packages" / "projections"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
         rel = path.relative_to(root).as_posix()
         if rel in _PROJECTIONS_ORCHESTRATOR_ALLOWLIST:
             continue
-        hits = _module_level_imports_matching(path, "nimbusware_orchestrator")
+        hits = _module_level_imports_matching(path, "orchestrator")
         if hits:
             offenders.append(f"{rel}: {hits}")
     assert not offenders, "\n".join(offenders)
@@ -194,19 +194,19 @@ def test_workflow_explainers_use_config_workflow_read_facade() -> None:
     root = (
         Path(__file__).resolve().parents[2]
         / "packages"
-        / "nimbusware_console"
+        / "console"
         / "workflow_explainers"
     )
     offenders: list[str] = []
     for path in sorted(root.glob("*/payload.py")):
         hits = [
             mod
-            for mod in _module_level_imports_matching(path, "nimbusware_orchestrator")
+            for mod in _module_level_imports_matching(path, "orchestrator")
             if mod
             not in {
-                "nimbusware_orchestrator.integrator_gate",
-                "nimbusware_orchestrator.integration_adapter_writer_stage",
-                "nimbusware_orchestrator.workflow_blocks_simple",
+                "orchestrator.integrator_gate",
+                "orchestrator.integration_adapter_writer_stage",
+                "orchestrator.workflow_blocks_simple",
             }
         ]
         if hits:

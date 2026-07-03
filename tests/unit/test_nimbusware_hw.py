@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_hw.fit import rank_models
-from nimbusware_hw.fixtures import FIXTURE_NAMES, fixture_probe
-from nimbusware_hw.governor import ResourceGovernor, governor_for_profile
-from nimbusware_hw.probe import classify_tier, probe_hardware
-from nimbusware_hw.profile import profile_from_probe
+from hw.fit import rank_models
+from hw.fixtures import FIXTURE_NAMES, fixture_probe
+from hw.governor import ResourceGovernor, governor_for_profile
+from hw.probe import classify_tier, probe_hardware
+from hw.profile import profile_from_probe
 
 
 def test_classify_tier() -> None:
@@ -37,7 +37,7 @@ def test_governor_metadata_roundtrip() -> None:
 
 
 def test_rank_models_includes_routing_allowlist() -> None:
-    from nimbusware_env import find_repo_root
+    from env import find_repo_root
 
     root = find_repo_root()
     profile = profile_from_probe(fixture_probe("medium"))
@@ -48,7 +48,7 @@ def test_rank_models_includes_routing_allowlist() -> None:
 
 def test_probe_hardware_fixture_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_HW_FIXTURE", "weak")
-    from nimbusware_hw import cache
+    from hw import cache
 
     cache._cached = None
     raw = probe_hardware()

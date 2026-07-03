@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_console.components.explainer_panel import nimbusware_download_filename
+from console.components.explainer_panel import nimbusware_download_filename
 
 
 def test_nimbusware_download_filename_metrics_json() -> None:

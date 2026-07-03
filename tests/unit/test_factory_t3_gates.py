@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.factory_completion import evaluate_factory_gates, resolve_factory_tier
-from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_static
-from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
-from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
-from nimbusware_orchestrator.workflow_campaign import parse_completion_workflow_block
+from orchestrator.factory_completion import evaluate_factory_gates, resolve_factory_tier
+from orchestrator.interaction_surface_map import discover_surfaces_static
+from orchestrator.put_e2e_runner import run_put_e2e_flow
+from orchestrator.put_runtime import start_put_preview, stop_put_preview
+from orchestrator.workflow_campaign import parse_completion_workflow_block
 
 REPO = Path(__file__).resolve().parents[2]
 WS = REPO / "tests" / "fixtures" / "repos" / "tiny_api_app"

@@ -16,7 +16,7 @@ Add lightweight HTTP middleware on the FastAPI app that logs one INFO line per r
 - response status code
 - elapsed milliseconds
 
-Logging uses the standard library `logging` module under logger `nimbusware_api.request`. Unhandled exceptions continue to flow through existing exception handlers (500 problem+json).
+Logging uses the standard library `logging` module under logger `api.request`. Unhandled exceptions continue to flow through existing exception handlers (500 problem+json).
 
 ## Consequences
 
@@ -26,4 +26,4 @@ Logging uses the standard library `logging` module under logger `nimbusware_api.
 
 ## References
 
-- `packages/nimbusware_api/app.py` — `_request_logging_middleware`
+- `packages/api/app.py` — `_request_logging_middleware`

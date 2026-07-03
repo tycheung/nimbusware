@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.skills_index import (
+from config.skills_index import (
     list_skill_briefs,
     load_skill,
     resolve_stage_skill,
     skill_briefs_prompt_block,
 )
-from nimbusware_env import find_repo_root
+from env import find_repo_root
 
 
 def test_list_skill_briefs_has_entries() -> None:

@@ -7,7 +7,7 @@ Operator guide for enabling the **bundle integrator gate**, live HTTP adapter pr
 | Requirement | Notes |
 |-------------|--------|
 | **Edition** | `NIMBUSWARE_EDITION=enterprise` |
-| **Postgres** | `NIMBUSWARE_DATABASE_URL` — integrator thresholds and bundle catalog can persist in `nimbusware_config_document` |
+| **Postgres** | `NIMBUSWARE_DATABASE_URL` — integrator thresholds and bundle catalog can persist in `config_document` |
 | **Bundle catalog** | `configs/integrator/thresholds.yaml` or materialized `policy/integrator-thresholds` |
 | **Workflow profile** | Profile with `integrator_gate.enabled: true` (or force via env) |
 

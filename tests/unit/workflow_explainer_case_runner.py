@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 import yaml
 
-from nimbusware_console.explainer_core.workflow_explainer_registry import (
+from console.explainer_core.workflow_explainer_registry import (
     WORKFLOW_EXPLAINER_SPECS,
     explainer_metrics_prefix,
 )
@@ -40,7 +40,7 @@ def _explainer_short_name(slug: str) -> str:
 
 
 def load_explainer_export_fns(slug: str) -> ExplainerExportFns:
-    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    mod = importlib.import_module(f"console.workflow_explainers.{slug}")
     short = _explainer_short_name(slug)
     prefix = explainer_metrics_prefix(slug)
     return ExplainerExportFns(
@@ -126,7 +126,7 @@ def load_explainer_cases_yaml(path: Path) -> dict[str, Any]:
 
 
 def resolve_explainer_caption_fn(slug: str, fn_name: str) -> Callable[[Any], str | None]:
-    return load_caption_fn(f"nimbusware_console.workflow_explainers.{slug}.{fn_name}")
+    return load_caption_fn(f"console.workflow_explainers.{slug}.{fn_name}")
 
 
 def load_operator_metrics_fns(
@@ -136,7 +136,7 @@ def load_operator_metrics_fns(
     Callable[[Mapping[str, Any]], str | None],
 ]:
     prefix = explainer_metrics_prefix(slug)
-    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    mod = importlib.import_module(f"console.workflow_explainers.{slug}")
     return (
         getattr(mod, f"{prefix}_operator_metrics"),
         getattr(mod, f"{prefix}_operator_metrics_caption"),

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_maker.archetype_surface_defaults import (
+from maker.archetype_surface_defaults import (
     apply_fleet_surface_policy,
     campaign_profile_for_archetype,
     default_surfaces_for_archetype,

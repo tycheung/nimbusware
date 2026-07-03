@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from uuid import uuid4
 
-from nimbusware_research.enterprise_index import (
+from research.enterprise_index import (
     append_enterprise_research_index,
     export_egress_audit_rows,
     list_enterprise_research_index,

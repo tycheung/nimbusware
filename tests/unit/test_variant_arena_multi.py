@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.variant_arena import run_variant_arena
+from orchestrator.variant_arena import run_variant_arena
 
 
 def test_run_variant_arena_caps_at_four_candidates(tmp_path: Path) -> None:

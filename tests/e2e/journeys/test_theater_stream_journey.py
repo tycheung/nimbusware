@@ -9,8 +9,8 @@ import pytest
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
 from e2e.harness.stack import start_api_subprocess, stop_api_subprocess
-from nimbusware_env import find_repo_root
-from nimbusware_store.postgres import PostgresEventStore
+from env import find_repo_root
+from store.postgres import PostgresEventStore
 
 pytestmark = [
     pytest.mark.e2e,

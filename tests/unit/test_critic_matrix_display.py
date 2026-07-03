@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from nimbusware_console.critic_matrix_display import (
+from console.critic_matrix_display import (
     critic_matrix_export_filename_slug,
     critic_matrix_export_json,
     critic_matrix_live_display_caption,

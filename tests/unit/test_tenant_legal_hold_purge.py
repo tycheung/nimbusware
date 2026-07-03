@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_store.retention_policy import purge_blocked_by_legal_hold, tenant_legal_hold_enabled
+from store.retention_policy import purge_blocked_by_legal_hold, tenant_legal_hold_enabled
 
 
 def test_tenant_legal_hold_false_without_postgres(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -28,7 +28,7 @@ def test_tenant_audit_policy_blocks_purge(monkeypatch: pytest.MonkeyPatch) -> No
             return _Row()
 
     monkeypatch.setattr(
-        "nimbusware_config.tenant_policy_store.PostgresConfigStore",
+        "config.tenant_policy_store.PostgresConfigStore",
         lambda _url: _Store(),
     )
     assert tenant_legal_hold_enabled("acme") is True

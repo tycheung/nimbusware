@@ -16,7 +16,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: `poetry run python -m uvicorn nimbusware_api.app:app --host 127.0.0.1 --port ${port}`,
+    command: `poetry run python -m uvicorn api.app:app --host 127.0.0.1 --port ${port}`,
     url: `${baseURL}/v1/maker/app/`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.dev_env_launch_merge import dev_env_live_regression_from_rows
-from nimbusware_orchestrator.launch_evaluator import (
+from orchestrator.dev_env_launch_merge import dev_env_live_regression_from_rows
+from orchestrator.launch_evaluator import (
     LaunchEvalScorecard,
     merge_dev_env_into_scorecard,
 )

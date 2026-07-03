@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.workflow_blocks_simple import EscalationWorkflowBlock
-from nimbusware_orchestrator.workflow_registry import (
+from env import find_repo_root
+from orchestrator.workflow_blocks_simple import EscalationWorkflowBlock
+from orchestrator.workflow_registry import (
     WORKFLOW_BLOCK_LOADERS,
     WORKFLOW_MODULE_KEYS,
     WORKFLOW_MODULE_LOADERS,

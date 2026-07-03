@@ -4,15 +4,15 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_config.keys import KEY_USER_DEFAULTS, NS_MODEL_BINDINGS
-from nimbusware_config.model_bindings_store import (
+from config.keys import KEY_USER_DEFAULTS, NS_MODEL_BINDINGS
+from config.model_bindings_store import (
     list_binding_role_catalog,
     load_defaults_file,
     load_user_defaults,
     merge_role_bindings,
     save_user_defaults,
 )
-from nimbusware_config.store import InMemoryConfigStore
+from config.store import InMemoryConfigStore
 
 REPO = Path(__file__).resolve().parents[2]
 

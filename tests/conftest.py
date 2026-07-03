@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_env import find_repo_root, load_dotenv
+from env import find_repo_root, load_dotenv
 
 _REPO = find_repo_root(start=Path(__file__).resolve().parent)
 load_dotenv(repo_root=_REPO)
@@ -30,7 +30,7 @@ def _unit_tests_use_file_config(
 @pytest.fixture(autouse=True)
 def _reset_collab_runtime_override() -> None:
     yield
-    from nimbusware_env.collab_runtime import clear_runtime_collab_override
+    from env.collab_runtime import clear_runtime_collab_override
 
     clear_runtime_collab_override()
 
@@ -38,6 +38,6 @@ def _reset_collab_runtime_override() -> None:
 @pytest.fixture(autouse=True)
 def _reset_playwright_sessions() -> None:
     yield
-    from nimbusware_orchestrator.browser_controller import close_all_persistent_browsers
+    from orchestrator.browser_controller import close_all_persistent_browsers
 
     close_all_persistent_browsers()

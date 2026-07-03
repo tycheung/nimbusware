@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_memory.timeline import (
+from memory.timeline import (
     memory_retrieval_entries_for_slice,
     memory_retrieval_timeline_entries,
 )

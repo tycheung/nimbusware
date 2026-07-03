@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.interjection_slo import (
+from orchestrator.interjection_slo import (
     interjection_slo_markdown,
     interjection_slo_summary,
 )

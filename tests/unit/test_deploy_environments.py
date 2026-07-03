@@ -3,13 +3,13 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_maker.deploy_target_enforcement import (
+from api.app import app
+from maker.deploy_target_enforcement import (
     DEFAULT_DEPLOY_ENVIRONMENT,
     normalize_deploy_environment,
     resolve_deploy_environment,
 )
-from nimbusware_maker.stack_manifest import parse_stack_manifest
+from maker.stack_manifest import parse_stack_manifest
 
 
 def test_normalize_deploy_environment() -> None:

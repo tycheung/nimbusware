@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from unittest.mock import MagicMock, patch
 
-from nimbusware_orchestrator.fleet_playwright import (
+from orchestrator.fleet_playwright import (
     FleetPlaywrightProbe,
     attach_fleet_playwright_capture,
     fleet_browser_goto,
@@ -53,7 +53,7 @@ def test_fleet_browser_goto_when_unavailable(monkeypatch) -> None:
 def test_attach_fleet_playwright_capture_includes_probe(monkeypatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT", "ws://fleet.example/playwright")
     with patch(
-        "nimbusware_orchestrator.fleet_playwright.probe_fleet_playwright_endpoint",
+        "orchestrator.fleet_playwright.probe_fleet_playwright_endpoint",
         return_value=FleetPlaywrightProbe(enabled=True, connected=True, detail="ok"),
     ):
         capture = attach_fleet_playwright_capture({"playwright_ready": True})

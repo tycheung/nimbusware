@@ -16,7 +16,7 @@ _TARGET = 0.8
 
 
 def measure_gate_comprehension(*, fixture_path: Path | None = None) -> dict[str, object]:
-    from nimbusware_projections.builders.maker_progress import _gate_summary_plain
+    from projections.builders.maker_progress import _gate_summary_plain
 
     path = fixture_path or _FIXTURE
     body = json.loads(path.read_text(encoding="utf-8"))

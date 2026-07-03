@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 from urllib.parse import parse_qsl, urlencode
 
-from nimbusware_api.routes.runs import _runs_list_query_string
-from nimbusware_api.schemas.openapi import (
+from api.routes.runs import _runs_list_query_string
+from api.schemas.openapi import (
     RUN_DETAIL_LINK_HEADER,
     RUN_FINDINGS_LINK_HEADER,
     RUN_TIMELINE_LINK_HEADER,

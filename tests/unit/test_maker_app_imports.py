@@ -4,15 +4,15 @@ from pathlib import Path
 
 
 def test_maker_package_imports() -> None:
-    import nimbusware_maker  # noqa: F401
-    from nimbusware_maker.cli import main
+    import maker  # noqa: F401
+    from maker.cli import main
 
     assert callable(main)
-    assert (Path(nimbusware_maker.__file__).resolve().parent / "services").is_dir()
+    assert (Path(maker.__file__).resolve().parent / "services").is_dir()
 
 
 def test_maker_runs_latest_for_project(monkeypatch) -> None:
-    from nimbusware_maker import runs as maker_runs
+    from maker import runs as maker_runs
 
     def fake_get_json(path: str) -> dict:
         assert "include_summary=1" in path

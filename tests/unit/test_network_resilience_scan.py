@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.network_resilience_scan import (
+from env import find_repo_root
+from orchestrator.network_resilience_scan import (
     check_sql_query_count_budget,
     run_network_resilience_scan_summary,
     scan_http_resilience_heuristic,

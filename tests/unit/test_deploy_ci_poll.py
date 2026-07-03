@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
+from api.app import app
 
 
 @pytest.fixture
@@ -28,18 +28,18 @@ def test_deploy_ci_poll_emits_timeline_event(
     created = client.post("/v1/runs", json={"workflow_profile": "default"})
     run_id = created.json()["run_id"]
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.maker_user_id_str",
+        "api.routes.platform_deploy_mutations.maker_user_id_str",
         lambda _req: "test-user",
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.load_deploy_credentials",
+        "api.routes.platform_deploy_mutations.load_deploy_credentials",
         lambda *_a, **_k: {
             "github_repo": "acme/app",
             "workflow_path": ".github/workflows/nimbusware-ci.yaml",
         },
     )
     monkeypatch.setattr(
-        "nimbusware_api.routes.platform_deploy_mutations.poll_github_workflow_run",
+        "api.routes.platform_deploy_mutations.poll_github_workflow_run",
         lambda **_k: {
             "status": "passed",
             "detail": "Nimbusware CI · completed · success",

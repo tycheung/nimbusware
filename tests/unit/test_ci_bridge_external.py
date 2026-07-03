@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_orchestrator.ci_bridge.external_ci import notify_gate_decision_external
+from orchestrator.ci_bridge.external_ci import notify_gate_decision_external
 
 
 def test_external_ci_skipped_without_token(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -37,7 +37,7 @@ def test_external_ci_gitlab_posts_status(monkeypatch: pytest.MonkeyPatch) -> Non
         return {}
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.ci_bridge.external_ci._post_json",
+        "orchestrator.ci_bridge.external_ci._post_json",
         fake_post_json,
     )
     out = notify_gate_decision_external(

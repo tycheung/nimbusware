@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_config.collab_settings_store import (
+from config.collab_settings_store import (
     load_persisted_collab_enabled,
     save_persisted_collab_enabled,
 )

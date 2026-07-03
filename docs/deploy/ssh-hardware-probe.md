@@ -1,6 +1,6 @@
 # SSH hardware probe (Enterprise fleet)
 
-Live tier checks for remote GPU/CPU workers over SSH. Code lives in `packages/nimbusware_hw/` (`probe.py`, `ssh_probe.py`, `fleet_hardware.py`).
+Live tier checks for remote GPU/CPU workers over SSH. Code lives in `packages/hw/` (`probe.py`, `ssh_probe.py`, `fleet_hardware.py`).
 
 ## GitHub Actions
 

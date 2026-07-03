@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from nimbusware_orchestrator.variant_arena import (
+from orchestrator.variant_arena import (
     VariantCandidate,
     merge_variant_crossover,
     select_promotion_candidate,

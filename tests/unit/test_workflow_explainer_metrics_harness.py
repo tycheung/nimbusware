@@ -6,15 +6,15 @@ from typing import Any
 
 import pytest
 
-from nimbusware_console.explainer_core.workflow_explainer_registry import (
+from console.explainer_core.workflow_explainer_registry import (
     WORKFLOW_EXPLAINER_SPECS,
     explainer_metrics_prefix,
 )
-from nimbusware_console.explainer_core.workflow_metrics_spec import repo_explainer_spec
+from console.explainer_core.workflow_metrics_spec import repo_explainer_spec
 
 
 def _metrics_fn(slug: str) -> Callable[[Mapping[str, Any] | None], dict[str, Any]]:
-    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    mod = importlib.import_module(f"console.workflow_explainers.{slug}")
     prefix = explainer_metrics_prefix(slug)
     return getattr(mod, f"{prefix}_operator_metrics")
 
@@ -46,7 +46,7 @@ def test_workflow_explainer_operator_exports_installed(
     prefix: str,
     metrics_fn: Callable[[Mapping[str, Any] | None], dict[str, Any]],
 ) -> None:
-    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    mod = importlib.import_module(f"console.workflow_explainers.{slug}")
     assert hasattr(mod, f"{prefix}_operator_metrics_table_rows")
     assert hasattr(mod, f"{prefix}_operator_metrics_caption")
     assert hasattr(mod, f"{prefix}_operator_metrics_export_json")
@@ -56,7 +56,7 @@ def test_workflow_explainer_operator_exports_installed(
 
 @pytest.mark.parametrize("slug", [spec.slug for spec in WORKFLOW_EXPLAINER_SPECS])
 def test_workflow_explainer_payload_fn_importable(slug: str) -> None:
-    mod = importlib.import_module(f"nimbusware_console.workflow_explainers.{slug}")
+    mod = importlib.import_module(f"console.workflow_explainers.{slug}")
     payload_names = [
         n
         for n in dir(mod)

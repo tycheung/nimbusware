@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_env.admin_token import (
+from env.admin_token import (
     DEFAULT_NIMBUSWARE_ADMIN_TOKEN,
     apply_default_admin_token_env,
     is_loopback_host,

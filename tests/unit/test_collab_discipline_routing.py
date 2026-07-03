@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from nimbusware_auth.store import InMemoryCollabStore, InMemoryUserStore
-from nimbusware_maker.chat_store_memory import InMemoryChatStore
-from nimbusware_maker.collab_discipline_routing import (
+from auth.store import InMemoryCollabStore, InMemoryUserStore
+from maker.chat_store_memory import InMemoryChatStore
+from maker.collab_discipline_routing import (
     append_routed_feedback_turns,
     maybe_route_collab_message,
 )
-from nimbusware_orchestrator.interjection_queue import queue_for_run
-from nimbusware_store.memory import InMemoryEventStore
+from orchestrator.interjection_queue import queue_for_run
+from store.memory import InMemoryEventStore
 
 
 def test_maybe_route_collab_message_enqueues_taxonomy() -> None:

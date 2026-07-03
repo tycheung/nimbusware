@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from agent_core.context_budget import strip_ansi
-from nimbusware_agent_tools.tools import ToolResult, _result, tool_read_file, tool_run_shell
+from agent_tools.tools import ToolResult, _result, tool_read_file, tool_run_shell
 
 
 def test_output_property_aliases_llm_output() -> None:
@@ -35,9 +35,9 @@ def test_shell_strips_ansi_for_llm() -> None:
     proc.returncode = 1
     proc.backend = "none"
     with (
-        patch("nimbusware_agent_tools.sandbox.run_subprocess_in_sandbox", return_value=proc),
+        patch("agent_tools.sandbox.run_subprocess_in_sandbox", return_value=proc),
         patch(
-            "nimbusware_agent_tools.tools.validate_shell_invocation",
+            "agent_tools.tools.validate_shell_invocation",
             return_value=("pytest", ["-q"]),
         ),
     ):

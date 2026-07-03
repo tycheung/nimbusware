@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from nimbusware_orchestrator.browser_controller import _execute_step, _locator_to_playwright
-from nimbusware_orchestrator.ui_flow_dsl import UiFlowStep, UiLocator
+from orchestrator.browser_controller import _execute_step, _locator_to_playwright
+from orchestrator.ui_flow_dsl import UiFlowStep, UiLocator
 
 
 def test_locator_to_playwright_role() -> None:

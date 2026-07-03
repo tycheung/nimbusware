@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.provider_registry import (
+from env import find_repo_root
+from orchestrator.provider_registry import (
     load_subscription_provider_presets,
     subscription_preset_by_id,
 )

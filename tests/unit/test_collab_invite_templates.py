@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_env import find_repo_root
-from nimbusware_maker.collab_invite_templates import list_invite_templates
+from env import find_repo_root
+from maker.collab_invite_templates import list_invite_templates
 
 
 def test_list_invite_templates_loads_yaml_catalog() -> None:
