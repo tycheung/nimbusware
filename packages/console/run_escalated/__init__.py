@@ -1,5 +1,16 @@
 from __future__ import annotations
 
+from console.run_escalated.captions import (
+    run_escalated_actor_without_notes_caption,
+    run_escalated_delta_transition_caption,
+    run_escalated_event_id_caption,
+    run_escalated_history_distinct_actors_caption,
+    run_escalated_history_entry_count_caption,
+    run_escalated_notes_preview_caption,
+    run_escalated_occurred_at_caption,
+    run_escalated_policy_cross_ref_caption,
+    run_escalated_reason_summary_caption,
+)
 from console.run_escalated.delta_metrics import (
     run_escalated_delta_operator_metrics,
     run_escalated_delta_operator_metrics_caption,
@@ -13,17 +24,6 @@ from console.run_escalated.history_metrics import (
     run_escalated_history_operator_metrics_export_json,
     run_escalated_history_operator_metrics_table_rows,
     run_escalated_history_operator_metrics_table_rows_csv,
-)
-from console.run_escalated.captions import (
-    run_escalated_actor_without_notes_caption,
-    run_escalated_delta_transition_caption,
-    run_escalated_event_id_caption,
-    run_escalated_history_distinct_actors_caption,
-    run_escalated_history_entry_count_caption,
-    run_escalated_notes_preview_caption,
-    run_escalated_occurred_at_caption,
-    run_escalated_policy_cross_ref_caption,
-    run_escalated_reason_summary_caption,
 )
 from console.run_escalated.metrics import (
     run_escalated_delta_operator_metrics_export_filename_slug,
