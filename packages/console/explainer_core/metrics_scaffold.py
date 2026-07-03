@@ -79,6 +79,27 @@ def apply_str_present(
     metrics[metric_key] = as_stripped_str(payload.get(payload_key)) is not None
 
 
+def apply_str_nonempty_fields(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    fields: Sequence[tuple[str, str]],
+) -> None:
+    for payload_key, metric_key in fields:
+        raw = payload.get(payload_key)
+        metrics[metric_key] = raw is not None and str(raw).strip() != ""
+
+
+def apply_optional_str_fields(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    fields: Sequence[tuple[str, str]],
+) -> None:
+    for payload_key, metric_key in fields:
+        stripped = as_stripped_str(payload.get(payload_key))
+        if stripped is not None:
+            metrics[metric_key] = stripped
+
+
 def metrics_table_rows(
     metrics: Mapping[str, Any] | None,
     rows: Sequence[tuple[str, str]],

@@ -12,6 +12,8 @@ from console.explainer_core.metrics_scaffold import (
     apply_nested_bool_fields,
     apply_nonneg_int_fields,
     apply_optional_int_field,
+    apply_optional_str_fields,
+    apply_str_nonempty_fields,
     apply_str_present,
     apply_workflow_yaml_file_metrics,
     default_operator_metrics,
@@ -40,6 +42,8 @@ def build_operator_metrics(
     list_len_fields: Sequence[tuple[str, str]] = (),
     bool_match_fields: Sequence[BoolMatchSpec] = (),
     str_present: Sequence[tuple[str, str]] = (),
+    str_nonempty: Sequence[tuple[str, str]] = (),
+    optional_str: Sequence[tuple[str, str]] = (),
     optional_int: Sequence[OptionalIntSpec] = (),
     env_tri_state: Sequence[EnvTriStateSpec] = (),
     env_flags: Sequence[EnvFlagSpec] = (),
@@ -103,6 +107,10 @@ def build_operator_metrics(
             apply_optional_int_field(metrics, payload, payload_key, metric_key)
     for payload_key, metric_key in str_present:
         apply_str_present(metrics, payload, payload_key, metric_key)
+    if str_nonempty:
+        apply_str_nonempty_fields(metrics, payload, str_nonempty)
+    if optional_str:
+        apply_optional_str_fields(metrics, payload, optional_str)
     for payload_key, metric_key in str_strip_fields:
         stripped = as_stripped_str(payload.get(payload_key))
         if stripped is not None:

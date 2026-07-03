@@ -11,31 +11,6 @@ from console.explainer_core.operator_metrics_exports import (
 )
 from console.explainer_core.schema_metrics import build_operator_metrics
 
-# Run escalated latest summary metrics spec (YAML not wired yet):
-# configs/displays/run_escalated_latest.yaml
-
-_RUN_ESCALATED_DEFAULTS: dict[str, Any] = {
-    "notes_present": False,
-    "actor_id_present": False,
-    "reason_code_present": False,
-    "policy_snapshot_id_present": False,
-    "event_id_present": False,
-    "severity": None,
-}
-
-_RUN_ESCALATED_STR_PRESENT: tuple[tuple[str, str], ...] = (
-    ("notes", "notes_present"),
-    ("actor_id", "actor_id_present"),
-)
-
-_RUN_ESCALATED_BOOL_ROWS: tuple[tuple[str, str], ...] = (
-    ("Reason code present", "reason_code_present"),
-    ("Actor id present", "actor_id_present"),
-    ("Policy snapshot id present", "policy_snapshot_id_present"),
-    ("Event id present", "event_id_present"),
-    ("Notes present", "notes_present"),
-)
-
 _HISTORY_DEFAULTS: dict[str, Any] = {
     "entry_count": 0,
     "distinct_reason_codes": 0,
@@ -78,71 +53,6 @@ _BUNDLE_SEARCH_TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("Hits without id", "hits_without_id"),
     ("Top hit id", "top_hit_id"),
 )
-
-
-def run_escalated_operator_metrics(
-    summary: Mapping[str, Any] | None,
-) -> dict[str, Any]:
-    metrics = build_operator_metrics(
-        summary,
-        _RUN_ESCALATED_DEFAULTS,
-        str_present=_RUN_ESCALATED_STR_PRESENT,
-    )
-    if isinstance(summary, Mapping):
-        for payload_key, metric_key in (
-            ("reason_code", "reason_code_present"),
-            ("policy_snapshot_id", "policy_snapshot_id_present"),
-            ("event_id", "event_id_present"),
-        ):
-            raw = summary.get(payload_key)
-            metrics[metric_key] = raw is not None and str(raw).strip() != ""
-        sev = summary.get("severity")
-        if isinstance(sev, str) and sev.strip():
-            metrics["severity"] = sev.strip()
-    return metrics
-
-
-def run_escalated_operator_metrics_table_rows(
-    metrics: Mapping[str, Any] | None,
-) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = []
-    sev = metrics.get("severity")
-    if isinstance(sev, str) and sev.strip():
-        rows.append({"field": "Severity", "value": sev.strip()})
-    rows.extend(
-        metrics_table_rows(
-            metrics,
-            _RUN_ESCALATED_BOOL_ROWS,
-            include_when=lambda m, k: m.get(k) is True,
-        ),
-    )
-    return rows
-
-
-def run_escalated_operator_metrics_caption(
-    metrics: Mapping[str, Any] | None,
-) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
-    sev = metrics.get("severity")
-    if isinstance(sev, str) and sev.strip():
-        return f"Run escalated: severity **{sev.strip()}**."
-    present: list[str] = []
-    if metrics.get("reason_code_present") is True:
-        present.append("reason code")
-    if metrics.get("actor_id_present") is True:
-        present.append("actor")
-    if metrics.get("policy_snapshot_id_present") is True:
-        present.append("policy snapshot")
-    if metrics.get("event_id_present") is True:
-        present.append("event id")
-    if metrics.get("notes_present") is True:
-        present.append("notes")
-    if not present:
-        return None
-    return "Run escalated metrics: " + ", ".join(present) + " present."
 
 
 def run_escalated_history_operator_metrics(
@@ -329,22 +239,6 @@ def bundle_search_operator_metrics_caption(
         parts.append(f"**{wid}** without id")
     return "Bundle search operator metrics: " + ", ".join(parts) + "."
 
-
-(
-    run_escalated_operator_metrics,
-    run_escalated_operator_metrics_table_rows,
-    run_escalated_operator_metrics_caption,
-    run_escalated_operator_metrics_export_json,
-    run_escalated_operator_metrics_table_rows_csv,
-    _run_escalated_operator_metrics_exports_slug,
-) = install_operator_metrics_module(
-    globals(),
-    module_prefix="run_escalated",
-    metrics=run_escalated_operator_metrics,
-    table_rows=run_escalated_operator_metrics_table_rows,
-    caption=run_escalated_operator_metrics_caption,
-    export_slug="run_escalated_operator_metrics",
-)
 
 (
     run_escalated_history_operator_metrics,

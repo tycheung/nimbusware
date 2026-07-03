@@ -102,6 +102,10 @@ def _build_kwargs_from_spec(build: Mapping[str, Any]) -> dict[str, Any]:
         kwargs["env_flags"] = _env_flags(build["env_flags"])
     if build.get("str_present"):
         kwargs["str_present"] = _tuple_pairs(build["str_present"])
+    if build.get("str_nonempty"):
+        kwargs["str_nonempty"] = _tuple_pairs(build["str_nonempty"])
+    if build.get("optional_str"):
+        kwargs["optional_str"] = _tuple_pairs(build["optional_str"])
     if build.get("optional_int"):
         kwargs["optional_int"] = _tuple_pairs(build["optional_int"])
     if build.get("bool_match_fields"):
@@ -127,6 +131,12 @@ def repo_explainer_spec(name: str) -> Path:
     return find_repo_root() / "configs" / "explainers" / f"{name}_metrics.yaml"
 
 
+def repo_display_spec(name: str) -> Path:
+    from env import find_repo_root
+
+    return find_repo_root() / "configs" / "displays" / f"{name}.yaml"
+
+
 def install_workflow_metrics_from_spec(
     namespace: dict[str, object],
     spec_path: Path,
@@ -150,13 +160,20 @@ def install_workflow_metrics_from_spec(
     optional_frozen = (
         frozenset(str(k) for k in optional_keys) if isinstance(optional_keys, list) else frozenset()
     )
+    bool_only_keys = tro.get("bool_only_when_true")
+    bool_only_frozen = (
+        frozenset(str(k) for k in bool_only_keys) if isinstance(bool_only_keys, list) else frozenset()
+    )
+    use_include_when = bool(optional_frozen or bool_only_frozen)
 
     def _include_when(m: Mapping[str, Any], key: str) -> bool:
-        if key not in optional_frozen:
-            return True
-        if key == "load_error_present" and m.get("load_error_present") is True:
-            return True
-        return m.get(key) is not None
+        if key in bool_only_frozen:
+            return m.get(key) is True
+        if key in optional_frozen:
+            if key == "load_error_present" and m.get("load_error_present") is True:
+                return True
+            return m.get(key) is not None
+        return True
 
     metrics_fn = custom_metrics_fn
     if metrics_fn is None:
@@ -176,7 +193,7 @@ def install_workflow_metrics_from_spec(
     if table_fn is None:
         table_fn = table_rows_fn(
             table_rows,
-            include_when=_include_when if optional_frozen else None,
+            include_when=_include_when if use_include_when else None,
             append_load_error_row=bool(tro.get("append_load_error_row")),
             exclude_keys=frozenset(str(k) for k in (tro.get("exclude_keys") or [])),
         )
