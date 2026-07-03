@@ -1,0 +1,13 @@
+prefix: run_escalated_history
+caption_prefix: "Run escalated history metrics: "
+defaults:
+  entry_count: 0
+  distinct_reason_codes: 0
+  distinct_actor_ids: 0
+  notes_present_count: 0
+table_rows:
+  - [Entry count, entry_count]
+  - [Distinct reason codes, distinct_reason_codes]
+  - [Distinct actor ids, distinct_actor_ids]
+  - [Notes present, notes_present_count]
+build: {}

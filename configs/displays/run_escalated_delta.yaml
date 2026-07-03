@@ -1,0 +1,18 @@
+prefix: run_escalated_delta
+caption_prefix: "Run escalated delta metrics: "
+defaults:
+  present: false
+table_rows:
+  - [Has previous event, has_previous]
+  - [Has current event, has_current]
+  - [Reason code changed, reason_code_changed]
+  - [Actor id changed, actor_id_changed]
+  - [Policy snapshot id changed, policy_snapshot_id_changed]
+table_rows_options:
+  bool_only_when_true:
+    - has_previous
+    - has_current
+    - reason_code_changed
+    - actor_id_changed
+    - policy_snapshot_id_changed
+build: {}

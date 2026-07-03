@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from console.explainer_core.generic_display_metrics import (
+from console.run_escalated.delta_metrics import (
     run_escalated_delta_operator_metrics,
     run_escalated_delta_operator_metrics_caption,
     run_escalated_delta_operator_metrics_export_json,
     run_escalated_delta_operator_metrics_table_rows,
     run_escalated_delta_operator_metrics_table_rows_csv,
+)
+from console.run_escalated.history_metrics import (
     run_escalated_history_operator_metrics,
     run_escalated_history_operator_metrics_caption,
     run_escalated_history_operator_metrics_export_json,
