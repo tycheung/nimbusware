@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import base64
-import json
 import re
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 from uuid import UUID
+
+from nimbusware_api.run_list_cursor import decode_run_list_cursor, encode_run_list_cursor
 
 
 def _sanitize_workflow_profile_prefix(value: str | None) -> str | None:
@@ -18,15 +18,11 @@ def _sanitize_workflow_profile_prefix(value: str | None) -> str | None:
 
 
 def _encode_run_list_cursor(seq: int, run_id: UUID) -> str:
-    raw = json.dumps({"s": seq, "r": str(run_id)}, separators=(",", ":")).encode()
-    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+    return encode_run_list_cursor(seq, run_id)
 
 
 def _decode_run_list_cursor(value: str) -> tuple[int, UUID]:
-    pad = "=" * ((4 - len(value) % 4) % 4)
-    raw = base64.urlsafe_b64decode(value + pad)
-    d = json.loads(raw.decode())
-    return int(d["s"]), UUID(str(d["r"]))
+    return decode_run_list_cursor(value)
 
 
 def _runs_list_query_string(
