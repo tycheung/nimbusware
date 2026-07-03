@@ -397,6 +397,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     )
     if gate_summary:
         out["gate_summary"] = gate_summary
+        out["display_caption"] = gate_summary
         if gate_summary not in sentences:
             sentences.append(gate_summary)
 

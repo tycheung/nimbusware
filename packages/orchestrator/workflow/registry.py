@@ -193,6 +193,11 @@ WORKFLOW_BLOCK_LOADERS: dict[str, WorkflowBlockLoader] = {
 
 
 def get_workflow_block_loader(key: str) -> WorkflowBlockLoader:
+    """Return the raw loader callable for ``key``.
+
+    Prefer :func:`parse_workflow_block` at call sites — it invokes the loader
+    with ``repo_root``, ``workflow_profile``, and optional ``config_materializer``.
+    """
     try:
         return WORKFLOW_BLOCK_LOADERS[key]
     except KeyError:
