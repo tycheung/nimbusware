@@ -19,8 +19,6 @@ from nimbusware_api.routes.runs.learnings import router as learnings_router
 from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
 from nimbusware_api.routes.runs.list_helpers import (
-    _decode_run_list_cursor,
-    _encode_run_list_cursor,
     _parse_query_datetime,
     _runs_list_query_string,
     _sanitize_workflow_profile_prefix,
@@ -36,8 +34,12 @@ from nimbusware_api.routes.runs.stitch_summary import router as stitch_summary_r
 from nimbusware_api.routes.runs.stream import router as stream_router
 from nimbusware_api.routes.runs.theater import router as theater_router
 from nimbusware_api.routes.runs.timeline_explain import router as timeline_explain_router
+from nimbusware_api.run_list_cursor import decode_run_list_cursor, encode_run_list_cursor
 from nimbusware_projections.builders import *  # noqa: F403
 from nimbusware_projections.builders import __all__ as _projection_exports
+
+_decode_run_list_cursor = decode_run_list_cursor
+_encode_run_list_cursor = encode_run_list_cursor
 
 __all__ = [
     "build_runs_router",

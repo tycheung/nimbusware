@@ -12,12 +12,11 @@ from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.runs.constants import INCLUDE_SUMMARY_MAX_LIMIT
 from nimbusware_api.routes.runs.list_helpers import (
-    _decode_run_list_cursor,
-    _encode_run_list_cursor,
     _parse_query_datetime,
     _runs_list_query_string,
     _sanitize_workflow_profile_prefix,
 )
+from nimbusware_api.run_list_cursor import decode_run_list_cursor, encode_run_list_cursor
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
@@ -226,7 +225,7 @@ def list_runs(
     cursor_rid: UUID | None = None
     if use_cursor:
         try:
-            cs, cr = _decode_run_list_cursor(str(cursor).strip())
+            cs, cr = decode_run_list_cursor(str(cursor).strip())
             cursor_seq = cs
             cursor_rid = cr
         except (
@@ -272,7 +271,7 @@ def list_runs(
         off_out = 0
         if page_has_more and rows_page:
             last = rows_page[-1]
-            next_cursor_out = _encode_run_list_cursor(last[1], last[0])
+            next_cursor_out = encode_run_list_cursor(last[1], last[0])
     else:
         ids = store.list_recent_run_ids(
             limit=lim,
@@ -290,7 +289,7 @@ def list_runs(
         if has_more and ids:
             mx_last = store.max_store_seq_for_run(str(ids[-1]))
             if mx_last is not None:
-                next_cursor_out = _encode_run_list_cursor(mx_last, ids[-1])
+                next_cursor_out = encode_run_list_cursor(mx_last, ids[-1])
     out: dict[str, Any] = {
         "run_ids": [str(x) for x in ids],
         "total": total,

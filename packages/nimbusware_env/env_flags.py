@@ -13,6 +13,7 @@ from nimbusware_env.settings_resolve import (
     resolve_raw,
     resolve_str,
 )
+
 _LEGACY_ENV_WARNED: set[str] = set()
 
 

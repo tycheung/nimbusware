@@ -3,13 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_env.env_flags import (
-    FALSY_VALUES,
-    TRUTHY_VALUES,
     env_bool,
     env_str,
     env_truthy_raw,
 )
-from nimbusware_env.settings_resolve import resolve_explicit_raw, resolve_int, resolve_raw
+from nimbusware_env.settings_resolve import (
+    FALSY_VALUES,
+    TRUTHY_VALUES,
+    resolve_explicit_raw,
+    resolve_int,
+    resolve_raw,
+)
 
 
 def nimbusware_embed_dispatch_worker_enabled() -> bool:

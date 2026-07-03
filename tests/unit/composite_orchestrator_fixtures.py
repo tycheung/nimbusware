@@ -5,7 +5,6 @@ from uuid import UUID
 from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
-
 from unit.composite_contracts.optional_critique_emit_matrix import make_effective_universal_critique
 
 CANONICAL_PRODUCERS = ("planner", "backend_writer", "test_writer")

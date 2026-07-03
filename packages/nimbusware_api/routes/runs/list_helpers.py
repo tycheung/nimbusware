@@ -3,9 +3,6 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from urllib.parse import urlencode
-from uuid import UUID
-
-from nimbusware_api.run_list_cursor import decode_run_list_cursor, encode_run_list_cursor
 
 
 def _sanitize_workflow_profile_prefix(value: str | None) -> str | None:
@@ -15,14 +12,6 @@ def _sanitize_workflow_profile_prefix(value: str | None) -> str | None:
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}", s):
         return None
     return s
-
-
-def _encode_run_list_cursor(seq: int, run_id: UUID) -> str:
-    return encode_run_list_cursor(seq, run_id)
-
-
-def _decode_run_list_cursor(value: str) -> tuple[int, UUID]:
-    return decode_run_list_cursor(value)
 
 
 def _runs_list_query_string(
