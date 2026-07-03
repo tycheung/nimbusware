@@ -121,8 +121,10 @@ def _openapi_run_paths(spec: dict[str, Any]) -> set[tuple[str, str]]:
 
 def test_runs_module_exports_router_and_constants() -> None:
     assert hasattr(runs_module, "router")
+    assert hasattr(runs_module, "build_runs_router")
     assert runs_module.INCLUDE_SUMMARY_MAX_LIMIT == 20
     assert hasattr(runs_module, "CreateRunBody")
+    assert runs_module.RUNS_SUB_ROUTER_NAMES
 
 
 def test_runs_router_has_expected_route_surface() -> None:
@@ -130,45 +132,14 @@ def test_runs_router_has_expected_route_surface() -> None:
 
 
 def test_build_runs_router_matches_module_router() -> None:
-    build = getattr(runs_module, "build_runs_router", None)
-    if build is None:
-        pytest.skip("build_runs_router not yet split from monolithic runs.py")
-    assert _route_methods(build()) == _route_methods(runs_module.router)
+    assert _route_methods(runs_module.build_runs_router()) == _route_methods(runs_module.router)
 
 
 def test_runs_sub_routers_cover_full_surface() -> None:
-    sub_names = (
-        "list_router",
-        "create_router",
-        "detail_router",
-        "lifecycle_router",
-        "model_bindings_swap_router",
-        "maker_progress_router",
-        "factory_evidence_router",
-        "dev_env_router",
-        "interjection_router",
-        "autopilot_router",
-        "enforcement_router",
-        "learnings_router",
-        "context_budget_router",
-        "compact_router",
-        "compactions_router",
-        "replay_from_router",
-        "context_artifacts_router",
-        "memory_insert_router",
-        "maker_approval_router",
-        "research_router",
-        "stream_router",
-        "theater_router",
-        "stitch_summary_router",
-        "slices_router",
-        "timeline_explain_router",
-    )
-    if not all(hasattr(runs_module, name) for name in sub_names):
-        pytest.skip("runs sub-routers not yet extracted")
     combined: set[tuple[str, str]] = set()
-    for name in sub_names:
-        combined |= _route_methods(getattr(runs_module, name))
+    for name in runs_module.RUNS_SUB_ROUTER_NAMES:
+        sub = getattr(runs_module, name)
+        combined |= _route_methods(sub)
     assert combined == EXPECTED_RUN_ROUTES
 
 

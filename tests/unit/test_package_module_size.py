@@ -3,49 +3,44 @@ from __future__ import annotations
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
+_PACKAGES_ROOT = _REPO / "packages"
 
-_GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
-    (
-        "packages/orchestrator",
-        450,
-        frozenset({"fleet/policies.py"}),
-    ),
-    ("packages/api", 450, frozenset({"routes/chat_collab.py", "routes/chat_session.py"})),
-    ("packages/memory", 450, frozenset()),
-    ("packages/projections", 450, frozenset()),
-    ("packages/auth", 450, frozenset({"store.py"})),
-    ("packages/mcp", 450, frozenset()),
-)
+# Cohesion-based cap: one feature may live in one module up to this size.
+MODULE_LINE_LIMIT = 1000
+
+# Modules intentionally above the cap until a follow-on split lands.
+_ALLOWLIST_OVER_LIMIT: frozenset[str] = frozenset()
 
 
 def _line_count(path: Path) -> int:
     return len(path.read_text(encoding="utf-8").splitlines())
 
 
-def test_package_module_size_limits() -> None:
+def _rel_package_path(path: Path) -> str:
+    return path.relative_to(_PACKAGES_ROOT).as_posix()
+
+
+def test_no_package_module_over_line_limit() -> None:
     over_limit: list[str] = []
-    for rel_root, limit, allowlist in _GUARDS:
-        root = _REPO / rel_root
-        for path in sorted(root.rglob("*.py")):
-            rel = path.relative_to(root).as_posix()
-            lines = _line_count(path)
-            if lines > limit and rel not in allowlist:
-                over_limit.append(f"{rel_root}/{rel}: {lines} lines (limit {limit})")
-    assert not over_limit, "New modules exceed package size limits:\n" + "\n".join(over_limit)
+    for path in sorted(_PACKAGES_ROOT.rglob("*.py")):
+        if "__pycache__" in path.parts:
+            continue
+        rel = _rel_package_path(path)
+        lines = _line_count(path)
+        if lines > MODULE_LINE_LIMIT and rel not in _ALLOWLIST_OVER_LIMIT:
+            over_limit.append(f"{rel}: {lines} lines (limit {MODULE_LINE_LIMIT})")
+    assert not over_limit, (
+        f"New modules exceed {MODULE_LINE_LIMIT}-line cap:\n" + "\n".join(over_limit)
+    )
 
 
-def test_package_module_size_allowlists_are_current() -> None:
-    stale: list[str] = []
-    for rel_root, limit, allowlist in _GUARDS:
-        root = _REPO / rel_root
-        still_large = {
-            path.relative_to(root).as_posix()
-            for path in root.rglob("*.py")
-            if _line_count(path) > limit
-        }
-        if still_large != set(allowlist):
-            stale.append(
-                f"{rel_root}: extra={still_large - set(allowlist)!r} "
-                f"missing={set(allowlist) - still_large!r}"
-            )
-    assert not stale, "Update package size allowlists:\n" + "\n".join(stale)
+def test_package_module_size_allowlist_is_current() -> None:
+    still_large = {
+        _rel_package_path(path)
+        for path in _PACKAGES_ROOT.rglob("*.py")
+        if "__pycache__" not in path.parts and _line_count(path) > MODULE_LINE_LIMIT
+    }
+    assert still_large == set(_ALLOWLIST_OVER_LIMIT), (
+        f"Update _ALLOWLIST_OVER_LIMIT: extra={still_large - set(_ALLOWLIST_OVER_LIMIT)!r} "
+        f"missing={set(_ALLOWLIST_OVER_LIMIT) - still_large!r}"
+    )

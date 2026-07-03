@@ -41,25 +41,42 @@ from projections.builders import __all__ as _projection_exports
 _decode_run_list_cursor = decode_run_list_cursor
 _encode_run_list_cursor = encode_run_list_cursor
 
-__all__ = [
-    "build_runs_router",
-    "router",
-    "INCLUDE_SUMMARY_MAX_LIMIT",
-    "CreateRunBody",
+# Single source of truth for sub-router registration order (facade tests pin this tuple).
+RUNS_SUB_ROUTER_NAMES: tuple[str, ...] = (
     "list_router",
     "create_router",
     "detail_router",
     "lifecycle_router",
+    "model_bindings_swap_router",
     "maker_progress_router",
+    "factory_evidence_router",
+    "dev_env_router",
+    "interjection_router",
+    "autopilot_router",
+    "enforcement_router",
+    "learnings_router",
     "context_budget_router",
     "compact_router",
     "compactions_router",
     "replay_from_router",
     "context_artifacts_router",
+    "memory_insert_router",
     "maker_approval_router",
     "research_router",
     "stream_router",
     "theater_router",
+    "stitch_summary_router",
+    "slices_router",
+    "timeline_explain_router",
+)
+
+__all__ = [
+    "build_runs_router",
+    "router",
+    "RUNS_SUB_ROUTER_NAMES",
+    "INCLUDE_SUMMARY_MAX_LIMIT",
+    "CreateRunBody",
+    *RUNS_SUB_ROUTER_NAMES,
     *_projection_exports,
     "_decode_run_list_cursor",
     "_encode_run_list_cursor",
@@ -70,32 +87,10 @@ __all__ = [
 
 
 def build_runs_router() -> APIRouter:
+    """Compose runs HTTP surface from sub-routers under ``api.routes.runs.*``."""
     composed = APIRouter(tags=["runs"])
-    composed.include_router(list_router)
-    composed.include_router(create_router)
-    composed.include_router(detail_router)
-    composed.include_router(lifecycle_router)
-    composed.include_router(model_bindings_swap_router)
-    composed.include_router(maker_progress_router)
-    composed.include_router(factory_evidence_router)
-    composed.include_router(dev_env_router)
-    composed.include_router(interjection_router)
-    composed.include_router(autopilot_router)
-    composed.include_router(enforcement_router)
-    composed.include_router(learnings_router)
-    composed.include_router(context_budget_router)
-    composed.include_router(compact_router)
-    composed.include_router(compactions_router)
-    composed.include_router(replay_from_router)
-    composed.include_router(context_artifacts_router)
-    composed.include_router(memory_insert_router)
-    composed.include_router(maker_approval_router)
-    composed.include_router(research_router)
-    composed.include_router(stream_router)
-    composed.include_router(theater_router)
-    composed.include_router(stitch_summary_router)
-    composed.include_router(slices_router)
-    composed.include_router(timeline_explain_router)
+    for name in RUNS_SUB_ROUTER_NAMES:
+        composed.include_router(globals()[name])
     return composed
 
 
