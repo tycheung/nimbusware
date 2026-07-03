@@ -75,7 +75,7 @@ Docker agent sandbox (`NIMBUSWARE_SANDBOX_BACKEND=docker`) requires a local Dock
 
 ### Module size
 
-Console `.py` files must stay **≤400 lines** ([`tests/unit/test_console_module_size.py`](tests/unit/test_console_module_size.py)). Orchestrator, API, memory, and projections modules must stay **≤450 lines** ([`tests/unit/test_package_module_size.py`](tests/unit/test_package_module_size.py)). Maker web tabs use thin `*.js` shells plus `*_ui.js` helpers — see [ARCHITECTURE.md](ARCHITECTURE.md).
+Console and all `packages/**/*.py` modules must stay **≤1000 lines** ([`tests/unit/test_package_module_size.py`](tests/unit/test_package_module_size.py)). Prefer cohesive modules over file-count splitting. Maker web tabs use thin `*.js` shells plus `*_ui.js` helpers — see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### LOC budget
 

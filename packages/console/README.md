@@ -90,7 +90,7 @@ Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not col
 | `implementation_critique_display.py` | Phase-3 critique panels |
 | `persona_assignment_display.py` | Persona assignment summary |
 
-Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `workflow_explainers/*`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
+Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `workflow_explainers/*`) may co-locate related logic in cohesive modules (≤1000 lines per file). Regenerate thin `*_display.py` facades after changing package exports when using shims: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
 
 ## Operator metrics scaffold
 
