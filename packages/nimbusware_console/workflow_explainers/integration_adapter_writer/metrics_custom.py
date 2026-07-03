@@ -3,7 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    metrics_table_rows,
+    normalize_metrics_table_rows,
+)
 
 _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("YAML key present", "yaml_key_present"),
@@ -15,6 +18,16 @@ _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("Workflow YAML path", "workflow_yaml_path_present"),
     ("Stub only", "stub_only"),
     ("Target adapter kind", "target_adapter_kind"),
+)
+
+_IAW_BOOL_AS_YES = frozenset(
+    {
+        "YAML key present",
+        "Workflow enabled",
+        "Effective enabled",
+        "Would emit stage",
+        "Live path active",
+    }
 )
 
 
@@ -51,20 +64,11 @@ def integration_adapter_writer_table_rows(
         r["field"] == "YAML key present" for r in rows
     ):
         rows.insert(0, {"field": "YAML key present", "value": "yes"})
-    for row in rows:
-        if row["field"] == "YAML key present" and row["value"] == "true":
-            row["value"] = "yes"
-        if row["field"] in (
-            "Workflow enabled",
-            "Effective enabled",
-            "Would emit stage",
-            "Live path active",
-        ):
-            if row["value"] == "true":
-                row["value"] = "yes"
-        if row["field"] == "Workflow YAML path" and row["value"] == "true":
-            row["value"] = "present"
-    return rows
+    return normalize_metrics_table_rows(
+        rows,
+        bool_as_yes=_IAW_BOOL_AS_YES,
+        present_as={"Workflow YAML path": "present"},
+    )
 
 
 def integration_adapter_writer_caption(metrics: Mapping[str, Any] | None) -> str | None:

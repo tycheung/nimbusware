@@ -4,6 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.builders.timeline_history import timeline_history_tail
 from nimbusware_projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
 
 
@@ -63,11 +64,7 @@ def security_scan_on_verify_timeline_history(
 ) -> list[dict[str, Any]]:
     """Bounded security-scan history for operator drill-down."""
     hist = security_scan_on_verify_timeline_entries(events)
-    if not hist:
-        return []
-    if len(hist) <= limit:
-        return hist
-    return hist[-limit:]
+    return timeline_history_tail(hist, limit=limit)
 
 
 __all__ = [

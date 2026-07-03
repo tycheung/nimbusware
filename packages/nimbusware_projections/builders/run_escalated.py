@@ -4,6 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.builders.timeline_history import timeline_history_tail
 
 
 def run_escalated_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
@@ -43,11 +44,7 @@ def run_escalated_timeline_history(
 ) -> list[dict[str, Any]]:
     """Bounded run escalation history for operator drill-down."""
     hist = run_escalated_timeline_entries(events)
-    if not hist:
-        return []
-    if len(hist) <= limit:
-        return hist
-    return hist[-limit:]
+    return timeline_history_tail(hist, limit=limit)
 
 
 def run_escalated_timeline_delta(events: list[dict[str, Any]]) -> dict[str, Any] | None:

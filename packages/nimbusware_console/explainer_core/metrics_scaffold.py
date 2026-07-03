@@ -154,3 +154,19 @@ def apply_env_flag_metric(
     env = payload.get(env_payload_key)
     if isinstance(env, Mapping):
         metrics[metric_key] = env.get(flag_payload_key) is True
+
+
+def normalize_metrics_table_rows(
+    rows: list[dict[str, str]],
+    *,
+    bool_as_yes: frozenset[str] = frozenset(),
+    present_as: Mapping[str, str] | None = None,
+) -> list[dict[str, str]]:
+    present = present_as or {}
+    for row in rows:
+        field = row["field"]
+        if field in bool_as_yes and row["value"] == "true":
+            row["value"] = "yes"
+        if field in present and row["value"] == "true":
+            row["value"] = present[field]
+    return rows

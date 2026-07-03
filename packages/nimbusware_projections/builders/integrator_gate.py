@@ -4,6 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.builders.timeline_history import timeline_history_tail
 from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_ROW_KEYS
 
 
@@ -68,11 +69,7 @@ def integrator_gate_timeline_history(
 ) -> list[dict[str, Any]]:
     """Bounded integrator gate history (latest entries win when trimmed)."""
     hist = integrator_gate_timeline_entries(events)
-    if not hist:
-        return []
-    if len(hist) <= limit:
-        return hist
-    return hist[-limit:]
+    return timeline_history_tail(hist, limit=limit)
 
 
 def _integrator_score_delta(prev: Any, cur: Any) -> float | None:

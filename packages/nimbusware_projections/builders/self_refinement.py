@@ -4,6 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.builders.timeline_history import timeline_history_tail
 from nimbusware_projections.builders.universal_critique import universal_critique_timeline_entries
 from nimbusware_projections.fields.self_refinement import SELF_REFINEMENT_SUMMARY_KEYS
 
@@ -206,11 +207,7 @@ def self_refinement_marker_timeline_history(
 ) -> list[dict[str, Any]]:
     """Bounded self-refinement marker history for operator drill-down."""
     hist = self_refinement_marker_timeline_entries(events)
-    if not hist:
-        return []
-    if len(hist) <= limit:
-        return hist
-    return hist[-limit:]
+    return timeline_history_tail(hist, limit=limit)
 
 
 __all__ = [

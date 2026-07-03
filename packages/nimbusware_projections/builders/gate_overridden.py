@@ -4,6 +4,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.builders.timeline_history import timeline_history_tail
 
 
 def gate_overridden_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
@@ -35,11 +36,7 @@ def gate_overridden_timeline_history(
     limit: int = 25,
 ) -> list[dict[str, Any]]:
     hist = gate_overridden_timeline_entries(events)
-    if not hist:
-        return []
-    if len(hist) <= limit:
-        return hist
-    return hist[-limit:]
+    return timeline_history_tail(hist, limit=limit)
 
 
 __all__ = [
