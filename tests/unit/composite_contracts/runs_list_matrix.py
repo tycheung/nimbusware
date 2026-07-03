@@ -308,7 +308,7 @@ DECODE_CURSOR_PART_B_EXCEPTION_CASES: tuple[dict[str, Any], ...] = (
     {
         "case_id": "b5_missing_s_with_r",
         "cursor": urlsafe_b64_encode(
-            ('{"r": "%s"}' % _SAMPLE_UUID_STR).encode(),
+            f'{{"r": "{_SAMPLE_UUID_STR}"}}'.encode(),
         ),
         "exc_type": KeyError,
         "exc_args": ("s",),
