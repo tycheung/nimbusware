@@ -17,10 +17,8 @@ from console.workflow_explainers.security_scan_metadata.captions import (
     security_scan_metadata_yaml_effective_mismatch_caption,
     security_scan_metadata_yaml_raw_type_caption,
 )
-from console.workflow_explainers.security_scan_metadata.env import (
-    _nimbusware_attach_security_scan_metadata_env_summary,
-)
 from console.workflow_explainers.security_scan_metadata.payload import (
+    _nimbusware_attach_security_scan_metadata_env_summary,
     security_scan_metadata_workflow_explainer_payload,
 )
 

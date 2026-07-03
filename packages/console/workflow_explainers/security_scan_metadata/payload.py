@@ -7,10 +7,12 @@ from config.workflow_read import (
     parse_security_scan_metadata_on_verify_workflow,
     security_scan_metadata_on_verify_enabled,
 )
+from console.explainer_core.env_captions import env_tri_state_yaml_follows_summary
 from console.explainer_core.workflow_payload_header import workflow_payload_header
-from console.workflow_explainers.security_scan_metadata.env import (
-    _nimbusware_attach_security_scan_metadata_env_summary,
-)
+
+
+def _nimbusware_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
+    return dict(env_tri_state_yaml_follows_summary("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA"))
 
 
 def security_scan_metadata_workflow_explainer_payload(
