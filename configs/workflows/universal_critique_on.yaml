@@ -1,15 +1,3 @@
 # Workflow profile: universal critique panels on by default (§14 #16 default-on slice).
 # Per-panel ``enabled`` may be omitted; env kill-switches (``=0``/``false``/``no``) still win.
-extends: default
-version: 1
-universal_critique:
-  default_enabled: true
-  implementation:
-    llm: false
-    stub: true
-  test_writer:
-    enabled: true
-  planner:
-    enabled: true
-escalation:
-  suppress_automatic_escalation: false
+extends: fragments/universal_critique

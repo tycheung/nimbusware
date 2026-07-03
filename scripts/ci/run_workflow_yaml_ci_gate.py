@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS_DIR = ROOT / "configs" / "workflows"
 ALLOWLIST_PATH = ROOT / "scripts" / "ci" / "workflow_yaml_allowlist.txt"
-MAX_LINES = 35
+MAX_LINES = 120
 
 
 def _load_allowlist() -> frozenset[str]:

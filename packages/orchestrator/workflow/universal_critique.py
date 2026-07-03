@@ -112,6 +112,12 @@ def parse_universal_critique_workflow_block(
         raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
     except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
         return UniversalCritiqueWorkflowBlock()
+    return universal_critique_workflow_block_from_dict(raw)
+
+
+def universal_critique_workflow_block_from_dict(
+    raw: dict[str, Any],
+) -> UniversalCritiqueWorkflowBlock:
     root_d = mapping_or_empty(raw.get("universal_critique"))
     impl_d = _yaml_panel(root_d, "implementation") if root_d else None
     tw_d = _yaml_panel(root_d, "test_writer") if root_d else None
@@ -282,12 +288,16 @@ def effective_universal_critique(
     workflow_profile: str | None,
     *,
     config_materializer: Any | None = None,
+    resolved_config: Any | None = None,
 ) -> EffectiveUniversalCritique:
-    wf = parse_universal_critique_workflow_block(
-        repo_root,
-        workflow_profile,
-        config_materializer=config_materializer,
-    )
+    if resolved_config is not None:
+        wf = universal_critique_workflow_block_from_dict(resolved_config.workflow_dict)
+    else:
+        wf = parse_universal_critique_workflow_block(
+            repo_root,
+            workflow_profile,
+            config_materializer=config_materializer,
+        )
     resolved = {
         field: env_over_yaml(env_key, getattr(wf, field)) for field, env_key in _UC_ENV_FIELDS
     }

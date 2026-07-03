@@ -1,5 +1,5 @@
 # Phase 3 fo145 — Network/Resilience Critic (backend writer path).
-extends: critique_test_base
+extends: fragments/base
 network_resilience_critique:
   enabled: true
   stub: true

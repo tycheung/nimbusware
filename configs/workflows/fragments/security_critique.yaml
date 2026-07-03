@@ -1,0 +1,7 @@
+# Shared fragment: security critic stage on (stub, no LLM).
+extends: fragments/base
+security_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  severity_floor: MEDIUM
