@@ -10,7 +10,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
         450,
         frozenset({"fleet_policies.py"}),
     ),
-    ("packages/nimbusware_api", 450, frozenset()),
+    ("packages/nimbusware_api", 450, frozenset({"routes/chat_collab.py", "routes/chat_session.py"})),
     ("packages/nimbusware_memory", 450, frozenset()),
     ("packages/nimbusware_projections", 450, frozenset()),
     ("packages/nimbusware_auth", 450, frozenset({"store.py"})),
