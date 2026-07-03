@@ -26,8 +26,7 @@ from api.routes.enterprise.fleet_memory import router as fleet_memory_router
 from api.routes.enterprise.fleet_mesh import router as fleet_mesh_router
 from api.routes.enterprise.fleet_ops import ollama_sli_router as fleet_ollama_sli_router
 from api.routes.enterprise.fleet_ops import worker_router as fleet_worker_router
-from api.routes.enterprise.fleet_slice import router as fleet_slice_router
-from api.routes.enterprise.fleet_stack import router as fleet_stack_router
+from api.routes.enterprise.fleet_tenant_policies import router as fleet_tenant_policies_router
 from api.routes.enterprise.iam import router as iam_router
 from api.routes.enterprise.model_policy import router as model_policy_router
 from api.routes.enterprise.object_store import router as object_store_router
@@ -70,12 +69,11 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_analytics_router)
     router.include_router(fleet_autopilot_router)
     router.include_router(fleet_enforcement_router)
-    router.include_router(fleet_slice_router)
+    router.include_router(fleet_tenant_policies_router)
     router.include_router(fleet_commit_router)
     router.include_router(fleet_deploy_router)
     router.include_router(fleet_deploy_approval_router)
     router.include_router(fleet_discovery_router)
-    router.include_router(fleet_stack_router)
     router.include_router(fleet_critic_reliability_router)
     router.include_router(enterprise_audit_export_router)
     router.include_router(audit_policy_router)
