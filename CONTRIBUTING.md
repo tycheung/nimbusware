@@ -92,7 +92,8 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
 - Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` (CI enforces prune gate; review diff before bulk local runs)
-- Console display metrics: prefer YAML specs under `configs/displays/` or `configs/explainers/` wired through `install_workflow_metrics_from_spec`; use `explainer_core.build_operator_metrics` + `install_operator_metrics_module` for bespoke cases only
+- Console display metrics: prefer YAML specs under `configs/displays/` or `configs/explainers/` wired through `install_workflow_metrics_from_spec` (e.g. `run_escalated_{latest,history,delta}.yaml`); use `explainer_core.build_operator_metrics` + `install_operator_metrics_module` for bespoke cases only
+- Greenfield scaffolds: `configs/factory/` (minimal frontend index) and `configs/templates/` (Safe Coding smoke pytest/Playwright stubs)
 - Explainer captions: use `explainer_core.field_caption` helpers and `env_captions.ENV_*_TEMPLATES` registry lookups instead of duplicating load-error / int guards
 - Maker operator ribbons live under `packages/maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)

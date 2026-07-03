@@ -97,7 +97,7 @@ Package map, import rules, and CI: **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
 ```
 packages/     Python libraries (orchestrator, api, maker, store, …)
-configs/      Workflow YAML, personas, bundles
+configs/      Workflow YAML, personas, bundles, displays/, factory/, templates/
 docs/         Operator and developer documentation
 scripts/      Install, CI, benchmarks, runbooks
 tests/        Pytest suite (unit, api, integration, e2e)

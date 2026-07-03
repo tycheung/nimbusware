@@ -4,7 +4,9 @@ Local event-sourced run pipeline for the agent runtime. Public entry: `RunOrches
 
 Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bootstrap.py` (`build_runtime_orchestrator`, `api_config_from_db_enabled`).
 
-## Mixin map (`_pipeline/compose.py`)
+## Mixin map (`_pipeline/stage_registry.py`)
+
+Ordered mixin tuple `PIPELINE_STAGE_MIXINS` is composed into `RunOrchestrator` in `_pipeline/compose.py`.
 
 | Mixin | Module | Responsibility |
 |-------|--------|----------------|
@@ -57,7 +59,7 @@ Orchestrator tests live under `tests/orchestrator_pipeline/` and `tests/unit/tes
 ## Adding a pipeline stage
 
 1. **Mixin module** — Add `packages/orchestrator/_pipeline/<stage>.py` with a `*Mixin` class. Import symbols from `_helpers` **explicitly** (no star imports), matching existing mixins such as `create_run.py` or `pipeline_scraper.py`.
-2. **Register in `compose.py`** — Import the mixin and append it to `_MIXINS` (order matters for MRO). `build_run_orchestrator_class` wraps mixin methods so runtime lookups resolve via `orchestrator.pipeline` (stable `unittest.mock.patch` target).
+2. **Register in `stage_registry.py`** — Import the mixin and append it to `PIPELINE_STAGE_MIXINS` (order matters for MRO). `compose.py` builds `RunOrchestrator` from that tuple plus `RunOrchestratorBase`.
 3. **`_helpers` exports** — Shared types, event helpers, and policy parsers live in `_pipeline/_helpers.py`. If a mixin needs a new symbol, add or re-export it there.
 4. **Export guard** — `tests/unit/test_pipeline_helpers_exports.py` asserts required `_helpers` symbols exist and that mixin modules do not star-import `_helpers`.
 
@@ -66,7 +68,7 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 ## Refactor notes
 
 - **Mypy:** Tranche E strict-checks `_pipeline/_helpers` (explicit `__all__`) and all `_pipeline` mixin modules without `attr-defined` ignores on `_helpers` imports. Ships PEP 561 marker (`py.typed`).
-- **Compose-time patch seam:** `compose.py` binds mixin method globals to `pipeline` during each call so tests can patch `orchestrator.pipeline.*` without star-import barrels in mixins. Mixins still import from `_helpers` explicitly at module level.
+- **Greenfield scaffolds:** minimal frontend index HTML lives in `configs/factory/frontend_minimal_index.html` (`frontend_writer_stage.py`); Safe Coding smoke test templates in `configs/templates/`.
 - After mechanical splits in console display packages, run `poetry run python scripts/ci/explicit_star_imports.py` and `poetry run python scripts/ci/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci/ci_check.ps1` locally.
 

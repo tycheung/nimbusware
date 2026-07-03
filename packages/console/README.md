@@ -37,7 +37,7 @@ console/
 ├── integrator_preview/       # Merge diff exports via workflow_exports + sequence_export_json (C41)
 ├── bundle_catalog/           # Local catalog search, FAISS status, tags rollup
 ├── persona_catalog/          # Persona pairings, summary metrics, export
-├── run_escalated/            # Escalation row formatters
+├── run_escalated/            # Escalation metrics (YAML: configs/displays/run_escalated_*.yaml)
 ├── security_scan_on_verify/  # Security scan timeline + linter alignment
 ├── self_refinement/          # Self-refinement marker history
 └── enterprise_console*.py    # Enterprise fleet formatters (Admin Fleet tab)
