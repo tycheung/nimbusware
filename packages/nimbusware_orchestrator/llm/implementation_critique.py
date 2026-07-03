@@ -5,30 +5,17 @@ from uuid import UUID
 
 from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE
 from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.common import (
-    emit_stub_role_critique_panel,
-    execute_post_verify_role_critique_llm,
+from nimbusware_orchestrator.llm.common import execute_post_verify_role_critique_llm
+from nimbusware_orchestrator.llm.post_verify_role_bindings import (
+    emit_stub_implementation_critique_panel,
 )
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
-
-def emit_stub_implementation_critique_panel(
-    store: EventStore,
-    registry: RoleRegistry,
-    critique_router: UniversalCritiqueRouter,
-    *,
-    run_id: UUID,
-) -> None:
-    emit_stub_role_critique_panel(
-        store,
-        registry,
-        critique_router,
-        run_id=run_id,
-        producer_tax_key="backend_writer",
-        stage_name=IMPLEMENTATION_CRITIQUE_STAGE,
-        evidence_ref="stub://implementation",
-    )
+__all__ = [
+    "emit_stub_implementation_critique_panel",
+    "execute_implementation_critique_llm",
+]
 
 
 def execute_implementation_critique_llm(

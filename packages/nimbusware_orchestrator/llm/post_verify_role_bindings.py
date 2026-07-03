@@ -6,6 +6,7 @@ from uuid import UUID
 
 from agent_core.critique_stages import (
     FRONTEND_WRITER_CRITIQUE_STAGE,
+    IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
@@ -32,6 +33,12 @@ class _RoleBindingSpec:
 
 
 _ROLE_SPECS: tuple[_RoleBindingSpec, ...] = (
+    _RoleBindingSpec(
+        "implementation",
+        "backend_writer",
+        IMPLEMENTATION_CRITIQUE_STAGE,
+        "implementation",
+    ),
     _RoleBindingSpec("planner", "planner", PLANNER_CRITIQUE_STAGE, "planner"),
     _RoleBindingSpec("test_writer", "test_writer", TEST_WRITER_CRITIQUE_STAGE, "test_writer"),
     _RoleBindingSpec(
@@ -68,6 +75,9 @@ def _bind_all() -> dict[str, EmitStubPanel | ExecuteRoleCritiqueLlm]:
 
 _bound = _bind_all()
 
+emit_stub_implementation_critique_panel: EmitStubPanel = _bound[  # type: ignore[assignment]
+    "emit_stub_implementation_critique_panel"
+]
 emit_stub_planner_critique_panel: EmitStubPanel = _bound["emit_stub_planner_critique_panel"]  # type: ignore[assignment]
 execute_planner_critique_llm: ExecuteRoleCritiqueLlm = _bound["execute_planner_critique_llm"]  # type: ignore[assignment]
 emit_stub_test_writer_critique_panel: EmitStubPanel = _bound["emit_stub_test_writer_critique_panel"]  # type: ignore[assignment]
@@ -89,6 +99,7 @@ execute_module_integrator_critique_llm: ExecuteRoleCritiqueLlm = _bound[  # type
 
 __all__ = [
     "emit_stub_frontend_writer_critique_panel",
+    "emit_stub_implementation_critique_panel",
     "emit_stub_module_integrator_critique_panel",
     "emit_stub_planner_critique_panel",
     "emit_stub_test_writer_critique_panel",
