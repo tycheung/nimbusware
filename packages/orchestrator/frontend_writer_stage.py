@@ -8,9 +8,7 @@ from env import find_repo_root
 _FRONTEND_SUFFIXES = (".html", ".htm", ".css", ".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte")
 _SKIP_DIRS = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__", ".nimbusware"})
 
-_MINIMAL_INDEX_PATH = (
-    find_repo_root() / "configs" / "factory" / "frontend_minimal_index.html"
-)
+_MINIMAL_INDEX_PATH = find_repo_root() / "configs" / "factory" / "frontend_minimal_index.html"
 
 
 def _minimal_index_html() -> str:
