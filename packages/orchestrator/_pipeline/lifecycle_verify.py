@@ -21,6 +21,25 @@ class LifecycleVerifyMixin:
     ) -> None:
         self.execute_micro_slice_pass(run_id, workspace=workspace)
 
+    def _run_post_writer_critique_tail(
+        self: LifecycleVerifyHost,
+        run_id: UUID,
+    ) -> None:
+        from env.env_flags import env_force_on
+        from orchestrator.llm.post_verify_role_bindings import (
+            emit_stub_implementation_critique_panel,
+        )
+
+        eff = self._effective_universal_critique_for_run(run_id)
+        if not (eff.impl_stub or env_force_on("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS")):
+            return
+        emit_stub_implementation_critique_panel(
+            self._store,
+            self._registry,
+            self._critique_router,
+            run_id=run_id,
+        )
+
     def dispatch_or_run_verify(
         self: LifecycleVerifyHost,
         run_id: UUID,

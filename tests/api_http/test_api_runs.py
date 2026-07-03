@@ -531,7 +531,7 @@ def test_timeline_parallel_writer_groups_after_writer_pass(client: TestClient) -
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
     with patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             ex = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -554,7 +554,7 @@ def test_timeline_parallel_dispatch_mode_when_enabled(client: TestClient) -> Non
     ).json()["run_id"]
     with patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -579,11 +579,11 @@ def test_timeline_parallel_stage_details_include_test_writer_failure(client: Tes
         clear=False,
     ):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             with patch(
-                "orchestrator.pipeline.run_test_writer_stage",
+                "orchestrator._pipeline.writers.run_test_writer_stage",
                 return_value=(7, "boom", "subprocess"),
             ):
                 resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -619,7 +619,7 @@ def test_timeline_parallel_stage_details_include_test_writer_body_mode_stub(
         clear=False,
     ):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -653,7 +653,7 @@ def test_timeline_agent_evaluator_coverage_gate(client: TestClient) -> None:
     ).json()["run_id"]
     with patch.dict(os.environ, {"NIMBUSWARE_AGENT_EVALUATOR": "1"}, clear=False):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -669,7 +669,7 @@ def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> Non
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
     with patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
         with patch(
-            "orchestrator.pipeline.run_writer_verifier_bundle",
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             client.post(

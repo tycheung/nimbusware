@@ -17,6 +17,7 @@ from orchestrator._pipeline._helpers import (
     datetime,
     event_metadata_for_stage,
     os,
+    parallel_group_members,
     run_frontend_writer_stage,
     run_parallel_writer_group,
     run_test_writer_stage,
@@ -248,3 +249,62 @@ class WritersMixin(WritersParallelMixin):
             verifier_exit_code=code,
             verifier_log=log,
         )
+
+    def _run_writer_group_dispatch(
+        self: WritersHost,
+        run_id: UUID,
+        *,
+        workspace: Path | None = None,
+    ) -> tuple[int, str]:
+        from orchestrator.integrator.gate import workflow_profile_from_run_created_rows
+        from orchestrator.workflow.parallel_writers import (
+            parallel_writers_enabled,
+            test_writer_llm_body_enabled,
+            test_writer_llm_stub_fallback,
+            test_writer_stage_enabled,
+        )
+
+        sg_snapshot = self._stage_graph_snapshot_for_run(run_id)
+        rows = self._store.list_run_events(str(run_id))
+        wf_prof = workflow_profile_from_run_created_rows(rows)
+        use_parallel = parallel_writers_enabled(
+            self._repo_root,
+            wf_prof,
+            config_materializer=self._config_materializer,
+        )
+        real_test_writer = test_writer_stage_enabled(
+            self._repo_root,
+            wf_prof,
+            config_materializer=self._config_materializer,
+        )
+        tw_llm_body = test_writer_llm_body_enabled(
+            self._repo_root,
+            wf_prof,
+            config_materializer=self._config_materializer,
+        )
+        tw_llm_stub_fallback = test_writer_llm_stub_fallback(
+            self._repo_root,
+            wf_prof,
+            config_materializer=self._config_materializer,
+        )
+        base_cfg = self._base_cfg()
+        runtime_cfg = base_cfg.get("runtime") or {}
+        writers_group = (
+            parallel_group_members(sg_snapshot, "writers") if sg_snapshot and use_parallel else []
+        )
+        if writers_group:
+            return self._run_writers_parallel_dispatch(
+                run_id,
+                sg_snapshot,
+                writers_group,
+                workspace=workspace,
+                real_test_writer_enabled=real_test_writer,
+                test_writer_llm_body=tw_llm_body,
+                test_writer_llm_stub_fallback_enabled=tw_llm_stub_fallback,
+                test_writer_llm_model_id=self._selected_model_for_run(run_id),
+                test_writer_llm_base_url=str(runtime_cfg.get("base_url", "http://localhost:11434")),
+                test_writer_llm_timeout_seconds=float(
+                    runtime_cfg.get("request_timeout_seconds", 120),
+                ),
+            )
+        return self._run_writers_sequential(run_id, sg_snapshot, workspace=workspace)
