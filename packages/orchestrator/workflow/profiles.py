@@ -26,7 +26,6 @@ def _is_fragment_key(key: str) -> bool:
 
 
 def workflow_yaml_path_for_key(repo_root: Path, key: str) -> Path:
-    """Resolve a workflow profile or ``fragments/<name>`` fragment to its YAML path."""
     k = key.strip()
     if _is_fragment_key(k):
         name = k[len(_FRAGMENT_PREFIX) :]
@@ -101,12 +100,15 @@ def collect_workflow_extends_trace(
     parent_key = str(extends).strip()
     if not parent_key:
         return trace
-    return [*collect_workflow_extends_trace(
-        repo_root,
-        parent_key,
-        materializer=materializer,
-        _stack=(*_stack, key),
-    ), *trace]
+    return [
+        *collect_workflow_extends_trace(
+            repo_root,
+            parent_key,
+            materializer=materializer,
+            _stack=(*_stack, key),
+        ),
+        *trace,
+    ]
 
 
 def _resolve_workflow_profile_raw(

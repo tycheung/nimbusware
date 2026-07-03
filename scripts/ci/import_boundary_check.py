@@ -12,7 +12,6 @@ ORCHESTRATOR_ROOT = ROOT / "packages" / "orchestrator"
 
 
 def module_level_import_prefixes(path: Path, prefix: str) -> list[str]:
-    """Return module names imported at module level that start with ``prefix``."""
     tree = ast.parse(path.read_text(encoding="utf-8"))
     hits: list[str] = []
     for node in tree.body:
@@ -39,7 +38,6 @@ def collect_violations(
     *,
     orchestrator_root: Path | None = None,
 ) -> list[str]:
-    """Scan orchestrator for forbidden module-level ``api`` imports (Lane R-C)."""
     orchestrator_root = orchestrator_root or ORCHESTRATOR_ROOT
     violations: list[str] = []
 

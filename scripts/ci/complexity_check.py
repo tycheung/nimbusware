@@ -61,7 +61,6 @@ def collect_high_branch_functions(
     pipeline_dir: Path | None = None,
     threshold: int = BRANCH_THRESHOLD,
 ) -> list[tuple[str, str, int]]:
-    """Return (relative_path, function_name, branch_count) for functions over threshold."""
     pipeline_dir = pipeline_dir or PIPELINE_DIR
     flagged: list[tuple[str, str, int]] = []
     for path in sorted(pipeline_dir.glob("*.py")):

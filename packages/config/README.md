@@ -11,6 +11,7 @@ When `NIMBUSWARE_CONFIG_FROM_DB=1`, `ConfigMaterializer` is the runtime source o
 | `documents/` | Typed config document models |
 | `materializer.py` | YAML ↔ Postgres sync |
 | `store.py` | Read/write with expected-version checks |
+| `resolved_config.py` | `resolve_run_config()` with extends trace for workflow debugging |
 
 ## Consumers
 

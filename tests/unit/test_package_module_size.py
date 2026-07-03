@@ -29,8 +29,8 @@ def test_no_package_module_over_line_limit() -> None:
         lines = _line_count(path)
         if lines > MODULE_LINE_LIMIT and rel not in _ALLOWLIST_OVER_LIMIT:
             over_limit.append(f"{rel}: {lines} lines (limit {MODULE_LINE_LIMIT})")
-    assert not over_limit, (
-        f"New modules exceed {MODULE_LINE_LIMIT}-line cap:\n" + "\n".join(over_limit)
+    assert not over_limit, f"New modules exceed {MODULE_LINE_LIMIT}-line cap:\n" + "\n".join(
+        over_limit
     )
 
 

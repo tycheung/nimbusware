@@ -52,26 +52,20 @@ def run_exception_matrix(
                 )
             else:
                 for substr in msg_contains:
-                    assert substr in str(exc), (
-                        f"{case_id}: expected {substr!r} in {str(exc)!r}"
-                    )
+                    assert substr in str(exc), f"{case_id}: expected {substr!r} in {str(exc)!r}"
         if "msg_equals" in case:
             assert str(exc) == case["msg_equals"], (
                 f"{case_id}: message expected {case['msg_equals']!r}, got {str(exc)!r}"
             )
         for substr in case.get("msg_not_contains", ()):
-            assert substr not in str(exc), (
-                f"{case_id}: expected {substr!r} not in {str(exc)!r}"
-            )
+            assert substr not in str(exc), f"{case_id}: expected {substr!r} not in {str(exc)!r}"
         if "exc_args" in case:
             assert exc.args == case["exc_args"], (
                 f"{case_id}: args expected {case['exc_args']!r}, got {exc.args!r}"
             )
         if "assert_not_isinstance" in case:
             bad_type = case["assert_not_isinstance"]
-            assert not isinstance(exc, bad_type), (
-                f"{case_id}: must not be {bad_type.__name__}"
-            )
+            assert not isinstance(exc, bad_type), f"{case_id}: must not be {bad_type.__name__}"
         if "assert_encoding" in case:
             assert getattr(exc, "encoding", None) == case["assert_encoding"], (
                 f"{case_id}: encoding expected {case['assert_encoding']!r}, "

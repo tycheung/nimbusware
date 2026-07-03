@@ -47,7 +47,6 @@ def resolve_run_config(
     *,
     materializer: ConfigMaterializer | None = None,
 ) -> ResolvedConfig:
-    """Load merged workflow YAML via the config materializer and record resolution trace."""
     root = repo_root.resolve()
     trace: list[str] = []
     profile = _resolve_workflow_profile_name(workflow_profile, trace)
@@ -68,7 +67,6 @@ def resolve_run_config(
 
 
 def effective_universal_critique_from_resolved(resolved: ResolvedConfig) -> Any:
-    """Thin wrapper: apply env overrides using a pre-resolved workflow profile."""
     from orchestrator.workflow.universal_critique import effective_universal_critique
 
     return effective_universal_critique(
