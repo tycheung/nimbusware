@@ -1,24 +1,6 @@
 # v1 production-oriented workflow profile (B1: default-on critique + evaluator depth).
-# Use for operator runs where YAML should drive behavior without env kill-switches.
+extends: default
 version: 1
-finding_fix_strictness:
-  minimum_severity_requiring_fixes: MEDIUM
-  also_require_fixes_for_low_severity: false
-network_egress:
-  scraper_role_allowlist: null
-  domain_allowlist: null
-  budget_bytes_per_run: null
-scraper_fetch:
-  enabled: false
-  url: null
-  urls: null
-  actor_role_key: backend_writer
-  max_attempts: 1
-  backoff_seconds: 0
-  max_bytes: null
-  body_snippet_max_bytes: 256
-  persist_artifacts_max_bytes_per_url: null
-security_scan_metadata_on_verify: false
 agent_evaluator:
   enabled: true
   persona_id: default
@@ -37,53 +19,45 @@ universal_critique:
   default_enabled: true
   unanimous_gate_enforce: true
   implementation:
+    llm: false
     stub: true
-  test_writer: {}
-  planner: {}
+  test_writer:
+    enabled: true
+  planner:
+    enabled: true
 integration_adapter_writer:
   enabled: true
   stub_only: false
-escalation:
-  suppress_automatic_escalation: false
-
-# Phase 3 critic stages (PZ-8): default-on for production profile (stub panels; LLM off).
 security_critique:
   enabled: true
   stub: true
   llm_enabled: false
   severity_floor: MEDIUM
-
 performance_critique:
   enabled: true
   stub: true
   llm_enabled: false
   severity_floor: MEDIUM
-
 network_resilience_critique:
   enabled: true
   stub: true
   llm_enabled: false
   backend_only: true
   severity_floor: MEDIUM
-
 refactor:
   enabled: true
   stub_only: false
   max_iterations: 1
   orphan_gate_max: 15
-
-# Phase 4 memory: default-on retrieval + index contribution for production runs.
 memory:
   retrieval_enabled: true
   index_contribution: true
   retrieval_k: 5
   excerpt_max_chars: 2000
   embedding_mode: deterministic
-
 research:
   enabled: false
   domain_enabled: true
   code_enabled: true
-
 stitch:
   enabled: false
