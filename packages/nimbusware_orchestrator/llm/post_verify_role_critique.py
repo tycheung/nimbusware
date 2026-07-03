@@ -19,9 +19,12 @@ def bind_post_verify_role_critique(
     stage_name: str,
     evidence_tag: str,
     review_label: str | None = None,
+    min_pairing_count: int = 2,
+    max_critics: int | None = None,
+    bind_execute_llm: bool = True,
 ) -> tuple[
     Callable[..., None],
-    Callable[..., bool],
+    Callable[..., bool] | None,
 ]:
     label = review_label or producer_tax_key.replace("_", " ")
 
@@ -40,7 +43,13 @@ def bind_post_verify_role_critique(
             producer_tax_key=producer_tax_key,
             stage_name=stage_name,
             evidence_ref=f"stub://{evidence_tag}",
+            min_pairing_count=min_pairing_count,
+            max_critics=max_critics,
         )
+
+    if not bind_execute_llm:
+        emit_stub_panel.__name__ = f"emit_stub_{name}_critique_panel"
+        return emit_stub_panel, None
 
     def execute_llm(
         store: EventStore,

@@ -23,36 +23,20 @@ from nimbusware_extensions.extension_runtime import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
     SELF_REFINEMENT_CRITIQUE_STAGE,
     LlmSelfRefinementCritiqueResponse,
-    _finalize_critique_gate,
     _parse_verdict,
     append_gate_decision_event,
-    emit_stub_role_critique_panel,
-)
-from nimbusware_orchestrator.llm.common import (
     ollama_chat_json_via_plan_patch as _ollama_chat_json,
+)
+from nimbusware_orchestrator.llm.post_verify_role_bindings import (
+    emit_stub_self_refinement_critique_panel,
 )
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
-
-def emit_stub_self_refinement_critique_panel(
-    store: EventStore,
-    registry: RoleRegistry,
-    critique_router: UniversalCritiqueRouter,
-    *,
-    run_id: UUID,
-) -> None:
-    emit_stub_role_critique_panel(
-        store,
-        registry,
-        critique_router,
-        run_id=run_id,
-        producer_tax_key="planner",
-        stage_name=SELF_REFINEMENT_CRITIQUE_STAGE,
-        evidence_ref="stub://self_refinement",
-        min_pairing_count=1,
-        max_critics=2,
-    )
+__all__ = [
+    "emit_stub_self_refinement_critique_panel",
+    "execute_self_refinement_critique_llm",
+]
 
 
 def execute_self_refinement_critique_llm(
