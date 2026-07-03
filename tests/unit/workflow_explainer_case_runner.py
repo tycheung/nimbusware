@@ -293,3 +293,45 @@ def run_and_assert_env_payload_case(
         monkeypatch.setenv(key, str(value))
     payload = run_explainer_payload_case(slug, case, tmp_path)
     assert_payload_expectations(payload, case)
+
+
+def decode_caption_guard_input(value: Any) -> Any:
+    if value == "null":
+        return None
+    return value
+
+
+def caption_guard_bad_payload_matrix(raw: Mapping[str, Any]) -> list[tuple[str, Any]]:
+    return [
+        (str(row["fn"]), decode_caption_guard_input(inp))
+        for row in raw.get("bad_payload") or []
+        for inp in row.get("inputs") or []
+    ]
+
+
+def caption_guard_load_error_matrix(
+    raw: Mapping[str, Any],
+) -> list[tuple[str, dict[str, Any]]]:
+    return [
+        (str(row["fn"]), dict(row["payload"]))
+        for row in raw.get("load_error_payload") or []
+    ]
+
+
+def assert_caption_guard_returns_none(fn_path: str, payload: Any) -> None:
+    assert load_caption_fn(fn_path)(payload) is None
+
+
+def assert_caption_guard_tmp_path_load_error(row: Mapping[str, Any], tmp_path: Path) -> None:
+    from unit.workflow_explainer_helpers import escalation_explainer_payload
+
+    fn = load_caption_fn(str(row["fn"]))
+    if row.get("setup") == "malformed_escalation_policy":
+        pl = escalation_explainer_payload(
+            tmp_path,
+            policy_yaml=": : not yaml\n",
+        )
+        assert isinstance(pl["escalation_policy_yaml_load_error"], str)
+        assert fn(pl) is None
+        return
+    raise ValueError(f"unsupported caption guard setup: {row.get('setup')!r}")
