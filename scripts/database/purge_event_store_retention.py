@@ -49,7 +49,9 @@ def main() -> int:
             count = int(cur.fetchone()[0])
         print(f"Eligible rows before {cutoff.isoformat()}: {count}")
         if not args.execute:
-            print("Dry-run only; pass --execute to purge (requires NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1)")
+            print(
+                "Dry-run only; pass --execute to purge (requires NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1)"
+            )
             return 0
         if not purge_execute_enabled():
             print("Execute blocked: set NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1")

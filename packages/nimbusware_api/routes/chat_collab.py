@@ -6,7 +6,13 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import ChatLibraryStoreDep, ChatStoreDep, CollabStoreDep, HostTransferStoreDep, StoreDep
+from nimbusware_api.deps import (
+    ChatLibraryStoreDep,
+    ChatStoreDep,
+    CollabStoreDep,
+    HostTransferStoreDep,
+    StoreDep,
+)
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_api.routes.chat_common import (
@@ -420,6 +426,7 @@ def decline_host_transfer(
     )
     return {"ok": True, "transfer": declined.to_dict()}
 
+
 class FolderBody(BaseModel):
     project_id: UUID
     name: str = Field(min_length=1, max_length=120)
@@ -690,4 +697,3 @@ def get_effective_role(
             "tag": tag_grants,
         },
     }
-

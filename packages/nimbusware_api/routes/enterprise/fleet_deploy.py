@@ -10,7 +10,6 @@ from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from nimbusware_env.dotenv import find_repo_root
 from nimbusware_orchestrator.fleet_policies import (
     FleetDeployPolicy,
     load_fleet_deploy_policies,

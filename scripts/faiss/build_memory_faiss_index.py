@@ -54,8 +54,10 @@ def main(argv: list[str] | None = None) -> int:
         from nimbusware_memory.indexer import rebuild_memory_index
 
         if conninfo:
-            mem_store: InMemoryMemoryChunkStore | PostgresMemoryChunkStore = PostgresMemoryChunkStore(
-                conninfo,
+            mem_store: InMemoryMemoryChunkStore | PostgresMemoryChunkStore = (
+                PostgresMemoryChunkStore(
+                    conninfo,
+                )
             )
             audit_store = None
             audit_run_id = None

@@ -106,7 +106,9 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     wizard = (root / "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js").read_text(
         encoding="utf-8",
     )
-    bootstrap = (root / "packages/nimbusware_maker/playwright_bootstrap.py").read_text(encoding="utf-8")
+    bootstrap = (root / "packages/nimbusware_maker/playwright_bootstrap.py").read_text(
+        encoding="utf-8"
+    )
     compliance = (root / "packages/nimbusware_api/routes/enterprise/compliance.py").read_text(
         encoding="utf-8",
     )
@@ -119,7 +121,9 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     collab_store = (root / "packages/nimbusware_config/collab_settings_store.py").read_text(
         encoding="utf-8",
     )
-    discovery_ui = (root / "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js").read_text(
+    discovery_ui = (
+        root / "packages/nimbusware_maker_web/static/js/tabs/chat_discovery_ui.js"
+    ).read_text(
         encoding="utf-8",
     )
     return {
@@ -130,19 +134,30 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
         "engineer": {
             "collab_persist": "save_persisted_collab_enabled" in collab_store,
             "host_hydrate": "ensure_mesh_binding_for_llm" in hydrate,
-            "campaign_parallel": "ThreadPoolExecutor" in (root / "packages/nimbusware_orchestrator/campaign_driver_execute.py").read_text(encoding="utf-8"),
+            "campaign_parallel": "ThreadPoolExecutor"
+            in (root / "packages/nimbusware_orchestrator/campaign_driver_execute.py").read_text(
+                encoding="utf-8"
+            ),
         },
         "enterprise": {
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
-            "fleet_semantic_embedding": (root / "packages/nimbusware_memory/embeddings.py").is_file(),
-            "gate_comprehension_harness": (root / "scripts/benchmarks/measure_gate_comprehension.py").is_file(),
+            "fleet_semantic_embedding": (
+                root / "packages/nimbusware_memory/embeddings.py"
+            ).is_file(),
+            "gate_comprehension_harness": (
+                root / "scripts/benchmarks/measure_gate_comprehension.py"
+            ).is_file(),
         },
         "polish": {
             "discovery_explain": "discovery-explain-btn" in discovery_ui,
             "surface_bindings": "maker-chat-scope-surface-bindings" in discovery_ui,
-            "product_polish_smoke": (root / "tests/e2e/web/maker_product_polish_smoke.spec.ts").is_file(),
-            "fs6_scaffold": (root / "packages/nimbusware_orchestrator/stack_agent_scaffold.py").is_file(),
+            "product_polish_smoke": (
+                root / "tests/e2e/web/maker_product_polish_smoke.spec.ts"
+            ).is_file(),
+            "fs6_scaffold": (
+                root / "packages/nimbusware_orchestrator/stack_agent_scaffold.py"
+            ).is_file(),
             "archetype_weekly": (root / ".github/workflows/archetype_fit_weekly.yml").is_file(),
         },
     }

@@ -41,5 +41,6 @@ def main() -> int:
     print(f"openapi TS gate OK ({source})", flush=True)
     return 0
 
+
 if __name__ == "__main__":
     raise SystemExit(main())

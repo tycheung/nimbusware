@@ -12,9 +12,11 @@ from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
 from nimbusware_api.routes.chat_common import (
     StartChatSessionBody,
     StartChatSessionResponse,
+    actor_user_id,
     chat_http_error,
     maybe_apply_chat_replay_alignment,
     patch_context_payload,
+    require_collab_enabled,
     requirements_payload,
     resolve_workflow_profile,
     start_campaign,
@@ -28,7 +30,9 @@ from nimbusware_api.routes.runs.create import enforce_discovery_gate
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
 from nimbusware_auth.permissions import require_session_participant
+from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
 from nimbusware_env.env_flags import env_str, nimbusware_collab_enabled, nimbusware_database_url
+from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_maker.archetype_surface_defaults import manifest_for_archetype
 from nimbusware_maker.autopilot_defer_matrix import autopilot_may_auto_defer
 from nimbusware_maker.chat_service import (
@@ -52,8 +56,6 @@ from nimbusware_maker.session_scope import (
     publish_scope_pending,
 )
 
-from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
-from nimbusware_iam.context import resolve_store_tenant_id
 router = APIRouter(tags=["maker"])
 
 
@@ -450,6 +452,7 @@ def post_scope_confirm(body: ScopeConfirmBody) -> ScopeDiscoverResponse:
         ) from exc
     return ScopeDiscoverResponse(scope=enrich_scope_surface_bindings(confirmed))
 
+
 class DelegateControlBody(BaseModel):
     allow_host_resource_management: bool = False
 
@@ -648,4 +651,3 @@ def put_participant_binding(
         "user_id": actor_id,
         "roles": participant_binding_overrides(meta, str(actor_id)),
     }
-

@@ -137,7 +137,9 @@ class Totals:
     files: int = 0
     physical: int = 0
     non_blank: int = 0
-    by_extension: dict[str, dict[str, int]] = field(default_factory=lambda: defaultdict(lambda: {"files": 0, "physical": 0, "non_blank": 0}))
+    by_extension: dict[str, dict[str, int]] = field(
+        default_factory=lambda: defaultdict(lambda: {"files": 0, "physical": 0, "non_blank": 0})
+    )
 
 
 def _is_under_skip_prefix(rel_posix: str) -> bool:
@@ -330,7 +332,9 @@ def main() -> int:
     print(f"Non-blank lines:  {totals.non_blank:,}  (typical 'LOC' metric)")
     if gen_totals.files:
         print()
-        print(f"Also skipped {gen_totals.files} file(s) with generated headers ({gen_totals.physical:,} lines).")
+        print(
+            f"Also skipped {gen_totals.files} file(s) with generated headers ({gen_totals.physical:,} lines)."
+        )
     print()
     print("By extension (non-blank lines):")
     rows = sorted(totals.by_extension.items(), key=lambda kv: -kv[1]["non_blank"])

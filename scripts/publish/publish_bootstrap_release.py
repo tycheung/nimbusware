@@ -92,7 +92,9 @@ def _smoke(*, testpypi: bool) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build and optionally publish nimbusware-bootstrap")
+    parser = argparse.ArgumentParser(
+        description="Build and optionally publish nimbusware-bootstrap"
+    )
     parser.add_argument(
         "--testpypi",
         action="store_true",

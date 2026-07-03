@@ -59,7 +59,10 @@ def main(argv: list[str] | None = None) -> int:
             print("fo2172 live gate: opt-in harness ok=false", file=sys.stderr)
             return 1
         if not live.get("skipped"):
-            print("fo2172 live gate: unexpected live run without NIMBUSWARE_FO2172_LIVE", file=sys.stderr)
+            print(
+                "fo2172 live gate: unexpected live run without NIMBUSWARE_FO2172_LIVE",
+                file=sys.stderr,
+            )
             return 1
 
     try:

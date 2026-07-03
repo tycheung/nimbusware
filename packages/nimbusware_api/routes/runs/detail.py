@@ -9,7 +9,6 @@ from fastapi.routing import APIRouter
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -51,6 +50,7 @@ from nimbusware_projections.builders import (
     stage_graph_timeline_summary,
     universal_critique_timeline_summary,
 )
+from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_projections.run_summary import build_run_summary
 from nimbusware_store.protocol import serialized_event_from_row
 

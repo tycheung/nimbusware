@@ -13,10 +13,7 @@ BUNDLES = REPO / "packages/nimbusware_console/pages/config_tooling/bundles/_shar
 def main() -> None:
     tree = ast.parse(WF.read_text(encoding="utf-8"))
     names = sorted(
-        alias.name
-        for node in tree.body
-        if isinstance(node, ast.ImportFrom)
-        for alias in node.names
+        alias.name for node in tree.body if isinstance(node, ast.ImportFrom) for alias in node.names
     )
     joined = ",\n    ".join(names)
     text = f'''"""Re-export workflow shared helpers for bundle pages."""

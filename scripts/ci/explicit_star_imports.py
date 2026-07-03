@@ -8,9 +8,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 PACKAGES = REPO / "packages"
 
-STAR_LINE = re.compile(
-    r"^from (?P<module>[a-zA-Z0-9_.]+) import \*  # noqa: F403\s*$"
-)
+STAR_LINE = re.compile(r"^from (?P<module>[a-zA-Z0-9_.]+) import \*  # noqa: F403\s*$")
 
 
 def _module_path(module: str) -> Path | None:
@@ -123,7 +121,9 @@ def explicitize_file(path: Path, *, dry_run: bool = False) -> bool:
         joined = ",\n    ".join(names)
         new_blocks.append(f"from {module} import (\n    {joined},\n)")
 
-    tail_lines = [line for line in text.splitlines(keepends=True) if not STAR_LINE.match(line.rstrip("\n"))]
+    tail_lines = [
+        line for line in text.splitlines(keepends=True) if not STAR_LINE.match(line.rstrip("\n"))
+    ]
     future_lines = [line for line in tail_lines if line.startswith("from __future__")]
     other_tail = [line for line in tail_lines if not line.startswith("from __future__")]
     body = "".join(future_lines)
@@ -185,7 +185,12 @@ def _console_targets() -> list[Path]:
             continue
         if " import *  # noqa: F403" in path.read_text(encoding="utf-8"):
             targets.append(path)
-    for pattern in ("*_display.py", "*_explainer.py", "bundle_catalog.py", "integrator_workflow_preview.py"):
+    for pattern in (
+        "*_display.py",
+        "*_explainer.py",
+        "bundle_catalog.py",
+        "integrator_workflow_preview.py",
+    ):
         for path in console.glob(pattern):
             if " import *  # noqa: F403" in path.read_text(encoding="utf-8"):
                 targets.append(path)

@@ -85,7 +85,14 @@ def _try_openapi_typescript(openapi_path: Path) -> bool:
     npx = _npx_executable()
     if npx is None:
         return False
-    args = [npx, "--yes", "openapi-typescript", str(openapi_path.resolve()), "-o", str(OUT.resolve())]
+    args = [
+        npx,
+        "--yes",
+        "openapi-typescript",
+        str(openapi_path.resolve()),
+        "-o",
+        str(OUT.resolve()),
+    ]
     for _attempt in range(2):
         try:
             if platform.system() == "Windows" and npx.lower().endswith(".cmd"):
@@ -134,10 +141,14 @@ def main() -> int:
         "yes",
     }
     if require_full and source != "openapi-typescript":
-        sys.stderr.write("NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL set but openapi-typescript unavailable\n")
+        sys.stderr.write(
+            "NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL set but openapi-typescript unavailable\n"
+        )
         return 1
 
-    print(json.dumps({"ok": True, "path": str(OUT), "openapi": str(OPENAPI_JSON), "source": source}))
+    print(
+        json.dumps({"ok": True, "path": str(OUT), "openapi": str(OPENAPI_JSON), "source": source})
+    )
     return 0
 
 

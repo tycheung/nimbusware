@@ -36,7 +36,12 @@ def _facade_package_module(facade_path: Path) -> tuple[str, Path] | None:
 
 def _discover_facades() -> list[Path]:
     paths: list[Path] = []
-    for pattern in ("*_display.py", "*_explainer.py", "bundle_catalog.py", "integrator_workflow_preview.py"):
+    for pattern in (
+        "*_display.py",
+        "*_explainer.py",
+        "bundle_catalog.py",
+        "integrator_workflow_preview.py",
+    ):
         paths.extend(CONSOLE.glob(pattern))
     return sorted(paths)
 

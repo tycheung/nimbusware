@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException, Query
 
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_api.routes import runs as runs_routes
 from nimbusware_api.schemas.openapi import (
     PREFLIGHT_HISTORY_RESPONSE_200,
@@ -20,6 +19,7 @@ from nimbusware_api.schemas.preflight import (
     PreflightMetricsExport,
     PreflightMetricsExportFilters,
 )
+from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_store.protocol import serialized_event_from_row
 
 router = APIRouter(tags=["preflight"])

@@ -12,4 +12,4 @@ If the stage is set to `cloud` and `cloud_runtime.enabled` is true, the resolver
 
 **Migration path:** apply a routing preset (`POST /v1/platform/routing-presets/apply`) or configure per-role bindings in Settings **Agent & Models**. Hybrid shim is a fallback only — not the long-term source of truth.
 
-**Enterprise policy:** `configs/model_policy.yaml` and `GET/PUT /v1/enterprise/model-policy` gate allowed cloud providers and blocked model ids for admin audit.
+**Enterprise policy:** the `model_policy` section in [`configs/model-routing.yaml`](../configs/model-routing.yaml) (and `GET/PUT /v1/enterprise/model-policy`) gates allowed cloud providers and blocked model ids for admin audit. Saving via the enterprise API may also write `configs/model_policy.yaml` as a tenant override file.

@@ -336,7 +336,7 @@ def persist_run_enforcement(
     tenant_slug: str | None = None,
     repo_root: Path | None = None,
 ) -> EnforcementProfile:
-    from nimbusware_orchestrator.fleet_policies import enforce_tenant_enforcement_policy
+    from nimbusware_orchestrator.fleet_policy_guards import enforce_tenant_enforcement_policy
 
     profile = enforce_tenant_enforcement_policy(
         profile,

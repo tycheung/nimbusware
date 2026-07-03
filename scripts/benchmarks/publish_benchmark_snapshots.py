@@ -60,7 +60,9 @@ def _write_critic_reliability_snapshot() -> Path:
         "source": "fleet_empty_fallback",
     }
     if int(metrics.get("runs_scanned") or 0) == 0:
-        payload["note"] = "No fleet runs in empty store; regenerate via swe_bench_harness --run with NIMBUSWARE_SWE_BENCH_WRITE_JSON=1"
+        payload["note"] = (
+            "No fleet runs in empty store; regenerate via swe_bench_harness --run with NIMBUSWARE_SWE_BENCH_WRITE_JSON=1"
+        )
     out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     return out
 
@@ -126,7 +128,12 @@ def main() -> int:
         "NIMBUSWARE_SWE_BENCH_WRITE_JSON": "1",
     }
     proc = subprocess.run(
-        [sys.executable, str(_ROOT / "scripts" / "benchmarks" / "swe_bench_harness.py"), "--run", "--json"],
+        [
+            sys.executable,
+            str(_ROOT / "scripts" / "benchmarks" / "swe_bench_harness.py"),
+            "--run",
+            "--json",
+        ],
         cwd=_ROOT,
         env=env,
         check=False,

@@ -12,10 +12,6 @@ from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from nimbusware_orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
-from nimbusware_orchestrator.fleet_policy_guards import (
-    clamp_autopilot_profile_to_policy,
-    enforce_tenant_autopilot_policy,
-)
 from nimbusware_orchestrator.fleet_policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,

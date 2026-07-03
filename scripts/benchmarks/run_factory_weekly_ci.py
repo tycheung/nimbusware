@@ -148,7 +148,9 @@ def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
         "passed": False,
         "entry_count": len(entries),
         "prompt_ids": [
-            str(e.get("id") or e.get("flow_id") or "default") for e in entries if isinstance(e, dict)
+            str(e.get("id") or e.get("flow_id") or "default")
+            for e in entries
+            if isinstance(e, dict)
         ],
     }
     if not entries:

@@ -36,7 +36,6 @@ def _writer_flags(doc: dict) -> dict[str, bool | None]:
 
 def _run_pipeline_smoke(repo_root: Path) -> dict[str, object]:
     import importlib.util
-    import time
     from dataclasses import asdict
 
     harness_path = repo_root / "scripts" / "benchmarks" / "swe_bench_harness.py"
@@ -52,7 +51,11 @@ def _run_pipeline_smoke(repo_root: Path) -> dict[str, object]:
     try:
         summary = mod.run_harness(manifest_path=manifest, dry_run=False, repo_root=repo_root)
     except Exception as exc:  # noqa: BLE001
-        return {"ok": False, "duration_sec": round(time.perf_counter() - t0, 3), "error": str(exc)[:500]}
+        return {
+            "ok": False,
+            "duration_sec": round(time.perf_counter() - t0, 3),
+            "error": str(exc)[:500],
+        }
 
     duration = round(time.perf_counter() - t0, 3)
     body = asdict(summary)

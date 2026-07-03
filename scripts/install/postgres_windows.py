@@ -74,17 +74,17 @@ def resolve_build(*, major: int, build: str | None) -> str:
             )
         return build
     # Try patch releases for this major (newest first).
-    candidates = [
-        f"{major}.9-{patch}" for patch in range(5, 0, -1)
-    ] + [
-        f"{major}.8-{patch}" for patch in range(5, 0, -1)
-    ] + [
-        f"{major}.7-1",
-        f"{major}.6-2",
-        f"{major}.6-1",
-        f"{major}.5-1",
-        f"{major}.4-1",
-    ]
+    candidates = (
+        [f"{major}.9-{patch}" for patch in range(5, 0, -1)]
+        + [f"{major}.8-{patch}" for patch in range(5, 0, -1)]
+        + [
+            f"{major}.7-1",
+            f"{major}.6-2",
+            f"{major}.6-1",
+            f"{major}.5-1",
+            f"{major}.4-1",
+        ]
+    )
     for candidate in candidates:
         if candidate.startswith(f"{major}.") and probe_build_exists(candidate):
             return candidate
@@ -532,9 +532,7 @@ def ensure_nimbusware_role(
         f"ALTER USER {NIMBUSWARE_DB_USER} WITH PASSWORD '{NIMBUSWARE_DB_PASSWORD}'; "
         f"END $nw$;"
     )
-    sql_db = (
-        f"SELECT 'ok' FROM pg_database WHERE datname = '{NIMBUSWARE_DB_NAME}';"
-    )
+    sql_db = f"SELECT 'ok' FROM pg_database WHERE datname = '{NIMBUSWARE_DB_NAME}';"
     log("Creating application database role (if missing)...")
     _run_checked([*base, "-d", "postgres", "-c", sql_user], log=log, env=env)
     proc = subprocess.run(
@@ -679,11 +677,7 @@ def install_postgresql_windows(
     exe_path = cache / installer_filename(resolved_build)
     _download(installer_url(resolved_build), exe_path, log=log)
 
-    pw = (
-        superpassword
-        or os.environ.get(ENV_POSTGRES_PASSWORD, "").strip()
-        or "nimbusware_setup"
-    )
+    pw = superpassword or os.environ.get(ENV_POSTGRES_PASSWORD, "").strip() or "nimbusware_setup"
     silent_args = _installer_args(superpassword=pw, port=port, prefix=None)
 
     _run_installer_elevated(

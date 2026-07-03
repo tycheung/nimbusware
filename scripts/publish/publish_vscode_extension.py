@@ -59,7 +59,10 @@ def main() -> int:
     args = parser.parse_args()
 
     if not args.skip_gate:
-        _run([sys.executable, str(_ROOT / "scripts" / "ci" / "run_publish_vscode_ci_gate.py")], cwd=_ROOT)
+        _run(
+            [sys.executable, str(_ROOT / "scripts" / "ci" / "run_publish_vscode_ci_gate.py")],
+            cwd=_ROOT,
+        )
 
     vsix = _package()
     print(f"VSIX packaged: {vsix.name}", flush=True)
@@ -70,7 +73,9 @@ def main() -> int:
 
     token = os.environ.get("VSCE_PAT", "").strip()
     if not token:
-        raise SystemExit("VSCE_PAT is required for --publish (see docs/deploy/vscode-marketplace.md)")
+        raise SystemExit(
+            "VSCE_PAT is required for --publish (see docs/deploy/vscode-marketplace.md)"
+        )
 
     npx = shutil.which("npx.cmd") or shutil.which("npx")
     if not npx:

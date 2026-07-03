@@ -42,7 +42,9 @@ def _is_trivial_module_docstring(body: list[str]) -> bool:
     if not text or len(text) > 160:
         return False
     lowered = text.lower()
-    if any(token in lowered for token in ("must", "warning", "deprecated", "security", "invariant")):
+    if any(
+        token in lowered for token in ("must", "warning", "deprecated", "security", "invariant")
+    ):
         return False
     return True
 

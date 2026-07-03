@@ -51,7 +51,10 @@ def main() -> int:
         steps = [
             ("Bootstrap CI gate", [py, "scripts/ci/run_publish_bootstrap_ci_gate.py"]),
             ("VS Code extension CI gate", [py, "scripts/ci/run_publish_vscode_ci_gate.py"]),
-            ("Bootstrap wheel build (twine check)", [py, "scripts/publish/publish_bootstrap_release.py"]),
+            (
+                "Bootstrap wheel build (twine check)",
+                [py, "scripts/publish/publish_bootstrap_release.py"],
+            ),
             ("VS Code .vsix package", [py, "scripts/publish/publish_vscode_extension.py"]),
         ]
     failed = 0

@@ -43,7 +43,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to source JSON with models[] (legacy positional)",
     )
     parser.add_argument("--from-json", type=Path, help="Path to source JSON")
-    parser.add_argument("--from-url", type=str, help="Download curated JSON from URL (operator-only)")
+    parser.add_argument(
+        "--from-url", type=str, help="Download curated JSON from URL (operator-only)"
+    )
     parser.add_argument("--merge", action="store_true", help="Merge by model id instead of replace")
     parser.add_argument("--dry-run", action="store_true", help="Validate without writing")
     args = parser.parse_args(argv)

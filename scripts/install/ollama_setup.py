@@ -79,9 +79,7 @@ def find_ollama_binary() -> str | None:
     if on_path:
         return on_path
     if sys.platform == "win32":
-        local = (
-            Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
-        )
+        local = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
         if local.is_file():
             return str(local)
     return None
@@ -192,9 +190,7 @@ def build_ollama_setup_options(*, platform: str | None = None) -> list[OllamaSet
             OllamaSetupOption(
                 key="script",
                 title="Official install script (curl)",
-                explanation=(
-                    "Runs curl -fsSL https://ollama.com/install.sh | sh from ollama.com."
-                ),
+                explanation=("Runs curl -fsSL https://ollama.com/install.sh | sh from ollama.com."),
                 available=_which("curl") is not None,
                 unavailable_reason="curl was not found on PATH.",
             ),
@@ -397,8 +393,7 @@ def pull_ollama_models(
         )
     if not wait_for_ollama(host, log=log):
         raise OllamaSetupError(
-            f"Ollama API is not reachable at {ollama_api_host(host)}. "
-            "Start Ollama and retry.",
+            f"Ollama API is not reachable at {ollama_api_host(host)}. Start Ollama and retry.",
         )
     installed = list_installed_models(host) if skip_existing else []
     pulled: list[str] = []

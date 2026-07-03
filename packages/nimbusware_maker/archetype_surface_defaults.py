@@ -71,7 +71,6 @@ def _apply_regulated_stack_guard(
 ) -> dict[str, Any]:
     from nimbusware_orchestrator.fleet_policy_guards import apply_regulated_stack_guard
 
-
     return apply_regulated_stack_guard(manifest, tenant_slug)
 
 

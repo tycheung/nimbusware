@@ -37,7 +37,7 @@ def test_build_v1_router_includes_core_routes() -> None:
     assert "/platform/model-bindings/defaults" in paths
     assert "/platform/model-bindings/roles" in paths
     assert "/compute/nodes/register" in paths
-    assert "/chat/sessions/{session_id}/compute/opt-in" in paths
+    assert "/sessions/{session_id}/compute/opt-in" in paths
     assert "/admin/ollama/user-policy" in paths
 
 

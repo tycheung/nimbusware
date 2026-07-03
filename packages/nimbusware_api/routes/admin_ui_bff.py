@@ -38,12 +38,6 @@ from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_re
 from nimbusware_iam.constants import API_KEY_HEADER
 from nimbusware_orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
 from nimbusware_orchestrator.fleet_analytics import compare_tenant_metrics
-from nimbusware_orchestrator.fleet_policy_guards import (
-    clamp_autopilot_profile_to_policy,
-    clamp_enforcement_profile_to_policy,
-    enforce_tenant_autopilot_policy,
-    enforce_tenant_enforcement_policy,
-)
 from nimbusware_orchestrator.fleet_policies import (
     FleetAutopilotPolicy,
     FleetEnforcementPolicy,

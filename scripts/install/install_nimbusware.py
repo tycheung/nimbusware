@@ -437,7 +437,10 @@ def apply_event_store_schema(
     *,
     prefer_psql: bool,
 ) -> None:
-    del poetry, prefer_psql  # apply via scripts/postgres_schema (psql under Program Files on Windows)
+    del (
+        poetry,
+        prefer_psql,
+    )  # apply via scripts/postgres_schema (psql under Program Files on Windows)
     sql_path = repo / SCHEMA_REL
     if not sql_path.is_file():
         raise SetupError(f"Schema file not found: {sql_path}")
@@ -612,9 +615,7 @@ def _fixture_workspace(repo: Path, name: str) -> Path:
 
 def _bundle_explicit_in_argv(argv: list[str] | None) -> bool:
     tokens = argv if argv is not None else sys.argv[1:]
-    return any(
-        token == "--setup-bundle" or token.startswith("--setup-bundle=") for token in tokens
-    )
+    return any(token == "--setup-bundle" or token.startswith("--setup-bundle=") for token in tokens)
 
 
 def _prompt_setup_bundle() -> str:
@@ -824,9 +825,7 @@ def _print_next_steps(
     _log(f"  Database: {url}")
     _log("")
     _log("Environment file:")
-    _log(
-        f"  {repo / '.env'}  (see .env.example; loaded automatically by Nimbusware)"
-    )
+    _log(f"  {repo / '.env'}  (see .env.example; loaded automatically by Nimbusware)")
     _log("")
     _log("PowerShell environment (current session; optional if using .env):")
     _log(f'  $env:NIMBUSWARE_REPO_ROOT = "{repo}"')
@@ -836,11 +835,13 @@ def _print_next_steps(
     _log("Unix:")
     _log(f'  export NIMBUSWARE_REPO_ROOT="{repo}"')
     _log(f'  export NIMBUSWARE_DATABASE_URL="{url}"')
-    _log('  export NIMBUSWARE_SKIP_PREFLIGHT=1')
+    _log("  export NIMBUSWARE_SKIP_PREFLIGHT=1")
     _log("")
     _log("Verify:")
-    _log("  poetry run pytest tests -q -m \"not integration\"")
-    _log("  .\\scripts\\run_integration_like_ci.ps1   # or bash scripts/ci/run_integration_like_ci.sh")
+    _log('  poetry run pytest tests -q -m "not integration"')
+    _log(
+        "  .\\scripts\\run_integration_like_ci.ps1   # or bash scripts/ci/run_integration_like_ci.sh"
+    )
     _log("")
     _log("Run API:")
     _log("  poetry run nimbusware-api")
@@ -1083,8 +1084,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=_INSTALL_PROFILE_CHOICES,
         default=INSTALL_PROFILE_RECOMMENDED,
         help=(
-            "recommended: Ollama + default model pulls (default); "
-            "barebones: skip local LLM setup"
+            "recommended: Ollama + default model pulls (default); barebones: skip local LLM setup"
         ),
     )
     parser.add_argument(

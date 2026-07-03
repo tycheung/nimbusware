@@ -37,8 +37,7 @@ def main() -> int:
         args.profile,
     ):
         print(
-            f"Profile {args.profile!r} does not enable production SR LLM; "
-            "check workflow YAML.",
+            f"Profile {args.profile!r} does not enable production SR LLM; check workflow YAML.",
             file=sys.stderr,
         )
         return 2

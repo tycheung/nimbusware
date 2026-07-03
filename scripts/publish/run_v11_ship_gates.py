@@ -48,7 +48,11 @@ def main() -> int:
 
     steps: list[tuple[str, list[str], bool]] = [
         ("Bootstrap workflow contract", [py, "scripts/ci/run_publish_bootstrap_ci_gate.py"], False),
-        ("VS Code extension workflow contract", [py, "scripts/ci/run_publish_vscode_ci_gate.py"], False),
+        (
+            "VS Code extension workflow contract",
+            [py, "scripts/ci/run_publish_vscode_ci_gate.py"],
+            False,
+        ),
         (
             "Bootstrap wheel build (twine check)",
             [py, "scripts/publish/publish_bootstrap_release.py"],
@@ -74,7 +78,11 @@ def main() -> int:
                     ],
                     False,
                 ),
-                ("Live writers production profile soak", [py, "scripts/ops/run_live_writers_soak.py"], False),
+                (
+                    "Live writers production profile soak",
+                    [py, "scripts/ops/run_live_writers_soak.py"],
+                    False,
+                ),
             ],
         )
 

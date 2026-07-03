@@ -28,7 +28,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## CI guard
 
-`scripts/ci/audit_operator_env.py` runs in `scripts/ci/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers. `scripts/ci/run_openapi_ts_ci_gate.py` regenerates Admin `schema.d.ts` and `openapi.json` from the FastAPI OpenAPI export (artifacts are gitignored; Admin `npm run build` runs `codegen:openapi` first).
+`scripts/ci/audit_operator_env.py` runs in `scripts/ci/ci_check.ps1`. Every `NIMBUSWARE_*` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers. `scripts/ci/run_openapi_ts_ci_gate.py` regenerates Admin `schema.d.ts` and `openapi.json` from the FastAPI OpenAPI export (artifacts are gitignored; Admin `npm run build` runs `codegen:openapi` first).
 
 ## Implementation
 
@@ -43,8 +43,8 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 | Prefer | Legacy alias | Notes |
 |--------|--------------|-------|
 | `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` (internal) | Prefer **DEFAULT**; legacy alias read from `os.environ` only |
-| `NIMBUSWARE_API_PORT` | `PORT` (internal legacy) | API bind port |
-| `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` (internal legacy) | Canonical Ollama endpoint |
+| `NIMBUSWARE_API_PORT` | — | API bind port (`PORT` no longer honored) |
+| `NIMBUSWARE_OLLAMA_BASE_URL` | — | Canonical Ollama endpoint (`OLLAMA_HOST` no longer honored) |
 | `NIMBUSWARE_GITLAB_TOKEN` | `GITLAB_TOKEN` (internal legacy) | External CI bridge GitLab auth |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
 | `NIMBUSWARE_API_BASE` | host + `NIMBUSWARE_API_PORT` | Explicit wins; else derived from bind host/port |
