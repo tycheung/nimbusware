@@ -1,3 +1,9 @@
+"""Run memory policy helpers and timeline re-exports.
+
+Timeline summaries are re-exported from ``memory.timeline`` for backward
+compatibility; prefer ``from memory.timeline import ...`` in new code.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Mapping

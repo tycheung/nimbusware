@@ -9,6 +9,22 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 CONSOLE = REPO / "packages" / "console"
 
+# Package-only display modules: import ``console.<name>`` directly (no root shim).
+PACKAGE_ONLY_DISPLAYS: frozenset[str] = frozenset(
+    {
+        "agent_evaluator_display",
+        "preflight_cross_run_display",
+        "prune_status_display",
+        "run_list_pagination_display",
+        "universal_critique_timeline_display",
+    }
+)
+
+FACADE_HEADER = (
+    '"""Deprecated: import from the sibling package (``console.{module}``) directly."""\n\n'
+    "from __future__ import annotations\n\n"
+)
+
 
 def _imported_names(path: Path) -> list[str]:
     tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -24,6 +40,8 @@ def _imported_names(path: Path) -> list[str]:
 
 def _facade_package_module(facade_path: Path) -> tuple[str, Path] | None:
     stem = facade_path.stem
+    if stem in PACKAGE_ONLY_DISPLAYS:
+        return None
     pkg_dir = CONSOLE / stem
     if pkg_dir.is_dir() and (pkg_dir / "__init__.py").is_file():
         return f"console.{stem}", pkg_dir / "__init__.py"
@@ -54,7 +72,7 @@ def sync_facade(facade_path: Path, *, dry_run: bool = False) -> bool:
     names = _imported_names(pkg_init)
     if not names:
         return False
-    body = f"from {module} import (\n    " + ",\n    ".join(names) + ",\n)\n"
+    body = FACADE_HEADER.format(module=module) + f"from {module} import (\n    " + ",\n    ".join(names) + ",\n)\n"
     existing = facade_path.read_text(encoding="utf-8")
     if existing == body:
         return False

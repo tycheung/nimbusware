@@ -15,11 +15,8 @@ from api.deps import (
 )
 from api.errors import problem
 from api.routes.auth import AuthUserDep
-from api.routes.chat_common import (
-    ChatMessageResponse,
-    require_collab_enabled,
-    session_or_404,
-)
+from api.routes.chat_common import ChatMessageResponse, require_collab_enabled
+from api.routes.chat_service import session_or_404
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from api.user import UserDep, maker_user_id_str
 from auth.permissions import require_session_participant

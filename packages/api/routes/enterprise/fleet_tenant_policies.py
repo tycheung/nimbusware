@@ -7,9 +7,11 @@ from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import IamStoreDep
+from api.routes.enterprise._fleet_policy_helpers import (
+    fleet_tenant_policy_get,
+    fleet_tenant_policy_put,
+)
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
-from api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from orchestrator.fleet.policies import (
     FleetSlicePolicy,
     FleetStackPolicy,
@@ -43,8 +45,7 @@ def get_fleet_slice_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
-    return tenant_slice_policy(slug).to_dict()
+    return fleet_tenant_policy_get(iam, tenant_ref, tenant_slice_policy)
 
 
 @router.put("/tenants/{tenant_ref}/slice-policy")
@@ -55,19 +56,24 @@ def put_fleet_slice_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
+    from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
+
     slug = _tenant_slug_for_ref(iam, tenant_ref)
-    policies = load_fleet_slice_policies()
-    policies[slug] = FleetSlicePolicy(
+    policy = FleetSlicePolicy(
         tenant_slug=slug,
         slice_budget_preset=body.slice_budget_preset.strip(),
         max_files=body.max_files,
         max_loc=body.max_loc,
         require_unanimous_gate=body.require_unanimous_gate,
     )
-    save_fleet_slice_policies(policies)
-    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="slice")
-    saved: FleetSlicePolicy = policies[slug]
-    return dict(saved.to_dict())
+    return fleet_tenant_policy_put(
+        iam,
+        tenant_ref,
+        policy_kind="slice",
+        policy=policy,
+        load_policies=load_fleet_slice_policies,
+        save_policies=save_fleet_slice_policies,
+    )
 
 
 @router.get("/tenants/{tenant_ref}/stack-policy")
@@ -77,8 +83,7 @@ def get_fleet_stack_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
-    return tenant_stack_policy(slug).to_dict()
+    return fleet_tenant_policy_get(iam, tenant_ref, tenant_stack_policy)
 
 
 @router.put("/tenants/{tenant_ref}/stack-policy")
@@ -89,11 +94,16 @@ def put_fleet_stack_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
+    from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
+
     slug = _tenant_slug_for_ref(iam, tenant_ref)
     allowed = normalize_allowed_stacks(body.allowed_stacks)
-    policies = load_fleet_stack_policies()
-    policies[slug] = FleetStackPolicy(tenant_slug=slug, allowed_stacks=allowed)
-    save_fleet_stack_policies(policies)
-    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="stack")
-    saved: FleetStackPolicy = policies[slug]
-    return dict(saved.to_dict())
+    policy = FleetStackPolicy(tenant_slug=slug, allowed_stacks=allowed)
+    return fleet_tenant_policy_put(
+        iam,
+        tenant_ref,
+        policy_kind="stack",
+        policy=policy,
+        load_policies=load_fleet_stack_policies,
+        save_policies=save_fleet_stack_policies,
+    )

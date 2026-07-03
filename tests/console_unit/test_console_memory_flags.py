@@ -3,6 +3,8 @@ from __future__ import annotations
 from console.memory_display import (
     memory_policy_from_run_summary,
     memory_policy_table_rows,
+)
+from memory.timeline import (
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
 )

@@ -24,11 +24,11 @@ from api.routes.chat_common import (
     actor_user_id,
     chat_http_error,
     project_metadata,
-    session_or_404,
 )
 from api.routes.chat_common import (
     platform_hints as resolve_platform_hints,
 )
+from api.routes.chat_service import session_or_404
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from api.user import UserDep
 from auth.permissions import enforce_collab_turn_write

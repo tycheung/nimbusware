@@ -7,9 +7,12 @@ from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import IamStoreDep
+from api.routes.enterprise._fleet_policy_helpers import (
+    fleet_tenant_policy_get,
+    fleet_tenant_policy_put,
+)
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
-from api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from orchestrator.fleet.policies import (
     FleetDeployPolicy,
     load_fleet_deploy_policies,
@@ -31,8 +34,7 @@ def get_fleet_deploy_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
-    return tenant_deploy_policy(slug).to_dict()
+    return fleet_tenant_policy_get(iam, tenant_ref, tenant_deploy_policy)
 
 
 @router.put("/tenants/{tenant_ref}/deploy-policy")
@@ -45,12 +47,15 @@ def put_fleet_deploy_policy(
 ) -> dict[str, Any]:
     slug = _tenant_slug_for_ref(iam, tenant_ref)
     targets = tuple(str(t).strip() for t in body.allowed_deploy_targets if str(t).strip())
-    policies = load_fleet_deploy_policies()
-    policies[slug] = FleetDeployPolicy(
+    policy = FleetDeployPolicy(
         tenant_slug=slug,
         allowed_deploy_targets=targets,
     )
-    save_fleet_deploy_policies(policies)
-    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="deploy")
-    saved: FleetDeployPolicy = policies[slug]
-    return saved.to_dict()
+    return fleet_tenant_policy_put(
+        iam,
+        tenant_ref,
+        policy_kind="deploy",
+        policy=policy,
+        load_policies=load_fleet_deploy_policies,
+        save_policies=save_fleet_deploy_policies,
+    )

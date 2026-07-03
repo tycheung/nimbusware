@@ -11,7 +11,8 @@ from pydantic import BaseModel, Field
 
 from api.deps import ChatStoreDep, CollabStoreDep, StoreDep
 from api.routes.auth import OptionalUserDep
-from api.routes.chat_common import actor_user_id, require_collab_enabled, session_or_404
+from api.routes.chat_common import actor_user_id, require_collab_enabled
+from api.routes.chat_service import session_or_404
 from api.schemas.openapi import PROBLEM_RESPONSE_404
 from api.user import UserDep
 from auth.permissions import enforce_collab_turn_write, require_session_participant

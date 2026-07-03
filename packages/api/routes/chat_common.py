@@ -16,7 +16,6 @@ from api.routes.chat_service import (
     project_metadata,
     require_collab_enabled,
     require_collab_session_participant,
-    session_or_404,
 )
 
 __all__ = (
@@ -44,7 +43,6 @@ __all__ = (
     "require_collab_enabled",
     "require_collab_session_participant",
     "resolve_workflow_profile",
-    "session_or_404",
     "start_campaign",
     "start_run",
 )

@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from typing import Any
-from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import IamStoreDep
-from api.errors import problem
+from api.routes.enterprise._fleet_policy_helpers import (
+    fleet_tenant_policy_get,
+    fleet_tenant_policy_put,
+)
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.iam_audit import log_fleet_policy_updated
+from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,
@@ -27,38 +29,13 @@ class FleetAutopilotPolicyBody(BaseModel):
     required_checkpoints: list[str] = Field(default_factory=list)
 
 
-def _tenant_slug_for_ref(iam: IamStoreDep, tenant_ref: str) -> str:
-    ref = tenant_ref.strip()
-    if not ref:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("invalid_tenant", "tenant reference required"),
-        )
-    try:
-        tid = UUID(ref)
-        tenant = iam.get_tenant(tid)
-        if tenant is None:
-            raise HTTPException(
-                status_code=404,
-                detail=problem("tenant_not_found", f"unknown tenant_id: {ref}"),
-            )
-        return tenant.slug
-    except ValueError:
-        for tenant in iam.list_tenants():
-            if tenant.slug == ref:
-                return tenant.slug
-        return ref
-
-
 @router.get("/tenants/{tenant_ref}/autopilot-policy")
 def get_tenant_autopilot_policy(
     tenant_ref: str,
     _gate: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
-    policy = tenant_autopilot_policy(slug)
-    return policy.to_dict()
+    return fleet_tenant_policy_get(iam, tenant_ref, tenant_autopilot_policy)
 
 
 @router.put("/tenants/{tenant_ref}/autopilot-policy")
@@ -76,8 +53,11 @@ def put_tenant_autopilot_policy(
         max_autopilot_level=body.max_autopilot_level,
         required_checkpoints=frozenset(checkpoints),
     )
-    policies = load_fleet_autopilot_policies()
-    policies[slug] = policy
-    save_fleet_autopilot_policies(policies)
-    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="autopilot")
-    return policy.to_dict()
+    return fleet_tenant_policy_put(
+        iam,
+        tenant_ref,
+        policy_kind="autopilot",
+        policy=policy,
+        load_policies=load_fleet_autopilot_policies,
+        save_policies=save_fleet_autopilot_policies,
+    )
