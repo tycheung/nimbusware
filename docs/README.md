@@ -1,6 +1,6 @@
 # Nimbusware documentation
 
-Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [getting-started.md](getting-started.md).
+Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Package catalog: [packages/README.md](../packages/README.md). Quick install: [getting-started.md](getting-started.md).
 
 ## Start here
 
@@ -25,6 +25,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [reference/benchmarks.md](reference/benchmarks.md) | SWE-bench harness, intent→patch snapshots |
 | [reference/launch-eval.md](reference/launch-eval.md) | Workspace quality rubric |
 | [architecture.md](architecture.md) | ADR index |
+| [../packages/README.md](../packages/README.md) | All `packages/*` modules — responsibilities and README index |
 | [eval-tuning-guide.md](eval-tuning-guide.md) | Campaign completion and launch tuning |
 
 ## Features (v1.2)
@@ -95,6 +96,7 @@ All ADRs: [architecture.md](architecture.md) → [adr/](adr/).
 
 | Document | Topic |
 |----------|-------|
+| [../packages/README.md](../packages/README.md) | Package catalog (`packages/*` responsibilities) |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | CI parity, conventions |
 | [../tests/README.md](../tests/README.md) | Test layout, markers, Playwright |
 | [../benchmarks/README.md](../benchmarks/README.md) | Benchmark snapshot formats |

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Rename nimbusware_* Python packages to short names (agent_core unchanged)."""
 
 from __future__ import annotations
 

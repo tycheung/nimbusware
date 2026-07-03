@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from agent_core.models import EventType
 from orchestrator.dev_env.launch_merge import dev_env_live_regression_from_rows
-from orchestrator.launch_evaluator import (
+from orchestrator.launch.launch_evaluator import (
     LaunchEvalScorecard,
     merge_dev_env_into_scorecard,
 )

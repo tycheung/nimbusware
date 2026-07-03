@@ -1,6 +1,6 @@
 # Architecture documentation index
 
-**Canonical reference:** [ARCHITECTURE.md](../ARCHITECTURE.md) — nomenclature, layer diagram, package map, editions, import rules, CI/typing, and refactor playbook.
+**Canonical reference:** [ARCHITECTURE.md](../ARCHITECTURE.md) — nomenclature, layer diagram, package summary, editions, import rules, CI/typing, and refactor playbook. **Package catalog:** [packages/README.md](../packages/README.md).
 
 This file is an index only (no duplicate package tables). Full doc map: [README.md](README.md). Use this page for ADRs and related operator docs.
 

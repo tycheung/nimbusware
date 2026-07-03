@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch.launch_evaluator import evaluate_workspace_rubric
 
 GOLDEN_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "launch_eval"
 

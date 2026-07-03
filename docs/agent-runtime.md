@@ -1,6 +1,6 @@
 # Agent runtime
 
-The orchestrator (`orchestrator`, `agent_core`) drives adversarial agentic workflows: multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages.
+The orchestrator ([`packages/orchestrator`](../packages/orchestrator/)) and shared contracts in [`agent_core`](../packages/agent_core/) drive adversarial agentic workflows: multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages. Package map: [packages/README.md](../packages/README.md).
 
 ## Core loop
 

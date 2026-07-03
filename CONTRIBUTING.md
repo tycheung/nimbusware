@@ -88,12 +88,11 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 ## Documentation
 
 - **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md) (canonical); [docs/architecture.md](docs/architecture.md) is the ADR index only
-- Doc index: [docs/README.md](docs/README.md)
-- Package READMEs: `packages/*/README.md`
+- **Package catalog:** [packages/README.md](packages/README.md) (all `packages/*` responsibilities); per-package detail in `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
 - Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` (CI enforces prune gate; review diff before bulk local runs)
-- Console display metrics: prefer `explainer_core.build_operator_metrics` + `install_operator_metrics_module` (or `install_named_operator_metrics_exports` when exports-only) over hand-written CSV/JSON export blocks; CSV serialization lives in `explainer_core.table_rows_csv` (explainer export lint gate allowlist is zero)
+- Console display metrics: prefer YAML specs under `configs/displays/` or `configs/explainers/` wired through `install_workflow_metrics_from_spec`; use `explainer_core.build_operator_metrics` + `install_operator_metrics_module` for bespoke cases only
 - Explainer captions: use `explainer_core.field_caption` helpers and `env_captions.ENV_*_TEMPLATES` registry lookups instead of duplicating load-error / int guards
 - Maker operator ribbons live under `packages/maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)

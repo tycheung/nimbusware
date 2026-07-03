@@ -35,9 +35,11 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 ## Packages
 
+Full catalog (responsibilities, subpackages, README links): **[packages/README.md](packages/README.md)**.
+
 | Package | Role |
 |---------|------|
-| `agent_core` | Event models (`events_payloads_*` modules), `context_budget`, slice handoff models, `stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/campaign`, `read/critic_matrix` |
+| `agent_core` | Event models (`models/`), `context_budget`, slice handoff models, `stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/campaign`, `read/critic_matrix` |
 | `store` | Event store (Postgres / memory) |
 | `orchestrator` | Run pipeline entry (`pipeline.py`, `_pipeline/` mixins) plus domain subpackages: `workflow/`, `slice/`, `fleet/`, `critique/`, `campaign/`, `factory/`, `dev_env/`, `routing/`, `integrator/`, `collab/`, `replay/`, `repo_intel/`, `profiles/`, `scraper/`, `stack/`, `llm/` — see [ADR 028](docs/adr/028-package-directory-depth.md) |
 | `memory` | Repo-scoped retrieval index (`store/`, `index/`, `fleet/` subpackages) |

@@ -20,7 +20,7 @@ from orchestrator.dev_env.supervisor import (
     start_dev_environment,
     stop_dev_environment,
 )
-from orchestrator.launch_flow_resolver import resolve_launch_flows
+from orchestrator.launch.launch_flow_resolver import resolve_launch_flows
 from orchestrator.ui_flow_dsl import DEFAULT_TINY_WEB_LOGIN_FLOW
 
 router = APIRouter()

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.escalation_threshold import (
+from orchestrator.escalation.escalation_threshold import (
     load_auto_escalate_after_cumulative_findings,
     load_escalate_after_cumulative_gate_failures,
     load_escalate_after_cumulative_stage_failures,

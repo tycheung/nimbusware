@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-"""Move orchestrator root modules into domain subpackages (batch 1)."""
 
 from __future__ import annotations
 
-import re
 import subprocess
 from pathlib import Path
 
@@ -79,7 +77,9 @@ def main() -> None:
         if new != text:
             path.write_text(new, encoding="utf-8")
 
-    subprocess.run(["poetry", "run", "ruff", "check", "--fix", "packages/orchestrator"], check=False)
+    subprocess.run(
+        ["poetry", "run", "ruff", "check", "--fix", "packages/orchestrator"], check=False
+    )
 
 
 if __name__ == "__main__":

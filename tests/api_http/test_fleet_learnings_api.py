@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from env.edition import ENTERPRISE_EDITION, ENV_EDITION
 from iam.constants import API_KEY_HEADER
-from orchestrator.diagnose_learn import learnings_dir
+from orchestrator.improvement.diagnose_learn import learnings_dir
 
 
 def test_fleet_learnings_search_enterprise(

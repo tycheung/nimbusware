@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.improvement_council import CouncilVote, ImprovementTrack
-from orchestrator.improvement_scope import (
+from orchestrator.improvement.improvement_council import CouncilVote, ImprovementTrack
+from orchestrator.improvement.improvement_scope import (
     RepoScope,
     filter_votes_by_scope,
     infer_repo_scope,
 )
-from orchestrator.resolution_council import (
+from orchestrator.improvement.resolution_council import (
     loc_accord_for_findings,
     run_resolution_council,
 )

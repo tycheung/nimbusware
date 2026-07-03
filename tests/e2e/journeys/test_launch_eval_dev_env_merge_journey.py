@@ -9,7 +9,7 @@ import pytest
 from agent_core.models import EventType, StagePassedEvent, StagePassedPayload
 from e2e.harness.journey import JourneyClient
 from e2e.harness.workspace import copy_fixture_repo
-from orchestrator.launch_evaluator import (
+from orchestrator.launch.launch_evaluator import (
     evaluate_workspace_rubric,
     merge_dev_env_into_scorecard,
 )

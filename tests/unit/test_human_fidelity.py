@@ -9,7 +9,7 @@ from threading import Thread
 import pytest
 
 from e2e.harness.playwright_skip import require_playwright_chromium
-from orchestrator.human_fidelity import (
+from orchestrator.factory.human_fidelity import (
     PERF_BUDGET_MS,
     run_axe_rules_check,
     run_axe_smoke,

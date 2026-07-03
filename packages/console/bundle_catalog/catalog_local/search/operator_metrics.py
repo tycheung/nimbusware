@@ -73,7 +73,9 @@ install_workflow_metrics_from_spec(
 bundle_search_operator_metrics = _install_ns["bundle_search_operator_metrics"]
 bundle_search_operator_metrics_table_rows = _install_ns["bundle_search_operator_metrics_table_rows"]
 bundle_search_operator_metrics_caption = _install_ns["bundle_search_operator_metrics_caption"]
-bundle_search_operator_metrics_export_json = _install_ns["bundle_search_operator_metrics_export_json"]
+bundle_search_operator_metrics_export_json = _install_ns[
+    "bundle_search_operator_metrics_export_json"
+]
 bundle_search_operator_metrics_table_rows_csv = _install_ns[
     "bundle_search_operator_metrics_table_rows_csv"
 ]

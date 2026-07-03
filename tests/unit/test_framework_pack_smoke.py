@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
+from orchestrator.factory.js_framework_detect import detect_js_framework, load_framework_pack
 
 
 def test_react_vite_pack_smoke(tmp_path: Path) -> None:

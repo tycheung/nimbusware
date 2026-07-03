@@ -35,9 +35,7 @@ def _prepare_workspace(tmp: Path) -> Path:
 
     ws = copy_fixture_repo("tiny_python_app", tmp / "ws")
     (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/orchestrator/micro_slice.py").write_text(
-        "# stub\n", encoding="utf-8"
-    )
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
     (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
     return ws
 
@@ -57,8 +55,8 @@ def _complete_patch_slice(jc) -> bool:
 def _run_once_direct(tmp: Path) -> float | None:
     from fastapi.testclient import TestClient
 
-    from e2e.harness.journey import JourneyClient
     from api.app import app
+    from e2e.harness.journey import JourneyClient
 
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()
@@ -89,8 +87,8 @@ def _run_once_direct(tmp: Path) -> float | None:
 def _run_once_via_chat(tmp: Path) -> float | None:
     from fastapi.testclient import TestClient
 
-    from e2e.harness.journey import JourneyClient
     from api.app import app
+    from e2e.harness.journey import JourneyClient
 
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()

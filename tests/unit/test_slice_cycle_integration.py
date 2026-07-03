@@ -91,7 +91,7 @@ def test_operator_pause_on_gate_fail() -> None:
 
 
 def test_latest_learning_excerpt_from_diagnose_event() -> None:
-    from orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
+    from orchestrator.improvement.diagnose_learn import latest_learning_excerpt_from_rows
 
     rows = [
         {

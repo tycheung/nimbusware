@@ -12,6 +12,8 @@ poetry install --with faiss    # bundle + memory FAISS indexes
 poetry install --with redis    # Enterprise Redis dispatch
 ```
 
+Python libraries live under [`packages/`](../packages/); see [packages/README.md](../packages/README.md) for what each module does.
+
 ## Bootstrap (recommended)
 
 **Clone + quick demo** (no Postgres):

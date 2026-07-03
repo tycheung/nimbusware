@@ -1,5 +1,3 @@
-"""Ordered pipeline stage mixins for RunOrchestrator."""
-
 from __future__ import annotations
 
 from orchestrator._pipeline.campaign_dispatch import CampaignDispatchMixin

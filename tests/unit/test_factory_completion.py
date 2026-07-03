@@ -16,8 +16,8 @@ from orchestrator.factory.completion import (
     tier_config,
 )
 from orchestrator.factory.runner import PutE2EFinding, PutE2EResult
-from orchestrator.interaction_surface_critic import critique_interaction_surfaces
-from orchestrator.interaction_surface_map import (
+from orchestrator.interaction.interaction_surface_critic import critique_interaction_surfaces
+from orchestrator.interaction.interaction_surface_map import (
     InteractionSurfaceMap,
     ISMSurface,
 )

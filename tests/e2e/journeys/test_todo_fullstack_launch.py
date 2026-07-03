@@ -13,9 +13,9 @@ from orchestrator.dev_env.supervisor import (
     start_dev_environment,
     stop_dev_environment,
 )
+from orchestrator.factory.human_fidelity import run_human_fidelity_suite
 from orchestrator.factory.runner import run_put_e2e_flow
-from orchestrator.human_fidelity import run_human_fidelity_suite
-from orchestrator.launch_flow_resolver import load_catalog_ui_flow
+from orchestrator.launch.launch_flow_resolver import load_catalog_ui_flow
 from store.memory import InMemoryEventStore
 
 _FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_todo_fullstack"

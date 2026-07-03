@@ -9,7 +9,7 @@ from orchestrator.critique.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )
-from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth
 from orchestrator.integrator.scaffold import write_integration_adapter_scaffold
 from orchestrator.workflow.agent_evaluator import (
     agent_evaluator_production_default_on,

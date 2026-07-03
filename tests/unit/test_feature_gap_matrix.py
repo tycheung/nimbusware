@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from orchestrator.feature_gap_matrix import build_feature_gap_matrix
-from orchestrator.improvement_council import ImprovementTrack, run_improvement_council
+from orchestrator.improvement.feature_gap_matrix import build_feature_gap_matrix
+from orchestrator.improvement.improvement_council import ImprovementTrack, run_improvement_council
 
 
 def test_feature_gap_matrix_detects_backlog_ready(tmp_path: Path) -> None:

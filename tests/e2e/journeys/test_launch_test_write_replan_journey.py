@@ -7,10 +7,10 @@ import pytest
 
 from e2e.harness.playwright_skip import require_playwright_chromium
 from orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
+from orchestrator.factory.human_fidelity import run_human_fidelity_suite
 from orchestrator.factory.runtime import start_put_preview, stop_put_preview
-from orchestrator.human_fidelity import run_human_fidelity_suite
-from orchestrator.launch_flow_resolver import load_workspace_ui_flow
-from orchestrator.launch_test_stage import (
+from orchestrator.launch.launch_flow_resolver import load_workspace_ui_flow
+from orchestrator.launch.launch_test_stage import (
     run_launch_test_critique,
     run_launch_test_plan,
     run_launch_test_write,

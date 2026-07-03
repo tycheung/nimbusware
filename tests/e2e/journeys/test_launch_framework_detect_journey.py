@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
-from orchestrator.launch_test_stage import build_launch_test_writer_prompt
+from orchestrator.factory.js_framework_detect import detect_js_framework, load_framework_pack
+from orchestrator.launch.launch_test_stage import build_launch_test_writer_prompt
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey]
 

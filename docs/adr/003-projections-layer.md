@@ -25,6 +25,7 @@ API `read_models/*` modules become thin shims that delegate to projections. Cons
 
 ## References
 
-- `packages/projections/`
-- [ARCHITECTURE.md](../../ARCHITECTURE.md) (projections in package map)
+- [`packages/projections/`](../../packages/projections/)
+- [packages/README.md](../../packages/README.md) — package catalog
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) (layer diagram and package summary)
 - [docs/architecture.md](../architecture.md) (ADR index)

@@ -46,7 +46,9 @@ install_workflow_metrics_from_spec(
 run_escalated_operator_metrics = _install_ns["run_escalated_operator_metrics"]
 run_escalated_operator_metrics_table_rows = _install_ns["run_escalated_operator_metrics_table_rows"]
 run_escalated_operator_metrics_caption = _install_ns["run_escalated_operator_metrics_caption"]
-run_escalated_operator_metrics_export_json = _install_ns["run_escalated_operator_metrics_export_json"]
+run_escalated_operator_metrics_export_json = _install_ns[
+    "run_escalated_operator_metrics_export_json"
+]
 run_escalated_operator_metrics_table_rows_csv = _install_ns[
     "run_escalated_operator_metrics_table_rows_csv"
 ]

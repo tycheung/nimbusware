@@ -20,7 +20,7 @@ from env.env_flags import (
 from extensions.self_refinement import (
     SelfRefinementPolicy,
 )
-from orchestrator.self_refinement_policy import resolve_self_refinement_policy
+from orchestrator.workflow.self_refinement_policy import resolve_self_refinement_policy
 
 
 def _load_policy_or_default(

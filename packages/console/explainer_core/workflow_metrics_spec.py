@@ -162,7 +162,9 @@ def install_workflow_metrics_from_spec(
     )
     bool_only_keys = tro.get("bool_only_when_true")
     bool_only_frozen = (
-        frozenset(str(k) for k in bool_only_keys) if isinstance(bool_only_keys, list) else frozenset()
+        frozenset(str(k) for k in bool_only_keys)
+        if isinstance(bool_only_keys, list)
+        else frozenset()
     )
     use_include_when = bool(optional_frozen or bool_only_frozen)
 

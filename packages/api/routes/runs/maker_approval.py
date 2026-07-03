@@ -254,8 +254,8 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     from maker.workspace.workspace import resolve_run_workspace
-    from orchestrator.launch_eval_catalog import attach_context_from_run
-    from orchestrator.launch_evaluator import (
+    from orchestrator.launch.launch_eval_catalog import attach_context_from_run
+    from orchestrator.launch.launch_evaluator import (
         emit_launch_eval_completed,
         evaluate_workspace_rubric,
     )
@@ -266,7 +266,7 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             status_code=422,
             detail=problem("workspace_not_found", "run has no attached workspace"),
         )
-    from orchestrator.launch_evaluator import merge_dev_env_into_scorecard
+    from orchestrator.launch.launch_evaluator import merge_dev_env_into_scorecard
 
     attach = attach_context_from_run(rows)
     scorecard = evaluate_workspace_rubric(ws)

@@ -60,7 +60,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Understand the agent pipeline | [docs/agent-runtime.md](docs/agent-runtime.md) |
 | Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
 | Operator ribbons (Maker) | Progress + Chat: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` |
-| Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md), [packages/README.md](packages/README.md) |
 | Configure settings (~256 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Collaborative chat & disciplines | [docs/collaborative-chat.md](docs/collaborative-chat.md) |
 | IDE bridge (MCP + VS Code extension) | [docs/ide-bridge.md](docs/ide-bridge.md) |

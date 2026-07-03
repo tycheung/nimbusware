@@ -106,24 +106,20 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     wizard = (root / "packages/maker_web/static/js/safe-coding-wizard.js").read_text(
         encoding="utf-8",
     )
-    bootstrap = (root / "packages/maker/playwright_bootstrap.py").read_text(
-        encoding="utf-8"
-    )
+    bootstrap = (root / "packages/maker/playwright_bootstrap.py").read_text(encoding="utf-8")
     compliance = (root / "packages/api/routes/enterprise/compliance.py").read_text(
         encoding="utf-8",
     )
-    fleet = (
-        root / "packages/admin_ui/src/pages/fleet/FleetCompliancePanel.tsx"
-    ).read_text(encoding="utf-8")
+    fleet = (root / "packages/admin_ui/src/pages/fleet/FleetCompliancePanel.tsx").read_text(
+        encoding="utf-8"
+    )
     hydrate = (root / "packages/orchestrator/collab/mesh_hydrate.py").read_text(
         encoding="utf-8",
     )
     collab_store = (root / "packages/config/collab_settings_store.py").read_text(
         encoding="utf-8",
     )
-    discovery_ui = (
-        root / "packages/maker_web/static/js/tabs/chat_discovery_ui.js"
-    ).read_text(
+    discovery_ui = (root / "packages/maker_web/static/js/tabs/chat_discovery_ui.js").read_text(
         encoding="utf-8",
     )
     return {
@@ -142,9 +138,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
         "enterprise": {
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
-            "fleet_semantic_embedding": (
-                root / "packages/memory/index/embeddings.py"
-            ).is_file(),
+            "fleet_semantic_embedding": (root / "packages/memory/index/embeddings.py").is_file(),
             "gate_comprehension_harness": (
                 root / "scripts/benchmarks/measure_gate_comprehension.py"
             ).is_file(),
@@ -155,9 +149,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "product_polish_smoke": (
                 root / "tests/e2e/web/maker_product_polish_smoke.spec.ts"
             ).is_file(),
-            "fs6_scaffold": (
-                root / "packages/orchestrator/stack/agent_scaffold.py"
-            ).is_file(),
+            "fs6_scaffold": (root / "packages/orchestrator/stack/agent_scaffold.py").is_file(),
             "archetype_weekly": (root / ".github/workflows/archetype_fit_weekly.yml").is_file(),
         },
     }

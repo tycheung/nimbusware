@@ -6,7 +6,7 @@ import pytest
 
 from e2e.harness.journey import JourneyClient
 from e2e.harness.workspace import copy_fixture_repo
-from orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch.launch_evaluator import evaluate_workspace_rubric
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey]
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

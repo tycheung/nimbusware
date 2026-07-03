@@ -5,7 +5,7 @@ from pathlib import Path
 from orchestrator.factory.completion import evaluate_factory_gates, resolve_factory_tier
 from orchestrator.factory.runner import run_put_e2e_flow
 from orchestrator.factory.runtime import start_put_preview, stop_put_preview
-from orchestrator.interaction_surface_map import discover_surfaces_static
+from orchestrator.interaction.interaction_surface_map import discover_surfaces_static
 from orchestrator.workflow.campaign import parse_completion_workflow_block
 
 REPO = Path(__file__).resolve().parents[2]

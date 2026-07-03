@@ -66,7 +66,8 @@ def put_fleet_slice_policy(
     )
     save_fleet_slice_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="slice")
-    return policies[slug].to_dict()
+    saved: FleetSlicePolicy = policies[slug]
+    return dict(saved.to_dict())
 
 
 @router.get("/tenants/{tenant_ref}/stack-policy")
@@ -94,4 +95,5 @@ def put_fleet_stack_policy(
     policies[slug] = FleetStackPolicy(tenant_slug=slug, allowed_stacks=allowed)
     save_fleet_stack_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="stack")
-    return policies[slug].to_dict()
+    saved: FleetStackPolicy = policies[slug]
+    return dict(saved.to_dict())

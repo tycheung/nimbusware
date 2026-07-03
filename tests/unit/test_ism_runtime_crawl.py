@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.interaction_surface_map import (
+from orchestrator.interaction.interaction_surface_map import (
     InteractionSurfaceMap,
     discover_surfaces_runtime,
 )

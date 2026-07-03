@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.launch_eval_catalog import attach_context_from_run
-from orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch.launch_eval_catalog import attach_context_from_run
+from orchestrator.launch.launch_evaluator import evaluate_workspace_rubric
 
 GOLDEN_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "launch_eval"
 REPOS_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "repos"

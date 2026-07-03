@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from orchestrator.critique.simplification_metrics import ComplexityIndex
-from orchestrator.improvement_council import run_improvement_council
+from orchestrator.improvement.improvement_council import run_improvement_council
 from orchestrator.repo_intel.code_graph import build_code_graph
 from orchestrator.repo_intel.cohesion_graph import build_cohesion_graph
 from orchestrator.repo_intel.explorer import run_repo_explore

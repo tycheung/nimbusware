@@ -34,6 +34,6 @@ __all__ = [
 
 def escalation_policy_breadth(repo_root: Path) -> dict[str, Any]:
     """Lazy import — optional policy breadth helper for escalation explainers."""
-    from orchestrator.escalation_policy_breadth import escalation_policy_breadth as _fn
+    from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth as _fn
 
     return _fn(repo_root)

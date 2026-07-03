@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from orchestrator.improvement_council import ImprovementTrack, run_improvement_council
+from orchestrator.improvement.improvement_council import ImprovementTrack, run_improvement_council
 from research.bundle_promotion import write_stitch_catalog_candidate
 from research.pattern_index import append_pattern_index, pattern_index_path
 from research.stitch_manifests import persist_transplant_manifest

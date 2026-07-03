@@ -48,9 +48,9 @@ def run_factory_golden_entry(
         evaluate_factory_gates,
         resolve_factory_tier,
     )
-    from orchestrator.interaction_surface_map import discover_surfaces_static
     from orchestrator.factory.runner import run_put_e2e_flow
     from orchestrator.factory.runtime import start_put_preview, stop_put_preview
+    from orchestrator.interaction.interaction_surface_map import discover_surfaces_static
     from projections.builders.factory_status import factory_status_from_events
 
     ws_name = str(spec.get("workspace_fixture") or "tiny_api_app")

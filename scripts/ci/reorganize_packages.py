@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Reorganize flat packages into domain subpackages and remove import shims."""
 
 from __future__ import annotations
 

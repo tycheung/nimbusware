@@ -5,7 +5,7 @@ from orchestrator.context_artifacts import (
     create_context_artifact,
     list_context_artifacts_for_actor,
 )
-from orchestrator.launch_evaluator import evaluate_workspace_rubric
+from orchestrator.launch.launch_evaluator import evaluate_workspace_rubric
 
 
 def test_list_context_artifacts_for_actor_filters_private() -> None:

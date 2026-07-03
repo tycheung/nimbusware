@@ -11,7 +11,7 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from orchestrator.diagnose_learn import write_learning_doc
+from orchestrator.improvement.diagnose_learn import write_learning_doc
 from orchestrator.learnings_catalog import list_workspace_learnings
 from orchestrator.profiles.user_autopilot_profiles import (
     apply_user_autopilot_at_run_start,

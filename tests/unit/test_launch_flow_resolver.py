@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.launch_flow_resolver import (
+from orchestrator.launch.launch_flow_resolver import (
     load_catalog_ui_flow,
     match_ui_flow_id,
     resolve_launch_flows,

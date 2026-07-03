@@ -12,7 +12,7 @@ from orchestrator.factory.runtime import (
     start_put_preview,
     stop_put_preview,
 )
-from orchestrator.interaction_surface_map import (
+from orchestrator.interaction.interaction_surface_map import (
     InteractionSurfaceMap,
     coverage_pct,
     discover_surfaces_from_html,

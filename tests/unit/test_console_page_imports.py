@@ -13,7 +13,6 @@ os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token-for-import-smo
 
 _CONSOLE_MODULES: tuple[str, ...] = (
     "console",
-    "console.operator_chat",
     "console.operator_chat_core",
     "console.services.operator_chat",
 )

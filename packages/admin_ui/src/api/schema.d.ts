@@ -4291,6 +4291,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/enterprise/tenants/{tenant_ref}/stack-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Fleet Stack Policy */
+        get: operations["get_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_get"];
+        /** Put Fleet Stack Policy */
+        put: operations["put_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/enterprise/tenants/{tenant_ref}/commit-policy": {
         parameters: {
             query?: never;
@@ -4356,24 +4374,6 @@ export interface paths {
         get: operations["get_fleet_discovery_policy_v1_enterprise_tenants__tenant_ref__discovery_policy_get"];
         /** Put Fleet Discovery Policy */
         put: operations["put_fleet_discovery_policy_v1_enterprise_tenants__tenant_ref__discovery_policy_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/enterprise/tenants/{tenant_ref}/stack-policy": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Fleet Stack Policy */
-        get: operations["get_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_get"];
-        /** Put Fleet Stack Policy */
-        put: operations["put_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -35218,6 +35218,174 @@ export interface operations {
             };
         };
     };
+    get_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetStackPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     get_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_get: {
         parameters: {
             query?: never;
@@ -35818,174 +35986,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["FleetDiscoveryPolicyBody"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_get: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path: {
-                tenant_ref: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    put_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_put: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path: {
-                tenant_ref: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FleetStackPolicyBody"];
             };
         };
         responses: {

@@ -286,7 +286,7 @@ def tool_write_ui_flow(workspace: Path, flow_id: str, yaml_body: str) -> ToolRes
 
 def tool_run_ui_regression(workspace: Path, *, base_url: str, flow_id: str) -> ToolResult:
     from orchestrator.browser_controller import run_ui_flow
-    from orchestrator.launch_flow_resolver import resolve_ui_flow
+    from orchestrator.launch.launch_flow_resolver import resolve_ui_flow
 
     flow, _ = resolve_ui_flow(workspace, flow_id=flow_id)
     if flow is None:

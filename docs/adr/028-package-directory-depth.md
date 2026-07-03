@@ -26,7 +26,7 @@ Horizontal sprawl also appeared in tests (`tests/unit/` ~400 flat files) and in 
 
 ```
 orchestrator/
-  _pipeline/     # RunOrchestrator mixins (existing)
+  _pipeline/     # RunOrchestrator mixins + stage_registry.py (ordered mixin list)
   llm/           # LLM stage helpers + providers
   workflow/      # workflow_*.py, registry, profiles
   fleet/         # fleet_*.py (CLI entrypoints stay at root)
@@ -36,7 +36,11 @@ orchestrator/
   persona/       # persona shelf + probation
   integrator/    # integrator gate + integration adapters
   dev_env/       # persistent dev environment
-  factory/       # factory + put/e2e harness
+  factory/       # factory + put/e2e harness + js_framework_detect, human_fidelity
+  launch/        # launch_eval*, launch_flow_resolver, launch_test_*
+  escalation/    # escalation_*, gate_override_execution
+  improvement/   # improvement_council*, diagnose_learn, feature_gap_matrix, resolution_council
+  interaction/   # interaction_surface_*
   scraper/       # scraper artifacts + stage
   routing/       # model bindings, Ollama, routing presets
   profiles/      # user/autopilot/enforcement profiles
@@ -60,7 +64,8 @@ orchestrator/
 
 ## References
 
-- [ARCHITECTURE.md](../../ARCHITECTURE.md) — package map
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) — layer diagram and package summary
+- [packages/README.md](../../packages/README.md) — package catalog
 - [ADR 003](003-projections-layer.md) — projections as the read-model home (retire orchestrator `read_models` shim)
 - [ADR 006](006-prompt-tiers.md) — `agent_core.prompt_tiers` is canonical (retire orchestrator copy)
 - `scripts/ci/reorganize_packages.py` — migration tooling

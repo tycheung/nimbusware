@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.interaction_surface_map import exploratory_crawl_limits
+from orchestrator.interaction.interaction_surface_map import exploratory_crawl_limits
 
 
 def test_exploratory_crawl_limits_defaults(monkeypatch) -> None:

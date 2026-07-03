@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 def _evaluate_workspace(ws: Path, *, min_aggregate: float, use_llm: bool):
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from orchestrator.launch_evaluator import evaluate_workspace_rubric
+    from orchestrator.launch.launch_evaluator import evaluate_workspace_rubric
 
     if use_llm:
         os.environ["NIMBUSWARE_LAUNCH_EVAL_LLM"] = "1"
@@ -23,7 +23,7 @@ def _evaluate_workspace(ws: Path, *, min_aggregate: float, use_llm: bool):
 
 def _run_matrix(*, min_aggregate: float, use_llm: bool) -> list[dict[str, object]]:
     sys.path.insert(0, str(REPO_ROOT / "packages"))
-    from orchestrator.launch_eval_catalog import (
+    from orchestrator.launch.launch_eval_catalog import (
         default_workspace_paths,
         prompt_ids,
     )
@@ -89,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.run_id:
         sys.path.insert(0, str(REPO_ROOT / "packages"))
         from maker.workspace.workspace import resolve_run_workspace
-        from orchestrator.launch_eval_catalog import attach_context_from_run
+        from orchestrator.launch.launch_eval_catalog import attach_context_from_run
 
         rows = _load_run_rows(args.run_id, args.run_events)
         ws = resolve_run_workspace(rows)
