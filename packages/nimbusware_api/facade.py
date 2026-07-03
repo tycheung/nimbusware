@@ -13,9 +13,7 @@ from nimbusware_api.routes import (
     campaigns,
     chat,
     chat_collab,
-    chat_collab_library,
     chat_participants,
-    chat_session_compute,
     chat_stream,
     compute,
     config_ops,
@@ -26,7 +24,7 @@ from nimbusware_api.routes import (
     model_bindings,
     ollama,
     operator_settings,
-    personas,
+    personas_handlers,
     platform,
     policy,
     preflight,
@@ -53,15 +51,13 @@ def build_v1_router() -> APIRouter:
     router.include_router(audit.router)
     router.include_router(bundles.router)
     router.include_router(critic_packs.router)
-    router.include_router(personas.router)
+    router.include_router(personas_handlers.router)
     router.include_router(custom_agents.router)
     router.include_router(projects.router)
     router.include_router(auth.router)
     router.include_router(chat.router)
     router.include_router(chat_collab.router)
-    router.include_router(chat_collab_library.router)
     router.include_router(chat_participants.router)
-    router.include_router(chat_session_compute.router)
     router.include_router(chat_stream.router)
     router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
