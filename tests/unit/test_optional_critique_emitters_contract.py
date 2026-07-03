@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 
+from unit.composite_contracts.matrix_runner import run_patch_matrix
 from unit.composite_contracts.optional_critique_emit_matrix import (
     MATRIX_6_AXIS,
     OPTIONAL_CRITIQUE_EMITTER_SPECS,
@@ -15,17 +16,10 @@ from unit.composite_contracts.optional_critique_emit_matrix import (
 
 
 @pytest.mark.parametrize("spec", OPTIONAL_CRITIQUE_EMITTER_SPECS, ids=lambda s: s.prefix)
-@pytest.mark.parametrize("case", MATRIX_6_AXIS, ids=lambda c: c["case_id"])
-def test_optional_critique_emit_path_matrix(
-    spec: OptionalCritiqueEmitterSpec,
-    case: dict[str, Any],
-) -> None:
-    llm_count, stub_count = run_optional_critique_matrix_case(spec, case)
-    assert llm_count == case["expected_llm"], (
-        f"{spec.prefix}/{case['case_id']}: expected llm={case['expected_llm']}, got {llm_count}"
-    )
-    assert stub_count == case["expected_stub"], (
-        f"{spec.prefix}/{case['case_id']}: expected stub={case['expected_stub']}, got {stub_count}"
+def test_optional_critique_emit_path_matrix(spec: OptionalCritiqueEmitterSpec) -> None:
+    run_patch_matrix(
+        MATRIX_6_AXIS,
+        invoke=lambda case: run_optional_critique_matrix_case(spec, case),
     )
 
 
