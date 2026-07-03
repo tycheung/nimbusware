@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from console.explainer_core.generic_display_metrics import (
+from console.bundle_catalog.catalog_local.search.operator_metrics import (
     bundle_search_operator_metrics,  # noqa: F401
     bundle_search_operator_metrics_caption,  # noqa: F401
     bundle_search_operator_metrics_export_filename_slug,  # noqa: F401

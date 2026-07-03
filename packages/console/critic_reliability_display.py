@@ -41,16 +41,16 @@ def _ood_rows(summary: Mapping[str, Any]) -> list[dict[str, str]]:
     return rows
 
 
-def critic_reliability_table_rows(
-    summary: Mapping[str, Any] | None,
+def _core_critic_metric_rows(
+    summary: Mapping[str, Any],
+    *,
+    fail_rate_label: str = "Critic FAIL rate",
 ) -> list[dict[str, str]]:
-    if not summary:
-        return []
     rows = [
         {"metric": "Critic verdicts", "value": str(summary.get("critic_verdict_count", 0))},
         {"metric": "Critic FAIL count", "value": str(summary.get("critic_fail_count", 0))},
         {
-            "metric": "Critic FAIL rate",
+            "metric": fail_rate_label,
             "value": f"{float(summary.get('critic_fail_rate', 0)):.1%}",
         },
         {"metric": "Gate blocks (FAIL)", "value": str(summary.get("gate_block_count", 0))},
@@ -61,6 +61,14 @@ def critic_reliability_table_rows(
     ]
     rows.extend(_ood_rows(summary))
     return rows
+
+
+def critic_reliability_table_rows(
+    summary: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not summary:
+        return []
+    return _core_critic_metric_rows(summary)
 
 
 def critic_reliability_caption(summary: Mapping[str, Any] | None) -> str:
@@ -92,19 +100,10 @@ def fleet_critic_reliability_table_rows(
     rows = [
         {"metric": "Runs scanned", "value": str(metrics.get("runs_scanned", 0))},
         {"metric": "Runs with critics", "value": str(metrics.get("runs_with_critics", 0))},
-        {"metric": "Critic verdicts", "value": str(metrics.get("critic_verdict_count", 0))},
-        {"metric": "Critic FAIL count", "value": str(metrics.get("critic_fail_count", 0))},
-        {
-            "metric": "Fleet critic FAIL rate",
-            "value": f"{float(metrics.get('critic_fail_rate', 0)):.1%}",
-        },
-        {"metric": "Gate blocks (FAIL)", "value": str(metrics.get("gate_block_count", 0))},
-        {
-            "metric": "Repeat finding paths",
-            "value": str(metrics.get("repeat_finding_paths", 0)),
-        },
     ]
-    rows.extend(_ood_rows(metrics))
+    rows.extend(
+        _core_critic_metric_rows(metrics, fail_rate_label="Fleet critic FAIL rate"),
+    )
     return rows
 
 

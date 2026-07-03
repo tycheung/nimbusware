@@ -1,0 +1,18 @@
+prefix: bundle_search
+caption_prefix: "Bundle search operator metrics: "
+defaults:
+  hit_count: 0
+  distinct_tag_count: 0
+  hits_without_tags: 0
+  hits_without_id: 0
+  top_hit_id: null
+table_rows:
+  - [Hit count, hit_count]
+  - [Distinct tags (union), distinct_tag_count]
+  - [Hits without tags, hits_without_tags]
+  - [Hits without id, hits_without_id]
+  - [Top hit id, top_hit_id]
+table_rows_options:
+  optional_metric_keys:
+    - top_hit_id
+build: {}
