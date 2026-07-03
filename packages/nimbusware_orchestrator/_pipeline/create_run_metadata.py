@@ -89,6 +89,68 @@ def resolve_requirements_meta(requirements: dict[str, Any] | None) -> dict[str, 
     return dict(requirements)
 
 
+def build_workflow_stage_effective_metadata(
+    *,
+    repo_root: Path,
+    workflow_profile: str,
+    config_materializer: Any | None,
+    blocks: CreateRunWorkflowBlocks,
+) -> dict[str, Any]:
+    mat = config_materializer
+    uc_block = blocks.uc_block
+    uc_eff = blocks.uc_eff
+    ae_block = blocks.ae_block
+    sr_block = blocks.sr_block
+    memory_meta = blocks.memory_meta
+    return {
+        "universal_critique_effective": {
+            "default_enabled": uc_block.default_enabled,
+            "production_default_on": universal_critique_production_default_on(
+                repo_root, workflow_profile, config_materializer=mat
+            ),
+            "impl_llm": uc_eff.impl_llm,
+            "impl_stub": uc_eff.impl_stub,
+            "tw_enabled": uc_eff.tw_enabled,
+            "pll_enabled": uc_eff.pll_enabled,
+            "fw_enabled": uc_eff.fw_enabled,
+            "mi_enabled": uc_eff.mi_enabled,
+            "unanimous_gate_enforce": uc_eff.unanimous_gate_enforce,
+        },
+        "agent_evaluator_effective": {
+            "enabled": ae_block.enabled,
+            "production_default_on": agent_evaluator_production_default_on(
+                repo_root, workflow_profile, config_materializer=mat
+            ),
+            "llm_evaluation_enabled": ae_block.llm_evaluation_enabled,
+        },
+        "self_refinement_effective": {
+            "enabled": sr_block.enabled,
+            "ungated_loop": self_refinement_ungated_loop_effective(sr_block),
+            "production_ungated": self_refinement_production_ungated_effective(
+                repo_root, workflow_profile, config_materializer=mat
+            ),
+            "llm_critique_enabled": sr_block.llm_critique_enabled,
+        },
+        "probation_automation_effective": probation_automation_effective_metadata(
+            blocks.prob_block
+        ),
+        "fast_slice_effective": fast_slice_effective_metadata(blocks.fs_block),
+        "memory_effective": {
+            "retrieval_enabled": memory_meta["retrieval_enabled"],
+            "index_contribution": memory_meta["index_contribution"],
+            "retrieval_k": memory_meta["retrieval_k"],
+            "excerpt_max_chars": memory_meta["excerpt_max_chars"],
+            "embedding_mode": memory_meta["embedding_mode"],
+            "memory_index_version": memory_meta.get("memory_index_version"),
+        },
+        "memory": memory_meta,
+        "research": research_effective_metadata(blocks.research_block),
+        "stitch": stitch_effective_metadata(blocks.stitch_block),
+        "theater": theater_effective_metadata(blocks.theater_block),
+        "dev_env_effective": dev_env_effective_metadata(blocks.dev_env_block),
+    }
+
+
 def build_run_created_metadata(
     *,
     registry: RoleRegistry,
@@ -112,39 +174,12 @@ def build_run_created_metadata(
     development_role_persona_id: str | None,
 ) -> dict[str, Any]:
     mat = config_materializer
-    uc_block = blocks.uc_block
-    uc_eff = blocks.uc_eff
-    ae_block = blocks.ae_block
-    sr_block = blocks.sr_block
-    memory_meta = blocks.memory_meta
-    universal_critique_effective = {
-        "default_enabled": uc_block.default_enabled,
-        "production_default_on": universal_critique_production_default_on(
-            repo_root, workflow_profile, config_materializer=mat
-        ),
-        "impl_llm": uc_eff.impl_llm,
-        "impl_stub": uc_eff.impl_stub,
-        "tw_enabled": uc_eff.tw_enabled,
-        "pll_enabled": uc_eff.pll_enabled,
-        "fw_enabled": uc_eff.fw_enabled,
-        "mi_enabled": uc_eff.mi_enabled,
-        "unanimous_gate_enforce": uc_eff.unanimous_gate_enforce,
-    }
-    agent_evaluator_effective = {
-        "enabled": ae_block.enabled,
-        "production_default_on": agent_evaluator_production_default_on(
-            repo_root, workflow_profile, config_materializer=mat
-        ),
-        "llm_evaluation_enabled": ae_block.llm_evaluation_enabled,
-    }
-    self_refinement_effective = {
-        "enabled": sr_block.enabled,
-        "ungated_loop": self_refinement_ungated_loop_effective(sr_block),
-        "production_ungated": self_refinement_production_ungated_effective(
-            repo_root, workflow_profile, config_materializer=mat
-        ),
-        "llm_critique_enabled": sr_block.llm_critique_enabled,
-    }
+    stage_meta = build_workflow_stage_effective_metadata(
+        repo_root=repo_root,
+        workflow_profile=workflow_profile,
+        config_materializer=mat,
+        blocks=blocks,
+    )
     hw_profile = get_cached_profile()
     resource_governor = governor_for_profile(hw_profile).to_metadata()
     patch_block = blocks.patch_block
@@ -217,14 +252,8 @@ def build_run_created_metadata(
         "resource_governor": resource_governor,
         "critique_coverage": critique_coverage,
         "stage_graph": stage_graph_snapshot,
-        "universal_critique_effective": universal_critique_effective,
+        **stage_meta,
         **({"critic_pack_effective": critic_pack_effective} if critic_pack_effective else {}),
-        "agent_evaluator_effective": agent_evaluator_effective,
-        "self_refinement_effective": self_refinement_effective,
-        "probation_automation_effective": probation_automation_effective_metadata(
-            blocks.prob_block
-        ),
-        "fast_slice_effective": fast_slice_effective_metadata(blocks.fs_block),
         "micro_slice_effective": {
             "enabled": True,
             "max_files": ms_max_files,
@@ -247,19 +276,6 @@ def build_run_created_metadata(
         **({"autopilot_effective": autopilot_effective_metadata(wt)} if wt else {}),
         **({"enforcement_effective": enforcement_effective_metadata(wt)} if wt else {}),
         "agent_tools_effective": agent_tools_effective,
-        "memory_effective": {
-            "retrieval_enabled": memory_meta["retrieval_enabled"],
-            "index_contribution": memory_meta["index_contribution"],
-            "retrieval_k": memory_meta["retrieval_k"],
-            "excerpt_max_chars": memory_meta["excerpt_max_chars"],
-            "embedding_mode": memory_meta["embedding_mode"],
-            "memory_index_version": memory_meta.get("memory_index_version"),
-        },
-        "memory": memory_meta,
-        "research": research_effective_metadata(blocks.research_block),
-        "stitch": stitch_effective_metadata(blocks.stitch_block),
-        "theater": theater_effective_metadata(blocks.theater_block),
-        "dev_env_effective": dev_env_effective_metadata(blocks.dev_env_block),
         **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
         **({"project": project_meta} if project_meta else {}),
         **({"git": git_meta} if git_meta else {}),
