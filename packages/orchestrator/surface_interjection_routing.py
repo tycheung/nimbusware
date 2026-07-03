@@ -19,9 +19,13 @@ def normalize_surface_id(raw: str) -> str | None:
 
 
 def parse_surface_mentions(message: str) -> list[str]:
+    from maker.collab.disciplines import normalize_discipline
+
     seen: set[str] = set()
     out: list[str] = []
     for match in _SURFACE_MENTION_RE.findall(str(message or "")):
+        if normalize_discipline(match):
+            continue
         surface_id = normalize_surface_id(match)
         if surface_id and surface_id not in seen:
             seen.add(surface_id)

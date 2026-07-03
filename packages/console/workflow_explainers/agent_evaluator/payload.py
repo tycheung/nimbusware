@@ -12,7 +12,6 @@ from console.explainer_core.repo_yaml import json_safe_yaml_fragment
 from console.explainer_core.workflow_payload_header import workflow_payload_header
 from console.explainer_core.workflow_profile import yaml_section
 from env.env_flags import nimbusware_use_llm_enabled
-from orchestrator.workflow.agent_evaluator import agent_evaluator_stage_would_emit
 
 
 def _nimbusware_agent_evaluator_env_summary() -> dict[str, Any]:
@@ -34,6 +33,8 @@ def _nimbusware_agent_evaluator_auto_create_env_summary() -> dict[str, Any]:
 
 
 def _would_emit_agent_evaluator_stage(repo_root: Path, workflow_profile: str | None) -> bool:
+    from orchestrator.workflow.agent_evaluator import agent_evaluator_stage_would_emit
+
     return agent_evaluator_stage_would_emit(repo_root, workflow_profile)
 
 

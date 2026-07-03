@@ -55,7 +55,9 @@ def test_maker_progress_after_intent_run(client: TestClient, tmp_path: Path) -> 
 def test_maker_progress_includes_campaign_progress(
     client: TestClient,
 ) -> None:
-    fixture_ws = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_python_app"
+    fixture_ws = (
+        Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "repos" / "tiny_python_app"
+    )
     project = client.post(
         "/v1/projects",
         json={

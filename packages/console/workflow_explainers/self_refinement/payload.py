@@ -24,7 +24,6 @@ from env.env_flags import (
 from extensions.self_refinement import (
     SelfRefinementPolicy,
 )
-from orchestrator.workflow.self_refinement_policy import resolve_self_refinement_policy
 
 
 def _load_policy_or_default(
@@ -32,6 +31,8 @@ def _load_policy_or_default(
     *,
     config_materializer: Any | None = None,
 ) -> tuple[SelfRefinementPolicy, dict[str, Any]]:
+    from orchestrator.workflow.self_refinement_policy import resolve_self_refinement_policy
+
     path = repo_root / "configs" / "self_refinement" / "policy.yaml"
     disk_bytes: int | None = None
     if path.is_file():
