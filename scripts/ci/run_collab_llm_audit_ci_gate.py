@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 COMMON = ROOT / "packages" / "orchestrator" / "llm" / "common.py"
-HYDRATE = ROOT / "packages" / "orchestrator" / "host_collab_mesh_hydrate.py"
+HYDRATE = ROOT / "packages" / "orchestrator" / "collab" / "mesh_hydrate.py"
 
 
 def main() -> int:
@@ -22,7 +22,7 @@ def main() -> int:
     )
     missing = [token for token in required_common if token not in common]
     if "ensure_mesh_binding_for_llm" not in hydrate:
-        missing.append("host_collab_mesh_hydrate.ensure_mesh_binding_for_llm")
+        missing.append("collab.mesh_hydrate.ensure_mesh_binding_for_llm")
     if missing:
         sys.stderr.write("collab LLM audit: missing mesh wiring:\n")
         for item in missing:
