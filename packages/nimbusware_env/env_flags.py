@@ -6,14 +6,13 @@ import warnings
 from nimbusware_env.settings_catalog import CATALOG, SettingScope
 from nimbusware_env.settings_resolve import (
     FAIL_CLOSED_RAW_KEYS,
+    FALSY_VALUES,
+    TRUTHY_VALUES,
     resolve_bool,
     resolve_int,
     resolve_raw,
     resolve_str,
 )
-
-TRUTHY_VALUES = frozenset({"1", "true", "yes"})
-FALSY_VALUES = frozenset({"0", "false", "no"})
 _LEGACY_ENV_WARNED: set[str] = set()
 
 
@@ -255,7 +254,7 @@ def nimbusware_use_llm_explicitly_off() -> bool:
 
 def nimbusware_slice_implement_mode() -> str:
     raw = resolve_str("NIMBUSWARE_SLICE_IMPLEMENT", default="scoped").lower()
-    if raw in ("stub", "0", "false", "no"):
+    if raw == "stub" or raw in FALSY_VALUES:
         return "stub"
     if raw == "agent":
         return "agent"
