@@ -27,6 +27,7 @@ import {
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
 import { wireChatMentionAutocomplete } from "../chat_mention_ui.js";
+import { applyChatIntentPlaceholder } from "../../../../ui_shared/js/chat-intent-hints.js";
 import { mountSoloHatChips, mountSoloHatCoachHint } from "./chat_solo_hat_ui.js";
 
 export async function mountChat(root) {
@@ -57,15 +58,9 @@ export async function mountChat(root) {
   const hashSessionId = hashParams.get("session_id") || "";
   const workSel = root.querySelector("#chat-work-type");
   const msgEl = root.querySelector("#chat-message");
-  const INTENT_HINTS = {
-    patch: "Describe the bug or paste a failing test name…",
-    slice: "Describe the feature to add or change…",
-    factory: "Describe the app you want (e.g. todo app with web UI and API)…",
-    campaign: "Describe the product you want built end-to-end…",
-  };
   if (intent && CHAT_WORK_TYPES.includes(intent) && workSel) {
     workSel.value = intent;
-    if (msgEl && INTENT_HINTS[intent]) msgEl.placeholder = INTENT_HINTS[intent];
+    applyChatIntentPlaceholder(msgEl, intent);
   }
   if (msgEl && deepPrompt && !msgEl.value.trim()) {
     msgEl.value = deepPrompt;
