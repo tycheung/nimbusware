@@ -12,6 +12,11 @@ from projections.builders.backlog_tree import backlog_tree_from_events
 
 router = APIRouter()
 
+_BACKLOG_PENDING_DETAIL = (
+    "Campaign exists but no delivery backlog has been emitted yet; "
+    "wait for the campaign driver tick or check workflow profile."
+)
+
 
 @router.get(
     "/campaigns/{campaign_id}/backlog",
@@ -30,6 +35,6 @@ def get_campaign_backlog(campaign_id: UUID, store: StoreDep) -> dict[str, Any]:
     if tree is None:
         raise HTTPException(
             status_code=404,
-            detail=problem("backlog_not_found", "delivery backlog not yet generated"),
+            detail=problem("backlog_not_found", _BACKLOG_PENDING_DETAIL),
         )
     return tree
