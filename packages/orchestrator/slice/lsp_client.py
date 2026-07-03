@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Sequence
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -242,11 +243,9 @@ def fetch_document_symbols(
         _LOG.debug("LSP symbol fetch failed for %s: %s", rel_path, exc)
         return [], f"lsp_error:{type(exc).__name__}"
     finally:
-        try:
+        with suppress(OSError):
             write_lsp_message(proc.stdin, {"jsonrpc": "2.0", "id": 99, "method": "shutdown"})
             write_lsp_message(proc.stdin, {"jsonrpc": "2.0", "method": "exit"})
-        except OSError:
-            pass
         proc.terminate()
         try:
             proc.wait(timeout=2)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -110,10 +111,8 @@ def _run_browser_session(
                 return result
             finally:
                 if browser is not None:
-                    try:
+                    with suppress(Exception):
                         browser.close()
-                    except Exception:
-                        pass
                 playwright.stop()
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)

@@ -14,4 +14,4 @@ class CritiqueGatesMixin(
     CritiqueGateHelpersMixin,
     CritiqueGateOptionalEmitMixin,
 ):
-    pass
+    """Critique gate stage hooks and optional emit helpers."""

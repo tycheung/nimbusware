@@ -6,4 +6,4 @@ from orchestrator._pipeline.lifecycle_verify import LifecycleVerifyMixin
 
 
 class LifecycleMixin(LifecycleStartMixin, LifecyclePlanMixin, LifecycleVerifyMixin):
-    pass
+    """Lifecycle stage hooks (start, plan, verify)."""

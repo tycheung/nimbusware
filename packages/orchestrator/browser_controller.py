@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -29,16 +30,12 @@ def _close_bundle_key(key: str) -> None:
     for obj in ("page", "context", "browser"):
         target = bundle.get(obj)
         if target is not None:
-            try:
+            with suppress(_BROWSER_IO_ERRORS):
                 target.close()
-            except _BROWSER_IO_ERRORS:
-                pass
     mgr = bundle.get("mgr")
     if mgr is not None:
-        try:
+        with suppress(_BROWSER_IO_ERRORS):
             mgr.stop()
-        except _BROWSER_IO_ERRORS:
-            pass
 
 
 @dataclass
@@ -147,10 +144,8 @@ def _run_ui_flow_sync(
                 ephemeral_mgr = ephemeral_browser = ephemeral_context = None
         except Exception:
             if ephemeral_mgr is not None:
-                try:
+                with suppress(_BROWSER_IO_ERRORS):
                     ephemeral_mgr.stop()
-                except _BROWSER_IO_ERRORS:
-                    pass
             raise
 
     try:
@@ -187,10 +182,8 @@ def _run_ui_flow_sync(
         if ephemeral_mgr is not None:
             for obj in (ephemeral_context, ephemeral_browser):
                 if obj is not None:
-                    try:
+                    with suppress(_BROWSER_IO_ERRORS):
                         obj.close()
-                    except _BROWSER_IO_ERRORS:
-                        pass
             ephemeral_mgr.stop()
 
 
