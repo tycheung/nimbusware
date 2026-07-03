@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from agent_core.mapping import mapping_or_empty
 from nimbusware_config.persist import load_model_routing_dict
 from nimbusware_orchestrator.llm.providers import provider_for_preset

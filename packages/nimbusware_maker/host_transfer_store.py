@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 
 from nimbusware_config.collab_policy_store import load_collab_policy
 from nimbusware_env.dotenv import find_repo_root
+from nimbusware_maker.store_backend import build_cached_store
 
 
 def _utc_now() -> datetime:
@@ -249,8 +250,6 @@ class InMemoryHostTransferStore:
         return session_id in self._frozen_sessions
 
 
-from nimbusware_maker.store_backend import build_cached_store
-
 _store: list[InMemoryHostTransferStore | None] = [None]
 
 
@@ -264,7 +263,7 @@ def build_host_transfer_store(database_url: str | None) -> HostTransferStore:
         database_url,
         cache=_store,
         memory_factory=InMemoryHostTransferStore,
-        postgres_factory=_postgres,
+        postgres_factory=_postgres,  # type: ignore[arg-type]
     )
 
 

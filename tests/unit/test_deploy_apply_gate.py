@@ -108,7 +108,7 @@ def test_deploy_apply_denied_when_target_not_allowed(
 
     monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
     monkeypatch.setattr(
-        "nimbusware_orchestrator.fleet_deploy_policy.find_repo_root",
+        "nimbusware_orchestrator.fleet_policy_loader.find_repo_root",
         lambda *_a, **_k: tmp_path,
     )
     monkeypatch.setattr(

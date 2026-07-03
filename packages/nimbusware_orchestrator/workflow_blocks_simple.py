@@ -1,5 +1,3 @@
-"""Small workflow profile blocks (subsection parsers and slice flags)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

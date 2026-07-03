@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator.llm.providers import provider_for_preset
 from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver

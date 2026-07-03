@@ -57,4 +57,5 @@ def put_fleet_slice_policy(
     )
     save_fleet_slice_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="slice")
-    return policies[slug].to_dict()
+    saved: FleetSlicePolicy = policies[slug]
+    return saved.to_dict()

@@ -66,4 +66,5 @@ def put_fleet_commit_policy(
     )
     save_fleet_commit_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="commit")
-    return policies[slug].to_dict()
+    saved: FleetCommitPolicy = policies[slug]
+    return saved.to_dict()

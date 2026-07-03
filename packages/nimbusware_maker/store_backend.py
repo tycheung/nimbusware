@@ -17,4 +17,6 @@ def build_cached_store(
         return postgres_factory(database_url)
     if cache[0] is None:
         cache[0] = memory_factory()
-    return cache[0]
+    cached = cache[0]
+    assert cached is not None
+    return cached

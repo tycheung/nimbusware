@@ -54,7 +54,7 @@ def frontend_writer_optional_spec(*, pre_emit: Any) -> RoleCritiqueEmitSpec:
     )
 
 
-def security_critique_scan_spec():
+def security_critique_scan_spec() -> Any:
     from nimbusware_orchestrator._pipeline._helpers import (
         ScanCritiqueEmitSpec,
         emit_stub_security_critique_panel,

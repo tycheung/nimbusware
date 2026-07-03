@@ -57,4 +57,5 @@ def put_fleet_discovery_policy(
     )
     save_fleet_discovery_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="discovery")
-    return policies[slug].to_dict()
+    saved: FleetDiscoveryPolicy = policies[slug]
+    return saved.to_dict()

@@ -55,4 +55,5 @@ def put_fleet_deploy_approval_policy(
     )
     save_fleet_deploy_approval_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="deploy_approval")
-    return policies[slug].to_dict()
+    saved: FleetDeployApprovalPolicy = policies[slug]
+    return saved.to_dict()

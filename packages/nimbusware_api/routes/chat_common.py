@@ -7,14 +7,46 @@ from uuid import UUID
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import ChatStoreDep, OrchDep, ProjectStoreDep, StoreDep
+from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.chat_service import (
     actor_user_id,
     chat_http_error,
+    collab_session_actor,
     project_metadata,
     require_collab_enabled,
+    require_collab_session_participant,
     session_or_404,
+)
+
+__all__ = (
+    "ActiveLeafBody",
+    "AppendTurnBody",
+    "ChatGraphResponse",
+    "ChatMessageBody",
+    "ChatMessageResponse",
+    "ChatSessionResponse",
+    "ClassificationResponse",
+    "ClassifyIntentBody",
+    "CreateChatSessionBody",
+    "ForkChatBody",
+    "StartChatSessionBody",
+    "StartChatSessionResponse",
+    "SwitchModeBody",
+    "actor_user_id",
+    "chat_http_error",
+    "collab_session_actor",
+    "maybe_apply_chat_replay_alignment",
+    "patch_context_payload",
+    "platform_hints",
+    "project_metadata",
+    "requirements_payload",
+    "require_collab_enabled",
+    "require_collab_session_participant",
+    "resolve_workflow_profile",
+    "session_or_404",
+    "start_campaign",
+    "start_run",
 )
 from nimbusware_api.routes.runs.create import PatchContextBody, RunRequirementsBody
 from nimbusware_maker.intent import build_requirements_artifact
@@ -372,5 +404,3 @@ def platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
     hints = dict(extra or {})
     hints.setdefault("quick_mode", quick_mode_enabled())
     return hints
-
-

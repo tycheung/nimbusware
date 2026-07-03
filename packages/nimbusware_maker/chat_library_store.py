@@ -13,6 +13,7 @@ from nimbusware_maker.chat_library_models import (
     FolderRecord,
     UserGroupRecord,
 )
+from nimbusware_maker.store_backend import build_cached_store
 
 
 def _utc_now() -> datetime:
@@ -366,8 +367,6 @@ class InMemoryChatLibraryStore:
         return session_roles, folder_roles, tag_roles
 
 
-from nimbusware_maker.store_backend import build_cached_store
-
 _library_store: list[InMemoryChatLibraryStore | None] = [None]
 
 
@@ -381,5 +380,5 @@ def build_chat_library_store(database_url: str | None) -> ChatLibraryStore:
         database_url,
         cache=_library_store,
         memory_factory=InMemoryChatLibraryStore,
-        postgres_factory=_postgres,
+        postgres_factory=_postgres,  # type: ignore[arg-type]
     )

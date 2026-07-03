@@ -129,7 +129,9 @@ def resolve_explainer_caption_fn(slug: str, fn_name: str) -> Callable[[Any], str
     return load_caption_fn(f"nimbusware_console.workflow_explainers.{slug}.{fn_name}")
 
 
-def load_operator_metrics_fns(slug: str) -> tuple[
+def load_operator_metrics_fns(
+    slug: str,
+) -> tuple[
     Callable[[Mapping[str, Any] | None], dict[str, Any]],
     Callable[[Mapping[str, Any]], str | None],
 ]:
@@ -230,8 +232,10 @@ def run_caption_case(
 ) -> str | None:
     fn = resolve_explainer_caption_fn(slug, str(case["fn"]))
     payload = case.get("payload")
-    if payload is None and tmp_path is not None and (
-        "workflow_yaml" in case or "policy_yaml" in case
+    if (
+        payload is None
+        and tmp_path is not None
+        and ("workflow_yaml" in case or "policy_yaml" in case)
     ):
         payload = run_explainer_payload_case(slug, case, tmp_path)
     return fn(payload)

@@ -20,7 +20,9 @@ from nimbusware_orchestrator.stage_provider_routing import (
 
 def test_list_and_apply_routing_presets(tmp_path: Path) -> None:
     repo = Path(__file__).resolve().parents[2]
-    canonical = yaml.safe_load((repo / "configs" / "model-routing.yaml").read_text(encoding="utf-8"))
+    canonical = yaml.safe_load(
+        (repo / "configs" / "model-routing.yaml").read_text(encoding="utf-8")
+    )
     routing_presets = canonical.get("routing_presets") or {"version": 1, "presets": {}}
     (tmp_path / "configs").mkdir(parents=True)
     (tmp_path / "configs" / "model-routing.yaml").write_text(

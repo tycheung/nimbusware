@@ -387,7 +387,7 @@ operator_metrics_cases:
       yaml_false_bool_value_count: 1
     expect_caption:
       not_null: true
-      icontains: true
+      icontains: "true"
 
   - id: env_forces_on
     payload:

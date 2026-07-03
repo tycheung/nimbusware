@@ -42,11 +42,7 @@ def _tenant_policy_set(
     policy_cls: type[T],
     parse_entry: Callable[[str, dict[str, Any]], T],
     serialize_entry: Callable[[T], dict[str, Any]],
-) -> tuple[
-    Callable[[Path | None], dict[str, T]],
-    Callable[[dict[str, T], Path | None], None],
-    Callable[[str | None, Path | None], T],
-]:
+):
     def load(repo_root: Path | None = None) -> dict[str, T]:
         return load_tenant_policies(yaml_name, parse_entry, repo_root=repo_root)
 
@@ -97,12 +93,20 @@ def _serialize_deploy_entry(policy: FleetDeployPolicy) -> dict[str, Any]:
     return {"allowed_deploy_targets": list(policy.allowed_deploy_targets)}
 
 
-load_fleet_deploy_policies, save_fleet_deploy_policies, tenant_deploy_policy = _tenant_policy_set(
+load_fleet_deploy_policies, save_fleet_deploy_policies, _tenant_deploy = _tenant_policy_set(
     "fleet_deploy_policies.yaml",
     FleetDeployPolicy,
     _parse_deploy_entry,
     _serialize_deploy_entry,
 )
+
+
+def tenant_deploy_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetDeployPolicy:
+    return _tenant_deploy(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -134,12 +138,20 @@ def _serialize_commit_entry(policy: FleetCommitPolicy) -> dict[str, Any]:
     }
 
 
-load_fleet_commit_policies, save_fleet_commit_policies, tenant_commit_policy = _tenant_policy_set(
+load_fleet_commit_policies, save_fleet_commit_policies, _tenant_commit = _tenant_policy_set(
     "fleet_commit_policies.yaml",
     FleetCommitPolicy,
     _parse_commit_entry,
     _serialize_commit_entry,
 )
+
+
+def tenant_commit_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetCommitPolicy:
+    return _tenant_commit(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -171,13 +183,21 @@ def _serialize_deploy_approval_entry(policy: FleetDeployApprovalPolicy) -> dict[
 (
     load_fleet_deploy_approval_policies,
     save_fleet_deploy_approval_policies,
-    tenant_deploy_approval_policy,
+    _tenant_deploy_approval,
 ) = _tenant_policy_set(
     "fleet_deploy_approval_policies.yaml",
     FleetDeployApprovalPolicy,
     _parse_deploy_approval_entry,
     _serialize_deploy_approval_entry,
 )
+
+
+def tenant_deploy_approval_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetDeployApprovalPolicy:
+    return _tenant_deploy_approval(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -216,16 +236,22 @@ def _serialize_discovery_entry(policy: FleetDiscoveryPolicy) -> dict[str, Any]:
     return {"discovery_required_fields": list(policy.discovery_required_fields)}
 
 
-(
-    load_fleet_discovery_policies,
-    save_fleet_discovery_policies,
-    tenant_discovery_policy,
-) = _tenant_policy_set(
-    "fleet_discovery_policies.yaml",
-    FleetDiscoveryPolicy,
-    _parse_discovery_entry,
-    _serialize_discovery_entry,
+load_fleet_discovery_policies, save_fleet_discovery_policies, _tenant_discovery = (
+    _tenant_policy_set(
+        "fleet_discovery_policies.yaml",
+        FleetDiscoveryPolicy,
+        _parse_discovery_entry,
+        _serialize_discovery_entry,
+    )
 )
+
+
+def tenant_discovery_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetDiscoveryPolicy:
+    return _tenant_discovery(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -265,12 +291,20 @@ def _serialize_slice_entry(policy: FleetSlicePolicy) -> dict[str, Any]:
     }
 
 
-load_fleet_slice_policies, save_fleet_slice_policies, tenant_slice_policy = _tenant_policy_set(
+load_fleet_slice_policies, save_fleet_slice_policies, _tenant_slice = _tenant_policy_set(
     "fleet_slice_policies.yaml",
     FleetSlicePolicy,
     _parse_slice_entry,
     _serialize_slice_entry,
 )
+
+
+def tenant_slice_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetSlicePolicy:
+    return _tenant_slice(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -311,12 +345,20 @@ def _serialize_stack_entry(policy: FleetStackPolicy) -> dict[str, Any]:
     return {"allowed_stacks": dict(policy.allowed_stacks)}
 
 
-load_fleet_stack_policies, save_fleet_stack_policies, tenant_stack_policy = _tenant_policy_set(
+load_fleet_stack_policies, save_fleet_stack_policies, _tenant_stack = _tenant_policy_set(
     "fleet_stack_policies.yaml",
     FleetStackPolicy,
     _parse_stack_entry,
     _serialize_stack_entry,
 )
+
+
+def tenant_stack_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetStackPolicy:
+    return _tenant_stack(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -354,16 +396,22 @@ def _serialize_autopilot_entry(policy: FleetAutopilotPolicy) -> dict[str, Any]:
     }
 
 
-(
-    load_fleet_autopilot_policies,
-    save_fleet_autopilot_policies,
-    tenant_autopilot_policy,
-) = _tenant_policy_set(
-    "fleet_autopilot_policies.yaml",
-    FleetAutopilotPolicy,
-    _parse_autopilot_entry,
-    _serialize_autopilot_entry,
+load_fleet_autopilot_policies, save_fleet_autopilot_policies, _tenant_autopilot = (
+    _tenant_policy_set(
+        "fleet_autopilot_policies.yaml",
+        FleetAutopilotPolicy,
+        _parse_autopilot_entry,
+        _serialize_autopilot_entry,
+    )
 )
+
+
+def tenant_autopilot_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetAutopilotPolicy:
+    return _tenant_autopilot(tenant_slug, repo_root=repo_root)
 
 
 @dataclass(frozen=True)
@@ -401,13 +449,19 @@ def _serialize_enforcement_entry(policy: FleetEnforcementPolicy) -> dict[str, An
     }
 
 
-(
-    load_fleet_enforcement_policies,
-    save_fleet_enforcement_policies,
-    tenant_enforcement_policy,
-) = _tenant_policy_set(
-    "fleet_enforcement_policies.yaml",
-    FleetEnforcementPolicy,
-    _parse_enforcement_entry,
-    _serialize_enforcement_entry,
+load_fleet_enforcement_policies, save_fleet_enforcement_policies, _tenant_enforcement = (
+    _tenant_policy_set(
+        "fleet_enforcement_policies.yaml",
+        FleetEnforcementPolicy,
+        _parse_enforcement_entry,
+        _serialize_enforcement_entry,
+    )
 )
+
+
+def tenant_enforcement_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetEnforcementPolicy:
+    return _tenant_enforcement(tenant_slug, repo_root=repo_root)
