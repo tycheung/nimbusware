@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.integrator_live_context import (
+from orchestrator.integrator.live_context import (
     integration_adapter_http_probe_from_rows,
     integrator_live_context_from_rows,
 )

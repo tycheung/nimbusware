@@ -102,7 +102,7 @@ def discover_workspace_patterns(repo_root: Path) -> list[dict[str, Any]]:
             },
         )
     try:
-        from orchestrator.code_intel_entrypoints import discover_entrypoint_modules
+        from orchestrator.repo_intel.entrypoints import discover_entrypoint_modules
 
         entries = discover_entrypoint_modules(root)
         if entries:

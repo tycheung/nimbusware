@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.workflow_agent_evaluator import (
+from orchestrator.workflow.agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )

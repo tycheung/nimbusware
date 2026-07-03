@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
-from maker.deploy_pipeline_events import (
+from maker.deploy.pipeline_events import (
     deploy_rollback_passed_from_events,
     emit_deploy_rollback_stages,
 )

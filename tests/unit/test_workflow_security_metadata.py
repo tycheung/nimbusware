@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.workflow_security_metadata import (
+from orchestrator.workflow.security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 from unit.composite_repo_fixtures import write_workflow_profile

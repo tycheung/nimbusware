@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_e2e import run_slice_e2e_verify
-from orchestrator.slice_gate import run_slice_gate_chain
-from orchestrator.workflow_blocks_simple import parse_micro_slice_workflow_block
+from orchestrator.slice.e2e import run_slice_e2e_verify
+from orchestrator.slice.gate import run_slice_gate_chain
+from orchestrator.slice.micro_slice import parse_slice_plan
+from orchestrator.workflow.blocks_simple import parse_micro_slice_workflow_block
 
 
 def test_slice_gate_skips_e2e_when_disabled() -> None:

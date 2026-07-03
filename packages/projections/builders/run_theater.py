@@ -65,7 +65,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
 
     if projection_prune_agent_tools_enabled():
         messages = prune_theater_agent_tool_messages(messages)
-    from orchestrator.autopilot_profiles import (
+    from orchestrator.profiles.autopilot_profiles import (
         autopilot_level_from_rows,
         autopilot_theater_filter_active,
         filter_theater_messages_for_autopilot,

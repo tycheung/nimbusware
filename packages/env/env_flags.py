@@ -276,7 +276,7 @@ def nimbusware_slice_branch_prefix(default: str = "nimbusware/run-") -> str:
 
 
 def _context_max_chars_from_preset(preset_attr: str, fallback: int) -> int:
-    from orchestrator.slice_budget_presets import resolve_slice_budget_preset
+    from orchestrator.slice.budget_presets import resolve_slice_budget_preset
 
     return int(getattr(resolve_slice_budget_preset(), preset_attr))
 

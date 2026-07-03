@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from api.errors import problem
 from env.edition import is_enterprise
 from iam.context import resolve_store_tenant_id
-from maker.workspace import project_id_from_run_created_metadata
+from maker.workspace.workspace import project_id_from_run_created_metadata
 
 
 def _run_created_metadata(rows: list[dict[str, Any]]) -> dict[str, Any]:

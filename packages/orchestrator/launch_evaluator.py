@@ -9,7 +9,7 @@ from typing import Any
 from uuid import UUID
 
 from env.env_flags import env_bool, env_str
-from orchestrator.ollama_manage import ollama_base_url
+from orchestrator.routing.manage import ollama_base_url
 
 
 @dataclass(frozen=True)
@@ -277,7 +277,7 @@ def merge_dev_env_into_scorecard(
     scorecard: LaunchEvalScorecard,
     rows: list[dict[str, Any]],
 ) -> LaunchEvalScorecard:
-    from orchestrator.dev_env_launch_merge import dev_env_live_regression_from_rows
+    from orchestrator.dev_env.launch_merge import dev_env_live_regression_from_rows
 
     bits = dev_env_live_regression_from_rows(rows)
     if not bits:
@@ -370,7 +370,7 @@ def maybe_run_launch_eval_for_campaign(
     *,
     workspace: Path | None = None,
 ) -> LaunchEvalScorecard | None:
-    from maker.workspace import resolve_run_workspace
+    from maker.workspace.workspace import resolve_run_workspace
 
     if any(
         row.get("event_type") == "stage.passed"

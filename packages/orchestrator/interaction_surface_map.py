@@ -341,7 +341,7 @@ def exploratory_put_crawl(
         default_clicks, default_depth = exploratory_crawl_limits()
         max_clicks = default_clicks if max_clicks is None else max_clicks
         max_depth = default_depth if max_depth is None else max_depth
-    from orchestrator.fleet_playwright import fleet_playwright_page
+    from orchestrator.fleet.playwright import fleet_playwright_page
 
     base = preview_base_url.rstrip("/")
     surfaces: list[ISMSurface] = []

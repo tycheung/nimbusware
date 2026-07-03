@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.integration_adapter_scaffold import (
+from orchestrator.integrator.scaffold import (
     execute_target_adapter_integration,
     probe_http_endpoint,
     validate_integration_manifest,

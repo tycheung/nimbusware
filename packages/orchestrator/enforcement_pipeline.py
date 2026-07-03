@@ -14,7 +14,7 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from orchestrator.enforcement_profiles import (
+from orchestrator.profiles.enforcement_profiles import (
     EnforcementProfile,
     enforcement_profile_from_rows,
     latest_enforcement_block_from_rows,

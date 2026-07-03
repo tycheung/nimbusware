@@ -35,13 +35,13 @@ from env.env_flags import env_str, nimbusware_collab_enabled, nimbusware_databas
 from iam.context import resolve_store_tenant_id
 from maker.archetype_surface_defaults import manifest_for_archetype
 from maker.autopilot_defer_matrix import autopilot_may_auto_defer
-from maker.chat_service import (
+from maker.chat.service import (
     requirements_from_path,
     resolve_work_type,
     resolve_work_type_source,
 )
-from maker.intent_classifier import WorkType
-from maker.scope_discovery import (
+from maker.intent.classifier import WorkType
+from maker.intent.scope_discovery import (
     attach_discovery_summary,
     enrich_scope_surface_bindings,
     recommend_for_me,
@@ -524,7 +524,7 @@ def put_session_optimizer_weights(
 ) -> dict[str, Any]:
     session_or_404(chat_store, session_id)
     from maker.optimizer_weights_store import DEFAULT_OPTIMIZER_WEIGHTS
-    from orchestrator.mesh_optimizer import weights_from_priority
+    from orchestrator.collab.optimizer import weights_from_priority
 
     allowed = set(DEFAULT_OPTIMIZER_WEIGHTS.keys())
     priority = [k for k in body.priority if k in allowed]
@@ -604,7 +604,7 @@ def get_participant_bindings(
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
     sess = chat_store.get_session(session_id)
     meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
-    from orchestrator.collab_binding_resolver import participant_binding_overrides
+    from orchestrator.collab.binding_resolver import participant_binding_overrides
 
     return {
         "user_id": actor_id,
@@ -628,7 +628,7 @@ def put_participant_binding(
     require_session_participant(collab_store, session_id=session_id, user_id=actor_id)
     sess = chat_store.get_session(session_id)
     meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
-    from orchestrator.collab_binding_resolver import (
+    from orchestrator.collab.binding_resolver import (
         merge_participant_binding,
         participant_binding_overrides,
     )

@@ -11,7 +11,7 @@ from env.env_flags import (
     nimbusware_fleet_memory_store_dir,
     nimbusware_fleet_memory_store_uri,
 )
-from memory.models import EmbeddingMode, MemoryChunkRecord
+from memory.index.models import EmbeddingMode, MemoryChunkRecord
 
 
 @dataclass(frozen=True)

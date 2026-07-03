@@ -7,13 +7,13 @@ from pydantic import BaseModel, Field
 
 from api.deps import OrchDep
 from api.errors import problem
-from orchestrator.autopilot_profiles import resolve_autopilot_profile
-from orchestrator.enforcement_profiles import resolve_enforcement_profile
-from orchestrator.user_autopilot_profiles import (
+from orchestrator.profiles.autopilot_profiles import resolve_autopilot_profile
+from orchestrator.profiles.enforcement_profiles import resolve_enforcement_profile
+from orchestrator.profiles.user_autopilot_profiles import (
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,
 )
-from orchestrator.user_enforcement_profiles import (
+from orchestrator.profiles.user_enforcement_profiles import (
     load_user_enforcement_profiles,
     upsert_user_enforcement_profile,
 )

@@ -20,7 +20,7 @@ from maker.slice_engine import (
 )
 from maker.slice_preview import unified_diff_from_edits
 from maker.slice_workflow._shared import completed_slice_count, emit_maker_stage
-from maker.workspace import resolve_run_workspace
+from maker.workspace.workspace import resolve_run_workspace
 
 
 def approve_run_plan(orch: Any, run_id: UUID) -> dict[str, Any]:
@@ -82,7 +82,7 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
     )
 
     if plan.target_paths:
-        from orchestrator.slice_lsp_client import build_symbol_sketch_with_lsp_fallback
+        from orchestrator.slice.lsp_client import build_symbol_sketch_with_lsp_fallback
 
         symbol_sketch, _ = build_symbol_sketch_with_lsp_fallback(
             ws,

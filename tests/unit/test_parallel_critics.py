@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.workflow_parallel_critics import parallel_critics_enabled
+from orchestrator.workflow.parallel_critics import parallel_critics_enabled
 
 _REPO = Path(__file__).resolve().parents[2]
 

@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
-from maker.deploy_target_enforcement import (
+from maker.deploy.target_enforcement import (
     DEFAULT_DEPLOY_ENVIRONMENT,
     normalize_deploy_environment,
     resolve_deploy_environment,

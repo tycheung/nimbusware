@@ -4,6 +4,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from agent_core.timeline_metadata import persona_assignment_from_run_created_metadata
 from api.app import app
 from api.deps import get_orchestrator, get_store
 from config.materializer import ConfigMaterializer
@@ -16,7 +17,6 @@ from console.persona_assignment_display import (
 )
 from env import find_repo_root
 from orchestrator.pipeline import RunOrchestrator, default_paths
-from orchestrator.read_models import persona_assignment_from_run_created_metadata
 from store.memory import InMemoryEventStore
 
 

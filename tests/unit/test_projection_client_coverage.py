@@ -6,7 +6,7 @@ import pytest
 
 from agent_tools.runtime import AgentStep
 from client.http import admin_headers, api_base, user_headers
-from maker.readiness import build_platform_readiness
+from maker.readiness.platform import build_platform_readiness
 from maker.slice_preview import (
     preview_note_for_scoped_mode,
     unified_diff_from_edits,

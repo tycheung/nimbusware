@@ -9,7 +9,7 @@ from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
 from iam.context import get_auth_context
-from orchestrator.enforcement_profiles import (
+from orchestrator.profiles.enforcement_profiles import (
     EnforcementProfile,
     enforcement_profile_from_rows,
     persist_run_enforcement,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.security_scan import (
+from orchestrator.critique.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )

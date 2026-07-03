@@ -10,7 +10,7 @@ from config.seed import seed_config_from_repo
 from config.store import InMemoryConfigStore
 from env import find_repo_root
 from orchestrator.pipeline import RunOrchestrator, default_paths
-from orchestrator.workflow_research import (
+from orchestrator.workflow.research import (
     parse_research_workflow_block,
     research_effective_metadata,
 )

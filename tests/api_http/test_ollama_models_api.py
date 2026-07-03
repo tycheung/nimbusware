@@ -75,7 +75,7 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
         headers=ADMIN_HEADERS,
     )
     with patch("api.routes.ollama.start_pull_job") as start_job:
-        from orchestrator.ollama_pull_jobs import PullJob
+        from orchestrator.routing.pull_jobs import PullJob
 
         start_job.return_value = PullJob(
             job_id="job-1", model="tiny", host="http://127.0.0.1:11434"
@@ -88,7 +88,7 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
 
 
 def test_get_ollama_pull_job_status(client: TestClient) -> None:
-    from orchestrator.ollama_pull_jobs import PullJob, reset_pull_jobs_for_tests
+    from orchestrator.routing.pull_jobs import PullJob, reset_pull_jobs_for_tests
 
     reset_pull_jobs_for_tests()
     with patch("api.routes.ollama.get_pull_job") as get_job:
@@ -104,7 +104,7 @@ def test_get_ollama_pull_job_status(client: TestClient) -> None:
 
 
 def test_filter_query_param(client: TestClient) -> None:
-    from orchestrator.ollama_manage import OllamaModelRow
+    from orchestrator.routing.manage import OllamaModelRow
 
     rows = [
         OllamaModelRow(name="llama3.1:8b"),

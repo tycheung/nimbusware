@@ -152,7 +152,7 @@ def stage_names_from_findings(findings: list[dict[str, Any]]) -> list[str | None
 
 
 def append_uc_critique_fail_gates(mem: Any, run_id: UUID) -> None:
-    from orchestrator.llm_plan import (
+    from orchestrator.llm import (
         IMPLEMENTATION_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     load_bundle_tags_for_bundle_id,
     load_bundle_title_for_bundle_id,
     parse_integrator_gate_project_tags,

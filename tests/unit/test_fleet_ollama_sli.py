@@ -7,7 +7,7 @@ import httpx
 import pytest
 
 from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from orchestrator.fleet_ollama_sli import (
+from orchestrator.fleet.ollama_sli import (
     merge_preflight_history_aggregate,
     probe_health_latency_ms,
     read_sli_export,
@@ -75,7 +75,7 @@ def test_merge_preflight_history_aggregate() -> None:
 
 def test_fleet_ollama_sli_disabled_on_individual(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, DEFAULT_EDITION)
-    from orchestrator.fleet_ollama_sli import fleet_ollama_sli_enabled
+    from orchestrator.fleet.ollama_sli import fleet_ollama_sli_enabled
 
     assert not fleet_ollama_sli_enabled()
 

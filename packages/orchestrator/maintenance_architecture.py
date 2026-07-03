@@ -42,7 +42,7 @@ def run_maintenance_architecture(
     revised = False
     if can_revise_backlog:
         from agent_core.models.backlog import BacklogSlice, sync_backlog_metadata
-        from orchestrator.backlog_generator import (
+        from orchestrator.campaign.generator import (
             backlog_from_events,
             emit_backlog_revised,
         )
@@ -50,8 +50,8 @@ def run_maintenance_architecture(
         rows = store.list_run_events(str(run_id))
         backlog = backlog_from_events(rows)
         if backlog is not None:
-            from maker.workspace import resolve_run_workspace
-            from orchestrator.repo_inventory import build_repo_inventory
+            from maker.workspace.workspace import resolve_run_workspace
+            from orchestrator.repo_intel.inventory import build_repo_inventory
 
             ws = resolve_run_workspace(rows)
             inv = build_repo_inventory(ws)

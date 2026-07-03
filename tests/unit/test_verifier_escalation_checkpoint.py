@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 from agent_core.models import EventType
 from env import find_repo_root
+from orchestrator.critique.verifier_escalation import load_escalate_on_first_verifier_failure
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.verifier_escalation import load_escalate_on_first_verifier_failure
 
 
 def test_load_escalate_on_first_verifier_failure_default() -> None:

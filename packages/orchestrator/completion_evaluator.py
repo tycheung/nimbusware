@@ -24,9 +24,9 @@ from agent_core.models.events_records import (
     CompletionEvaluatedEvent,
 )
 from agent_core.read.campaign import campaign_effective_from_rows
-from orchestrator.backlog_generator import apply_slice_outcomes, backlog_from_events
-from orchestrator.campaign_slice_selector import all_slices_terminal
-from orchestrator.workflow_campaign import CompletionWorkflowBlock
+from orchestrator.campaign.generator import apply_slice_outcomes, backlog_from_events
+from orchestrator.campaign.slice_selector import all_slices_terminal
+from orchestrator.workflow.campaign import CompletionWorkflowBlock
 
 CompletionVerdict = Literal["PASS", "FAIL", "INCOMPLETE"]
 
@@ -129,7 +129,7 @@ def _deploy_completion_satisfied(
     rows: list[dict[str, Any]],
     requirements: dict[str, Any] | None,
 ) -> tuple[bool, list[str]]:
-    from maker.deploy_pipeline_events import deploy_smoke_passed_from_events
+    from maker.deploy.pipeline_events import deploy_smoke_passed_from_events
     from maker.stack_manifest import manifest_from_requirements
 
     manifest = manifest_from_requirements(requirements)
@@ -184,7 +184,7 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
             blocking.append("project_tests_not_passed")
         if policy.require_all_must_have_features and not _features_satisfied(backlog):
             blocking.append("must_have_features_incomplete")
-        from orchestrator.backlog_generator import _requirements_from_rows
+        from orchestrator.campaign.generator import _requirements_from_rows
 
         surfaces_ok, surface_gaps = _manifest_surfaces_satisfied(
             backlog,
@@ -200,7 +200,7 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
             blocking.extend(deploy_gaps)
         if not _deep_eval_due(completed, policy.deep_eval_every_n_slices):
             blocking.append("deep_eval_cadence_pending")
-        from orchestrator.factory_cadence import factory_blocks_campaign_pass
+        from orchestrator.factory.cadence import factory_blocks_campaign_pass
 
         blocking.extend(factory_blocks_campaign_pass(rows))
         if blocking:
@@ -343,8 +343,8 @@ def evaluate_and_finalize_campaign(
                     rationale=str(payload.get("rationale") or ""),
                 )
     result = evaluate_completion(rows)
-    from maker.workspace import resolve_run_workspace
-    from orchestrator.factory_cadence import (
+    from maker.workspace.workspace import resolve_run_workspace
+    from orchestrator.factory.cadence import (
         factory_complete_emitted,
         factory_completion_policy_from_rows,
         maybe_run_factory_cadence_pass,
@@ -369,7 +369,7 @@ def evaluate_and_finalize_campaign(
         rows = store.list_run_events(str(run_id))
         result = evaluate_completion(rows)
     if result.verdict == "PASS":
-        from maker.workspace import resolve_run_workspace
+        from maker.workspace.workspace import resolve_run_workspace
         from orchestrator.enforcement_pipeline import emit_terminal_enforcement_gate
 
         ws = resolve_run_workspace(rows)
@@ -385,7 +385,7 @@ def evaluate_and_finalize_campaign(
             )
     emit_completion_evaluated(store, run_id, result)
     if result.verdict == "PASS":
-        from maker.workspace import resolve_run_workspace
+        from maker.workspace.workspace import resolve_run_workspace
         from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
 
         maybe_run_launch_eval_for_campaign(

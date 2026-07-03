@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from orchestrator.autopilot_profiles import deliberation_rounds_for_level
+from orchestrator.profiles.autopilot_profiles import deliberation_rounds_for_level
 
 
 class HardBlockCategory(str, Enum):

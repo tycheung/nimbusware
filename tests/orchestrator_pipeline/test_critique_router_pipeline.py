@@ -24,18 +24,18 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from orchestrator.critique_routing import (
+from orchestrator.critique.routing import (
     load_critique_router,
     taxonomy_keys_for_run_lifecycle,
 )
-from orchestrator.llm_plan import (
+from orchestrator.llm import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from orchestrator.pipeline import make_dev_orchestrator
 from orchestrator.registry import RoleRegistry
-from orchestrator.workflow_universal_critique import (
+from orchestrator.workflow.universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
 )

@@ -9,7 +9,7 @@ from console.explainer_core.env_summaries import (
     env_tri_state_summary,
 )
 from env.env_flags import nimbusware_use_llm_enabled
-from orchestrator.workflow_agent_evaluator import agent_evaluator_stage_would_emit
+from orchestrator.workflow.agent_evaluator import agent_evaluator_stage_would_emit
 
 
 def _nimbusware_agent_evaluator_env_summary() -> dict[str, Any]:

@@ -20,7 +20,7 @@ from agent_core.models import (  # noqa: E402
 )
 from agent_core.models.slice_handoff import SliceHandoffSummary  # noqa: E402
 from api.app import app  # noqa: E402
-from maker.workspace import project_metadata_block  # noqa: E402
+from maker.workspace.workspace import project_metadata_block  # noqa: E402
 from orchestrator.context_artifacts import (  # noqa: E402
     clear_context_artifacts_memory,
     create_context_artifact,

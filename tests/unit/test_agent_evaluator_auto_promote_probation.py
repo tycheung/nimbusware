@@ -11,17 +11,17 @@ from agent_core.models import EventType
 from api.routes.runs import agent_evaluator_timeline_summary
 from env import find_repo_root
 from extensions.personas import PersonaShelf
-from orchestrator.persona_catalog_audit import persona_catalog_run_id
-from orchestrator.persona_shelf_auto_create import (
+from orchestrator.persona.catalog_audit import persona_catalog_run_id
+from orchestrator.persona.shelf_auto_create import (
     auto_create_persona_correlation_id,
     try_auto_create_persona_if_missing,
 )
-from orchestrator.persona_shelf_promotion import (
+from orchestrator.persona.shelf_promotion import (
     auto_promote_probation_correlation_id,
     try_auto_promote_probation_persona,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_agent_evaluator import (
+from orchestrator.workflow.agent_evaluator import (
     AgentEvaluatorAutoCreatePersonaBlock,
     parse_agent_evaluator_workflow_block,
 )

@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
-from maker.chat_models import ChatTurnRecord
-from maker.chat_store import child_turn_ids, path_to_root
+from maker.chat.graph import child_turn_ids, path_to_root
+from maker.chat.session_models import ChatTurnRecord
 
 
 def _parse_ts(raw: object) -> datetime | None:

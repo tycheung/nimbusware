@@ -21,7 +21,7 @@ from orchestrator.outbound_http import (
     network_egress_from_run_created,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.scraper_stage import ScraperFetchConfig
+from orchestrator.scraper.stage import ScraperFetchConfig
 from store.memory import InMemoryEventStore
 
 # follow-on 65: shared fixtures + helper for NIMBUSWARE_OUTBOUND_FETCH_ENABLED

@@ -10,7 +10,7 @@ from agent_core.models import EventType
 from env import find_repo_root
 from executor.fetch import EgressResponseTooLarge
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
+from orchestrator.scraper.stage import ScraperFetchConfig, load_scraper_fetch_config
 
 _DEFAULT_CFG = ScraperFetchConfig(
     enabled=True,

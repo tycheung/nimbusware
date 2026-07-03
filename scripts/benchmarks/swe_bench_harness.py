@@ -49,7 +49,7 @@ def _write_benchmark_snapshots(
 
     if store is None or not summary.run_id:
         return
-    from orchestrator.fleet_critic_reliability import (
+    from orchestrator.fleet.critic_reliability import (
         critic_reliability_summary_from_events,
     )
 
@@ -158,7 +158,7 @@ def _isolated_benchmark_env(
 
 
 def _fixture_slice_plan_factory(target_paths: list[str]):
-    from orchestrator.micro_slice import parse_slice_plan
+    from orchestrator.slice.micro_slice import parse_slice_plan
 
     def _plan(slice_index: int):
         return parse_slice_plan(
@@ -199,11 +199,11 @@ def _run_micro_slice_benchmark(
         plan_factory = _fixture_slice_plan_factory(target_paths)
         with (
             patch(
-                "orchestrator.micro_slice_plan.default_stub_slice_plan",
+                "orchestrator.slice.plan.default_stub_slice_plan",
                 plan_factory,
             ),
             patch(
-                "orchestrator.micro_slice_executor.default_stub_slice_plan",
+                "orchestrator.slice.executor.default_stub_slice_plan",
                 plan_factory,
             ),
             patch(

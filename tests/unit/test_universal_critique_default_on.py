@@ -7,7 +7,7 @@ import pytest
 from agent_core.models import EventType
 from api.routes.runs import universal_critique_timeline_summary
 from env import find_repo_root
-from orchestrator.workflow_universal_critique import (
+from orchestrator.workflow.universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
     universal_critique_production_default_on,

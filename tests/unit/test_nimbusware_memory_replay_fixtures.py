@@ -6,13 +6,13 @@ import pytest
 
 from agent_core.models import EventType
 from memory import InMemoryMemoryChunkStore, rebuild_memory_index, search_memory
-from memory.indexer import deterministic_chunk_id
-from orchestrator.replay_cli import main as replay_cli_main
-from orchestrator.replay_harness import (
+from memory.index.indexer import deterministic_chunk_id
+from orchestrator.replay.harness import (
     build_replay_snapshot,
     load_fixture_rows,
     stable_replay_hash,
 )
+from orchestrator.replay_cli import main as replay_cli_main
 
 _FIXTURE = (
     Path(__file__).resolve().parents[1] / "fixtures" / "memory" / "failure_pattern_events.json"
@@ -71,7 +71,7 @@ def test_deterministic_chunk_id_matches_indexer(tmp_path, monkeypatch) -> None:
     pl = finding_row["payload"]
     from uuid import UUID
 
-    from memory.chunking import _finding_excerpt
+    from memory.index.chunking import _finding_excerpt
 
     expected_finding = deterministic_chunk_id(
         repo_scope_hash=scope,

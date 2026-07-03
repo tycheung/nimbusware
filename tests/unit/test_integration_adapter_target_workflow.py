@@ -3,12 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from orchestrator.integration_adapter_writer_stage import (
+from orchestrator.integrator.scaffold import write_integration_adapter_scaffold
+from orchestrator.integrator.writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 

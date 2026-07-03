@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.critic_pack_resolve import load_critic_pack
+from orchestrator.critique.pack_resolve import load_critic_pack
 
 REPO = Path(__file__).resolve().parents[2]
 

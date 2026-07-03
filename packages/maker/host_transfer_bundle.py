@@ -5,7 +5,7 @@ import json
 from typing import Any
 from uuid import UUID
 
-from maker.chat_store import ChatStore
+from maker.chat.session_store import ChatStore
 
 
 def build_transfer_manifest(

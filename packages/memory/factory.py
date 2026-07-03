@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from env.env_flags import nimbusware_database_url
-from memory.store import (
-    InMemoryMemoryChunkStore,
-    MemoryChunkStore,
-    PostgresMemoryChunkStore,
-)
+from memory.store.memory import InMemoryMemoryChunkStore
+from memory.store.postgres import PostgresMemoryChunkStore
+from memory.store.protocol import MemoryChunkStore
 
 
 def build_memory_chunk_store(

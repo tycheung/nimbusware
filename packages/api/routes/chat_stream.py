@@ -16,7 +16,7 @@ from api.schemas.openapi import PROBLEM_RESPONSE_404
 from api.user import UserDep
 from auth.permissions import enforce_collab_turn_write, require_session_participant
 from env.env_flags import nimbusware_collab_enabled
-from orchestrator.collab_stream_redaction import redact_theater_lines
+from orchestrator.collab.stream_redaction import redact_theater_lines
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 
@@ -136,7 +136,7 @@ def post_session_commentary(
     )
     routes: list[dict[str, str]] = []
     if nimbusware_collab_enabled():
-        from maker.collab_discipline_routing import maybe_route_collab_message
+        from maker.collab.discipline_routing import maybe_route_collab_message
 
         routes = maybe_route_collab_message(
             store,

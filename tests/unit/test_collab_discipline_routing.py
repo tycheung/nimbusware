@@ -3,8 +3,8 @@ from __future__ import annotations
 from uuid import uuid4
 
 from auth.store import InMemoryCollabStore, InMemoryUserStore
-from maker.chat_store_memory import InMemoryChatStore
-from maker.collab_discipline_routing import (
+from maker.chat.memory import InMemoryChatStore
+from maker.collab.discipline_routing import (
     append_routed_feedback_turns,
     maybe_route_collab_message,
 )

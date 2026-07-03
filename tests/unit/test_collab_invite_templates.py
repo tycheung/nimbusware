@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from maker.collab_invite_templates import list_invite_templates
+from maker.collab.invite_templates import list_invite_templates
 
 
 def test_list_invite_templates_loads_yaml_catalog() -> None:

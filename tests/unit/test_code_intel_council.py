@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.code_graph import build_code_graph
-from orchestrator.cohesion_graph import build_cohesion_graph
+from orchestrator.critique.simplification_metrics import ComplexityIndex
 from orchestrator.improvement_council import run_improvement_council
-from orchestrator.orphan_index import build_orphan_report
-from orchestrator.repo_explorer import run_repo_explore
-from orchestrator.repo_inventory import build_repo_inventory, inventory_health_score
-from orchestrator.similarity_index import build_similarity_index
-from orchestrator.simplification_metrics import ComplexityIndex
+from orchestrator.repo_intel.code_graph import build_code_graph
+from orchestrator.repo_intel.cohesion_graph import build_cohesion_graph
+from orchestrator.repo_intel.explorer import run_repo_explore
+from orchestrator.repo_intel.inventory import build_repo_inventory, inventory_health_score
+from orchestrator.repo_intel.orphan_index import build_orphan_report
+from orchestrator.repo_intel.similarity_index import build_similarity_index
 
 
 def test_code_graph_builds_nodes(tmp_path: Path) -> None:

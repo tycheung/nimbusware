@@ -7,7 +7,7 @@ from pathlib import Path
 from uuid import UUID
 
 from env.env_flags import nimbusware_database_url
-from orchestrator.replay_harness import (
+from orchestrator.replay.harness import (
     build_replay_snapshot,
     diff_replay_snapshots,
     load_fixture_rows,

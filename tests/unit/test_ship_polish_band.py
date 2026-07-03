@@ -13,7 +13,7 @@ from agent_core.models import (
 )
 from orchestrator.diagnose_learn import write_learning_doc
 from orchestrator.learnings_catalog import list_workspace_learnings
-from orchestrator.user_autopilot_profiles import (
+from orchestrator.profiles.user_autopilot_profiles import (
     apply_user_autopilot_at_run_start,
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,

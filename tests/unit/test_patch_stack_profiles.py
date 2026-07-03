@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.workflow_profiles import workflow_profile_path
+from orchestrator.workflow.profiles import workflow_profile_path
 
 REPO = Path(__file__).resolve().parents[2]
 

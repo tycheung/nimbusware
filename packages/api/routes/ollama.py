@@ -22,8 +22,8 @@ from api.schemas.ollama import (
 from api.user import UserDep
 from config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from config.persist import load_model_routing_dict, persist_model_routing_dict
-from orchestrator.ollama_bootstrap import bootstrap_ollama_from_repo
-from orchestrator.ollama_manage import (
+from orchestrator.routing.bootstrap import bootstrap_ollama_from_repo
+from orchestrator.routing.manage import (
     OllamaManageError,
     delete_model,
     filter_models,
@@ -32,8 +32,8 @@ from orchestrator.ollama_manage import (
     pull_model,
     runtime_base_url_from_routing,
 )
-from orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
-from orchestrator.ollama_user_policy import (
+from orchestrator.routing.pull_jobs import get_pull_job, start_pull_job
+from orchestrator.routing.user_policy import (
     assert_user_may,
     merge_policy_into_routing,
     policy_from_routing,

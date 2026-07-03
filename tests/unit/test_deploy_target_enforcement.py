@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from maker.deploy_target_enforcement import (
+from maker.deploy.target_enforcement import (
     deploy_target_from_manifest,
     validate_credential_scopes,
     validate_manifest_deploy_target,

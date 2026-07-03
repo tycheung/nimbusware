@@ -22,7 +22,7 @@ from agent_tools.tools import (
     tool_write_file,
 )
 from env.env_flags import nimbusware_use_llm_enabled
-from orchestrator.slice_implement import SliceImplementResult
+from orchestrator.slice.implement import SliceImplementResult
 
 
 @dataclass(frozen=True)
@@ -161,9 +161,9 @@ def _steps_from_llm(
     timeout_seconds: float,
     system_prompt: str | None,
 ) -> list[AgentStep]:
+    from agent_core.prompt_tiers import assemble_prompt
     from agent_tools.prompts import build_agent_stable_prompt
     from orchestrator.llm.common import ollama_chat_json_via_plan_patch
-    from orchestrator.prompt_tiers import assemble_prompt
 
     context = _gather_context(workspace, plan)
     schema = (
@@ -289,7 +289,7 @@ def execute_slice_implement_agent(
             steps = []
 
     if not steps and use_llm:
-        from orchestrator.llm_slice import execute_slice_implement_llm
+        from orchestrator.llm.llm_slice import execute_slice_implement_llm
 
         edits = execute_slice_implement_llm(
             plan=plan,
@@ -347,7 +347,7 @@ def execute_slice_implement_agent(
                 exit_code = max(exit_code, 1)
                 break
             edits = [{"path": rel, "content": content}]
-            from orchestrator.slice_patch_apply import apply_slice_file_edits
+            from orchestrator.slice.patch_apply import apply_slice_file_edits
 
             applied, errors = apply_slice_file_edits(ws, plan, edits)
             touched.extend(applied)
@@ -369,7 +369,7 @@ def execute_slice_implement_agent(
             exit_code = max(exit_code, 1)
 
     if not touched and not use_llm:
-        from orchestrator.slice_implement import (
+        from orchestrator.slice.implement import (
             execute_slice_implement,
             slice_implement_mode,
         )

@@ -17,7 +17,7 @@ os.environ.setdefault(
 )
 
 from api.app import app  # noqa: E402
-from orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
+from orchestrator.scraper.artifacts import scraper_artifact_inventory  # noqa: E402
 
 
 @pytest.fixture
@@ -119,7 +119,7 @@ def test_scraper_artifact_inventory_object_store_ready_signals(
         "https://s3.example.com",
     )
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
-    from orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    from orchestrator.scraper.artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["storage_backend"] == "object_store_ready"
@@ -140,7 +140,7 @@ def test_scraper_artifact_inventory_object_store_prune_requested_signal(
         "https://s3.example.com",
     )
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
-    from orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    from orchestrator.scraper.artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["object_store_prune_requested"] is True
@@ -157,7 +157,7 @@ def test_scraper_artifact_inventory_object_store_delete_tuning_from_env(
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS", "17")
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS", "3")
-    from orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    from orchestrator.scraper.artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["object_store_timeout_seconds"] == 17

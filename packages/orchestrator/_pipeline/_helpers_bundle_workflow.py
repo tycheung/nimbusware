@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from orchestrator.merge import load_yaml, policy_snapshot_from_files
-from orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from orchestrator.workflow_registry import (
+from orchestrator.workflow.profiles import workflow_profile_dict, workflow_profile_path
+from orchestrator.workflow.registry import (
     EffectiveUniversalCritique,
     agent_evaluator_llm_branch_effective,
     agent_evaluator_llm_stub_env_enabled,

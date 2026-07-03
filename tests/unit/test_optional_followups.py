@@ -12,21 +12,21 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
 def test_default_workflow_profile_is_micro_slice() -> None:
-    from orchestrator.default_workflow_profile import default_workflow_profile
+    from orchestrator.workflow.profile import default_workflow_profile
 
     os.environ.pop("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", None)
     assert default_workflow_profile() == "micro_slice"
 
 
 def test_default_workflow_profile_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    from orchestrator.default_workflow_profile import default_workflow_profile
+    from orchestrator.workflow.profile import default_workflow_profile
 
     monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "default")
     assert default_workflow_profile() == "default"
 
 
 def test_self_refinement_production_llm_without_global_use_llm() -> None:
-    from orchestrator.workflow_self_refinement import (
+    from orchestrator.workflow.self_refinement import (
         self_refinement_production_llm_critique_effective,
     )
 
@@ -41,7 +41,7 @@ def test_self_refinement_production_llm_without_global_use_llm() -> None:
 
 
 def test_scan_n_plus_one_heuristic_clean_repo() -> None:
-    from orchestrator.performance_scan import scan_n_plus_one_heuristic
+    from orchestrator.critique.performance_scan import scan_n_plus_one_heuristic
 
     code, out = scan_n_plus_one_heuristic(ROOT)
     assert code in (0, 1)

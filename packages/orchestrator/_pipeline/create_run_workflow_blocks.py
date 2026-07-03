@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from orchestrator._pipeline._helpers import effective_universal_critique
-from orchestrator.workflow_memory import (
+from orchestrator.workflow.memory import (
     memory_effective_metadata,
     resolve_memory_index_version,
 )
-from orchestrator.workflow_registry import parse_workflow_block
+from orchestrator.workflow.registry import parse_workflow_block
 
 _CREATE_RUN_BLOCK_KEYS: tuple[str, ...] = (
     "universal_critique",

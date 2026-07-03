@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any
 
 from orchestrator.merge import load_yaml
-from orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from orchestrator.workflow_registry import (
+from orchestrator.workflow.profiles import workflow_profile_dict, workflow_profile_path
+from orchestrator.workflow.registry import (
     SelfRefinementWorkflowBlock,
     effective_universal_critique,
     parse_agent_evaluator_workflow_block,

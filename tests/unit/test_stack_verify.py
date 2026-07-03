@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.micro_slice import SlicePlan
-from orchestrator.micro_slice_verify import _workspace_stack, run_slice_verify_and_test
-from orchestrator.slice_gate import map_paths_to_test_targets
+from orchestrator.slice.gate import map_paths_to_test_targets
+from orchestrator.slice.micro_slice import SlicePlan
+from orchestrator.slice.verify import _workspace_stack, run_slice_verify_and_test
 
 _REPO = Path(__file__).resolve().parents[2]
 

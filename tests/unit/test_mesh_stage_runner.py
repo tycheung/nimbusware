@@ -97,7 +97,7 @@ def test_execute_mesh_stage_sets_agent_overlay_context(tmp_path: Path) -> None:
             ),
         ):
             with patch(
-                "orchestrator.collab_mesh_context.set_mesh_binding_context",
+                "orchestrator.collab.mesh_context.set_mesh_binding_context",
             ) as set_ctx:
                 execute_mesh_stage_on_worker(rec)
     set_ctx.assert_called_once()

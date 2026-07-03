@@ -23,14 +23,14 @@ from api.routes.chat_common import (
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from api.user import UserDep, maker_user_id_str
 from auth.permissions import require_session_participant
-from maker.chat_acl import effective_session_role
+from maker.chat.acl import effective_session_role
 from maker.host_transfer_bundle import build_transfer_manifest, import_transfer_bundle
 from maker.host_transfer_store import default_consent_hours
-from orchestrator.model_binding_audit import (
+from orchestrator.routing.audit import (
     RoleClaimConflictError,
     assert_role_claim_available,
 )
-from orchestrator.model_binding_swap import (
+from orchestrator.routing.swap import (
     append_model_binding_override,
     append_role_claim,
     append_role_release,

@@ -12,7 +12,7 @@ from agent_tools.runtime import (
     re_escape_simple,
 )
 from agent_tools.tools import ToolResult
-from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice.micro_slice import SlicePlan
 
 
 def test_allowed_paths_normalizes() -> None:

@@ -8,11 +8,11 @@ _TARGETS = _REPO / "scripts" / "ci" / "mypy_ci_targets.py"
 
 _ORCHESTRATOR_STRICT = frozenset(
     {
-        "orchestrator.ollama_manage",
-        "orchestrator.ollama_user_policy",
+        "orchestrator.routing.manage",
+        "orchestrator.routing.user_policy",
         "orchestrator.preflight",
         "orchestrator.merge",
-        "orchestrator.workflow_profiles",
+        "orchestrator.workflow.profiles",
         "orchestrator._pipeline.base",
         "orchestrator._pipeline._helpers",
         "orchestrator._pipeline.create_run",
@@ -60,7 +60,7 @@ def test_pipeline_blanket_ignore_removed() -> None:
 def test_tranche_e_paths_in_ci_targets() -> None:
     text = _TARGETS.read_text(encoding="utf-8")
     assert "packages/orchestrator/merge.py" in text
-    assert "packages/orchestrator/workflow_profiles.py" in text
+    assert "packages/orchestrator/workflow/profiles.py" in text
     assert "packages/orchestrator/_pipeline/base.py" in text
     assert "packages/orchestrator/_pipeline/_helpers.py" in text
     assert "packages/orchestrator/_pipeline/create_run.py" in text

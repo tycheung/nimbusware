@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from maker.autopilot_defer_matrix import autopilot_may_auto_defer
-from maker.scope_discovery import (
+from maker.intent.scope_discovery import (
     discovery_complete_for_start,
     recommend_for_me,
     scope_discover,

@@ -11,7 +11,7 @@ from env.env_flags import (
     nimbusware_git_pr_on_complete_enabled,
     nimbusware_slice_branch_prefix,
 )
-from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice.micro_slice import SlicePlan
 
 
 def run_branch_name(run_id: str | UUID, *, prefix: str | None = None) -> str:

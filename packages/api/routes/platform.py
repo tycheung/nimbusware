@@ -20,8 +20,8 @@ from config.collab_settings_store import save_persisted_collab_enabled
 from env import find_repo_root
 from env.collab_runtime import collab_settings_snapshot, set_runtime_collab_enabled
 from env.edition import edition_manifest, enterprise_compose_profiles
-from maker.collab_disciplines import list_disciplines
-from maker.collab_invite_templates import list_invite_templates
+from maker.collab.disciplines import list_disciplines
+from maker.collab.invite_templates import list_invite_templates
 from maker.consumer_precommit_install import install_workspace_precommit
 from maker.consumer_test_scaffold import scaffold_consumer_tests
 from maker.onboarding import is_onboarded_server, mark_onboarded_server
@@ -29,10 +29,10 @@ from maker.playwright_bootstrap import (
     playwright_bootstrap_status,
     run_playwright_bootstrap,
 )
-from maker.readiness import build_platform_readiness
-from maker.workspace_readiness import assess_workspace_readiness
-from orchestrator.critic_pack_resolve import list_industry_critic_packs
-from orchestrator.user_operator_profiles import (
+from maker.readiness.platform import build_platform_readiness
+from maker.workspace.readiness import assess_workspace_readiness
+from orchestrator.critique.pack_resolve import list_industry_critic_packs
+from orchestrator.profiles.user_operator_profiles import (
     load_user_industry_critic_pack_ids,
     save_user_industry_critic_pack_ids,
 )

@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 
 from maker.approval import has_plan_approved, pending_slice_from_rows
-from maker.intent import build_requirements_artifact
+from maker.intent.requirements import build_requirements_artifact
 from maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
@@ -27,12 +27,8 @@ def maker_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     ws = tmp_path / "project"
     ws.mkdir()
-    (ws / "packages/orchestrator/micro_slice.py").parent.mkdir(
-        parents=True, exist_ok=True
-    )
-    (ws / "packages/orchestrator/micro_slice.py").write_text(
-        "# stub\n", encoding="utf-8"
-    )
+    (ws / "packages/orchestrator/micro_slice.py").parent.mkdir(parents=True, exist_ok=True)
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
     (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
     orch, store = make_dev_orchestrator(repo)
     requirements = build_requirements_artifact(business_prompt="Inventory app")

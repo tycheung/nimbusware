@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from orchestrator.put_e2e_runner import run_put_e2e_flow
+from orchestrator.factory.runner import run_put_e2e_flow
 
 
 def test_run_put_e2e_pass_attaches_live_trace_when_playwright_ready(tmp_path: Path) -> None:
@@ -12,11 +12,11 @@ def test_run_put_e2e_pass_attaches_live_trace_when_playwright_ready(tmp_path: Pa
     trace_path.write_bytes(b"trace")
     with (
         patch(
-            "orchestrator.put_e2e_runner._playwright_module_ready",
+            "orchestrator.factory.runner._playwright_module_ready",
             return_value=(True, "ok"),
         ),
         patch(
-            "orchestrator.put_e2e_browser.capture_failure_browser_trace",
+            "orchestrator.factory.browser.capture_failure_browser_trace",
             return_value={
                 "trace_mode": "live",
                 "trace_path": str(trace_path),
@@ -25,7 +25,7 @@ def test_run_put_e2e_pass_attaches_live_trace_when_playwright_ready(tmp_path: Pa
             },
         ),
         patch(
-            "orchestrator.put_e2e_runner._run_http_step",
+            "orchestrator.factory.runner._run_http_step",
             return_value=True,
         ),
     ):

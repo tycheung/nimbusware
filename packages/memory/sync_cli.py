@@ -10,12 +10,13 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main(argv: list[str] | None = None) -> int:
-    from memory.fleet_sync import (
+    from memory.fleet.sync import (
         pull_fleet_memory_from_canonical,
         push_fleet_memory_to_canonical,
     )
     from memory.org_scope import require_fleet_memory_feature
-    from memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
+    from memory.store.memory import InMemoryMemoryChunkStore
+    from memory.store.postgres import PostgresMemoryChunkStore
 
     try:
         require_fleet_memory_feature()

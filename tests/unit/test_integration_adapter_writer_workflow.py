@@ -9,7 +9,7 @@ from console.workflow_explainers.integration_adapter_writer import (
     integration_adapter_writer_workflow_explainer_operator_metrics_caption,
     integration_adapter_writer_workflow_explainer_payload,
 )
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     DEFAULT_ADAPTER_KIND,
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,

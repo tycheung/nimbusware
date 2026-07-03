@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 
 from orchestrator.context_compaction import maybe_emit_compaction_event
-from orchestrator.replay_from import (
+from orchestrator.replay.replay_from import (
     ReplayPolicy,
     compaction_allowed,
     emit_replay_started_event,

@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from env import find_repo_root
-from orchestrator.workflow_campaign import (
+from orchestrator.workflow.campaign import (
     parse_backlog_workflow_block,
     parse_campaign_workflow_block,
 )

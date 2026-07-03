@@ -5,12 +5,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models.slice_handoff import SliceHandoffSummary
+from agent_core.prompt_tiers import assemble_prompt
 from agent_tools.agent_loop import _stable_system_prompt, _volatile_user_prompt
 from agent_tools.runtime import _gather_context
 from orchestrator.context_compaction import compact_campaign_context
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.prompt_tiers import assemble_prompt
-from orchestrator.slice_handoff import handoff_markdown_capped
+from orchestrator.slice.handoff import handoff_markdown_capped
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "token_budget"
 

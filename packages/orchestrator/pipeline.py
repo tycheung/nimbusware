@@ -9,7 +9,7 @@ for _name, _value in vars(_helpers).items():
         continue
     globals()[_name] = _value
 
-from orchestrator.binding_preflight import (  # noqa: E402
+from orchestrator.routing.preflight import (  # noqa: E402
     build_binding_preflight_report,
     cloud_only_roles_satisfied,
 )

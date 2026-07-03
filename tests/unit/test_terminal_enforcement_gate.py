@@ -7,7 +7,7 @@ from orchestrator.enforcement_pipeline import (
     emit_terminal_enforcement_gate,
     terminal_enforcement_emitted,
 )
-from orchestrator.enforcement_profiles import (
+from orchestrator.profiles.enforcement_profiles import (
     persist_run_enforcement,
     resolve_enforcement_profile,
 )

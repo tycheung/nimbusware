@@ -88,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.run_id:
         sys.path.insert(0, str(REPO_ROOT / "packages"))
-        from maker.workspace import resolve_run_workspace
+        from maker.workspace.workspace import resolve_run_workspace
         from orchestrator.launch_eval_catalog import attach_context_from_run
 
         rows = _load_run_rows(args.run_id, args.run_events)

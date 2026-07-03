@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 
 from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
-from orchestrator.fleet_worker import (
+from orchestrator.fleet.worker import (
     collect_fleet_worker_metrics,
     evaluate_backpressure,
     fleet_redis_worker_enabled,

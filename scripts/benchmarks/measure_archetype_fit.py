@@ -34,7 +34,7 @@ _SAFE_CODING_BEHAVIORAL: tuple[str, ...] = (
 )
 
 _ENGINEER_STATIC: tuple[str, ...] = (
-    "packages/orchestrator/collab_binding_resolver.py",
+    "packages/orchestrator/collab/binding_resolver.py",
     "packages/api/routes/platform.py",
     "packages/maker_web/static/js/tabs/chat_model_drawer_ui.js",
     "packages/maker_web/static/js/tabs/chat_solo_hat_ui.js",
@@ -45,7 +45,7 @@ _ENGINEER_STATIC: tuple[str, ...] = (
 
 _ENGINEER_BEHAVIORAL: tuple[str, ...] = (
     "packages/maker_web/static/js/archetype-picker.js",
-    "packages/orchestrator/host_collab_mesh_hydrate.py",
+    "packages/orchestrator/collab/mesh_hydrate.py",
     "tests/api_http/test_collab_settings_api.py",
     "tests/api_http/test_collab_model_routing_api.py",
     "tests/e2e/web/collab_model_routing.spec.ts",
@@ -64,7 +64,7 @@ _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
     "packages/maker_web/static/js/tabs/home.js",
     "tests/e2e/web/maker_enterprise_journey.spec.ts",
     "tests/e2e/web/maker_enterprise_install_journey.spec.ts",
-    "packages/memory/embeddings.py",
+    "packages/memory/index/embeddings.py",
     "scripts/benchmarks/measure_gate_comprehension.py",
 )
 
@@ -76,9 +76,9 @@ _POLISH_BEHAVIORAL: tuple[str, ...] = (
 )
 
 _FS6_BEHAVIORAL: tuple[str, ...] = (
-    "packages/orchestrator/stack_agent_scaffold.py",
+    "packages/orchestrator/stack/agent_scaffold.py",
     "configs/personas/surface_critics.yaml",
-    "packages/orchestrator/factory_put_e2e.py",
+    "packages/orchestrator/factory/put_e2e.py",
     "tests/unit/test_fs6_scaffold_polish.py",
 )
 
@@ -115,7 +115,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
     fleet = (
         root / "packages/admin_ui/src/pages/fleet/FleetCompliancePanel.tsx"
     ).read_text(encoding="utf-8")
-    hydrate = (root / "packages/orchestrator/host_collab_mesh_hydrate.py").read_text(
+    hydrate = (root / "packages/orchestrator/collab/mesh_hydrate.py").read_text(
         encoding="utf-8",
     )
     collab_store = (root / "packages/config/collab_settings_store.py").read_text(
@@ -135,7 +135,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "collab_persist": "save_persisted_collab_enabled" in collab_store,
             "host_hydrate": "ensure_mesh_binding_for_llm" in hydrate,
             "campaign_parallel": "ThreadPoolExecutor"
-            in (root / "packages/orchestrator/campaign_driver_execute.py").read_text(
+            in (root / "packages/orchestrator/campaign/driver_execute.py").read_text(
                 encoding="utf-8"
             ),
         },
@@ -143,7 +143,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
             "fleet_semantic_embedding": (
-                root / "packages/memory/embeddings.py"
+                root / "packages/memory/index/embeddings.py"
             ).is_file(),
             "gate_comprehension_harness": (
                 root / "scripts/benchmarks/measure_gate_comprehension.py"
@@ -156,7 +156,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
                 root / "tests/e2e/web/maker_product_polish_smoke.spec.ts"
             ).is_file(),
             "fs6_scaffold": (
-                root / "packages/orchestrator/stack_agent_scaffold.py"
+                root / "packages/orchestrator/stack/agent_scaffold.py"
             ).is_file(),
             "archetype_weekly": (root / ".github/workflows/archetype_fit_weekly.yml").is_file(),
         },

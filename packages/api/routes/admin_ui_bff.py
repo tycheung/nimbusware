@@ -36,9 +36,8 @@ from console.workflow_explainers.integration_adapter_writer import (
 from env.edition import is_enterprise
 from extensions.persona_scope_overlap import persona_scope_overlap_report
 from iam.constants import API_KEY_HEADER
-from orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
-from orchestrator.fleet_analytics import compare_tenant_metrics
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.analytics import compare_tenant_metrics
+from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     FleetEnforcementPolicy,
     load_fleet_autopilot_policies,
@@ -48,6 +47,7 @@ from orchestrator.fleet_policies import (
     tenant_autopilot_policy,
     tenant_enforcement_policy,
 )
+from orchestrator.profiles.autopilot_profiles import CHECKPOINT_CATALOG
 from store.protocol import serialized_event_from_row
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])

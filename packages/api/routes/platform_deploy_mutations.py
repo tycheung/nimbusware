@@ -22,13 +22,13 @@ from api.routes.platform_deploy import (
     resolved_deploy_environment,
 )
 from api.user import maker_user_id_str
-from maker.deploy_credential_vault import (
+from maker.deploy.credential_vault import (
     audit_credentials_updated,
     audit_credentials_used,
     load_deploy_credentials,
     save_deploy_credentials,
 )
-from maker.deploy_pipeline_events import (
+from maker.deploy.pipeline_events import (
     autopilot_may_auto_approve_deploy,
     deploy_apply_passed_from_events,
     deploy_apply_ready,
@@ -42,8 +42,8 @@ from maker.deploy_pipeline_events import (
     live_urls_from_events,
     manifest_from_events,
 )
-from maker.deploy_smoke import run_deploy_smoke
-from maker.deploy_target_enforcement import (
+from maker.deploy.smoke import run_deploy_smoke
+from maker.deploy.target_enforcement import (
     credential_scope_labels,
     deploy_target_from_credentials,
     deploy_target_from_manifest,
@@ -82,7 +82,7 @@ def post_deploy_apply(
     tenant_slug, setup_bundle = deploy_policy_context()
     approval_chain = deploy_approval_chain_for_tenant(tenant_slug, setup_bundle)
     if not deploy_apply_ready(rows, deploy_approval_chain=approval_chain):
-        from orchestrator.autopilot_profiles import latest_autopilot_block_from_rows
+        from orchestrator.profiles.autopilot_profiles import latest_autopilot_block_from_rows
 
         block = latest_autopilot_block_from_rows(rows)
         if not autopilot_may_auto_approve_deploy(block):

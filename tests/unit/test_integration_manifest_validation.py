@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.integration_adapter_scaffold import (
+from orchestrator.integrator.scaffold import (
     validate_integration_manifest,
     validate_manifest_for_run,
 )

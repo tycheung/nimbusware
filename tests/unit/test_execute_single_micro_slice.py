@@ -5,12 +5,12 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.micro_slice_executor import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice.executor import (
     execute_micro_slice_pass,
     execute_single_micro_slice,
 )
-from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 @pytest.fixture(autouse=True)

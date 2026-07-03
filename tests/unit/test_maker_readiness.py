@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from maker.readiness import build_platform_readiness
-from maker.workspace import (
+from maker.readiness.platform import build_platform_readiness
+from maker.workspace.workspace import (
     project_metadata_block,
     resolve_run_workspace,
     workspace_path_from_run_created_metadata,

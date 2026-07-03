@@ -4,11 +4,7 @@ import ast
 from pathlib import Path
 
 _HELPERS = (
-    Path(__file__).resolve().parents[2]
-    / "packages"
-    / "orchestrator"
-    / "_pipeline"
-    / "_helpers.py"
+    Path(__file__).resolve().parents[2] / "packages" / "orchestrator" / "_pipeline" / "_helpers.py"
 )
 
 _REQUIRED = frozenset(

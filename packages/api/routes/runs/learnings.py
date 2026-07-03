@@ -9,7 +9,7 @@ from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from env import find_repo_root
-from maker.workspace import resolve_run_workspace
+from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.learnings_catalog import list_workspace_learnings
 from orchestrator.learnings_stitch_suggest import stitch_suggestion_for_run
 

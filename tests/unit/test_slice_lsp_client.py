@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from orchestrator.slice_lsp_client import (
+from orchestrator.slice.lsp_client import (
     _encode_message,
     build_lsp_symbol_sketch,
     build_symbol_sketch_with_lsp_fallback,
@@ -57,7 +57,7 @@ def test_build_lsp_symbol_sketch_mocked() -> None:
     proc.wait.return_value = 0
 
     with patch(
-        "orchestrator.slice_lsp_client.subprocess.Popen",
+        "orchestrator.slice.lsp_client.subprocess.Popen",
         return_value=proc,
     ):
         text, reason = build_lsp_symbol_sketch(repo, ("calc.py",), max_chars=2000)
@@ -80,7 +80,7 @@ def test_resolve_lsp_command_prefers_venv_scripts(monkeypatch, tmp_path: Path) -
     python = scripts / "python.exe"
     python.write_text("", encoding="utf-8")
     monkeypatch.delenv("NIMBUSWARE_SLICE_LSP_COMMAND", raising=False)
-    monkeypatch.setattr("orchestrator.slice_lsp_client.shutil.which", lambda _name: None)
+    monkeypatch.setattr("orchestrator.slice.lsp_client.shutil.which", lambda _name: None)
     monkeypatch.setattr(sys, "executable", str(python))
     argv = resolve_lsp_command_argv()
     assert argv == [str(langserver)]
@@ -112,7 +112,7 @@ def test_lsp_fallback_expands_import_neighbors_two_hops(tmp_path: Path) -> None:
     (pkg / "b.py").write_text("from pkg import c\n", encoding="utf-8")
     (pkg / "c.py").write_text("def chain() -> int:\n    return 3\n", encoding="utf-8")
     with patch(
-        "orchestrator.slice_lsp_client.build_lsp_symbol_sketch",
+        "orchestrator.slice.lsp_client.build_lsp_symbol_sketch",
         return_value=("", "disabled"),
     ):
         text, reason = build_symbol_sketch_with_lsp_fallback(

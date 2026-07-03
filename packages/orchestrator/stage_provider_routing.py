@@ -8,7 +8,7 @@ import httpx
 
 from agent_core.mapping import mapping_or_empty
 from env.env_flags import env_str
-from orchestrator.routing_presets import load_model_routing_yaml
+from orchestrator.routing.presets import load_model_routing_yaml
 
 ProviderKind = Literal["local", "cloud"]
 
@@ -120,7 +120,7 @@ def stage_chat_json(
     timeout_seconds: float = 120.0,
 ) -> dict[str, Any]:
     """Route JSON chat to cloud or Ollama based on ``stage_providers`` policy."""
-    from orchestrator.ollama_chat import ollama_chat_json
+    from orchestrator.routing.chat import ollama_chat_json
 
     routing = load_model_routing_yaml(repo_root / "configs" / "model-routing.yaml")
     if stage_name and resolve_stage_provider(routing, stage_name) == "cloud":

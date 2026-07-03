@@ -8,7 +8,7 @@ import pytest
 
 from executor.fetch import EgressResponseTooLarge
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.scraper_stage import ScraperFetchConfig
+from orchestrator.scraper.stage import ScraperFetchConfig
 
 
 def _make_cfg(max_attempts: int = 1, backoff_seconds: float = 0.0) -> ScraperFetchConfig:

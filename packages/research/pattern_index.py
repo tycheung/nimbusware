@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TypedDict
 from uuid import uuid4
 
-from memory.repo_scope import repo_scope_hash
+from memory.index.repo_scope import repo_scope_hash
 
 
 class PatternIndexRecord(TypedDict):

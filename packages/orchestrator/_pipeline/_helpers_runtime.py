@@ -118,7 +118,7 @@ def optional_stage_yaml_gate(
 
 
 def optional_rows_and_profile(host: Any, run_id: UUID) -> tuple[list[dict[str, Any]], str]:
-    from orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+    from orchestrator.integrator.gate import workflow_profile_from_run_created_rows
 
     rows = host._store.list_run_events(str(run_id))
     wf = workflow_profile_from_run_created_rows(rows) or ""

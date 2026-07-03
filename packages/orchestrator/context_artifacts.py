@@ -262,14 +262,14 @@ def maybe_rebuild_memory_faiss_from_bridges(
         return None
 
     from env import find_repo_root
-    from memory.embeddings import embed_text, embedding_model_id_for_mode
-    from memory.faiss_index import build_memory_faiss_index
-    from memory.manifest import (
+    from memory.index.embeddings import embed_text, embedding_model_id_for_mode
+    from memory.index.faiss_index import build_memory_faiss_index
+    from memory.index.manifest import (
         MemoryIndexManifest,
         default_memory_index_dir,
         write_manifest,
     )
-    from memory.models import MemoryChunkRecord
+    from memory.index.models import MemoryChunkRecord
 
     root = repo_root or find_repo_root()
     bridge_dir = root / ".cache" / "nimbusware" / "memory-bridge" / project_id

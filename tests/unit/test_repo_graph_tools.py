@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.repo_graph_tools import list_module_deps, run_graph_tool
+from orchestrator.repo_intel.graph_tools import list_module_deps, run_graph_tool
 
 
 def test_list_module_deps(tmp_path: Path) -> None:

@@ -16,7 +16,7 @@ from config.keys import (
 from extensions.custom_agents import CustomAgentRegistry, default_registry_path
 from extensions.personas import PersonaShelf
 from orchestrator.merge import atomic_write_yaml, load_yaml
-from orchestrator.workflow_profiles import workflow_profile_path
+from orchestrator.workflow.profiles import workflow_profile_path
 
 _MODEL_ROUTING_PATH = ("configs", "model-routing.yaml")
 

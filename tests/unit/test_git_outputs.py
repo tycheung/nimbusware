@@ -14,7 +14,7 @@ from orchestrator.git_outputs import (
     run_complete_commit_message,
     slice_commit_message,
 )
-from orchestrator.micro_slice import SlicePlan
+from orchestrator.slice.micro_slice import SlicePlan
 
 
 def test_run_branch_name() -> None:

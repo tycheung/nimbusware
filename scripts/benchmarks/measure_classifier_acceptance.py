@@ -12,7 +12,7 @@ _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO / "packages") not in sys.path:
     sys.path.insert(0, str(_REPO / "packages"))
 
-from maker.intent_classifier import WorkType, classify_intent
+from maker.intent.classifier import WorkType, classify_intent
 
 _SCENARIOS: list[tuple[str, WorkType]] = [
     ("fix failing unit test in calculator", WorkType.PATCH),

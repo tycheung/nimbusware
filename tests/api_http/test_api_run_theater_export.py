@@ -20,7 +20,7 @@ from agent_core.models import (  # noqa: E402
     StagePassedPayload,
 )
 from api.app import app  # noqa: E402
-from orchestrator.audit_export import build_audit_bundle_bytes
+from orchestrator.replay.audit_export import build_audit_bundle_bytes
 from projections.builders.run_theater import build_run_theater_messages
 from projections.exporters.theater_transcript import format_theater_transcript_md
 from store.memory import InMemoryEventStore  # noqa: E402

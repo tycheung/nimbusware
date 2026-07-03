@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 
 from api.deps import StoreDep
 from api.routes.enterprise.core import EnterpriseDep
-from orchestrator.fleet_analytics import compare_tenant_metrics, tenant_run_metrics
+from orchestrator.fleet.analytics import compare_tenant_metrics, tenant_run_metrics
 
 router = APIRouter(prefix="/enterprise/fleet/analytics", tags=["enterprise"])
 

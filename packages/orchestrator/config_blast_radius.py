@@ -39,9 +39,9 @@ def preview_workflow_blast_radius(
 ) -> dict[str, Any]:
     from pathlib import Path
 
-    from maker.workspace import run_created_metadata_from_rows
-    from orchestrator.slice_budget_presets import resolve_slice_budget_preset
-    from orchestrator.workflow_registry import (
+    from maker.workspace.workspace import run_created_metadata_from_rows
+    from orchestrator.slice.budget_presets import resolve_slice_budget_preset
+    from orchestrator.workflow.registry import (
         effective_universal_critique,
         parse_agent_evaluator_workflow_block,
         parse_micro_slice_workflow_block,

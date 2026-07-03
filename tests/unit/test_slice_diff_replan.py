@@ -3,13 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.micro_slice import parse_slice_plan, validate_diff_budget
-from orchestrator.slice_diff import (
+from orchestrator.slice.diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
     subdivide_slice_plan,
 )
-from orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
+from orchestrator.slice.micro_slice import parse_slice_plan, validate_diff_budget
+from orchestrator.workflow.blocks_simple import MicroSliceWorkflowBlock
 
 
 def test_subdivide_slice_plan_reduces_file_count() -> None:
@@ -20,7 +20,7 @@ def test_subdivide_slice_plan_reduces_file_count() -> None:
         },
     )
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=500)
-    from orchestrator.micro_slice import DiffBudgetResult
+    from orchestrator.slice.micro_slice import DiffBudgetResult
 
     budget = DiffBudgetResult(
         ok=False,

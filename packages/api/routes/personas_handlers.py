@@ -37,8 +37,8 @@ from api.schemas.personas import (
 from extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from extensions.persona_scope_overlap import persona_scope_overlap_report
 from extensions.personas import normalize_entry
-from orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
-from orchestrator.persona_probation_reliability import (
+from orchestrator.persona.catalog_audit import append_persona_shelf_updated_event
+from orchestrator.persona.probation_reliability import (
     collect_persona_eval_metrics,
     reliability_decision,
 )

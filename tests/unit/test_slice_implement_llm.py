@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_implement import execute_slice_implement
+from orchestrator.slice.implement import execute_slice_implement
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_slice_implement_llm_applies_mocked_edits(tmp_path: Path) -> None:
@@ -21,11 +21,11 @@ def test_slice_implement_llm_applies_mocked_edits(tmp_path: Path) -> None:
         clear=False,
     ):
         with patch(
-            "orchestrator.llm_slice.execute_slice_implement_llm",
+            "orchestrator.llm.llm_slice.execute_slice_implement_llm",
             return_value=edits,
         ):
             with patch(
-                "orchestrator.slice_implement._run_ruff_format",
+                "orchestrator.slice.implement._run_ruff_format",
                 return_value=(0, "ok\n"),
             ):
                 result = execute_slice_implement(

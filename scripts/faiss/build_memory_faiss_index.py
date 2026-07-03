@@ -42,16 +42,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_arg_parser().parse_args(argv)
     repo = args.repo_root.resolve()
-    from memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
-    from memory.manifest import default_memory_index_dir
-    from memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
+    from memory.index.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
+    from memory.index.manifest import default_memory_index_dir
+    from memory.store.memory import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
 
     out_dir = (args.out_dir or default_memory_index_dir(repo)).resolve()
     conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
     if args.rebuild_metadata:
         from uuid import UUID
 
-        from memory.indexer import rebuild_memory_index
+        from memory.index.indexer import rebuild_memory_index
 
         if conninfo:
             mem_store: InMemoryMemoryChunkStore | PostgresMemoryChunkStore = (
@@ -87,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 1
         mem_store = PostgresMemoryChunkStore(conninfo)
-        from memory.repo_scope import repo_scope_hash
+        from memory.index.repo_scope import repo_scope_hash
 
         scope = repo_scope_hash(repo)
         chunks = mem_store.list_chunks_for_scope(scope)

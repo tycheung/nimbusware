@@ -39,8 +39,8 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 |---------|------|
 | `agent_core` | Event models (`events_payloads_*` modules), `context_budget`, slice handoff models, `stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/campaign`, `read/critic_matrix` |
 | `store` | Event store (Postgres / memory) |
-| `orchestrator` | Pipeline (`_pipeline/` mixins), critics (`critique/` barrel + `scan_critique_kinds`), gates, fleet tenant policies (`fleet_policies.py` + `fleet_policy_loader.py`), **micro-slice-only verify** (`execute_writer_verifier_pass` → slice loop; optional integrator/IAW/evaluator/self-refinement tail when all slices pass), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export, **`hybrid_routing`** (optional stage-level cloud fallback presets; Individual default Ollama-only), **mesh host sync** (`mesh_event_replay`, `mesh_workspace_merge`) |
-| `memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
+| `orchestrator` | Run pipeline entry (`pipeline.py`, `_pipeline/` mixins) plus domain subpackages: `workflow/`, `slice/`, `fleet/`, `critique/`, `campaign/`, `factory/`, `dev_env/`, `routing/`, `integrator/`, `collab/`, `replay/`, `repo_intel/`, `profiles/`, `scraper/`, `stack/`, `llm/` — see [ADR 028](docs/adr/028-package-directory-depth.md) |
+| `memory` | Repo-scoped retrieval index (`store/`, `index/`, `fleet/` subpackages) |
 | `extensions` | Personas, bundles, escalation helpers |
 | `executor` | Role-gated outbound HTTP |
 | `research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
@@ -53,7 +53,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `api` | REST control plane; run-list cursor encoding in `run_list_cursor.py` |
 | `client` | Shared HTTP client for Maker + Admin UIs |
 | `iam` | Enterprise tenants, API keys, IAM action log for audit export |
-| `maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
+| `maker` | Maker server logic — `chat/`, `intent/`, `readiness/`, `workspace/`, `deploy/`, `collab/` subpackages; `services/` + `slice_workflow/` |
 | `console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `repo_yaml`, `operator_metrics_exports.install_operator_metrics_module`, `workflow_exports.run_id_export_filename_slug`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `projections/fields/` where possible; BFF via `admin_ui_bff.py` |
 | `env` | Edition gate, OIDC config, desktop launchers, dotenv, **~256-key** settings catalog + `settings_facade` / `settings_resolve` / `env_flags`, admin token guards |
 | `hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |

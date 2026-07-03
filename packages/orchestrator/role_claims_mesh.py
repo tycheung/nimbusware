@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from orchestrator.model_binding_audit import active_role_claims_from_events
+from orchestrator.routing.audit import active_role_claims_from_events
 
 WRITER_STAGE_TAXONOMY: dict[str, str] = {
     "implementation": "backend_writer",
@@ -43,7 +43,7 @@ def node_capabilities_for_session(node_rows: list[Any]) -> dict[UUID, dict[str, 
 
 
 def optimizer_weights_from_session_metadata(metadata: dict[str, Any] | None) -> dict[str, float]:
-    from orchestrator.mesh_optimizer import (
+    from orchestrator.collab.optimizer import (
         normalize_optimizer_weights,
         weights_from_priority,
     )
@@ -65,7 +65,7 @@ def mesh_dispatch_context(
 ) -> tuple[dict[str, str], dict[UUID, str], dict[UUID, dict[str, Any]], dict[str, float]]:
     from compute.node_store import build_compute_node_store
     from env.env_flags import nimbusware_database_url
-    from maker.chat_store import build_chat_store
+    from maker.chat.session_store import build_chat_store
 
     role_claims = role_claims_for_run(store, run_id)
     rows = build_compute_node_store(nimbusware_database_url()).list_for_session(session_id)

@@ -14,8 +14,8 @@ from api.routes.runs.create import (
     build_requirements_from_body,
     enforce_discovery_gate,
 )
-from orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
+from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 router = APIRouter()
 

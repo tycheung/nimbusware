@@ -15,8 +15,8 @@ from agent_core.models.backlog import (
 from agent_core.models.events_payloads import GateDecisionEmittedPayload
 from agent_core.models.events_records import GateDecisionEmittedEvent
 from env import find_repo_root
-from maker.deploy_pipeline_events import emit_deploy_smoke_stages
-from orchestrator.backlog_generator import emit_backlog_generated
+from maker.deploy.pipeline_events import emit_deploy_smoke_stages
+from orchestrator.campaign.generator import emit_backlog_generated
 from orchestrator.completion_evaluator import (
     evaluate_and_finalize_campaign,
     evaluate_completion,

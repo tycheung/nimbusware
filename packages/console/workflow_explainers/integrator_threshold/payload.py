@@ -14,7 +14,7 @@ from console.workflow_explainers.integrator_threshold.snapshots import (
     _env_min_score_to_pass_breakdown,
     _thresholds_snapshot,
 )
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     effective_integrator_min_score_to_pass,
     load_integrator_gate_workflow_block,
     parse_integrator_gate_min_score_to_pass,

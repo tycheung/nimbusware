@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.binding_preflight import (
+from orchestrator.routing.preflight import (
     active_roles_for_context,
     build_binding_preflight_report,
     cloud_only_roles_satisfied,

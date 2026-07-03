@@ -3,7 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from orchestrator.micro_slice_executor import (
+from agent_core.slice_plan import SlicePlan, parse_slice_plan
+from orchestrator.slice.diff import collect_slice_diff_stats
+from orchestrator.slice.executor import (
     _custom_agent_system_prompt,
     _emit_slice_stage,
     _plan_one_slice,
@@ -11,15 +13,9 @@ from orchestrator.micro_slice_executor import (
     _run_slice_verify_and_test,
     resolve_slice_block_for_plan,
 )
-from orchestrator.slice import (
-    SlicePlan,
-    apply_slice_file_edits,
-    collect_slice_diff_stats,
-    execute_slice_implement,
-    micro_slice_count_for_run,
-    parse_slice_plan,
-    slice_implement_mode,
-)
+from orchestrator.slice.implement import execute_slice_implement, slice_implement_mode
+from orchestrator.slice.micro_slice import micro_slice_count_for_run
+from orchestrator.slice.patch_apply import apply_slice_file_edits
 
 __all__ = [
     "SlicePlan",
@@ -52,7 +48,7 @@ def _execute_slice_implement_llm(
     timeout_seconds: float,
     system_prompt: str,
 ) -> list[dict[str, str]] | None:
-    from orchestrator.llm_slice import execute_slice_implement_llm
+    from orchestrator.llm.llm_slice import execute_slice_implement_llm
 
     return execute_slice_implement_llm(
         plan=plan,
@@ -72,7 +68,7 @@ def _execute_slice_critique_llm(
     verify_log: str,
     timeout_seconds: float,
 ) -> list[str]:
-    from orchestrator.llm_slice import execute_slice_critique_llm
+    from orchestrator.llm.llm_slice import execute_slice_critique_llm
 
     return execute_slice_critique_llm(
         plan=plan,
@@ -88,7 +84,7 @@ def _collect_slice_diff_stats(workspace: Path, plan: SlicePlan) -> Any:
 
 
 def check_slice_diff_budget(stats: Any, block: Any) -> Any:
-    from orchestrator.slice_diff import check_slice_diff_budget
+    from orchestrator.slice.diff import check_slice_diff_budget
 
     return check_slice_diff_budget(stats, block)
 
@@ -98,8 +94,8 @@ def _complete_slice_p3_evidence(
     *,
     timeout_seconds: float,
 ) -> tuple[int, int]:
-    from orchestrator.performance_scan import run_ruff_perf
-    from orchestrator.security_scan import run_security_scan
+    from orchestrator.critique.performance_scan import run_ruff_perf
+    from orchestrator.critique.security_scan import run_security_scan
 
     sec = run_security_scan(workspace)
     perf_code, _perf_log = run_ruff_perf(workspace, timeout_seconds=timeout_seconds)

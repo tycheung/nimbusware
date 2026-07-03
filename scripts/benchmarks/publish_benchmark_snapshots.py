@@ -42,7 +42,7 @@ def _write_critic_reliability_snapshot() -> Path:
         except json.JSONDecodeError:
             pass
     from iam.constants import DEFAULT_TENANT_ID
-    from orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+    from orchestrator.fleet.critic_reliability import tenant_critic_reliability_metrics
     from store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()

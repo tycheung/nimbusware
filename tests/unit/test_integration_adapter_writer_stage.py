@@ -6,14 +6,14 @@ import pytest
 
 from agent_core.models import EventType
 from env import find_repo_root
-from orchestrator.integration_adapter_writer_stage import (
+from orchestrator.integrator.writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
     emit_live_integration_adapter_writer_stage,
     emit_stub_integration_adapter_writer_stage,
     integration_adapter_writer_stage_would_emit,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from unit.composite_repo_fixtures import write_workflow_profile

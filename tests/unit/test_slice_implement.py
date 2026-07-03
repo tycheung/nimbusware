@@ -5,8 +5,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from env import find_repo_root
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
+from orchestrator.slice.implement import execute_slice_implement, slice_implement_mode
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_slice_implement_mode_default_scoped() -> None:
@@ -20,7 +20,7 @@ def test_slice_implement_stub_mode() -> None:
         plan = parse_slice_plan(
             {
                 "slice_id": "s1",
-                "target_paths": ["packages/orchestrator/micro_slice.py"],
+                "target_paths": ["packages/orchestrator/slice/micro_slice.py"],
             },
         )
         root = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -34,13 +34,13 @@ def test_slice_implement_scoped_touches_existing_file() -> None:
     plan = parse_slice_plan(
         {
             "slice_id": "s1",
-            "target_paths": ["packages/orchestrator/slice_implement.py"],
+            "target_paths": ["packages/orchestrator/slice/implement.py"],
         },
     )
     with patch.dict(os.environ, {"NIMBUSWARE_SLICE_IMPLEMENT": "scoped"}, clear=False):
         result = execute_slice_implement(root, plan, timeout_seconds=60.0)
     assert result.mode == "scoped"
-    assert "slice_implement.py" in "".join(result.paths_touched)
+    assert "slice/implement.py" in "".join(result.paths_touched)
 
 
 def test_slice_implement_scoped_skips_ruff_for_non_python_targets(tmp_path: Path) -> None:

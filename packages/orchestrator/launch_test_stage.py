@@ -68,7 +68,7 @@ def _launch_pack_id(
     repo_root: Path | None = None,
 ) -> str:
     from maker.stack_manifest import manifest_from_requirements
-    from orchestrator.stack_catalog import stack_for_surface
+    from orchestrator.stack.catalog import stack_for_surface
 
     manifest = manifest_from_requirements(requirements)
     if manifest is not None:

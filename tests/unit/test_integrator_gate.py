@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from extensions.extension_runtime import ModuleIntegrator
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     load_integrator_gate_emit_enabled,
     rank_bundle_compatibility_candidates,
     select_bundle_id_for_workflow,

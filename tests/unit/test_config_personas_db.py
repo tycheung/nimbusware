@@ -14,7 +14,7 @@ from api.deps import get_orchestrator, get_store
 from config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from config.materializer import ConfigMaterializer
 from config.store import InMemoryConfigStore
-from orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
+from orchestrator.persona.shelf_promotion import try_auto_promote_probation_persona
 from store.memory import InMemoryEventStore
 
 

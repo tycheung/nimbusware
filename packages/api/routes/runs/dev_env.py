@@ -9,11 +9,11 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
-from maker.workspace import resolve_run_workspace
+from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.browser_controller import run_dev_env_ui_regression
-from orchestrator.dev_env_observability import dev_env_theater_excerpt, tail_dev_env_logs
-from orchestrator.dev_env_regression import run_dev_env_regression
-from orchestrator.dev_env_supervisor import (
+from orchestrator.dev_env.observability import dev_env_theater_excerpt, tail_dev_env_logs
+from orchestrator.dev_env.regression import run_dev_env_regression
+from orchestrator.dev_env.supervisor import (
     dev_env_status,
     frontend_base_url,
     probe_dev_environment_health,

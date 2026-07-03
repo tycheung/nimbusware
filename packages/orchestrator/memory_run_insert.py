@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 from uuid import UUID
 
-from memory.models import MemoryChunkRecord
+from memory.index.models import MemoryChunkRecord
 
 
 def insert_memory_chunk_into_run(

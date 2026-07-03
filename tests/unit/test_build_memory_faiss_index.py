@@ -11,8 +11,8 @@ import pytest
 
 from env import find_repo_root
 from memory import InMemoryMemoryChunkStore, rebuild_memory_index
-from memory.faiss_index import memory_faiss_index_ready
-from memory.models import MemoryChunkRecord
+from memory.index.faiss_index import memory_faiss_index_ready
+from memory.index.models import MemoryChunkRecord
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -60,8 +60,8 @@ def test_rebuild_writes_memory_faiss_index(tmp_path, monkeypatch) -> None:
 
 def test_memory_faiss_search_chunk_ids(tmp_path) -> None:
     pytest.importorskip("faiss")
-    from memory.embeddings import deterministic_embed
-    from memory.faiss_index import build_memory_faiss_index, faiss_search_chunk_ids
+    from memory.index.embeddings import deterministic_embed
+    from memory.index.faiss_index import build_memory_faiss_index, faiss_search_chunk_ids
 
     gid = uuid4()
     chunks = [

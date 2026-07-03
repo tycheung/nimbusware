@@ -1,8 +1,8 @@
 from uuid import uuid4
 
 from compute.work_unit import get_work_unit_queue
-from orchestrator.mesh_pipeline_hook import mesh_assign_parallel_stages
-from orchestrator.mesh_scheduler import MeshScheduler
+from orchestrator.collab.pipeline_hook import mesh_assign_parallel_stages
+from orchestrator.collab.scheduler import MeshScheduler
 
 
 def test_mesh_scheduler_spreads_across_nodes() -> None:
@@ -53,7 +53,7 @@ def test_host_only_skips_enqueue() -> None:
 
 
 def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
-    from orchestrator.mesh_pipeline_hook import mesh_assign_campaign_slices
+    from orchestrator.collab.pipeline_hook import mesh_assign_campaign_slices
 
     sid = uuid4()
     run_id = uuid4()
@@ -71,7 +71,7 @@ def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
 
 
 def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
-    from orchestrator.mesh_pipeline_hook import mesh_assign_parallel_critics
+    from orchestrator.collab.pipeline_hook import mesh_assign_parallel_critics
 
     sid = uuid4()
     run_id = uuid4()

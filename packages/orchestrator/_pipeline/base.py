@@ -10,12 +10,12 @@ from agent_core.models import (
     RunCreatedEvent,
     validate_event_dict,
 )
-from orchestrator.critique_routing import load_critique_router
-from orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+from agent_core.stage_graph import stage_graph_from_run_created_metadata
+from orchestrator.critique.routing import load_critique_router
+from orchestrator.integrator.gate import workflow_profile_from_run_created_rows
 from orchestrator.merge import load_yaml
 from orchestrator.registry import RoleRegistry
-from orchestrator.stage_graph import stage_graph_from_run_created_metadata
-from orchestrator.workflow_universal_critique import (
+from orchestrator.workflow.universal_critique import (
     EffectiveUniversalCritique,
     effective_universal_critique,
 )

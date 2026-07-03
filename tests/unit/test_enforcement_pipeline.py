@@ -7,8 +7,8 @@ from orchestrator.enforcement_pipeline import (
     normalize_e2e_for_enforcement,
     security_scan_required,
 )
-from orchestrator.enforcement_profiles import resolve_enforcement_profile
-from orchestrator.slice_gate import SliceGateStep, apply_skip_verdict_policy
+from orchestrator.profiles.enforcement_profiles import resolve_enforcement_profile
+from orchestrator.slice.gate import SliceGateStep, apply_skip_verdict_policy
 
 
 def test_apply_skip_verdict_policy_fail() -> None:

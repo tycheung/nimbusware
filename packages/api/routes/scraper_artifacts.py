@@ -12,7 +12,7 @@ from api.schemas.openapi import (
 )
 from api.schemas.scraper_artifacts import ScraperArtifactInventoryResponse
 from env.env_flags import nimbusware_scraper_artifact_max_age_days_raw
-from orchestrator.scraper_artifacts import (
+from orchestrator.scraper.artifacts import (
     resolve_scraper_artifact_base_dir,
     scraper_artifact_inventory,
 )

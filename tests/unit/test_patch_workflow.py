@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent_tools.risk_caps import PATCH_DEFAULT_CAPS, agent_risk_caps_from_run_rows
-from orchestrator.micro_slice import micro_slice_count_for_run, parse_slice_plan
 from orchestrator.patch_context import (
     apply_patch_stub_hotfix,
     implementation_path_from_failing_test,
@@ -15,7 +14,8 @@ from orchestrator.patch_context import (
     resolve_patch_test_targets,
     work_type_from_run_rows,
 )
-from orchestrator.workflow_patch import (
+from orchestrator.slice.micro_slice import micro_slice_count_for_run, parse_slice_plan
+from orchestrator.workflow.patch import (
     parse_patch_workflow_block,
     patch_effective_metadata,
 )

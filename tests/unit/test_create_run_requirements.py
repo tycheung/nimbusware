@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from maker.intent import build_requirements_artifact
+from maker.intent.requirements import build_requirements_artifact
 from orchestrator.pipeline import make_dev_orchestrator
 
 

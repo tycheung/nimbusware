@@ -8,7 +8,7 @@ from uuid import UUID
 from agent_core.models import EventType
 from extensions import SelfRefinementPolicy
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
+from orchestrator.workflow.self_refinement import SelfRefinementWorkflowBlock
 
 if TYPE_CHECKING:
     from store.memory import InMemoryEventStore

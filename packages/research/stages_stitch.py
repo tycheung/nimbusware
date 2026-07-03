@@ -20,8 +20,8 @@ from agent_core.models import (
     StitchPlanEmittedPayload,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
-from maker.workspace import workspace_path_from_run_created_metadata
-from maker.workspace_snapshot import create_workspace_snapshot
+from maker.workspace.snapshot import create_workspace_snapshot
+from maker.workspace.workspace import workspace_path_from_run_created_metadata
 from orchestrator.registry import RoleRegistry
 from research.stages import _emit_critique_panel
 from research.stitch_manifests import (
@@ -386,7 +386,7 @@ def emit_stitch_stages_for_manifest(
         ),
     )
     if write_catalog_on_apply:
-        from maker.intent import requirements_from_run_created_metadata
+        from maker.intent.requirements import requirements_from_run_created_metadata
         from research.bundle_promotion import (
             primary_stack_id_from_requirements,
             write_stitch_catalog_candidate,

@@ -31,7 +31,7 @@ class _CampaignDispatchHost(Protocol):
 
 class CampaignDispatchMixin:
     def active_campaigns_for_project(self: _CampaignDispatchHost, project_id: str) -> int:
-        from orchestrator.campaign_safety import active_campaigns_for_project
+        from orchestrator.campaign.safety import active_campaigns_for_project
 
         return active_campaigns_for_project(self._store, project_id)
 
@@ -43,7 +43,7 @@ class CampaignDispatchMixin:
         autonomous: bool | None = None,
     ) -> str:
         from agent_core.models import EventType
-        from orchestrator.campaign import (
+        from orchestrator.campaign.campaign import (
             campaign_enabled_for_run,
             campaign_policy_from_workflow,
             emit_campaign_created,
@@ -98,7 +98,7 @@ class CampaignDispatchMixin:
         self: _CampaignDispatchHost,
         task: RunDispatchTask,
     ) -> None:
-        from orchestrator.campaign_driver import campaign_driver_tick
+        from orchestrator.campaign.driver import campaign_driver_tick
 
         ws_raw = task_payload_workspace(task.payload)
         ws = Path(ws_raw) if ws_raw else None
@@ -112,7 +112,7 @@ class CampaignDispatchMixin:
                 notify_campaign_failed,
                 notify_campaign_paused,
             )
-            from orchestrator.campaign import CampaignDriverState
+            from orchestrator.campaign.campaign import CampaignDriverState
 
             run_uuid = UUID(task.run_id)
             if result.state == CampaignDriverState.PAUSED:

@@ -18,7 +18,7 @@ from maker.slice_workflow import (
     revert_workspace,
     skip_pending_slice,
 )
-from maker.workspace import resolve_run_workspace
+from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
 
 router = APIRouter()
@@ -218,7 +218,7 @@ def post_maker_run_tests(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    from maker.workspace import resolve_run_workspace
+    from maker.workspace.workspace import resolve_run_workspace
     from orchestrator.patch_context import (
         patch_context_from_run_rows,
         resolve_patch_test_targets,
@@ -253,7 +253,7 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    from maker.workspace import resolve_run_workspace
+    from maker.workspace.workspace import resolve_run_workspace
     from orchestrator.launch_eval_catalog import attach_context_from_run
     from orchestrator.launch_evaluator import (
         emit_launch_eval_completed,

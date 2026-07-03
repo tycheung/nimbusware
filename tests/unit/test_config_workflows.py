@@ -12,7 +12,7 @@ from env import find_repo_root
 from orchestrator.ingress import assert_known_workflow
 from orchestrator.merge import load_yaml
 from orchestrator.pipeline import RunOrchestrator, default_paths
-from orchestrator.workflow_profiles import workflow_profile_dict
+from orchestrator.workflow.profiles import workflow_profile_dict
 from store.memory import InMemoryEventStore
 
 
@@ -63,7 +63,7 @@ def test_materializer_stage_graph_profile_round_trip() -> None:
     mat = ConfigMaterializer(root, store=store, use_db=True)
     loaded = mat.get_workflow_profile_dict("default")
     assert isinstance(loaded.get("stage_graph"), list)
-    from orchestrator.stage_graph import (
+    from agent_core.stage_graph import (
         KNOWN_STAGE_GRAPH_STAGES,
         stage_graph_from_workflow_profile,
         validate_stage_graph,

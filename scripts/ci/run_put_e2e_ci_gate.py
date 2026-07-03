@@ -16,13 +16,13 @@ def run_put_e2e_ci_gate(*, repo_root: Path | None = None) -> dict[str, Any]:
     repo = repo_root or REPO_ROOT
     sys.path.insert(0, str(repo / "packages"))
 
-    from orchestrator.factory_completion import (
+    from orchestrator.factory.completion import (
         evaluate_factory_gates,
         resolve_factory_tier,
     )
+    from orchestrator.factory.runner import run_put_e2e_flow
+    from orchestrator.factory.runtime import start_put_preview, stop_put_preview
     from orchestrator.interaction_surface_map import discover_surfaces_static
-    from orchestrator.put_e2e_runner import run_put_e2e_flow
-    from orchestrator.put_runtime import start_put_preview, stop_put_preview
 
     ws = REPOS_ROOT / "tiny_api_app"
     summary: dict[str, Any] = {"workspace": ws.name, "skipped": False, "passed": False}

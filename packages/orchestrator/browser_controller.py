@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from orchestrator.dev_env_events import emit_dev_env_ui_regression
+from orchestrator.dev_env.events import emit_dev_env_ui_regression
 from orchestrator.playwright_sync import run_without_asyncio_loop
 from orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, UiLocator
 

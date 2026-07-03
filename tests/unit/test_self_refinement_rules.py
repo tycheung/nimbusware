@@ -16,7 +16,7 @@ from env import find_repo_root
 from extensions.personas import PersonaShelf
 from extensions.self_refinement import SelfRefinementEvaluator
 from orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
-from orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
+from orchestrator.workflow.self_refinement import SelfRefinementWorkflowBlock
 from store.memory import InMemoryEventStore
 
 

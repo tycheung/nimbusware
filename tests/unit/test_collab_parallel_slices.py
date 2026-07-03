@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from orchestrator.collab_parallel_slices import collab_mesh_parallel_count
+from orchestrator.collab.parallel_slices import collab_mesh_parallel_count
 
 
 class _CollabRow:
@@ -29,7 +29,7 @@ def test_collab_parallel_requires_two_disciplines(monkeypatch) -> None:
     node_ids = [uuid4(), uuid4()]
 
     monkeypatch.setattr(
-        "orchestrator.collab_parallel_slices.resolve_mesh_context_for_run",
+        "orchestrator.collab.parallel_slices.resolve_mesh_context_for_run",
         lambda _rid: (session_id, "auto_share", node_ids),
     )
     collab = _CollabStore([_CollabRow("frontend"), _CollabRow("backend")])
@@ -42,7 +42,7 @@ def test_collab_parallel_single_discipline_stays_serial(monkeypatch) -> None:
     node_ids = [uuid4(), uuid4()]
 
     monkeypatch.setattr(
-        "orchestrator.collab_parallel_slices.resolve_mesh_context_for_run",
+        "orchestrator.collab.parallel_slices.resolve_mesh_context_for_run",
         lambda _rid: (session_id, "auto_share", node_ids),
     )
     collab = _CollabStore([_CollabRow("frontend"), _CollabRow(None)])

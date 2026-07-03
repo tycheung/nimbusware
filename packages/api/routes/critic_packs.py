@@ -9,7 +9,7 @@ from api.admin import AdminDep
 from api.deps import OrchDep
 from api.errors import problem
 from config.keys import NS_CRITIC_PACKS
-from orchestrator.critic_pack_resolve import (
+from orchestrator.critique.pack_resolve import (
     list_critic_pack_ids,
     list_workflows_using_critic_pack,
     load_critic_pack,

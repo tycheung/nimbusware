@@ -39,7 +39,7 @@ def test_integrator_gate_includes_live_context_from_adapter_writer_stage() -> No
         ),
     )
     with patch(
-        "orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
+        "orchestrator.integrator.gate.load_integrator_gate_emit_enabled",
         return_value=True,
     ):
         orch._emit_bundle_integrator_gate(run_id)  # noqa: SLF001

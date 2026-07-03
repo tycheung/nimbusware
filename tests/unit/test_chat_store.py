@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from maker.chat_store import InMemoryChatStore, build_graph, path_to_root
+from maker.chat.memory import InMemoryChatStore, build_graph, path_to_root
 
 
 @pytest.fixture

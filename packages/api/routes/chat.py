@@ -33,12 +33,12 @@ from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from api.user import UserDep
 from auth.permissions import enforce_collab_turn_write
 from env.env_flags import nimbusware_collab_enabled
-from maker.chat_service import (
+from maker.chat.service import (
     classification_dict,
     session_response,
     switch_mode_rationale,
 )
-from maker.intent_classifier import WorkType, classify_intent
+from maker.intent.classifier import WorkType, classify_intent
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_session.router)
@@ -108,7 +108,7 @@ def get_chat_session(
     payload = session_response(chat_store, session, include_turns=include_turns)
     if nimbusware_collab_enabled():
         from env import find_repo_root
-        from orchestrator.user_operator_profiles import enrich_participants_with_profiles
+        from orchestrator.profiles.user_operator_profiles import enrich_participants_with_profiles
 
         raw_parts = [p.to_dict() for p in collab_store.list_participants(session_id)]
         payload["participants"] = enrich_participants_with_profiles(
@@ -258,7 +258,7 @@ def append_chat_turn(
     except (KeyError, ValueError) as exc:
         raise chat_http_error(exc) from exc
     if nimbusware_collab_enabled():
-        from maker.collab_discipline_routing import maybe_route_collab_message
+        from maker.collab.discipline_routing import maybe_route_collab_message
 
         maybe_route_collab_message(
             store,

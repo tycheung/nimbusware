@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from orchestrator.ollama_user_policy import (
+from orchestrator.routing.user_policy import (
     OllamaUserPolicy,
     assert_user_may,
     merge_policy_into_routing,

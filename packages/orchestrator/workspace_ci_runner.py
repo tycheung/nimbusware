@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from orchestrator.enforcement_profiles import EnforcementProfile
+from orchestrator.profiles.enforcement_profiles import EnforcementProfile
 from orchestrator.verifiers import (
     run_bandit_on_layout,
     run_go_test,
@@ -148,7 +148,7 @@ def run_enforcement_bundle(
             steps.append(EnforcementStep("pytest", code, out[:2000]))
             worst = max(worst, code)
     elif scope_paths and profile.tests_mode == "mapped_required":
-        from orchestrator.slice_gate import map_paths_to_test_targets
+        from orchestrator.slice.gate import map_paths_to_test_targets
 
         mapped = map_paths_to_test_targets(tuple(scope_paths))
         existing = [t for t in mapped if (layout.workspace / t).is_file()]
@@ -212,7 +212,7 @@ def run_enforcement_bundle(
 def run_workspace_ci_parity(
     workspace: Path, *, timeout_seconds: float = 600.0
 ) -> EnforcementResult:
-    from orchestrator.enforcement_profiles import preset_for_enforcement_level
+    from orchestrator.profiles.enforcement_profiles import preset_for_enforcement_level
 
     profile = preset_for_enforcement_level(PARITY_LEVEL)
     return run_enforcement_bundle(

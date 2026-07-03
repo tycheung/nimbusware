@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from orchestrator.collab_binding_resolver import (
+from orchestrator.collab.binding_resolver import (
     merge_participant_binding,
     participant_binding_overrides,
 )
-from orchestrator.model_binding_resolver import ModelBindingResolver
 from orchestrator.participant_output_packet import ParticipantOutputPacket
+from orchestrator.routing.resolver import ModelBindingResolver
 
 
 def test_participant_output_packet_caps() -> None:

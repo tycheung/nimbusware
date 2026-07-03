@@ -173,7 +173,7 @@ class CreateRunMixin:
         return {}
 
     def maybe_rebuild_memory_index(self: _CreateRunHost, run_id: UUID) -> Any | None:
-        from memory.contribution import maybe_rebuild_memory_index_for_run
+        from memory.index.contribution import maybe_rebuild_memory_index_for_run
 
         return maybe_rebuild_memory_index_for_run(
             self._memory_chunk_store,

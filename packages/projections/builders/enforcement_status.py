@@ -8,7 +8,7 @@ from agent_core.mapping import mapping_or_empty
 def enforcement_status_from_events(events: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not events:
         return None
-    from orchestrator.enforcement_profiles import (
+    from orchestrator.profiles.enforcement_profiles import (
         enforcement_profile_from_rows,
         latest_enforcement_block_from_rows,
     )

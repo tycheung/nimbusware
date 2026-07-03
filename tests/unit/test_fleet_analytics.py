@@ -16,7 +16,7 @@ from console import enterprise_console as ent_console
 from iam.constants import DEFAULT_TENANT_ID
 from iam.context import reset_auth_context, set_auth_context
 from iam.models import AuthContext
-from orchestrator.fleet_analytics import compare_tenant_metrics, tenant_run_metrics
+from orchestrator.fleet.analytics import compare_tenant_metrics, tenant_run_metrics
 from store.memory import InMemoryEventStore
 
 

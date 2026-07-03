@@ -49,12 +49,12 @@ __all__ = (
     "start_run",
 )
 from api.routes.runs.create import PatchContextBody, RunRequirementsBody
-from maker.intent import build_requirements_artifact
-from maker.intent_classifier import WorkType
+from maker.intent.classifier import WorkType
+from maker.intent.requirements import build_requirements_artifact
 from maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabled
 from orchestrator.patch_context import normalize_patch_context
-from orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
+from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 
 class CreateChatSessionBody(BaseModel):
@@ -356,7 +356,7 @@ def maybe_apply_chat_replay_alignment(
             break
     if not align or seq is None:
         return None
-    from orchestrator.replay_from import ReplayPolicy, emit_replay_started_event
+    from orchestrator.replay.replay_from import ReplayPolicy, emit_replay_started_event
 
     emit_replay_started_event(
         store,

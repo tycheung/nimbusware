@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.backlog_generator import (
+from orchestrator.campaign.campaign import campaign_policy_from_workflow, emit_campaign_created
+from orchestrator.campaign.driver import campaign_driver_tick
+from orchestrator.campaign.generator import (
     generate_heuristic_backlog,
     has_backlog_event,
 )
-from orchestrator.campaign import campaign_policy_from_workflow, emit_campaign_created
-from orchestrator.campaign_driver import campaign_driver_tick
-from orchestrator.campaign_slice_selector import select_next_slice
+from orchestrator.campaign.slice_selector import select_next_slice
 from orchestrator.pipeline import make_dev_orchestrator
 
 

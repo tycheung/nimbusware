@@ -3,15 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.dev_env_policy import (
-    human_fidelity_profile_enabled,
-    persistent_dev_env_enabled,
-)
-from orchestrator.simplification_rubric_critique import (
+from orchestrator.critique.simplification_rubric_critique import (
     emit_simplification_rubric_stage,
     run_simplification_rubric,
 )
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.dev_env.policy import (
+    human_fidelity_profile_enabled,
+    persistent_dev_env_enabled,
+)
+from orchestrator.workflow.blocks_simple import (
     dev_env_effective_metadata,
     parse_dev_env_workflow_block,
 )

@@ -5,8 +5,8 @@ from typing import Any
 
 from extensions.personas import ALLOWED_SHELVES, PersonaShelf
 from orchestrator.registry import RoleRegistry
-from orchestrator.workflow_profiles import workflow_profile_path
-from orchestrator.workflow_registry import parse_agent_evaluator_workflow_block
+from orchestrator.workflow.profiles import workflow_profile_path
+from orchestrator.workflow.registry import parse_agent_evaluator_workflow_block
 
 
 def assert_bundle_catalog_maps_resolve(
@@ -102,12 +102,12 @@ def assert_stage_graph_valid(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    from orchestrator.stage_graph import (
+    from agent_core.stage_graph import (
         KNOWN_STAGE_GRAPH_STAGES,
         stage_graph_from_workflow_profile,
         validate_stage_graph,
     )
-    from orchestrator.workflow_profiles import workflow_profile_dict
+    from orchestrator.workflow.profiles import workflow_profile_dict
 
     raw = workflow_profile_dict(
         repo_root,

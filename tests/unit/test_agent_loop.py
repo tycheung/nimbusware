@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from agent_tools.agent_loop import run
-from orchestrator.micro_slice import parse_slice_plan
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_agent_loop_reads_and_edits_via_tools(tmp_path: Path) -> None:

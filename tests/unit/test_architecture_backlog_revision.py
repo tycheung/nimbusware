@@ -4,7 +4,7 @@ from pathlib import Path
 
 from agent_core.models import EventType
 from env import find_repo_root
-from orchestrator.backlog_generator import (
+from orchestrator.campaign.generator import (
     emit_backlog_generated,
     generate_heuristic_backlog,
 )

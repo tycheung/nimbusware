@@ -10,7 +10,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetSlicePolicy,
     load_fleet_slice_policies,
     save_fleet_slice_policies,

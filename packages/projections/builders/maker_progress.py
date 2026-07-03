@@ -5,7 +5,7 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from maker.intent import (
+from maker.intent.requirements import (
     plan_summary_from_requirements,
     requirements_from_run_created_metadata,
 )
@@ -400,7 +400,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         if gate_summary not in sentences:
             sentences.append(gate_summary)
 
-    from orchestrator.routing_cost_summary import summarize_run_role_cost
+    from orchestrator.routing.cost_summary import summarize_run_role_cost
 
     role_cost = summarize_run_role_cost(events)
     if role_cost:

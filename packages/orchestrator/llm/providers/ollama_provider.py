@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from orchestrator.ollama_chat import ollama_chat_json
-from orchestrator.ollama_manage import ollama_reachable
+from orchestrator.routing.chat import ollama_chat_json
+from orchestrator.routing.manage import ollama_reachable
 
 
 class OllamaProvider:

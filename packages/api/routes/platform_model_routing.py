@@ -16,8 +16,8 @@ from hw.cache import get_cached_profile
 from hw.catalog_sync import catalog_info_from_path
 from hw.fit import rank_models
 from hw.ollama_presets import PRESET_NAMES
-from maker.readiness import build_platform_readiness
-from orchestrator.routing_presets import (
+from maker.readiness.platform import build_platform_readiness
+from orchestrator.routing.presets import (
     apply_routing_preset,
     list_routing_preset_summaries,
 )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from maker.workspace_snapshot import (
+from maker.workspace.snapshot import (
     create_workspace_snapshot,
     restore_workspace_snapshot,
 )

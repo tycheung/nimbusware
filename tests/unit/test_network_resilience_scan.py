@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.network_resilience_scan import (
+from orchestrator.critique.network_resilience_scan import (
     check_sql_query_count_budget,
     run_network_resilience_scan_summary,
     scan_http_resilience_heuristic,

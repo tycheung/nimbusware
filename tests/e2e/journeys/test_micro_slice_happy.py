@@ -18,9 +18,7 @@ def test_micro_slice_happy_apply(
 ) -> None:
     ws = copy_fixture_repo("tiny_python_app", tmp_path / "ws")
     (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/orchestrator/micro_slice.py").write_text(
-        "# stub\n", encoding="utf-8"
-    )
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
     (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws)

@@ -6,7 +6,7 @@ from typing import Any
 import yaml
 
 from env import find_repo_root
-from maker.collab_disciplines import normalize_discipline
+from maker.collab.disciplines import normalize_discipline
 
 
 def _user_path(repo_root: Path, user_id: str) -> Path:

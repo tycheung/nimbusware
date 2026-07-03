@@ -4,7 +4,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from orchestrator.factory_cadence import launch_eval_completed
+from orchestrator.factory.cadence import launch_eval_completed
 from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
 from orchestrator.maintenance_refactor import run_maintenance_refactor
 from store.memory import InMemoryEventStore

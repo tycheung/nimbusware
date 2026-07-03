@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from orchestrator.autopilot_profiles import preset_for_level, resolve_autopilot_profile
 from orchestrator.interjection_queue import InterjectionPriority, queue_for_run
+from orchestrator.profiles.autopilot_profiles import preset_for_level, resolve_autopilot_profile
 from orchestrator.resolution_council import (
     aggregate_resolution_soak_metrics,
     classify_hard_block,
@@ -27,7 +27,7 @@ def test_autopilot_preset_levels() -> None:
 
 
 def test_default_autopilot_level_for_work_type() -> None:
-    from orchestrator.autopilot_profiles import (
+    from orchestrator.profiles.autopilot_profiles import (
         autopilot_effective_metadata,
         default_autopilot_level_for_work_type,
     )

@@ -6,10 +6,10 @@ from typing import Any
 from console.explainer_core.env_summaries import env_tri_state_summary
 from console.explainer_core.repo_yaml import json_safe_yaml_fragment
 from console.explainer_core.workflow_payload_header import workflow_payload_header
-from orchestrator.integration_adapter_writer_stage import (
+from orchestrator.integrator.writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
 )

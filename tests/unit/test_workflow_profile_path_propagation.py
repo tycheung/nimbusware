@@ -26,7 +26,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from api.app import app  # noqa: E402
 from orchestrator.ingress import assert_known_workflow  # noqa: E402
 from orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
-from orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402
+from orchestrator.scraper.stage import load_scraper_fetch_config  # noqa: E402
 
 _VALUE_ERROR_PREFIX = "invalid workflow_profile: "
 _FILE_NOT_FOUND_PREFIX = "unknown workflow_profile (no file): "

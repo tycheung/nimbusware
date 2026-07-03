@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.enforcement_profiles import preset_for_enforcement_level
+from orchestrator.profiles.enforcement_profiles import preset_for_enforcement_level
 from orchestrator.workspace_ci_runner import run_enforcement_bundle
 
 pytestmark = pytest.mark.e2e_journey

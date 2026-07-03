@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
+from orchestrator.scraper.artifacts import resolve_scraper_artifact_base_dir
 
 _ENV_NAME = "NIMBUSWARE_SCRAPER_ARTIFACT_DIR"
 _DEFAULT_REL = (".cache", "nimbusware_scraper")

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from env import find_repo_root
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_self_refinement import (
+from orchestrator.workflow.self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )

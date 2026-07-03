@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     load_integrator_gate_emit_enabled,
     load_integrator_min_score_from_thresholds,
     parse_integrator_gate_min_score_to_pass,

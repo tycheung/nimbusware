@@ -4,15 +4,15 @@ from pathlib import Path
 
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.scan_critique_handlers import (
+from orchestrator.critique.handlers import (
     SECURITY_CRITIQUE_STAGE,
     emit_stub_security_critique_panel,
     run_security_scan_summary,
     security_critique_timeline_summary,
     security_scan_tools_failed,
 )
-from orchestrator.workflow_scan_critique import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.workflow.scan_critique import (
     SecurityCritiqueBlock,
     parse_security_critique_workflow_block,
     security_critique_effective,

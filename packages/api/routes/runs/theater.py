@@ -13,7 +13,7 @@ from api.errors import problem
 from api.routes.runs.stream import _sse_pack
 from api.schemas.openapi import PROBLEM_RESPONSE_404
 from env.env_flags import nimbusware_collab_enabled
-from orchestrator.collab_output_redaction import redact_collab_output
+from orchestrator.collab.output_redaction import redact_collab_output
 from projections.builders.chat_theater import build_theater_messages_for_profile
 from projections.builders.run_theater import build_run_theater_messages
 from projections.exporters.theater_transcript import format_theater_transcript_md

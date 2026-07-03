@@ -18,7 +18,7 @@ pytestmark = [
 
 def test_micro_slice_web_profile_loads() -> None:
     from env import find_repo_root
-    from orchestrator.workflow_profiles import workflow_profile_dict
+    from orchestrator.workflow.profiles import workflow_profile_dict
 
     repo = find_repo_root()
     profile = workflow_profile_dict(repo, "micro_slice_web")

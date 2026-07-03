@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from orchestrator.repo_inventory import RepoInventory, build_repo_inventory
+from orchestrator.repo_intel.inventory import RepoInventory, build_repo_inventory
 
 
 @dataclass(frozen=True)

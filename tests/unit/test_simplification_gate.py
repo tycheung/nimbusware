@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.simplification_gate import delete_with_tests_allowed
+from orchestrator.critique.simplification_gate import delete_with_tests_allowed
 
 
 def test_delete_with_tests_requires_tests_dir(tmp_path: Path) -> None:

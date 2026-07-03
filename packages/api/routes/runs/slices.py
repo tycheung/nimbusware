@@ -14,8 +14,8 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
-from maker.workspace import resolve_run_workspace
-from orchestrator.slice_diff_api import build_slice_diff_response
+from maker.workspace.workspace import resolve_run_workspace
+from orchestrator.slice.diff_api import build_slice_diff_response
 from store.protocol import serialized_event_from_row
 
 router = APIRouter()

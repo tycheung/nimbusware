@@ -75,7 +75,7 @@ class WritersParallelMixin:
             )
         if not runners:
             return self._run_writers_sequential(run_id, sg_snapshot, workspace=workspace)
-        from orchestrator.mesh_pipeline_hook import (
+        from orchestrator.collab.pipeline_hook import (
             mesh_assign_parallel_stages,
             resolve_mesh_context_for_run,
         )
@@ -97,7 +97,7 @@ class WritersParallelMixin:
         session_metadata = None
         if session_id is not None:
             from env.env_flags import nimbusware_database_url
-            from maker.chat_store import build_chat_store
+            from maker.chat.session_store import build_chat_store
 
             chat_store = build_chat_store(nimbusware_database_url())
             sess = chat_store.get_session(session_id)
@@ -123,7 +123,7 @@ class WritersParallelMixin:
             writer_stage_result_from_mesh,
         )
         from env.env_flags import env_force_on
-        from orchestrator.workflow_parallel_writers import (
+        from orchestrator.workflow.parallel_writers import (
             max_parallel_writer_stages_from_governor,
         )
 

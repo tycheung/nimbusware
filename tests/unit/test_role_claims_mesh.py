@@ -2,13 +2,13 @@ from uuid import uuid4
 
 import pytest
 
-from orchestrator.mesh_scheduler import MeshScheduler
-from orchestrator.model_binding_audit import (
+from orchestrator.collab.scheduler import MeshScheduler
+from orchestrator.role_claims_mesh import stage_role_claims
+from orchestrator.routing.audit import (
     RoleClaimConflictError,
     active_role_claims_from_events,
     assert_role_claim_available,
 )
-from orchestrator.role_claims_mesh import stage_role_claims
 
 
 def test_mesh_scheduler_pins_claimed_stage_to_claimer_node() -> None:

@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from memory.faiss_index import memory_faiss_index_ready
-from memory.manifest import default_memory_index_dir, read_manifest
+from memory.index.faiss_index import memory_faiss_index_ready
+from memory.index.manifest import default_memory_index_dir, read_manifest
 
 
 def memory_index_sync_state(repo_root: Path) -> dict[str, Any]:

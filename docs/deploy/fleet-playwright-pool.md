@@ -13,7 +13,7 @@ NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT=ws://playwright-pool.internal:3000/chrom
 Probe connectivity:
 
 ```python
-from orchestrator.fleet_playwright import probe_fleet_playwright_endpoint
+from orchestrator.fleet.playwright import probe_fleet_playwright_endpoint
 probe_fleet_playwright_endpoint()
 ```
 

@@ -5,22 +5,22 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.escalation_policy_breadth import escalation_policy_breadth
-from orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from orchestrator.security_scan import (
+from orchestrator.critique.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )
-from orchestrator.workflow_agent_evaluator import (
+from orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from orchestrator.integrator.scaffold import write_integration_adapter_scaffold
+from orchestrator.workflow.agent_evaluator import (
     agent_evaluator_production_default_on,
 )
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-from orchestrator.workflow_self_refinement import (
+from orchestrator.workflow.self_refinement import (
     self_refinement_production_ungated_effective,
 )
-from orchestrator.workflow_universal_critique import (
+from orchestrator.workflow.universal_critique import (
     universal_critique_production_default_on,
 )
 

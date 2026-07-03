@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from orchestrator.workflow_self_refinement import (
+from orchestrator.workflow.self_refinement import (
     SelfRefinementWorkflowBlock,
     self_refinement_llm_critique_branch_effective,
 )

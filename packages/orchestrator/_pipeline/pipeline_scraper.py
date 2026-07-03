@@ -97,7 +97,7 @@ class PipelineScraperMixin:
         content: bytes,
         persist_cap: int,
     ) -> dict[str, Any]:
-        from orchestrator.scraper_artifacts import (
+        from orchestrator.scraper.artifacts import (
             persist_scraper_artifact,
         )
 

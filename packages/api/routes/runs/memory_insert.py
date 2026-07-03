@@ -8,12 +8,12 @@ from fastapi import APIRouter, HTTPException
 from api.deps import OrchDep, ProjectStoreDep, StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from maker.workspace import (
+from maker.workspace.workspace import (
     project_id_from_run_created_metadata,
     run_created_metadata_from_rows,
 )
 from memory.factory import build_memory_chunk_store
-from memory.repo_scope import repo_scope_hash
+from memory.index.repo_scope import repo_scope_hash
 from orchestrator.memory_run_insert import (
     find_memory_chunk_for_scope,
     insert_memory_chunk_into_run,

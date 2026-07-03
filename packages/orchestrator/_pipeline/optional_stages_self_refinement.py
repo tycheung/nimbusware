@@ -122,8 +122,8 @@ class SelfRefinementOptionalStagesMixin:
             return
 
         bounded = (description or "")[:2000]
+        from agent_core.timeline_metadata import persona_assignment_from_run_created_metadata
         from config.persist import load_persona_shelf
-        from orchestrator.read_models import persona_assignment_from_run_created_metadata
 
         pa_for_eval: dict[str, Any] | None = None
         for row in rows:

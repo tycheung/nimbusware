@@ -4,13 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from config.keys import NS_WORKFLOWS
-from config.materializer import ConfigMaterializer
-from config.seed import seed_config_from_repo
-from config.store import InMemoryConfigStore
-from env import find_repo_root
-from orchestrator.merge import load_yaml
-from orchestrator.stage_graph import (
+from agent_core.stage_graph import (
     KNOWN_STAGE_GRAPH_STAGES,
     default_stage_graph,
     stage_graph_from_workflow_profile,
@@ -18,7 +12,13 @@ from orchestrator.stage_graph import (
     topological_order,
     validate_stage_graph,
 )
-from orchestrator.workflow_profiles import workflow_profile_dict
+from config.keys import NS_WORKFLOWS
+from config.materializer import ConfigMaterializer
+from config.seed import seed_config_from_repo
+from config.store import InMemoryConfigStore
+from env import find_repo_root
+from orchestrator.merge import load_yaml
+from orchestrator.workflow.profiles import workflow_profile_dict
 
 
 def test_default_stage_graph_topological_order() -> None:

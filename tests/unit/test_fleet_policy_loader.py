@@ -4,13 +4,13 @@ from pathlib import Path
 
 import yaml
 
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetDeployPolicy,
     load_fleet_deploy_policies,
     save_fleet_deploy_policies,
     tenant_deploy_policy,
 )
-from orchestrator.fleet_policy_loader import (
+from orchestrator.fleet.policy_loader import (
     enterprise_policies_path,
     load_tenant_policies,
     save_tenant_policies,

@@ -11,7 +11,7 @@ from console.integrator_preview.parse import (
 )
 from env.env_flags import env_str
 from extensions.extension_runtime import ModuleIntegrator
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     load_bundle_tags_for_bundle_id,
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,

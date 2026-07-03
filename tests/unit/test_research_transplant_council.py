@@ -62,7 +62,7 @@ def test_council_votes_research_transplant_for_pattern_index(tmp_path: Path) -> 
 
 def test_run_research_transplant_skips_without_source(tmp_path: Path) -> None:
     from env import find_repo_root
-    from orchestrator.slice_cycle_integration import run_research_transplant_track
+    from orchestrator.slice.cycle_integration import run_research_transplant_track
 
     ws = tmp_path / "proj"
     _healthy_repo(ws)
@@ -112,7 +112,7 @@ def test_run_research_transplant_skips_without_source(tmp_path: Path) -> None:
 
 def test_run_research_transplant_uses_catalog_url(tmp_path: Path) -> None:
     from env import find_repo_root
-    from orchestrator.slice_cycle_integration import run_research_transplant_track
+    from orchestrator.slice.cycle_integration import run_research_transplant_track
 
     ws = tmp_path / "proj"
     _healthy_repo(ws)

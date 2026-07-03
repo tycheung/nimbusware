@@ -3,13 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_COMMON = (
-    Path(__file__).resolve().parents[2]
-    / "packages"
-    / "orchestrator"
-    / "llm"
-    / "common.py"
-)
+_COMMON = Path(__file__).resolve().parents[2] / "packages" / "orchestrator" / "llm" / "common.py"
 
 _REQUIRED = frozenset(
     {

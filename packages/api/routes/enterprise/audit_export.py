@@ -9,7 +9,7 @@ from fastapi.responses import Response
 from api.deps import IamStoreDep, StoreDep
 from api.routes.enterprise.core import EnterpriseDep
 from env.desktop_common import repo_root
-from orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
+from orchestrator.replay.export import build_enterprise_audit_bundle_bytes
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 

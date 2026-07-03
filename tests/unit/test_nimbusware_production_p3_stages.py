@@ -7,14 +7,14 @@ from unittest.mock import patch
 import pytest
 
 from env import find_repo_root
-from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
-from orchestrator.scan_critique_handlers import (
+from orchestrator.critique.handlers import (
     NETWORK_RESILIENCE_CRITIQUE_STAGE,
     PERFORMANCE_CRITIQUE_STAGE,
     SECURITY_CRITIQUE_STAGE,
 )
-from orchestrator.workflow_scan_critique import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
+from orchestrator.workflow.scan_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
     parse_performance_critique_workflow_block,

@@ -36,7 +36,7 @@ def missing_required_discovery_fields(
 def questions_for_required_fields(
     required_fields: tuple[str, ...] | list[str],
 ) -> list[dict[str, str]]:
-    from maker.scope_discovery import SCOPE_QUESTIONS
+    from maker.intent.scope_discovery import SCOPE_QUESTIONS
 
     known = {q["id"]: q["question"] for q in SCOPE_QUESTIONS}
     out: list[dict[str, str]] = []

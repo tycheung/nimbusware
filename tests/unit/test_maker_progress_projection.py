@@ -170,7 +170,7 @@ def test_maker_progress_surface_aware_slice_headlines() -> None:
     from pathlib import Path
 
     from env import find_repo_root
-    from orchestrator.backlog_generator import (
+    from orchestrator.campaign.generator import (
         emit_backlog_generated,
         generate_heuristic_backlog,
     )

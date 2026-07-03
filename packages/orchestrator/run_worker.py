@@ -166,7 +166,7 @@ def _write_worker_heartbeat(
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
     try:
-        from orchestrator.fleet_worker import (
+        from orchestrator.fleet.worker import (
             collect_fleet_worker_metrics,
             fleet_redis_worker_enabled,
         )

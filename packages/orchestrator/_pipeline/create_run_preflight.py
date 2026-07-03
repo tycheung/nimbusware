@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from orchestrator.critique_routing import (
+from orchestrator.critique.routing import (
     assert_critique_coverage_complete,
     critique_coverage_snapshot,
     taxonomy_keys_for_run_lifecycle,

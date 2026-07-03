@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.workflow_refactor import (
+from orchestrator.workflow.refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )

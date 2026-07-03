@@ -8,7 +8,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
         "packages/orchestrator",
         450,
-        frozenset({"fleet_policies.py"}),
+        frozenset({"fleet/policies.py"}),
     ),
     ("packages/api", 450, frozenset({"routes/chat_collab.py", "routes/chat_session.py"})),
     ("packages/memory", 450, frozenset()),

@@ -65,7 +65,7 @@ def append_theater_messages_for_row(
                 break
         preflight_body = f"p95 latency {latency}ms" if latency is not None else None
         if inference_mode:
-            from orchestrator.binding_preflight import _inference_mode_label
+            from orchestrator.routing.preflight import _inference_mode_label
 
             label = _inference_mode_label(inference_mode)
             preflight_body = label if preflight_body is None else f"{label} · {preflight_body}"

@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.micro_slice import micro_slice_timeline_summary, parse_slice_plan
 from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice.micro_slice import micro_slice_timeline_summary, parse_slice_plan
 
 
 def test_record_micro_slice_plan_and_gate() -> None:

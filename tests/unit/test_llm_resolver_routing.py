@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from orchestrator.binding_preflight import agent_role_for_stage
 from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+from orchestrator.routing.preflight import agent_role_for_stage
 
 
 def test_agent_role_for_stage_maps_slice_and_critique() -> None:
@@ -18,7 +18,7 @@ def test_via_plan_patch_uses_resolver_for_mapped_stage() -> None:
     resolver = MagicMock()
     resolver.chat_json.return_value = fake
     with patch(
-        "orchestrator.model_binding_resolver.ModelBindingResolver",
+        "orchestrator.routing.resolver.ModelBindingResolver",
         return_value=resolver,
     ):
         out = ollama_chat_json_via_plan_patch(

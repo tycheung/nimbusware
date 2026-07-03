@@ -12,9 +12,7 @@ from orchestrator.pipeline import make_dev_orchestrator
 
 @patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False)
 def test_frontend_writer_runs_in_parallel_group() -> None:
-    with patch(
-        "orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok")
-    ):
+    with patch("orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok")):
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("parallel_writers_on")
         ws = find_repo_root(start=Path(__file__).resolve().parents[1])

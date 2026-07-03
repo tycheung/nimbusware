@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )

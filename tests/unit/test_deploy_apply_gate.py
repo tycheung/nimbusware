@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from agent_core.models import EventType, RunCreatedEvent
 from agent_core.models.events_payloads import RunCreatedPayload
 from api.app import app
-from maker.deploy_pipeline_events import (
+from maker.deploy.pipeline_events import (
     autopilot_may_auto_approve_deploy,
     deploy_approved_from_events,
     emit_deploy_approved,
@@ -108,7 +108,7 @@ def test_deploy_apply_denied_when_target_not_allowed(
 
     monkeypatch.setenv("NIMBUSWARE_SETUP_BUNDLE", "enterprise")
     monkeypatch.setattr(
-        "orchestrator.fleet_policy_loader.find_repo_root",
+        "orchestrator.fleet.policy_loader.find_repo_root",
         lambda *_a, **_k: tmp_path,
     )
     monkeypatch.setattr(

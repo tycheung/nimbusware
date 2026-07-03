@@ -110,7 +110,7 @@ def _handle_command(text: str, state: ChatState) -> str | None:
 
 
 def _message_has_routable_mentions(message: str) -> bool:
-    from maker.collab_disciplines import parse_discipline_mentions
+    from maker.collab.disciplines import parse_discipline_mentions
     from orchestrator.surface_interjection_routing import parse_surface_mentions
 
     return bool(parse_discipline_mentions(message) or parse_surface_mentions(message))

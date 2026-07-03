@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from orchestrator.backlog_generator import (
+from orchestrator.campaign.generator import (
     generate_heuristic_backlog,
 )
-from orchestrator.campaign_slice_selector import select_next_slice
+from orchestrator.campaign.slice_selector import select_next_slice
 
 
 def test_generate_heuristic_backlog_crm_template() -> None:

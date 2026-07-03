@@ -4,7 +4,7 @@ from typing import Any
 
 from env.env_flags import env_str
 from maker.archetype_surface_defaults import default_surfaces_for_archetype
-from maker.deploy_target_enforcement import allowed_deploy_targets_for_tenant
+from maker.deploy.target_enforcement import allowed_deploy_targets_for_tenant
 
 
 def fleet_governance_summary(
@@ -13,7 +13,7 @@ def fleet_governance_summary(
     archetype: str | None = None,
     tenant_slug: str | None = None,
 ) -> dict[str, Any]:
-    from orchestrator.fleet_policies import tenant_enforcement_policy
+    from orchestrator.fleet.policies import tenant_enforcement_policy
 
     bundle = (setup_bundle or env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default").lower()
     enforcement = tenant_enforcement_policy(tenant_slug or None)
@@ -42,7 +42,7 @@ def fleet_governance_summary(
 def _allowed_stacks(tenant_slug: str | None, bundle: str) -> dict[str, str]:
     if bundle != "enterprise":
         return {}
-    from orchestrator.fleet_policies import tenant_stack_policy
+    from orchestrator.fleet.policies import tenant_stack_policy
 
     policy = tenant_stack_policy(tenant_slug)
     return dict(policy.allowed_stacks)
@@ -51,7 +51,7 @@ def _allowed_stacks(tenant_slug: str | None, bundle: str) -> dict[str, str]:
 def _deploy_approval_chain(tenant_slug: str | None, bundle: str) -> str:
     if bundle != "enterprise":
         return "maker_only"
-    from orchestrator.fleet_policies import tenant_deploy_approval_policy
+    from orchestrator.fleet.policies import tenant_deploy_approval_policy
 
     return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
 
@@ -59,6 +59,6 @@ def _deploy_approval_chain(tenant_slug: str | None, bundle: str) -> str:
 def _discovery_required_fields(tenant_slug: str | None, bundle: str) -> list[str]:
     if bundle != "enterprise":
         return []
-    from orchestrator.fleet_policies import tenant_discovery_policy
+    from orchestrator.fleet.policies import tenant_discovery_policy
 
     return list(tenant_discovery_policy(tenant_slug).discovery_required_fields)

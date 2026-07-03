@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.slice_contract import run_slice_contract_check
+from orchestrator.slice.contract import run_slice_contract_check
 
 
 def test_slice_contract_passes_with_openapi(tmp_path: Path) -> None:

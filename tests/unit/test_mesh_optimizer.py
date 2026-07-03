@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from orchestrator.mesh_optimizer import (
+from orchestrator.collab.optimizer import (
     normalize_optimizer_weights,
     pick_optimize_node,
     score_node,

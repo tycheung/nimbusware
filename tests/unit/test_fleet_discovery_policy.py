@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetDiscoveryPolicy,
     load_fleet_discovery_policies,
     save_fleet_discovery_policies,

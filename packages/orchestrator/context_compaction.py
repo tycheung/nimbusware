@@ -6,7 +6,7 @@ from typing import Any, Literal
 from agent_core.context_budget import estimate_tokens
 from agent_core.mapping import mapping_or_empty
 from agent_core.models.slice_handoff import SliceHandoffSummary
-from orchestrator.slice_handoff import handoff_markdown_capped
+from orchestrator.slice.handoff import handoff_markdown_capped
 
 CompactionScope = Literal["all", "last_n", "source_refs"]
 
@@ -121,7 +121,7 @@ def compact_campaign_context(
     if not older:
         return None
 
-    from orchestrator.replay_from import (
+    from orchestrator.replay.replay_from import (
         compaction_skipped_compaction_ids,
         effective_reverted_compaction_ids,
     )
@@ -268,7 +268,7 @@ def maybe_emit_compaction_event(
     source_refs: list[str] | None = None,
 ) -> CompactionResult | None:
     """Compact when enabled and append a campaign.context.compacted marker event."""
-    from orchestrator.replay_from import compaction_allowed
+    from orchestrator.replay.replay_from import compaction_allowed
 
     if not compaction_allowed(events):
         return None

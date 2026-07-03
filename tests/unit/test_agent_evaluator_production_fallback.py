@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.workflow_agent_evaluator import (
+from orchestrator.workflow.agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     agent_evaluator_production_llm_fallback_enabled,
     agent_evaluator_rules_derived_llm_evaluation,

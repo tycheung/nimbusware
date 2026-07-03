@@ -7,14 +7,14 @@ from orchestrator.interjection_queue import (
     parse_interjection_prefix,
     queue_for_run,
 )
-from orchestrator.micro_slice import SlicePlan
-from orchestrator.slice_interjection import (
+from orchestrator.slice.interjection import (
     apply_interjection_to_plan,
     gate_result_for_skip_slice,
     handle_patch_from_chat_interjection,
     process_interjection_cycle,
     steer_excerpt_from_cycle,
 )
+from orchestrator.slice.micro_slice import SlicePlan
 from store.memory import InMemoryEventStore
 
 
@@ -90,7 +90,7 @@ def test_patch_from_chat_inserts_backlog_slice() -> None:
         BacklogSlice,
         DeliveryBacklog,
     )
-    from orchestrator.backlog_generator import emit_backlog_generated
+    from orchestrator.campaign.generator import emit_backlog_generated
 
     run_id = uuid4()
     store = InMemoryEventStore()

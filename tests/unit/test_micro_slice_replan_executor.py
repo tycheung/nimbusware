@@ -5,18 +5,18 @@ from unittest.mock import patch
 from uuid import UUID
 
 from agent_core.models import EventType
-from orchestrator.micro_slice import DiffBudgetResult
-from orchestrator.micro_slice_executor import execute_micro_slice_pass
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.slice_diff import SliceDiffStats
+from orchestrator.slice.diff import SliceDiffStats
+from orchestrator.slice.executor import execute_micro_slice_pass
+from orchestrator.slice.micro_slice import DiffBudgetResult
 
 
 @patch.dict(os.environ, {"NIMBUSWARE_MICRO_SLICE_COUNT": "1"}, clear=False)
 @patch(
-    "orchestrator.micro_slice_executor.collect_slice_diff_stats",
+    "orchestrator.slice.executor.collect_slice_diff_stats",
 )
 @patch(
-    "orchestrator.micro_slice_executor._run_slice_verify_and_test",
+    "orchestrator.slice.executor._run_slice_verify_and_test",
     return_value=(True, "ok", True, "ok"),
 )
 def test_slice_replan_emitted_on_budget_fail(
@@ -39,7 +39,7 @@ def test_slice_replan_emitted_on_budget_fail(
     mock_stats.side_effect = _stats
 
     with patch(
-        "orchestrator.micro_slice_executor.check_slice_diff_budget",
+        "orchestrator.slice.executor.check_slice_diff_budget",
     ) as mock_budget:
         mock_budget.side_effect = [
             DiffBudgetResult(False, 3, 500, "over loc"),

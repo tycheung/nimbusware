@@ -12,8 +12,8 @@ from maker.approval import (
     pending_slice_from_rows,
 )
 from maker.slice_workflow._shared import emit_maker_stage
-from maker.workspace import resolve_run_workspace
-from maker.workspace_snapshot import restore_workspace_snapshot
+from maker.workspace.snapshot import restore_workspace_snapshot
+from maker.workspace.workspace import resolve_run_workspace
 
 
 def skip_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any]:

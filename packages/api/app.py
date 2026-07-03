@@ -25,8 +25,8 @@ from api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from auth.store import build_collab_store, build_user_store
 from iam.middleware import enterprise_iam_middleware
 from iam.store import PostgresIamStore, build_iam_store
-from maker.chat_library_store import build_chat_library_store
-from maker.chat_store import build_chat_store
+from maker.chat.library_store import build_chat_library_store
+from maker.chat.session_store import build_chat_store
 from maker.host_transfer_store import build_host_transfer_store
 from maker.optimizer_weights_store import build_optimizer_weights_store
 from maker.store import build_project_store

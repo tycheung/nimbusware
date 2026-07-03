@@ -31,8 +31,8 @@ from maker.slice_engine import (
     slice_implement_mode,
 )
 from maker.slice_workflow._shared import emit_maker_stage, plan_from_pending
-from maker.workspace import resolve_run_workspace
-from maker.workspace_snapshot import create_workspace_snapshot
+from maker.workspace.snapshot import create_workspace_snapshot
+from maker.workspace.workspace import resolve_run_workspace
 
 
 def complete_slice_after_implement(
@@ -94,7 +94,7 @@ def complete_slice_after_implement(
 
     final_stats = _collect_slice_diff_stats(ws, plan)
     if slice_implement_mode() == "stub":
-        from orchestrator.slice_diff import SliceDiffStats
+        from orchestrator.slice.diff import SliceDiffStats
 
         final_stats = SliceDiffStats(
             final_stats.changed_files,
@@ -111,7 +111,7 @@ def complete_slice_after_implement(
     e2e_passed: bool | None = None
     e2e_detail = ""
     if block.e2e_enabled:
-        from orchestrator.slice_e2e import run_slice_e2e_verify
+        from orchestrator.slice.e2e import run_slice_e2e_verify
 
         e2e = run_slice_e2e_verify(
             ws,
@@ -258,7 +258,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
     gate = complete_slice_after_implement(orch, run_id, ws, plan, duration_ms=duration_ms)
     commit_result: dict[str, Any] = {"status": "skipped", "reason": "gate_not_passed"}
     if gate.passed:
-        from orchestrator.slice_git_commit import maybe_commit_slice
+        from orchestrator.slice.git_commit import maybe_commit_slice
 
         run_meta = orch._run_created_metadata(run_id)
         commit_result = maybe_commit_slice(

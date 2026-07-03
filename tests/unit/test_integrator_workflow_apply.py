@@ -15,7 +15,7 @@ from console.integrator_workflow_apply import (
     workflow_yaml_write_enabled,
 )
 from orchestrator.merge import load_yaml
-from orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
+from orchestrator.workflow.agent_evaluator import parse_agent_evaluator_workflow_block
 
 
 @pytest.fixture()

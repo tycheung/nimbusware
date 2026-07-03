@@ -14,8 +14,8 @@ from agent_tools.tools import (
     tool_read_file,
     tool_write_file,
 )
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_implement import slice_implement_mode
+from orchestrator.slice.implement import slice_implement_mode
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_path_in_plan() -> None:

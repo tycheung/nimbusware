@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from orchestrator.collab_mesh_context import (
+from orchestrator.collab.mesh_context import (
     clear_mesh_binding_context,
     mesh_actor_user_id,
     mesh_participant_overrides,
 )
-from orchestrator.host_collab_mesh_hydrate import (
+from orchestrator.collab.mesh_hydrate import (
     ensure_mesh_binding_for_llm,
     hydrate_mesh_binding_from_run,
     set_active_run_for_mesh,

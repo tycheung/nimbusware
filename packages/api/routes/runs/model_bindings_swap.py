@@ -9,12 +9,12 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.user import UserDep, maker_user_id_str
-from orchestrator.model_binding_audit import (
+from orchestrator.routing.audit import (
     RoleClaimConflictError,
     assert_role_claim_available,
     extract_model_binding_audit_rows,
 )
-from orchestrator.model_binding_swap import (
+from orchestrator.routing.swap import (
     append_model_binding_override,
     append_role_claim,
     append_role_release,

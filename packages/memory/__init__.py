@@ -1,22 +1,23 @@
-from memory.audit import (
+from memory.index.audit import (
     append_memory_indexed_event,
     append_memory_retrieval_emitted_event,
 )
-from memory.chunking import chunks_from_event_rows, run_index_contribution_enabled
-from memory.embeddings import deterministic_embed, embedding_model_id_for_mode
-from memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
-from memory.indexer import RebuildIndexResult, rebuild_memory_index
-from memory.manifest import MemoryIndexManifest, default_memory_index_dir, write_manifest
-from memory.models import (
+from memory.index.chunking import chunks_from_event_rows, run_index_contribution_enabled
+from memory.index.embeddings import deterministic_embed, embedding_model_id_for_mode
+from memory.index.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
+from memory.index.indexer import RebuildIndexResult, rebuild_memory_index
+from memory.index.manifest import MemoryIndexManifest, default_memory_index_dir, write_manifest
+from memory.index.models import (
     EmbeddingMode,
     MemoryChunkDraft,
     MemoryChunkRecord,
     MemoryRetrievalHit,
 )
-from memory.repo_scope import repo_scope_hash
-from memory.search import format_memory_excerpt, search_memory, search_user_memory
-from memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
-from memory.user_scope import user_scope_hash
+from memory.index.repo_scope import repo_scope_hash
+from memory.index.search import format_memory_excerpt, search_memory, search_user_memory
+from memory.index.user_scope import user_scope_hash
+from memory.store.memory import InMemoryMemoryChunkStore
+from memory.store.postgres import PostgresMemoryChunkStore
 
 __all__ = [
     "EmbeddingMode",

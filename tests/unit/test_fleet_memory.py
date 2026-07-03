@@ -9,11 +9,12 @@ from agent_core.models import EventType
 from env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from iam.context import set_auth_context
 from iam.store import InMemoryIamStore
-from memory.fleet_index import rebuild_fleet_memory_index
-from memory.fleet_sync import (
+from memory.fleet.index import rebuild_fleet_memory_index
+from memory.fleet.sync import (
     pull_fleet_memory_from_canonical,
     push_fleet_memory_to_canonical,
 )
+from memory.index.search import search_fleet_memory
 from memory.org_scope import (
     fleet_scope_hash,
     memory_namespace_for_repo,
@@ -21,8 +22,7 @@ from memory.org_scope import (
     resolve_fleet_scope,
 )
 from memory.remote_store import FileFleetMemoryCanonicalStore
-from memory.search import search_fleet_memory
-from memory.store import InMemoryMemoryChunkStore
+from memory.store.memory import InMemoryMemoryChunkStore
 from memory.sync_cli import main as sync_cli_main
 
 

@@ -6,8 +6,8 @@ import pytest
 
 from agent_tools.risk_caps import AgentRiskCaps, resolve_agent_risk_caps
 from agent_tools.runtime import execute_slice_implement_agent
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_implement import slice_implement_mode
+from orchestrator.slice.implement import slice_implement_mode
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_resolve_agent_risk_caps_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -3,13 +3,13 @@ from __future__ import annotations
 from uuid import uuid4
 
 from orchestrator.interjection_queue import queue_for_run
-from orchestrator.micro_slice import SlicePlan
-from orchestrator.slice_interjection import (
+from orchestrator.slice.interjection import (
     InterjectionCycle,
     apply_surface_steer_to_plan,
     process_interjection_cycle,
     steer_excerpt_from_cycle,
 )
+from orchestrator.slice.micro_slice import SlicePlan
 from orchestrator.surface_interjection_routing import (
     enqueue_surface_steers,
     surface_steer_routes,

@@ -4,7 +4,7 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from orchestrator.fleet_critic_reliability import critic_reliability_summary_from_events
+from orchestrator.fleet.critic_reliability import critic_reliability_summary_from_events
 
 __all__ = [
     "critic_reliability_caption",

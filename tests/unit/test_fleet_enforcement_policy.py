@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from orchestrator.enforcement_profiles import preset_for_enforcement_level
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetEnforcementPolicy,
     load_fleet_enforcement_policies,
     save_fleet_enforcement_policies,
 )
-from orchestrator.fleet_policy_guards import (
+from orchestrator.fleet.policy_guards import (
     clamp_enforcement_profile_to_policy as clamp_profile_to_policy,
 )
+from orchestrator.profiles.enforcement_profiles import preset_for_enforcement_level
 
 
 def test_clamp_profile_to_policy(tmp_path) -> None:

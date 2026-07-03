@@ -8,12 +8,12 @@ from api.deps import OrchDep, StoreDep
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.preflight import get_preflight_history
 from env.edition import enterprise_feature_enabled
-from orchestrator.fleet_ollama_sli import (
+from orchestrator.fleet.ollama_sli import (
     fleet_ollama_sli_enabled,
     fleet_ollama_sli_status_snapshot,
     merge_preflight_history_aggregate,
 )
-from orchestrator.fleet_worker import (
+from orchestrator.fleet.worker import (
     collect_fleet_worker_metrics,
     fleet_redis_worker_enabled,
     fleet_worker_health_snapshot,

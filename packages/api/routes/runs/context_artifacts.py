@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from maker.workspace import (
+from maker.workspace.workspace import (
     project_id_from_run_created_metadata,
     run_created_metadata_from_rows,
 )

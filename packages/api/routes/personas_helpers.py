@@ -10,7 +10,7 @@ from api.errors import problem
 from api.schemas.personas import PersonaShelvesResponse
 from config.persist import load_persona_shelf, persist_persona_shelf
 from extensions.personas import ALLOWED_SHELVES, PersonaShelf
-from orchestrator.persona_catalog_audit import persona_catalog_run_id
+from orchestrator.persona.catalog_audit import persona_catalog_run_id
 
 _RESERVED_PERSONA_IDS = frozenset({"default"})
 

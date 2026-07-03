@@ -519,7 +519,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from orchestrator.slice.lsp_client import resolve_lsp_command_argv; "
                 "import sys; sys.exit(0 if resolve_lsp_command_argv() else 1)"
             ),
         ],
@@ -540,7 +540,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from orchestrator.slice.lsp_client import resolve_lsp_command_argv; "
                 "argv = resolve_lsp_command_argv() or []; print(' '.join(argv))"
             ),
         ],

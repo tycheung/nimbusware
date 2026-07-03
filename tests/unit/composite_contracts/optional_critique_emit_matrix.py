@@ -16,7 +16,7 @@ from agent_core.models import (
     ModelSelectedPrimaryPayload,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.workflow.universal_critique import EffectiveUniversalCritique
 
 
 def make_effective_universal_critique(**overrides: bool) -> EffectiveUniversalCritique:
@@ -87,12 +87,10 @@ TEST_WRITER_SPEC = OptionalCritiqueEmitterSpec(
     llm_key="tw_llm",
     stub_key="tw_stub",
     llm_patch=(
-        "orchestrator._pipeline.critique_gates_optional_emit."
-        "execute_test_writer_critique_llm"
+        "orchestrator._pipeline.critique_gates_optional_emit.execute_test_writer_critique_llm"
     ),
     stub_patch=(
-        "orchestrator._pipeline.critique_gates_optional_emit."
-        "emit_stub_test_writer_critique_panel"
+        "orchestrator._pipeline.critique_gates_optional_emit.emit_stub_test_writer_critique_panel"
     ),
     emit_method="_emit_test_writer_critique_optional",
 )
@@ -102,13 +100,9 @@ PLANNER_SPEC = OptionalCritiqueEmitterSpec(
     enabled_key="pll_enabled",
     llm_key="pll_llm",
     stub_key="pll_stub",
-    llm_patch=(
-        "orchestrator._pipeline.critique_gates_optional_emit."
-        "execute_planner_critique_llm"
-    ),
+    llm_patch=("orchestrator._pipeline.critique_gates_optional_emit.execute_planner_critique_llm"),
     stub_patch=(
-        "orchestrator._pipeline.critique_gates_optional_emit."
-        "emit_stub_planner_critique_panel"
+        "orchestrator._pipeline.critique_gates_optional_emit.emit_stub_planner_critique_panel"
     ),
     emit_method="_emit_planner_critique_optional",
 )

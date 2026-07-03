@@ -6,12 +6,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
-from maker.deploy_pipeline_events import (
+from maker.deploy.pipeline_events import (
     deploy_apply_passed_from_events,
     emit_deploy_apply_stages,
     live_urls_from_events,
 )
-from maker.deploy_smoke import run_deploy_smoke
+from maker.deploy.smoke import run_deploy_smoke
 from store.memory import InMemoryEventStore
 
 
@@ -31,7 +31,7 @@ def test_run_deploy_smoke_http_pass(monkeypatch: pytest.MonkeyPatch) -> None:
             return False
 
     monkeypatch.setattr(
-        "maker.deploy_smoke.urlopen",
+        "maker.deploy.smoke.urlopen",
         lambda *_a, **_k: FakeResp(),
     )
     result = run_deploy_smoke(api_url="https://api.example.com", web_url="https://app.example.com")

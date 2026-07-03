@@ -11,13 +11,13 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from orchestrator.llm_plan import (
+from orchestrator.llm import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.workflow.universal_critique import EffectiveUniversalCritique
 
 if TYPE_CHECKING:
     from store.memory import InMemoryEventStore

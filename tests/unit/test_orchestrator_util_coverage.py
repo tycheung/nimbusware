@@ -10,12 +10,12 @@ from config.listener import (
     start_config_notify_listener,
 )
 from config.notify import ConfigNotifyHub, encode_notify_payload
-from orchestrator.ollama_chat import (
+from orchestrator.critique.security_semgrep import run_semgrep_scan
+from orchestrator.routing.chat import (
     OllamaLlmJson,
     extract_ollama_usage,
     ollama_chat_json,
 )
-from orchestrator.security_semgrep import run_semgrep_scan
 
 
 def test_extract_ollama_usage_counts() -> None:
@@ -42,7 +42,7 @@ def test_ollama_chat_json_parses_message(monkeypatch) -> None:
         def post(self, *args, **kwargs):
             return response
 
-    monkeypatch.setattr("orchestrator.ollama_chat.httpx.post", _Client().post)
+    monkeypatch.setattr("orchestrator.routing.chat.httpx.post", _Client().post)
     out = ollama_chat_json(
         base_url="http://127.0.0.1:11434",
         model="tiny",
@@ -55,23 +55,21 @@ def test_ollama_chat_json_parses_message(monkeypatch) -> None:
 
 
 def test_semgrep_scan_branches(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr("orchestrator.security_semgrep.semgrep_enabled", lambda: False)
+    monkeypatch.setattr("orchestrator.critique.security_semgrep.semgrep_enabled", lambda: False)
     code, out = run_semgrep_scan(tmp_path)
     assert code == 0
     assert "skipped" in out
 
-    monkeypatch.setattr("orchestrator.security_semgrep.semgrep_enabled", lambda: True)
-    monkeypatch.setattr("orchestrator.security_semgrep.shutil.which", lambda _: None)
+    monkeypatch.setattr("orchestrator.critique.security_semgrep.semgrep_enabled", lambda: True)
+    monkeypatch.setattr("orchestrator.critique.security_semgrep.shutil.which", lambda _: None)
     code, out = run_semgrep_scan(tmp_path)
     assert "not on PATH" in out
 
     (tmp_path / "packages").mkdir()
-    monkeypatch.setattr(
-        "orchestrator.security_semgrep.shutil.which", lambda _: "semgrep"
-    )
+    monkeypatch.setattr("orchestrator.critique.security_semgrep.shutil.which", lambda _: "semgrep")
     proc = MagicMock(returncode=0, stdout="{}", stderr="")
     monkeypatch.setattr(
-        "orchestrator.security_semgrep.subprocess.run", lambda *a, **k: proc
+        "orchestrator.critique.security_semgrep.subprocess.run", lambda *a, **k: proc
     )
     code, out = run_semgrep_scan(tmp_path)
     assert code == 0

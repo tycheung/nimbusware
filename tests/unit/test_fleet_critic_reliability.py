@@ -18,7 +18,7 @@ from agent_core.models import (
 from iam.constants import DEFAULT_TENANT_ID
 from iam.context import reset_auth_context, set_auth_context
 from iam.models import AuthContext
-from orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+from orchestrator.fleet.critic_reliability import tenant_critic_reliability_metrics
 from store.memory import InMemoryEventStore
 
 
@@ -101,7 +101,7 @@ def test_tenant_critic_reliability_metrics(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_critic_reliability_out_of_domain_metrics() -> None:
-    from orchestrator.fleet_critic_reliability import (
+    from orchestrator.fleet.critic_reliability import (
         critic_reliability_summary_from_events,
     )
 

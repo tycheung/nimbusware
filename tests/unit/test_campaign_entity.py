@@ -3,14 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.campaign import (
+from orchestrator.campaign.campaign import (
     campaign_effective_from_rows,
     campaign_enabled_for_run,
     campaign_policy_from_workflow,
     emit_campaign_created,
 )
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_campaign import (
+from orchestrator.workflow.campaign import (
     parse_backlog_workflow_block,
     parse_campaign_workflow_block,
 )

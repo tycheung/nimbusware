@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from maker.intent import build_requirements_artifact
+from maker.intent.requirements import build_requirements_artifact
 from maker.solo_discipline import parse_discipline_mentions, solo_discipline_routes
 
 

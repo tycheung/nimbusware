@@ -188,9 +188,9 @@ def run_desktop(
     if hasattr(signal, "SIGTERM"):
         signal.signal(signal.SIGTERM, _handle_signal)
 
-    from env.env_flags import api_port
+    from env.env_flags import api_port as resolve_api_port
 
-    api_port_display = api_port or str(api_port())
+    api_port_display = api_port or str(resolve_api_port())
     _log(f"Nimbusware repo: {repo}")
     _log(f"Log file: {log_file}")
     if using_default_admin_token():

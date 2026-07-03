@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from maker.deploy_credential_vault import append_deploy_audit_event
+from maker.deploy.credential_vault import append_deploy_audit_event
 
 
 def test_deploy_audit_event_writes_jsonl(tmp_path) -> None:

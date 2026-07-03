@@ -6,7 +6,7 @@ import tarfile
 from uuid import uuid4
 
 from iam.store import InMemoryIamStore
-from orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
+from orchestrator.replay.export import build_enterprise_audit_bundle_bytes
 from research.enterprise_index import append_enterprise_research_index
 from store.memory import InMemoryEventStore
 

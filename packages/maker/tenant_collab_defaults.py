@@ -6,7 +6,7 @@ from uuid import UUID
 from config.collab_policy_store import load_collab_policy
 from config.tenant_policy_store import load_tenant_collab_policy
 from env import find_repo_root
-from maker.collab_disciplines import normalize_discipline
+from maker.collab.disciplines import normalize_discipline
 
 
 def _policy_doc(tenant_slug: str | None) -> dict[str, Any]:

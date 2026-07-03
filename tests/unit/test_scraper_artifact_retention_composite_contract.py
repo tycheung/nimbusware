@@ -9,7 +9,7 @@ from uuid import uuid4
 import pytest
 
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.scraper_artifacts import prune_scraper_artifacts
+from orchestrator.scraper.artifacts import prune_scraper_artifacts
 from unit.composite_contract_fixtures import set_mtime_days_ago, set_mtime_to
 
 _VALUE_ERROR_MSG = "max_age_days must be >= 1"

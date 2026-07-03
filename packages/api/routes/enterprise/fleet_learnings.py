@@ -8,7 +8,7 @@ from api.deps import ProjectStoreDep
 from api.errors import problem
 from api.routes.enterprise.core import EnterpriseDep
 from iam.context import get_auth_context
-from orchestrator.fleet_learnings import search_fleet_learnings, workspaces_for_tenant
+from orchestrator.fleet.learnings import search_fleet_learnings, workspaces_for_tenant
 
 router = APIRouter(prefix="/enterprise/fleet-learnings", tags=["enterprise"])
 

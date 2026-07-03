@@ -7,7 +7,7 @@ import pytest
 
 from agent_core.models import EventType
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_agent_evaluator import (
+from orchestrator.workflow.agent_evaluator import (
     AgentEvaluatorAutoCreatePersonaBlock,
     AgentEvaluatorWorkflowBlock,
 )

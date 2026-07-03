@@ -6,12 +6,12 @@ from uuid import uuid4
 
 from env import find_repo_root
 from maker.user_agent_overlay import prompt_addon_for_run_claims, save_user_agent_overlay
-from orchestrator.collab_mesh_context import (
+from orchestrator.collab.mesh_context import (
     clear_mesh_binding_context,
     set_mesh_binding_context,
 )
-from orchestrator.critique_routing import load_critique_router
-from orchestrator.llm_slice import _custom_agent_prompt_from_rows
+from orchestrator.critique.routing import load_critique_router
+from orchestrator.llm.llm_slice import _custom_agent_prompt_from_rows
 from orchestrator.registry import RoleRegistry
 
 ROOT = find_repo_root()

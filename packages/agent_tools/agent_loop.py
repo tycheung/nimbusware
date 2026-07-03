@@ -209,7 +209,7 @@ def run(
 
                 page_url = str(step.arguments.get("base_url") or "").strip()
                 if not page_url:
-                    from orchestrator.dev_env_supervisor import active_base_url
+                    from orchestrator.dev_env.supervisor import active_base_url
 
                     page_url = active_base_url(ws) or ""
                 tool_result = tool_browser_act(
@@ -221,7 +221,7 @@ def run(
                 )
             elif step.tool == "write":
                 from agent_tools.tools import tool_write_file
-                from orchestrator.slice_patch_apply import apply_slice_file_edits
+                from orchestrator.slice.patch_apply import apply_slice_file_edits
 
                 rel = str(step.arguments.get("path") or "")
                 content = str(step.arguments.get("content") or "")

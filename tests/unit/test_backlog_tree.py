@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.backlog_generator import (
+from orchestrator.campaign.generator import (
     emit_backlog_generated,
     generate_heuristic_backlog,
 )

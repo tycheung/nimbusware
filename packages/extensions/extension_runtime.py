@@ -264,7 +264,7 @@ class SecurityScanner:
     def run(self, workspace: str) -> dict[str, Any]:
         from pathlib import Path
 
-        from orchestrator.security_scan import run_security_scan
+        from orchestrator.critique.security_scan import run_security_scan
 
         code, log, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec, _semgrep_ec = run_security_scan(
             Path(workspace),

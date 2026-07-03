@@ -140,7 +140,7 @@ def lifecycle_slice(
         return prepare_next_pending_slice(orch, run_id)
 
     repo = nimbusware_repo_root_path()
-    from maker.workspace import resolve_run_workspace
+    from maker.workspace.workspace import resolve_run_workspace
 
     ws = resolve_run_workspace(rows, override=repo)
     results = orch.execute_micro_slice_pass(run_id, workspace=ws)

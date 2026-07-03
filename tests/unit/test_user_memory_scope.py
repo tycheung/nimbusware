@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from memory.user_scope import memory_retrieval_policy, user_memory_index_dir
+from memory.index.user_scope import memory_retrieval_policy, user_memory_index_dir
 
 
 def test_user_memory_index_dir() -> None:

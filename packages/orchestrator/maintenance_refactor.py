@@ -41,12 +41,12 @@ def run_maintenance_refactor(
         ),
     )
     rows_for_index = store.list_run_events(str(run_id))
-    from maker.workspace import resolve_run_workspace
-    from orchestrator.orphan_index import build_orphan_report
-    from orchestrator.similarity_index import build_similarity_index
+    from maker.workspace.workspace import resolve_run_workspace
+    from orchestrator.repo_intel.orphan_index import build_orphan_report
+    from orchestrator.repo_intel.similarity_index import build_similarity_index
 
     ws_index = resolve_run_workspace(rows_for_index)
-    from orchestrator.code_intel_store import load_or_build_code_intel
+    from orchestrator.repo_intel.store import load_or_build_code_intel
 
     repo_root = getattr(orch, "repo_root", ws_index)
     intel = load_or_build_code_intel(Path(repo_root), ws_index)
@@ -79,7 +79,7 @@ def run_maintenance_refactor(
     fix_slices = 0
     if insert_fix_slices and (gate_fail or orphan_report.orphans or duplicate_clusters):
         from agent_core.models.backlog import BacklogSlice
-        from orchestrator.backlog_generator import (
+        from orchestrator.campaign.generator import (
             backlog_from_events,
             emit_backlog_revised,
         )
@@ -120,8 +120,8 @@ def run_maintenance_refactor(
                 emit_backlog_revised(store, run_id, revised, revision_reason="refactor_fix_slices")
                 fix_slices = 1
     rows = store.list_run_events(str(run_id))
-    from maker.workspace import resolve_run_workspace
-    from orchestrator.factory_cadence import maybe_run_factory_cadence_pass
+    from maker.workspace.workspace import resolve_run_workspace
+    from orchestrator.factory.cadence import maybe_run_factory_cadence_pass
     from orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
 
     ws = resolve_run_workspace(rows)

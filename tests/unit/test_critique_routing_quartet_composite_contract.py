@@ -7,7 +7,7 @@ import pytest
 
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.critique_routing import (
+from orchestrator.critique.routing import (
     default_critique_pairings_path,
     load_critique_router,
     registry_producer_taxonomy_keys,

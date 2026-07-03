@@ -16,7 +16,7 @@ from agent_core.models import (
 from api.app import app
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.critique_routing import (
+from orchestrator.critique.routing import (
     CRITIQUE_STAGE_TO_PRODUCER,
     critique_coverage_snapshot,
 )

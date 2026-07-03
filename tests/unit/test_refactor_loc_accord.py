@@ -11,7 +11,7 @@ from orchestrator.loc_accord_stage import (
 )
 from orchestrator.refactor_stage import emit_refactor_stage_and_critique
 from orchestrator.registry import RoleRegistry
-from orchestrator.workflow_refactor import RefactorWorkflowBlock
+from orchestrator.workflow.refactor import RefactorWorkflowBlock
 from store.memory import InMemoryEventStore
 
 _REPO = Path(__file__).resolve().parents[2]

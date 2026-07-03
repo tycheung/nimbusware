@@ -5,19 +5,19 @@ from pathlib import Path
 
 import pytest
 
+from orchestrator.factory.runtime import (
+    collect_put_artifacts,
+    detect_put_stack,
+    put_runtime_summary,
+    start_put_preview,
+    stop_put_preview,
+)
 from orchestrator.interaction_surface_map import (
     InteractionSurfaceMap,
     coverage_pct,
     discover_surfaces_from_html,
     discover_surfaces_from_openapi,
     discover_surfaces_static,
-)
-from orchestrator.put_runtime import (
-    collect_put_artifacts,
-    detect_put_stack,
-    put_runtime_summary,
-    start_put_preview,
-    stop_put_preview,
 )
 
 
@@ -151,11 +151,11 @@ def test_campaign_driver_tick_includes_put_stack_note(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     from env import find_repo_root
-    from orchestrator.campaign import (
+    from orchestrator.campaign.campaign import (
         campaign_policy_from_workflow,
         emit_campaign_created,
     )
-    from orchestrator.campaign_driver import campaign_driver_tick
+    from orchestrator.campaign.driver import campaign_driver_tick
     from orchestrator.pipeline import make_dev_orchestrator
 
     monkeypatch.setenv("NIMBUSWARE_MICRO_SLICE_COUNT", "1")

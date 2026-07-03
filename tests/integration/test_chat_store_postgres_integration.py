@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import pytest
 
-from maker.chat_store import PostgresChatStore
+from maker.chat.postgres import PostgresChatStore
 from maker.store import PostgresProjectStore
 
 pytestmark = pytest.mark.integration

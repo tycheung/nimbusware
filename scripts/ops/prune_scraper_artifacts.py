@@ -51,7 +51,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from orchestrator.scraper_artifacts import (
+from orchestrator.scraper.artifacts import (
     prune_scraper_artifacts,
     resolve_scraper_artifact_base_dir,
 )

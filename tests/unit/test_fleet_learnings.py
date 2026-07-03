@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from maker.models import ProjectRecord
 from maker.store import InMemoryProjectStore
 from orchestrator.diagnose_learn import learnings_dir
-from orchestrator.fleet_learnings import search_fleet_learnings, workspaces_for_tenant
+from orchestrator.fleet.learnings import search_fleet_learnings, workspaces_for_tenant
 
 
 def _project(tenant_id: UUID, workspace: Path) -> ProjectRecord:

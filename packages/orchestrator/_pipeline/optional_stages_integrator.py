@@ -17,7 +17,7 @@ from orchestrator._pipeline._helpers import (
     uuid4,
 )
 from orchestrator._pipeline.protocol_hosts import IntegratorOptionalStagesHost
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     effective_integrator_min_score_to_pass,
     integrator_gate_event_would_emit,
     parse_integrator_gate_project_tags,
@@ -32,7 +32,7 @@ class IntegratorOptionalStagesMixin:
         bundle_id: str,
     ) -> None:
         from config.persist import load_bundle_catalog_dict
-        from orchestrator.integrator_dep_preflight import (
+        from orchestrator.integrator.dep_preflight import (
             analyze_integrator_dep_conflicts,
         )
 
@@ -171,7 +171,7 @@ class IntegratorOptionalStagesMixin:
         }
         if selected_bundle_rank is not None:
             gate_meta["selected_bundle_rank"] = selected_bundle_rank
-        from orchestrator.integrator_live_context import (
+        from orchestrator.integrator.live_context import (
             integrator_live_context_from_rows,
         )
 

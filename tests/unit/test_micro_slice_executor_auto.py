@@ -6,11 +6,11 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.micro_slice import (
+from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice.micro_slice import (
     micro_slice_count_for_run,
     micro_slice_timeline_summary,
 )
-from orchestrator.pipeline import make_dev_orchestrator
 
 
 @pytest.fixture(autouse=True)

@@ -6,10 +6,10 @@ import pytest
 import yaml
 
 from orchestrator.merge import load_yaml
-from orchestrator.workflow_blocks_simple import (
+from orchestrator.workflow.blocks_simple import (
     parse_escalation_workflow_block,
 )
-from orchestrator.workflow_security_metadata import (
+from orchestrator.workflow.security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 from unit.composite_repo_fixtures import write_tmp_yaml, write_workflow_profile

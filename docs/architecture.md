@@ -35,6 +35,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [027-install-setup-bundles.md](adr/027-install-setup-bundles.md) | Default vs enterprise setup bundles |
 | [025-distributed-compute-mesh.md](adr/025-distributed-compute-mesh.md) | Compute node registry and work-unit mesh MVP |
 | [026-enforcement-depth-slider.md](adr/026-enforcement-depth-slider.md) | Enforcement depth 0–10 (workspace CI strictness) |
+| [028-package-directory-depth.md](adr/028-package-directory-depth.md) | Package depth vs breadth; orchestrator domain subpackages |
 | [026-host-transfer.md](adr/026-host-transfer.md) | Collaborative session host transfer MVP |
 
 Tier 3 context-efficiency modules (Pi transplant): `agent_tools` (dual tool output, allowlist, stable prompt file), `projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.

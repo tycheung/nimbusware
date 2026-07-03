@@ -5,7 +5,7 @@ from typing import Any
 
 from config.workflow_read import load_yaml
 from env.env_flags import env_var_tri_state_summary
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     integrator_gate_event_would_emit,
     integrator_gate_workflow_enabled,
     load_integrator_gate_emit_enabled,

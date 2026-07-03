@@ -15,9 +15,7 @@ _TARGET_MS = 180_000
 def test_chat_patch_intent_to_first_slice(journey_client, tmp_path: Path) -> None:
     ws = copy_fixture_repo("tiny_python_app", tmp_path / "chat-patch")
     (ws / "packages/orchestrator").mkdir(parents=True, exist_ok=True)
-    (ws / "packages/orchestrator/micro_slice.py").write_text(
-        "# stub\n", encoding="utf-8"
-    )
+    (ws / "packages/orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
     (ws / "packages/orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws, name="chat-patch-timing")

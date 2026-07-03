@@ -5,7 +5,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models.backlog import BacklogSlice
-from orchestrator.backlog_generator import backlog_from_events, emit_backlog_revised
+from orchestrator.campaign.generator import backlog_from_events, emit_backlog_revised
 from orchestrator.improvement_council import ImprovementTrack
 
 
@@ -24,7 +24,7 @@ def queue_council_backlog_slice(
     rationale = f"Council track: {track.value}"
 
     if track == ImprovementTrack.SIMPLIFY:
-        from orchestrator.code_intel_store import load_or_build_code_intel
+        from orchestrator.repo_intel.store import load_or_build_code_intel
 
         intel = load_or_build_code_intel(workspace, workspace)
         orphans_raw = intel.get("orphans")

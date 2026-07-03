@@ -18,6 +18,7 @@ from agent_core.models import (
     Verdict,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
+from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
 from orchestrator.llm.common import append_gate_decision_event
 from orchestrator.refactor_proposal import (
     build_refactor_proposal,
@@ -25,8 +26,7 @@ from orchestrator.refactor_proposal import (
     orphan_gate_exceeded,
 )
 from orchestrator.registry import RoleRegistry
-from orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from orchestrator.workflow_refactor import RefactorWorkflowBlock
+from orchestrator.workflow.refactor import RefactorWorkflowBlock
 from store.protocol import EventStore
 
 REFACTOR_STAGE = "refactor"
@@ -168,8 +168,8 @@ def emit_refactor_stage_and_critique(
     if llm_summary:
         refactor_meta["llm_summary"] = llm_summary
     if workspace is not None and workspace.is_dir():
+        from orchestrator.critique.simplification_metrics import ComplexityIndex
         from orchestrator.loc_accord_stage import emit_refactor_loc_accord_stage
-        from orchestrator.simplification_metrics import ComplexityIndex
 
         cx = ComplexityIndex.from_workspace(workspace)
         patch_raw = str(proposal_meta.get("patch_artifact") or "[]")

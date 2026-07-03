@@ -21,6 +21,4 @@ def test_ui_ignore_is_narrowed_not_blanket_wildcard() -> None:
     assert "ignore_errors = true" in block
     for entry in _NARROWED_MARKERS:
         assert entry in block, f"missing narrowed UI ignore entry {entry}"
-    assert "console.pages" not in block, (
-        "retired Streamlit pages must not be in mypy ignore"
-    )
+    assert "console.pages" not in block, "retired Streamlit pages must not be in mypy ignore"

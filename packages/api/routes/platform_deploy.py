@@ -13,21 +13,21 @@ from api.routes.auth import AuthUserDep, OptionalUserDep
 from api.user import maker_user_id_str
 from env.env_flags import env_str
 from iam.context import get_auth_context
-from maker.deploy_approval_enforcement import (
+from maker.deploy.approval_enforcement import (
     resolve_deploy_approver_context,
     user_may_record_deploy_approval,
 )
-from maker.deploy_credential_vault import (
+from maker.deploy.credential_vault import (
     list_deploy_audit_events,
     load_deploy_credentials,
 )
-from maker.deploy_pipeline_events import (
+from maker.deploy.pipeline_events import (
     deploy_apply_ready,
     emit_deploy_approved,
     emit_terraform_validate_stages,
     manifest_from_events,
 )
-from maker.deploy_target_enforcement import (
+from maker.deploy.target_enforcement import (
     deploy_environment_catalog,
     resolve_deploy_environment,
     validate_credential_scopes,
@@ -109,7 +109,7 @@ def deploy_policy_context() -> tuple[str | None, str]:
 def deploy_approval_chain_for_tenant(tenant_slug: str | None, setup_bundle: str) -> str:
     if setup_bundle != "enterprise":
         return "maker_only"
-    from orchestrator.fleet_policies import tenant_deploy_approval_policy
+    from orchestrator.fleet.policies import tenant_deploy_approval_policy
 
     return tenant_deploy_approval_policy(tenant_slug).deploy_approval_chain
 

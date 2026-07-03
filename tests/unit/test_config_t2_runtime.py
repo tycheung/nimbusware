@@ -12,10 +12,10 @@ from config.materializer import ConfigMaterializer
 from config.seed import seed_config_from_repo
 from config.store import InMemoryConfigStore
 from env import find_repo_root
-from orchestrator.critique_routing import load_critique_router
-from orchestrator.integrator_gate import load_integrator_gate_emit_enabled
+from orchestrator.critique.routing import load_critique_router
+from orchestrator.integrator.gate import load_integrator_gate_emit_enabled
 from orchestrator.pipeline import RunOrchestrator, default_paths
-from orchestrator.workflow_blocks_simple import parse_escalation_workflow_block
+from orchestrator.workflow.blocks_simple import parse_escalation_workflow_block
 from store.memory import InMemoryEventStore
 
 

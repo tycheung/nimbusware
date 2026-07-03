@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.scraper_artifacts import (
+from orchestrator.scraper.artifacts import (
     prune_scraper_artifacts,
     resolve_scraper_artifact_base_dir,
 )

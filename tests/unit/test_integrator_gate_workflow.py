@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     effective_integrator_min_score_to_pass,
     integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,

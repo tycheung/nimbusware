@@ -14,7 +14,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
 )
 from env.dotenv import find_repo_root
-from maker.workspace import run_created_metadata_from_rows
+from maker.workspace.workspace import run_created_metadata_from_rows
 from orchestrator.policy_snapshot_diff import (
     diff_policy_snapshots,
     policy_snapshot_from_run_created_metadata,

@@ -4,11 +4,11 @@ from env.env_flags import (
     nimbusware_handoff_max_chars,
     nimbusware_slice_packet_max_chars,
 )
-from orchestrator.micro_slice_executor import slice_replan_max_for_run
-from orchestrator.slice_budget_presets import (
+from orchestrator.slice.budget_presets import (
     resolve_slice_budget_preset,
     slice_budget_preset,
 )
+from orchestrator.slice.executor import slice_replan_max_for_run
 
 
 def test_slice_budget_preset_values() -> None:

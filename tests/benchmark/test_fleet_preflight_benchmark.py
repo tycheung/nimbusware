@@ -20,7 +20,7 @@ from agent_core.models import (  # noqa: E402
     ModelPreflightPassedPayload,
 )
 from api.app import app  # noqa: E402
-from orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
+from orchestrator.fleet.benchmark import benchmark_preflight_history_scan  # noqa: E402
 
 
 @pytest.fixture

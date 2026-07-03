@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from orchestrator.binding_preflight import (
+from orchestrator.fleet.slice_caps import clamp_slice_budget, fleet_replan_metadata
+from orchestrator.routing.preflight import (
     roles_for_stack_manifest,
     surface_stage_map,
 )
-from orchestrator.fleet_slice_caps import clamp_slice_budget, fleet_replan_metadata
 
 
 def test_clamp_slice_budget_enterprise() -> None:

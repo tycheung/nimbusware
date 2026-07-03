@@ -17,13 +17,13 @@ from agent_core.models import (
     Verdict,
 )
 from env import find_repo_root
-from orchestrator.llm_plan import (
+from orchestrator.llm import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
-from orchestrator.workflow_universal_critique import effective_universal_critique
+from orchestrator.workflow.universal_critique import effective_universal_critique
 
 if TYPE_CHECKING:
     from store.memory import InMemoryEventStore

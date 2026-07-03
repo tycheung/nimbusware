@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 from env import find_repo_root
-from maker.collab_disciplines import (
+from maker.collab.disciplines import (
     list_disciplines,
     normalize_discipline,
     taxonomy_keys_for_discipline,

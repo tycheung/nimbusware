@@ -23,11 +23,11 @@ from orchestrator._pipeline._helpers import (
     uuid4,
 )
 from orchestrator._pipeline.protocol_hosts import LifecycleStartHost
-from orchestrator.binding_preflight import (
+from orchestrator.preflight import PreflightError
+from orchestrator.routing.preflight import (
     build_binding_preflight_report,
     cloud_only_roles_satisfied,
 )
-from orchestrator.preflight import PreflightError
 
 
 class LifecycleStartMixin:

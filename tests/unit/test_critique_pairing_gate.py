@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from api.app import app
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.critique_routing import (
+from orchestrator.critique.routing import (
     assert_critique_coverage_complete,
     critique_coverage_snapshot,
 )

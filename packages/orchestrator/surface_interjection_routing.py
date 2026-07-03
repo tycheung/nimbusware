@@ -50,7 +50,7 @@ def enqueue_surface_steers(
     message: str,
     routed_from_user_id: str | None = None,
 ) -> list[dict[str, str]]:
-    from orchestrator.slice_interjection import emit_interjection_enqueued
+    from orchestrator.slice.interjection import emit_interjection_enqueued
 
     routes = surface_steer_routes(message)
     if not routes:

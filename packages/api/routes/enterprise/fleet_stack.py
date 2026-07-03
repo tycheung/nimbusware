@@ -10,7 +10,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetStackPolicy,
     load_fleet_stack_policies,
     save_fleet_stack_policies,
@@ -44,7 +44,7 @@ def put_fleet_stack_policy(
     __: AdminDep,
 ) -> dict[str, Any]:
     slug = _tenant_slug_for_ref(iam, tenant_ref)
-    from orchestrator.fleet_policies import normalize_allowed_stacks
+    from orchestrator.fleet.policies import normalize_allowed_stacks
 
     allowed = normalize_allowed_stacks(body.allowed_stacks)
     policies = load_fleet_stack_policies()

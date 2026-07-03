@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.autopilot_profiles import resolve_autopilot_profile
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,
     save_fleet_autopilot_policies,
     tenant_autopilot_policy,
 )
-from orchestrator.fleet_policy_guards import (
+from orchestrator.fleet.policy_guards import (
     clamp_autopilot_profile_to_policy as clamp_profile_to_policy,
 )
+from orchestrator.profiles.autopilot_profiles import resolve_autopilot_profile
 
 
 def test_tenant_policy_clamps_level_and_adds_checkpoints(tmp_path: Path) -> None:

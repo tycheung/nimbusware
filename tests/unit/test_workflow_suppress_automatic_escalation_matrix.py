@@ -16,7 +16,7 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
-from orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+from orchestrator.integrator.gate import workflow_profile_from_run_created_rows
 from orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:

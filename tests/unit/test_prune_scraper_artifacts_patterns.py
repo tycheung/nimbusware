@@ -4,7 +4,7 @@ import os
 import time
 from pathlib import Path
 
-from orchestrator.scraper_artifacts import (
+from orchestrator.scraper.artifacts import (
     _matches_any,
     prune_scraper_artifacts,
 )

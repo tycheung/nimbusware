@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.integrator_dep_preflight import analyze_integrator_dep_conflicts
+from orchestrator.integrator.dep_preflight import analyze_integrator_dep_conflicts
 
 
 def test_analyze_integrator_dep_conflicts_missing(tmp_path: Path) -> None:

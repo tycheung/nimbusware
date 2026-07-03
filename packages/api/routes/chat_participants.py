@@ -18,7 +18,7 @@ from api.routes.chat_service import (
 from api.schemas.openapi import PROBLEM_RESPONSE_404
 from auth.models import SESSION_PARTICIPANT_ROLES
 from auth.permissions import require_session_participant
-from maker.collab_disciplines import normalize_discipline
+from maker.collab.disciplines import normalize_discipline
 from maker.user_discipline_profile import load_user_discipline_profile
 
 router = APIRouter(prefix="/chat", tags=["maker"])

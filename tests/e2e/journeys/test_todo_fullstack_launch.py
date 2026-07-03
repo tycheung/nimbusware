@@ -8,14 +8,14 @@ import pytest
 
 from e2e.harness.playwright_skip import require_playwright_chromium
 from orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
-from orchestrator.dev_env_supervisor import (
+from orchestrator.dev_env.supervisor import (
     frontend_base_url,
     start_dev_environment,
     stop_dev_environment,
 )
+from orchestrator.factory.runner import run_put_e2e_flow
 from orchestrator.human_fidelity import run_human_fidelity_suite
 from orchestrator.launch_flow_resolver import load_catalog_ui_flow
-from orchestrator.put_e2e_runner import run_put_e2e_flow
 from store.memory import InMemoryEventStore
 
 _FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_todo_fullstack"

@@ -63,12 +63,7 @@ def test_metrics_scaffold_field_map() -> None:
 
 
 def test_explainer_package_allowlist_frozen() -> None:
-    root = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "console"
-        / "workflow_explainers"
-    )
+    root = Path(__file__).resolve().parents[2] / "packages" / "console" / "workflow_explainers"
     found = {p.name for p in root.iterdir() if p.is_dir() and not p.name.startswith("_")}
     assert found == _ALLOWED_EXPLAINER_SLUGS, (
         "New workflow_explainers/* packages require allowlist update: "

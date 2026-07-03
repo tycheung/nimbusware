@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from env import find_repo_root
-from orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from orchestrator.workflow.security import security_scan_metadata_on_verify_enabled
 from unit.composite_repo_fixtures import write_security_scan_workflow_profile
 
 

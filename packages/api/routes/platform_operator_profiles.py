@@ -9,7 +9,7 @@ from api.deps import OrchDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep
 from api.user import maker_user_id_str
-from orchestrator.user_operator_profiles import (
+from orchestrator.profiles.user_operator_profiles import (
     load_user_operator_profiles,
     save_user_operator_profiles,
 )

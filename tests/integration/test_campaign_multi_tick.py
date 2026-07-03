@@ -12,12 +12,12 @@ from agent_core.models.events_payloads import StagePassedPayload
 from agent_core.models.events_records import StagePassedEvent
 from e2e.harness.timeline import assert_timeline_golden
 from env import find_repo_root
-from orchestrator.backlog_generator import generate_heuristic_backlog
-from orchestrator.campaign import CampaignDriverState
-from orchestrator.campaign_driver import campaign_driver_tick
+from orchestrator.campaign.campaign import CampaignDriverState
+from orchestrator.campaign.driver import campaign_driver_tick
+from orchestrator.campaign.generator import generate_heuristic_backlog
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.slice_gate import SliceGateChainResult
-from orchestrator.workflow_campaign import CompletionWorkflowBlock
+from orchestrator.slice.gate import SliceGateChainResult
+from orchestrator.workflow.campaign import CompletionWorkflowBlock
 
 CAMPAIGN_GOLDEN = (
     Path(__file__).resolve().parents[1]
@@ -72,7 +72,7 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
         return generate_heuristic_backlog(campaign_id, max_slices=2)
 
     monkeypatch.setattr(
-        "orchestrator.backlog_generator.generate_heuristic_backlog",
+        "orchestrator.campaign.generator.generate_heuristic_backlog",
         _two_slice_backlog,
     )
 
@@ -94,7 +94,7 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
         return SliceGateChainResult(slice_id=sid, passed=True, steps=(), status="passed")
 
     monkeypatch.setattr(
-        "orchestrator.micro_slice_executor.execute_single_micro_slice",
+        "orchestrator.slice.executor.execute_single_micro_slice",
         _fast_slice,
     )
 

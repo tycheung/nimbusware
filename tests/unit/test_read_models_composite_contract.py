@@ -8,7 +8,7 @@ import pytest
 from pydantic import ValidationError
 
 from agent_core.models import EventType
-from orchestrator.read_models import (
+from projections.run_summary import (
     RUN_LIST_FILTER_STATUSES,
     build_run_summary,
     run_has_started,

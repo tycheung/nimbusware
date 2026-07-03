@@ -3,12 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.micro_slice import (
+from orchestrator.slice.micro_slice import (
     micro_slice_timeline_summary,
     parse_slice_plan,
     validate_diff_budget,
 )
-from orchestrator.workflow_blocks_simple import parse_micro_slice_workflow_block
+from orchestrator.workflow.blocks_simple import parse_micro_slice_workflow_block
 
 
 def test_parse_slice_plan() -> None:
@@ -25,7 +25,7 @@ def test_parse_slice_plan() -> None:
 
 
 def test_validate_diff_budget_rejects_large_slice() -> None:
-    from orchestrator.workflow_blocks_simple import MicroSliceWorkflowBlock
+    from orchestrator.workflow.blocks_simple import MicroSliceWorkflowBlock
 
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=50)
     result = validate_diff_budget(

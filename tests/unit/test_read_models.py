@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from orchestrator.read_models import build_run_summary
+from projections.run_summary import build_run_summary
 from store.memory import InMemoryEventStore
 from store.protocol import serialized_event_from_row
 

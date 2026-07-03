@@ -69,7 +69,7 @@ def _apply_regulated_stack_guard(
     manifest: dict[str, Any],
     tenant_slug: str | None,
 ) -> dict[str, Any]:
-    from orchestrator.fleet_policy_guards import apply_regulated_stack_guard
+    from orchestrator.fleet.policy_guards import apply_regulated_stack_guard
 
     return apply_regulated_stack_guard(manifest, tenant_slug)
 

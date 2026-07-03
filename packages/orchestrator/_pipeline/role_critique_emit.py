@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.workflow.universal_critique import EffectiveUniversalCritique
 
 
 @dataclass(frozen=True)

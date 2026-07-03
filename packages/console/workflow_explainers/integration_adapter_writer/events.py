@@ -7,7 +7,7 @@ from typing import Any
 def integration_adapter_writer_from_events(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any] | None:
-    from orchestrator.integration_adapter_writer_stage import (
+    from orchestrator.integrator.writer_stage import (
         INTEGRATION_ADAPTER_WRITER_STAGE,
     )
 

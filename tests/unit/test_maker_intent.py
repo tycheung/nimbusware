@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from maker.intent import (
+from maker.intent.requirements import (
     build_requirements_artifact,
     plan_summary_from_requirements,
     requirements_from_run_created_metadata,

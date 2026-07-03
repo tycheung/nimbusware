@@ -12,16 +12,16 @@ from api.routes.enterprise.core import EnterpriseDep
 from env.edition import enterprise_feature_enabled
 from env.env_flags import nimbusware_database_url
 from iam.context import get_auth_context
-from memory.embeddings import resolve_fleet_embedding_mode
 from memory.factory import build_memory_chunk_store
-from memory.fleet_index import rebuild_fleet_memory_index
-from memory.fleet_sync import (
+from memory.fleet.index import rebuild_fleet_memory_index
+from memory.fleet.sync import (
     fleet_memory_remote_status,
     pull_fleet_memory_from_canonical,
     push_fleet_memory_to_canonical,
 )
+from memory.index.embeddings import resolve_fleet_embedding_mode
+from memory.index.search import format_memory_excerpt, search_fleet_memory
 from memory.org_scope import fleet_scope_hash, resolve_fleet_scope
-from memory.search import format_memory_excerpt, search_fleet_memory
 
 router = APIRouter(prefix="/enterprise/fleet-memory", tags=["enterprise"])
 

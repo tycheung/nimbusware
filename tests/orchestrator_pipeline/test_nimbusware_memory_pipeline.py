@@ -6,8 +6,8 @@ from uuid import uuid4
 from agent_core.models import EventType
 from env import find_repo_root
 from memory import InMemoryMemoryChunkStore, rebuild_memory_index
-from orchestrator.micro_slice import parse_slice_plan
 from orchestrator.pipeline import make_dev_orchestrator
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def _sample_rows() -> list[dict]:

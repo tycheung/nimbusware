@@ -17,7 +17,7 @@ from orchestrator._pipeline._helpers import (
     uuid4,
 )
 from orchestrator._pipeline.protocol_hosts import MicroSliceHost
-from orchestrator.slice_gate import SliceGateChainResult
+from orchestrator.slice.gate import SliceGateChainResult
 
 
 class MicroSliceMixin:
@@ -26,7 +26,7 @@ class MicroSliceMixin:
         run_id: UUID,
         plan: dict[str, Any] | Any,
     ) -> None:
-        from orchestrator.micro_slice import SlicePlan, parse_slice_plan
+        from orchestrator.slice.micro_slice import SlicePlan, parse_slice_plan
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
         self._store.append(
@@ -60,16 +60,16 @@ class MicroSliceMixin:
         test_output: str = "",
         test_detail: str = "",
     ) -> SliceGateChainResult:
-        from orchestrator.collab_binding_resolver import participant_memory_policy
-        from orchestrator.micro_slice import SlicePlan, parse_slice_plan
-        from orchestrator.slice_context_packet import build_slice_context_packet
-        from orchestrator.slice_gate import run_slice_gate_chain
-        from orchestrator.slice_handoff import (
+        from orchestrator.collab.binding_resolver import participant_memory_policy
+        from orchestrator.slice.context_packet import build_slice_context_packet
+        from orchestrator.slice.gate import run_slice_gate_chain
+        from orchestrator.slice.handoff import (
             build_slice_handoff_summary,
             handoff_markdown_capped,
             latest_handoff_from_events,
         )
-        from orchestrator.workflow_memory import (
+        from orchestrator.slice.micro_slice import SlicePlan, parse_slice_plan
+        from orchestrator.workflow.memory import (
             actor_user_id_from_run_metadata,
             memory_settings_from_run_metadata,
             pinned_generation_for_scope,
@@ -80,12 +80,12 @@ class MicroSliceMixin:
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
         rows = self._store.list_run_events(str(run_id))
-        from orchestrator.autopilot_profiles import autopilot_profile_from_rows
         from orchestrator.enforcement_pipeline import (
             active_enforcement_profile,
             run_milestone_enforcement,
         )
-        from orchestrator.slice_cycle_integration import resolution_for_gate
+        from orchestrator.profiles.autopilot_profiles import autopilot_profile_from_rows
+        from orchestrator.slice.cycle_integration import resolution_for_gate
 
         profile = autopilot_profile_from_rows(rows)
         enforcement = active_enforcement_profile(rows)
@@ -96,7 +96,7 @@ class MicroSliceMixin:
             return resolution_for_gate(self._store, run_id, rows, findings)
 
         if enforcement is not None:
-            from maker.workspace import resolve_run_workspace
+            from maker.workspace.workspace import resolve_run_workspace
 
             ws = resolve_run_workspace(rows)
             milestone = run_milestone_enforcement(
@@ -173,7 +173,7 @@ class MicroSliceMixin:
             "slice_handoff": handoff.model_dump(mode="json"),
         }
         if memory_hits:
-            from memory.audit import append_memory_retrieval_emitted_event
+            from memory.index.audit import append_memory_retrieval_emitted_event
 
             chunk_store = self._memory_chunk_store
             assert chunk_store is not None
@@ -266,7 +266,7 @@ class MicroSliceMixin:
     ) -> Any:
         from typing import cast
 
-        from orchestrator.micro_slice_executor import execute_single_micro_slice
+        from orchestrator.slice.executor import execute_single_micro_slice
 
         return execute_single_micro_slice(
             cast(Any, self),
@@ -285,6 +285,6 @@ class MicroSliceMixin:
     ) -> list[Any]:
         from typing import cast
 
-        from orchestrator.micro_slice_executor import execute_micro_slice_pass
+        from orchestrator.slice.executor import execute_micro_slice_pass
 
         return execute_micro_slice_pass(cast(Any, self), run_id, workspace=workspace)

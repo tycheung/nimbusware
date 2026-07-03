@@ -7,7 +7,7 @@ from typing import Any
 from uuid import UUID
 
 from env.env_flags import env_str
-from orchestrator.workflow_scan_critique import ScanCritiqueBlock
+from orchestrator.workflow.scan_critique import ScanCritiqueBlock
 
 
 def network_resilience_pre_emit(host: Any, block: ScanCritiqueBlock) -> bool:

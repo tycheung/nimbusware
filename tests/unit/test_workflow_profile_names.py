@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from env import find_repo_root
-from orchestrator.workflow_profiles import list_workflow_profile_names
+from orchestrator.workflow.profiles import list_workflow_profile_names
 
 
 def test_list_workflow_profile_names_includes_defaults() -> None:

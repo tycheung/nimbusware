@@ -37,4 +37,4 @@ Errors use Problem+JSON (`api.errors.problem`). Edition gating via `env.edition`
 | `POST` | `/admin/ollama/pull` | Admin |
 | `DELETE` | `/admin/ollama/models/{name}` | Admin |
 
-Policy defaults live in `configs/model-routing.yaml` (`ollama_user_policy`). Implementation: `orchestrator.ollama_manage`, `ollama_user_policy`; persistence via `config.persist`.
+Policy defaults live in `configs/model-routing.yaml` (`ollama_user_policy`). Implementation: `orchestrator.routing.manage`, `ollama_user_policy`; persistence via `config.persist`.

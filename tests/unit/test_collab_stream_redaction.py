@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.collab_stream_redaction import redact_theater_lines
+from orchestrator.collab.stream_redaction import redact_theater_lines
 
 
 def test_redact_theater_lines_strips_api_key_patterns() -> None:

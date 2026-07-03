@@ -8,7 +8,7 @@ import httpx
 
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.llm_plan import (
+from orchestrator.llm import (
     execute_implementation_critique_llm,
     execute_plan_stage_llm,
     execute_planner_critique_llm,
@@ -17,9 +17,7 @@ from orchestrator.llm_plan import (
 from orchestrator.registry import RoleRegistry
 from store.memory import InMemoryEventStore
 
-_MOCK_RESOLVER_CHAT = (
-    "orchestrator.model_binding_resolver.ModelBindingResolver.chat_json"
-)
+_MOCK_RESOLVER_CHAT = "orchestrator.routing.resolver.ModelBindingResolver.chat_json"
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"
 

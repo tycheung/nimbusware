@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.workflow_memory import (
+from orchestrator.slice.micro_slice import parse_slice_plan
+from orchestrator.workflow.memory import (
     memory_effective_metadata,
     memory_query_from_slice_plan,
     memory_settings_from_run_metadata,

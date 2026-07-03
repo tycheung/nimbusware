@@ -11,7 +11,7 @@ from api.deps import IamStoreDep
 from api.errors import problem
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetEnforcementPolicy,
     load_fleet_enforcement_policies,
     save_fleet_enforcement_policies,

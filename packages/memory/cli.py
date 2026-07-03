@@ -24,8 +24,8 @@ def main(argv: list[str] | None = None) -> int:
     if not conninfo:
         print("NIMBUSWARE_DATABASE_URL is required", file=sys.stderr)
         return 1
-    from memory.indexer import rebuild_memory_index
-    from memory.store import PostgresMemoryChunkStore
+    from memory.index.indexer import rebuild_memory_index
+    from memory.store.postgres import PostgresMemoryChunkStore
     from store.postgres import PostgresEventStore
 
     store = PostgresMemoryChunkStore(conninfo)

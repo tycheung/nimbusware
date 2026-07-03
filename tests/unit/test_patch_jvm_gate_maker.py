@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import pytest
 
-from maker.intent import build_requirements_artifact
+from maker.intent.requirements import build_requirements_artifact
 from maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,

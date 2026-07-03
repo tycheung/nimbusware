@@ -48,7 +48,7 @@ def dispatch_role_execute(
     *,
     workspace: Path | None = None,
 ) -> dict[str, Any]:
-    from orchestrator.host_collab_mesh_hydrate import (
+    from orchestrator.collab.mesh_hydrate import (
         hydrate_mesh_binding_from_run,
         set_active_run_for_mesh,
     )

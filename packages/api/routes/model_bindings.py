@@ -16,8 +16,8 @@ from config.model_bindings_store import (
 )
 from config.store import PostgresConfigStore
 from env.env_flags import nimbusware_database_url
-from orchestrator.binding_preflight import build_binding_preflight_report
 from orchestrator.provider_registry import load_provider_presets
+from orchestrator.routing.preflight import build_binding_preflight_report
 
 router = APIRouter(tags=["platform"])
 

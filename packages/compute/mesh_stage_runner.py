@@ -5,7 +5,7 @@ from typing import Any
 from uuid import UUID
 
 from compute.work_unit import WorkUnitRecord
-from orchestrator.mesh_pipeline_hook import CRITIC_STAGE_NAMES
+from orchestrator.collab.pipeline_hook import CRITIC_STAGE_NAMES
 from orchestrator.role_execute import _SUPPORTED_PRODUCERS, dispatch_role_execute
 
 _WRITER_STAGE_TAXONOMY: dict[str, str] = {
@@ -90,8 +90,8 @@ def _execute_campaign_slice(
     workspace: Path,
 ) -> dict[str, Any]:
     from agent_core.read.campaign import backlog_from_events
-    from orchestrator.micro_slice import parse_slice_plan
-    from orchestrator.micro_slice_executor import execute_single_micro_slice
+    from orchestrator.slice.executor import execute_single_micro_slice
+    from orchestrator.slice.micro_slice import parse_slice_plan
 
     rows = orch._store.list_run_events(str(run_id))
     backlog = backlog_from_events(rows)
@@ -181,7 +181,7 @@ def _execute_writer_mesh_stage(
     workflow_profile: str | None,
     sg_snapshot: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    from orchestrator.workflow_parallel_writers import (
+    from orchestrator.workflow.parallel_writers import (
         test_writer_llm_body_enabled,
         test_writer_llm_stub_fallback,
         test_writer_stage_enabled,
@@ -308,8 +308,8 @@ def execute_mesh_stage_on_worker(rec: WorkUnitRecord) -> dict[str, Any]:
             diff_workspace_files,
             workspace_file_digests,
         )
-        from orchestrator.collab_mesh_bindings import participant_overrides_from_hint
-        from orchestrator.collab_mesh_context import (
+        from orchestrator.collab.mesh_bindings import participant_overrides_from_hint
+        from orchestrator.collab.mesh_context import (
             clear_mesh_binding_context,
             set_mesh_binding_context,
         )

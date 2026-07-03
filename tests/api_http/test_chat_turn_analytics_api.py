@@ -7,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
-from maker.chat_store import InMemoryChatStore
+from maker.chat.memory import InMemoryChatStore
 
 
 @pytest.fixture

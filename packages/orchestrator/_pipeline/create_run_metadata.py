@@ -16,13 +16,13 @@ from orchestrator._pipeline._helpers import (
     universal_critique_production_default_on,
 )
 from orchestrator._pipeline.create_run_workflow_blocks import CreateRunWorkflowBlocks
-from orchestrator.autopilot_profiles import autopilot_effective_metadata
-from orchestrator.critic_pack_resolve import resolve_critic_pack_for_workflow
-from orchestrator.enforcement_profiles import enforcement_effective_metadata
+from orchestrator.critique.pack_resolve import resolve_critic_pack_for_workflow
 from orchestrator.patch_context import normalize_patch_context
+from orchestrator.profiles.autopilot_profiles import autopilot_effective_metadata
+from orchestrator.profiles.enforcement_profiles import enforcement_effective_metadata
 from orchestrator.registry import RoleRegistry
-from orchestrator.slice_budget_presets import resolve_slice_budget_preset
-from orchestrator.workflow_registry import (
+from orchestrator.slice.budget_presets import resolve_slice_budget_preset
+from orchestrator.workflow.registry import (
     campaign_effective_metadata,
     dev_env_effective_metadata,
     fast_slice_effective_metadata,
@@ -204,7 +204,7 @@ def build_run_created_metadata(
     if ms_block.enabled:
         from env.env_flags import env_str
         from iam.context import get_auth_context
-        from orchestrator.fleet_slice_caps import clamp_slice_budget
+        from orchestrator.fleet.slice_caps import clamp_slice_budget
 
         ctx = get_auth_context()
         ms_max_files, ms_max_loc, fleet_cap_active = clamp_slice_budget(

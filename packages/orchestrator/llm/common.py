@@ -28,9 +28,9 @@ from agent_core.models import (
 )
 from env.env_flags import nimbusware_repo_root_path
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.ollama_chat import ollama_chat_json
+from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
 from orchestrator.registry import RoleRegistry
-from orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
+from orchestrator.routing.chat import ollama_chat_json
 from store.protocol import EventStore
 
 
@@ -107,8 +107,8 @@ def _unanimous_gate_enforce_for_run(store: EventStore, run_id: UUID) -> bool:
     import os
     from pathlib import Path
 
-    from orchestrator.integrator_gate import workflow_profile_from_run_created_rows
-    from orchestrator.workflow_universal_critique import effective_universal_critique
+    from orchestrator.integrator.gate import workflow_profile_from_run_created_rows
+    from orchestrator.workflow.universal_critique import effective_universal_critique
 
     rows = store.list_run_events(str(run_id))
     for row in rows:
@@ -243,17 +243,17 @@ def ollama_chat_json_via_plan_patch(
 ) -> dict[str, Any]:
     role = (agent_role or "").strip() or None
     if not role and stage_name:
-        from orchestrator.binding_preflight import agent_role_for_stage
+        from orchestrator.routing.preflight import agent_role_for_stage
 
         role = agent_role_for_stage(stage_name)
     if role:
         from env import find_repo_root
-        from orchestrator.collab_mesh_context import (
+        from orchestrator.collab.mesh_context import (
             mesh_actor_user_id,
             mesh_participant_overrides,
         )
-        from orchestrator.host_collab_mesh_hydrate import ensure_mesh_binding_for_llm
-        from orchestrator.model_binding_resolver import ModelBindingResolver
+        from orchestrator.collab.mesh_hydrate import ensure_mesh_binding_for_llm
+        from orchestrator.routing.resolver import ModelBindingResolver
 
         ensure_mesh_binding_for_llm()
         resolver = ModelBindingResolver(find_repo_root())
@@ -279,9 +279,9 @@ def ollama_chat_json_via_plan_patch(
                 messages=messages,
                 timeout_seconds=timeout_seconds,
             )
-    import orchestrator.llm_plan as _patch
+    from orchestrator.routing import ollama_chat as _ollama_chat_mod
 
-    return _patch.ollama_chat_json(
+    return _ollama_chat_mod.ollama_chat_json(
         base_url=base_url,
         model=model,
         messages=messages,

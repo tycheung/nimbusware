@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from env import find_repo_root
-from orchestrator.stack_catalog import (
+from orchestrator.stack.catalog import (
     load_stack_catalog,
     resolve_manifest_stacks,
     stack_for_surface,

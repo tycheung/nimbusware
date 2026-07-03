@@ -11,7 +11,7 @@ from orchestrator.merge import (
     policy_snapshot_from_materializer,
 )
 from orchestrator.pipeline import RunOrchestrator, default_paths
-from orchestrator.workflow_profiles import workflow_profile_path
+from orchestrator.workflow.profiles import workflow_profile_path
 from store.memory import InMemoryEventStore
 
 

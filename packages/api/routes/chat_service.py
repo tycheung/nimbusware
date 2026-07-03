@@ -12,7 +12,7 @@ from auth.models import UserRecord
 from auth.permissions import require_session_participant
 from auth.session_cookie import user_id_from_request
 from env.env_flags import nimbusware_collab_enabled
-from maker.chat_models import ChatSessionRecord
+from maker.chat.session_models import ChatSessionRecord
 
 
 def require_collab_enabled() -> None:

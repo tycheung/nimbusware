@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from orchestrator.backlog_generator import generate_heuristic_backlog
-from orchestrator.backlog_manifest import (
+from orchestrator.campaign.generator import generate_heuristic_backlog
+from orchestrator.campaign.manifest import (
     manifest_template_id,
     validate_manifest_backlog,
 )

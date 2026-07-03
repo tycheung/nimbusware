@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 
 from api.deps import StoreDep
 from api.routes.enterprise.core import EnterpriseDep
-from orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+from orchestrator.fleet.critic_reliability import tenant_critic_reliability_metrics
 
 router = APIRouter(prefix="/enterprise/fleet/critic-reliability", tags=["enterprise"])
 

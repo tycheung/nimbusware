@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from orchestrator.workflow_refactor import RefactorWorkflowBlock
+from orchestrator.workflow.refactor import RefactorWorkflowBlock
 
 
 def estimate_loc_delta_from_patch(patch_artifact: str) -> int | None:
@@ -69,7 +69,7 @@ def build_refactor_proposal(
     workspace: Path,
     block: RefactorWorkflowBlock,
 ) -> dict[str, Any]:
-    from orchestrator.code_intel_store import load_or_build_code_intel
+    from orchestrator.repo_intel.store import load_or_build_code_intel
 
     bundle = load_or_build_code_intel(repo_root, workspace)
     orphans_raw = bundle.get("orphans")

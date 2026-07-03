@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from orchestrator.enforcement_profiles import resolve_enforcement_profile
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
+from orchestrator.profiles.enforcement_profiles import resolve_enforcement_profile
+from orchestrator.slice.gate import map_paths_to_test_targets, run_slice_gate_chain
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_slice_gate_chain_pass() -> None:

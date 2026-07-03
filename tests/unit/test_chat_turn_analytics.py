@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from maker.chat_store import InMemoryChatStore
+from maker.chat.memory import InMemoryChatStore
 from projections.builders.chat_turn_analytics import build_chat_turn_summary
 
 

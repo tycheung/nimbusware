@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from agent_core.models.events import FindingFixStrictnessSettings, Severity
 from orchestrator._pipeline import base as orchestrator_base
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from orchestrator.workflow.universal_critique import EffectiveUniversalCritique
 from unit.composite_orchestrator_fixtures import all_false_effective_critique
 from unit.composite_store_fixtures import inject_raw_run_created_row
 

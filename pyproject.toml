@@ -87,8 +87,8 @@ nimbusware-memory-index = "memory.cli:main"
 nimbusware-memory-sync = "memory.sync_cli:main"
 nimbusware-memory-replay = "orchestrator.replay_cli:main"
 nimbusware-role-telemetry = "orchestrator.telemetry_cli:main"
-nimbusware-routing-suggest = "orchestrator.routing_suggestions_cli:main"
-nimbusware-fleet-ollama-sli = "orchestrator.fleet_ollama_sli_cli:main"
+nimbusware-routing-suggest = "orchestrator.routing.suggestions_cli:main"
+nimbusware-fleet-ollama-sli = "orchestrator.fleet.ollama_sli_cli:main"
 nimbusware-run = "env.run_app:main"
 nimbusware-admin = "env.admin_app:main"
 nimbusware-maker = "maker.cli:main"
@@ -269,11 +269,11 @@ module = [
   "api.schemas.ollama",
   "api.routes.ollama",
   "api.errors",
-  "orchestrator.ollama_manage",
-  "orchestrator.ollama_user_policy",
+  "orchestrator.routing.manage",
+  "orchestrator.routing.user_policy",
   "orchestrator.preflight",
   "orchestrator.merge",
-  "orchestrator.workflow_profiles",
+  "orchestrator.workflow.profiles",
   "console.services.ollama",
   "maker.services.ollama",
 ]

@@ -28,7 +28,7 @@ def main() -> int:
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(args.repo_root.resolve()))
 
     from orchestrator.pipeline import make_dev_orchestrator
-    from orchestrator.workflow_self_refinement import (
+    from orchestrator.workflow.self_refinement import (
         self_refinement_production_llm_critique_effective,
     )
 

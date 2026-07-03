@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.put_runtime import detect_put_stack
+from orchestrator.factory.runtime import detect_put_stack
 
 
 def test_detect_fullstack_monorepo(tmp_path: Path) -> None:

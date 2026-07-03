@@ -18,8 +18,8 @@ from orchestrator.ingress import (
 )
 from orchestrator.merge import load_yaml, merge_policy_snapshot
 from orchestrator.preflight import PreflightError, run_model_preflight
-from orchestrator.read_models import build_run_summary
 from orchestrator.registry import RoleRegistry
+from projections.run_summary import build_run_summary
 
 __all__ = [
     "PreflightError",

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from orchestrator.dev_env_adapters import resolve_adapter_name
+from orchestrator.dev_env.adapters import resolve_adapter_name
 
 
 def test_resolve_nextjs_adapter_when_next_dependency(tmp_path: Path) -> None:

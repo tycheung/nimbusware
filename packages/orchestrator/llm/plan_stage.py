@@ -57,7 +57,7 @@ def _plan_deliverables(requirements: dict[str, Any] | None) -> list[str]:
     if not prompt:
         return ["Deliver bounded slices with tests and gate verification"]
     try:
-        from orchestrator.backlog_heuristic_templates import (
+        from orchestrator.campaign.heuristic_templates import (
             HEURISTIC_TEMPLATES,
             match_template_id,
         )
@@ -185,7 +185,7 @@ def execute_plan_stage_llm(
         "validation_steps, acceptance_criteria. Prefer PASS for a generic plan."
     )
     user = _plan_stage_user_prompt(store, run_id)
-    from orchestrator.prompt_tiers import assemble_prompt
+    from agent_core.prompt_tiers import assemble_prompt
 
     context_tier = skill_block or ""
     if plan_skill.strip():

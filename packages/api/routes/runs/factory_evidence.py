@@ -10,12 +10,12 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
-from maker.workspace import resolve_run_workspace
-from orchestrator.factory_evidence import (
+from maker.workspace.workspace import resolve_run_workspace
+from orchestrator.factory.evidence import (
     build_factory_evidence_bundle,
     export_factory_evidence_zip,
 )
-from orchestrator.factory_evidence_html import render_factory_evidence_html
+from orchestrator.factory.evidence_html import render_factory_evidence_html
 
 router = APIRouter()
 

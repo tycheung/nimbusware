@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetStackPolicy,
     load_fleet_stack_policies,
     save_fleet_stack_policies,
     tenant_stack_policy,
 )
-from orchestrator.fleet_policy_guards import apply_regulated_stack_guard
+from orchestrator.fleet.policy_guards import apply_regulated_stack_guard
 
 
 def test_fleet_stack_policies_round_trip(tmp_path) -> None:

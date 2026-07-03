@@ -6,8 +6,9 @@ from fastapi import Depends, Request
 
 from auth.store import CollabStore, UserStore
 from iam.store import InMemoryIamStore, PostgresIamStore
-from maker.chat_library_store import ChatLibraryStore
-from maker.chat_store import InMemoryChatStore, PostgresChatStore
+from maker.chat.library_store import ChatLibraryStore
+from maker.chat.memory import InMemoryChatStore
+from maker.chat.postgres import PostgresChatStore
 from maker.host_transfer_store import HostTransferStore
 from maker.optimizer_weights_store import OptimizerWeightsStore
 from maker.store import InMemoryProjectStore, PostgresProjectStore

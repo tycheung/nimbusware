@@ -11,9 +11,7 @@ _MIN_LINES: dict[str, int] = {
 }
 
 _REQUIRED_SNIPPETS: dict[str, tuple[str, ...]] = {
-    "packages/orchestrator/_pipeline/_helpers_bundle_runtime.py": (
-        "InMemoryEventStore",
-    ),
+    "packages/orchestrator/_pipeline/_helpers_bundle_runtime.py": ("InMemoryEventStore",),
     "packages/maker_web/static/js/api-client.js": ("apiJson",),
 }
 

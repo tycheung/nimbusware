@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.enforcement_profiles import (
+from orchestrator.profiles.enforcement_profiles import (
     default_enforcement_level_for_work_type,
     enforcement_effective_metadata,
     enforcement_profile_from_rows,

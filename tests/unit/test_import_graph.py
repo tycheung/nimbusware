@@ -103,13 +103,7 @@ def test_console_does_not_import_httpx_directly() -> None:
 
 
 def test_run_detail_sections_do_not_star_import() -> None:
-    root = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "console"
-        / "pages"
-        / "run_detail"
-    )
+    root = Path(__file__).resolve().parents[2] / "packages" / "console" / "pages" / "run_detail"
     skip = {
         "_imports.py",
         "_imports_common.py",
@@ -126,7 +120,7 @@ def test_run_detail_sections_do_not_star_import() -> None:
     assert not offenders, "\n".join(offenders)
 
 
-_MAKER_HTTPX_ALLOWLIST = frozenset({"readiness.py"})
+_MAKER_HTTPX_ALLOWLIST = frozenset({"readiness/platform.py"})
 
 
 def test_maker_slice_workflow_uses_slice_engine_boundary() -> None:
@@ -156,9 +150,7 @@ def test_maker_does_not_import_httpx_directly() -> None:
 
 
 def test_api_runs_use_projections_run_summary() -> None:
-    api_runs = (
-        Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "runs"
-    )
+    api_runs = Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "runs"
     offenders: list[str] = []
     for path in sorted(api_runs.glob("*.py")):
         hits = _module_level_imports_matching(path, "orchestrator.read_models")
@@ -191,12 +183,7 @@ def test_projections_has_no_module_level_orchestrator_imports() -> None:
 
 
 def test_workflow_explainers_use_config_workflow_read_facade() -> None:
-    root = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "console"
-        / "workflow_explainers"
-    )
+    root = Path(__file__).resolve().parents[2] / "packages" / "console" / "workflow_explainers"
     offenders: list[str] = []
     for path in sorted(root.glob("*/payload.py")):
         hits = [
@@ -204,9 +191,9 @@ def test_workflow_explainers_use_config_workflow_read_facade() -> None:
             for mod in _module_level_imports_matching(path, "orchestrator")
             if mod
             not in {
-                "orchestrator.integrator_gate",
-                "orchestrator.integration_adapter_writer_stage",
-                "orchestrator.workflow_blocks_simple",
+                "orchestrator.integrator.gate",
+                "orchestrator.integrator.writer_stage",
+                "orchestrator.workflow.blocks_simple",
             }
         ]
         if hits:

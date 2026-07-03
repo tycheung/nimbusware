@@ -7,7 +7,7 @@ from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 
 if TYPE_CHECKING:
-    from orchestrator.micro_slice import SlicePlan
+    from orchestrator.slice.micro_slice import SlicePlan
 
 
 def _run_created_metadata(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -135,7 +135,7 @@ def patch_slice_plan_for_run(
     target_paths = infer_patch_implementation_paths(patch_context_from_run_rows(rows), workspace)
     if not target_paths:
         return None
-    from orchestrator.micro_slice import parse_slice_plan
+    from orchestrator.slice.micro_slice import parse_slice_plan
 
     return parse_slice_plan(
         {
@@ -155,7 +155,7 @@ def resolve_patch_test_targets(
         failing = str(patch_ctx.get("failing_test") or "").strip()
         if failing:
             return [failing]
-    from orchestrator.slice_gate import map_paths_to_test_targets
+    from orchestrator.slice.gate import map_paths_to_test_targets
 
     return map_paths_to_test_targets(plan_target_paths)
 

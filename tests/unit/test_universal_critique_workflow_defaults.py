@@ -6,7 +6,7 @@ import pytest
 
 from env import find_repo_root
 from orchestrator.pipeline import make_dev_orchestrator
-from orchestrator.workflow_universal_critique import (
+from orchestrator.workflow.universal_critique import (
     effective_universal_critique,
     universal_critique_production_default_on,
 )

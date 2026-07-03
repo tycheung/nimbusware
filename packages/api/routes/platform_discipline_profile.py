@@ -9,7 +9,7 @@ from api.deps import OrchDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep
 from api.user import maker_user_id_str
-from maker.collab_disciplines import normalize_discipline
+from maker.collab.disciplines import normalize_discipline
 from maker.user_agent_overlay import (
     load_user_agent_overlays,
     overlay_catalog,

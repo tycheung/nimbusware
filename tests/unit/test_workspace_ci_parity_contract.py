@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.enforcement_profiles import preset_for_enforcement_level
+from orchestrator.profiles.enforcement_profiles import preset_for_enforcement_level
 from orchestrator.workspace_ci_runner import (
     PARITY_LEVEL,
     parity_contract_steps,

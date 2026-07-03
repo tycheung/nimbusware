@@ -11,7 +11,7 @@ from config.seed import seed_config_from_repo
 from config.store import InMemoryConfigStore
 from env import find_repo_root
 from maker.slice_workflow.approval_panel import revert_workspace
-from maker.workspace import project_metadata_block
+from maker.workspace.workspace import project_metadata_block
 from orchestrator.pipeline import RunOrchestrator, default_paths
 from research.stitch_manifests import (
     persist_transplant_manifest,

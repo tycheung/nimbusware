@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 
 from e2e.harness.playwright_skip import require_playwright_chromium
-from orchestrator.dev_env_supervisor import start_dev_environment, stop_dev_environment
+from orchestrator.dev_env.supervisor import start_dev_environment, stop_dev_environment
 from orchestrator.human_fidelity import run_human_fidelity_suite
 from store.memory import InMemoryEventStore
 

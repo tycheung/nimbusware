@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from env import find_repo_root
-from orchestrator.workflow_profiles import workflow_profile_dict
+from orchestrator.workflow.profiles import workflow_profile_dict
 
 
 def test_workflow_profile_extends_merges_universal_critique_stub() -> None:

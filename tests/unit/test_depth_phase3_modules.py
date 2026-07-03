@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.collab_binding_resolver import (
+from orchestrator.collab.binding_resolver import (
     merge_participant_memory_policy,
     participant_memory_policy,
 )
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetCommitPolicy,
     load_fleet_commit_policies,
     save_fleet_commit_policies,
     tenant_commit_policy,
 )
-from orchestrator.user_operator_profiles import (
+from orchestrator.profiles.user_operator_profiles import (
     load_user_operator_profiles,
     save_user_operator_profiles,
 )

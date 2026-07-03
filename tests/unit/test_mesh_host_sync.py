@@ -21,7 +21,7 @@ from compute.mesh_workspace_merge import (
     workspace_file_digests,
 )
 from compute.work_unit import InMemoryWorkUnitQueue, set_work_unit_queue
-from orchestrator.mesh_scheduler import MeshScheduler
+from orchestrator.collab.scheduler import MeshScheduler
 from orchestrator.pipeline import make_dev_orchestrator
 
 

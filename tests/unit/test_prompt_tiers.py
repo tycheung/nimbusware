@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
+from agent_core.prompt_tiers import assemble_prompt, stable_slice_agent_block
 
 
 def test_stable_prefix_identical_across_slices() -> None:

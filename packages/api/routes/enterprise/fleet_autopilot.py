@@ -11,13 +11,13 @@ from api.deps import IamStoreDep
 from api.errors import problem
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
-from orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
-from orchestrator.fleet_policies import (
+from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,
     save_fleet_autopilot_policies,
     tenant_autopilot_policy,
 )
+from orchestrator.profiles.autopilot_profiles import CHECKPOINT_CATALOG
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 

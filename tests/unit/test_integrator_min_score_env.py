@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from orchestrator.integrator_gate import (
+from orchestrator.integrator.gate import (
     effective_integrator_min_score_to_pass,
 )
 from unit.composite_repo_fixtures import (

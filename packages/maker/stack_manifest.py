@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from maker.deploy_target_enforcement import (
+from maker.deploy.target_enforcement import (
     DEFAULT_DEPLOY_ENVIRONMENT,
     normalize_deploy_environment,
 )
@@ -101,7 +101,7 @@ def validate_frozen_manifest(
     repo_root: Any | None = None,
     tenant_slug: str | None = None,
 ) -> list[str]:
-    from orchestrator.fleet_policies import tenant_stack_policy
+    from orchestrator.fleet.policies import tenant_stack_policy
 
     errors: list[str] = []
     if not manifest.surfaces:
@@ -119,7 +119,7 @@ def validate_frozen_manifest(
                     f"stack {chosen!r} for surface {surface!r} "
                     f"not allowed (tenant requires {allowed!r})",
                 )
-    from orchestrator.stack_catalog import load_stack_catalog, resolve_manifest_stacks
+    from orchestrator.stack.catalog import load_stack_catalog, resolve_manifest_stacks
 
     catalog = load_stack_catalog(repo_root)
     for surface in manifest.surfaces:

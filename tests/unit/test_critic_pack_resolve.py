@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.critic_pack_resolve import (
+from orchestrator.critique.pack_resolve import (
     critic_pack_id_from_workflow,
     list_industry_critic_packs,
     load_critic_pack,

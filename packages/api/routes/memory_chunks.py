@@ -11,7 +11,7 @@ from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
 from api.user import UserDep
 from memory.factory import build_memory_chunk_store
-from memory.repo_scope import repo_scope_hash
+from memory.index.repo_scope import repo_scope_hash
 
 router = APIRouter(prefix="/memory", tags=["memory"])
 

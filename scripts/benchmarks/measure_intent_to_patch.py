@@ -25,7 +25,7 @@ os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))
 
 
 def _bind_inmemory_chat(client) -> None:
-    from maker.chat_store import InMemoryChatStore
+    from maker.chat.memory import InMemoryChatStore
 
     client.app.state.chat_store = InMemoryChatStore()
 

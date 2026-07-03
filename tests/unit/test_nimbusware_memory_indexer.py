@@ -11,7 +11,7 @@ from memory import (
     repo_scope_hash,
     search_memory,
 )
-from memory.manifest import read_manifest
+from memory.index.manifest import read_manifest
 
 
 def _sample_rows() -> list[dict]:

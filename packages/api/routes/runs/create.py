@@ -17,10 +17,10 @@ from api.schemas.openapi import (
 )
 from env.settings_catalog import SettingScope
 from env.settings_store import validate_patch
-from maker.intent import build_requirements_artifact
-from orchestrator.default_workflow_profile import default_workflow_profile
-from orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
+from maker.intent.requirements import build_requirements_artifact
+from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
+from orchestrator.workflow.profile import default_workflow_profile
 
 router = APIRouter()
 
@@ -41,11 +41,11 @@ class RunRequirementsBody(BaseModel):
 
 
 def build_requirements_from_body(requirements: RunRequirementsBody) -> dict[str, Any]:
-    from maker.scope_discovery import (
+    from maker.intent.scope_discovery import (
         attach_scope_to_requirements,
         scope_discover,
     )
-    from maker.scope_discovery import (
+    from maker.intent.scope_discovery import (
         recommend_for_me as scope_recommend_for_me,
     )
 
@@ -73,7 +73,7 @@ def enforce_discovery_gate(
 ) -> None:
     from env.env_flags import env_str
     from iam.context import get_auth_context
-    from maker.scope_discovery import discovery_complete_for_start
+    from maker.intent.scope_discovery import discovery_complete_for_start
 
     ctx = get_auth_context()
     slug = tenant_slug or (ctx.tenant_slug if ctx is not None else None)

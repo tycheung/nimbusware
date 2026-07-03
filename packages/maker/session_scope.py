@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from maker.scope_discovery import scope_confirm
+from maker.intent.scope_discovery import scope_confirm
 
 
 def _meta(session: Any) -> dict[str, Any]:

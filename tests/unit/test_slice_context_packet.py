@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from orchestrator.micro_slice import parse_slice_plan
-from orchestrator.slice_context_packet import build_slice_context_packet
-from orchestrator.slice_gate import run_slice_gate_chain
+from orchestrator.slice.context_packet import build_slice_context_packet
+from orchestrator.slice.gate import run_slice_gate_chain
+from orchestrator.slice.micro_slice import parse_slice_plan
 
 
 def test_packet_caps_size() -> None:
