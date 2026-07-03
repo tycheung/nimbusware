@@ -4,7 +4,11 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_projections.builders.timeline_history import timeline_history_tail
+from nimbusware_projections.builders.gate_timeline import (
+    filter_timeline_entries,
+    timeline_history,
+    timeline_summary,
+)
 
 
 def gate_overridden_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
@@ -21,13 +25,15 @@ def gate_overridden_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
 
 
 def gate_overridden_timeline_entries(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    want = EventType.GATE_OVERRIDDEN.value
-    return [gate_overridden_row_from_event(ev) for ev in events if ev.get("event_type") == want]
+    return filter_timeline_entries(
+        events,
+        event_type=EventType.GATE_OVERRIDDEN.value,
+        row_from_event=gate_overridden_row_from_event,
+    )
 
 
 def gate_overridden_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    hist = gate_overridden_timeline_entries(events)
-    return hist[-1] if hist else None
+    return timeline_summary(gate_overridden_timeline_entries(events))
 
 
 def gate_overridden_timeline_history(
@@ -35,8 +41,7 @@ def gate_overridden_timeline_history(
     *,
     limit: int = 25,
 ) -> list[dict[str, Any]]:
-    hist = gate_overridden_timeline_entries(events)
-    return timeline_history_tail(hist, limit=limit)
+    return timeline_history(gate_overridden_timeline_entries(events), limit=limit)
 
 
 __all__ = [

@@ -4,7 +4,11 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_projections.builders.timeline_history import timeline_history_tail
+from nimbusware_projections.builders.gate_timeline import (
+    filter_timeline_entries,
+    timeline_history,
+    timeline_summary,
+)
 from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_ROW_KEYS
 
 
@@ -43,23 +47,21 @@ def integrator_gate_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
 
 
 def integrator_gate_timeline_entries(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Chronological integrator gate decisions (presence-gated rows per event)."""
-    want = EventType.GATE_DECISION_EMITTED.value
-    hist: list[dict[str, Any]] = []
-    for ev in events:
-        if ev.get("event_type") != want:
-            continue
+    def _row(ev: dict[str, Any]) -> dict[str, Any] | None:
         meta = ev.get("metadata")
         if not isinstance(meta, dict) or meta.get("integrator_gate") is not True:
-            continue
-        hist.append(integrator_gate_row_from_event(ev))
-    return hist
+            return None
+        return integrator_gate_row_from_event(ev)
+
+    return filter_timeline_entries(
+        events,
+        event_type=EventType.GATE_DECISION_EMITTED.value,
+        row_from_event=_row,
+    )
 
 
 def integrator_gate_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Latest integrator gate decision."""
-    hist = integrator_gate_timeline_entries(events)
-    return hist[-1] if hist else None
+    return timeline_summary(integrator_gate_timeline_entries(events))
 
 
 def integrator_gate_timeline_history(
@@ -67,9 +69,7 @@ def integrator_gate_timeline_history(
     *,
     limit: int = 25,
 ) -> list[dict[str, Any]]:
-    """Bounded integrator gate history (latest entries win when trimmed)."""
-    hist = integrator_gate_timeline_entries(events)
-    return timeline_history_tail(hist, limit=limit)
+    return timeline_history(integrator_gate_timeline_entries(events), limit=limit)
 
 
 def _integrator_score_delta(prev: Any, cur: Any) -> float | None:

@@ -4,7 +4,11 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_projections.builders.timeline_history import timeline_history_tail
+from nimbusware_projections.builders.gate_timeline import (
+    filter_timeline_entries,
+    timeline_history,
+    timeline_summary,
+)
 from nimbusware_projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
 
 
@@ -15,7 +19,6 @@ def _finding_has_security_scan_metadata(meta: Any) -> bool:
 
 
 def security_scan_row_from_event(ev: dict[str, Any]) -> dict[str, Any] | None:
-    """Shape one security-scan finding row (caller filters event type)."""
     meta = ev.get("metadata")
     if not _finding_has_security_scan_metadata(meta):
         return None
@@ -38,23 +41,17 @@ def security_scan_row_from_event(ev: dict[str, Any]) -> dict[str, Any] | None:
 def security_scan_on_verify_timeline_entries(
     events: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Chronological security-scan ``finding.created`` rows (``store_seq`` order)."""
-    want = EventType.FINDING_CREATED.value
-    hist: list[dict[str, Any]] = []
-    for ev in events:
-        if ev.get("event_type") != want:
-            continue
-        row = security_scan_row_from_event(ev)
-        if row is not None:
-            hist.append(row)
-    return hist
+    return filter_timeline_entries(
+        events,
+        event_type=EventType.FINDING_CREATED.value,
+        row_from_event=security_scan_row_from_event,
+    )
 
 
 def security_scan_on_verify_timeline_summary(
     events: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
-    hist = security_scan_on_verify_timeline_entries(events)
-    return hist[-1] if hist else None
+    return timeline_summary(security_scan_on_verify_timeline_entries(events))
 
 
 def security_scan_on_verify_timeline_history(
@@ -62,9 +59,7 @@ def security_scan_on_verify_timeline_history(
     *,
     limit: int = 25,
 ) -> list[dict[str, Any]]:
-    """Bounded security-scan history for operator drill-down."""
-    hist = security_scan_on_verify_timeline_entries(events)
-    return timeline_history_tail(hist, limit=limit)
+    return timeline_history(security_scan_on_verify_timeline_entries(events), limit=limit)
 
 
 __all__ = [

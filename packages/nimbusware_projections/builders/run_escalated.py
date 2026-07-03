@@ -4,7 +4,11 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_projections.builders.timeline_history import timeline_history_tail
+from nimbusware_projections.builders.gate_timeline import (
+    filter_timeline_entries,
+    timeline_history,
+    timeline_summary,
+)
 
 
 def run_escalated_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
@@ -22,19 +26,15 @@ def run_escalated_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_escalated_timeline_entries(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Chronological ``run.escalated`` events (``store_seq`` order of ``events``)."""
-    want = EventType.RUN_ESCALATED.value
-    hist: list[dict[str, Any]] = []
-    for ev in events:
-        if ev.get("event_type") != want:
-            continue
-        hist.append(run_escalated_row_from_event(ev))
-    return hist
+    return filter_timeline_entries(
+        events,
+        event_type=EventType.RUN_ESCALATED.value,
+        row_from_event=run_escalated_row_from_event,
+    )
 
 
 def run_escalated_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    hist = run_escalated_timeline_entries(events)
-    return hist[-1] if hist else None
+    return timeline_summary(run_escalated_timeline_entries(events))
 
 
 def run_escalated_timeline_history(
@@ -42,9 +42,7 @@ def run_escalated_timeline_history(
     *,
     limit: int = 25,
 ) -> list[dict[str, Any]]:
-    """Bounded run escalation history for operator drill-down."""
-    hist = run_escalated_timeline_entries(events)
-    return timeline_history_tail(hist, limit=limit)
+    return timeline_history(run_escalated_timeline_entries(events), limit=limit)
 
 
 def run_escalated_timeline_delta(events: list[dict[str, Any]]) -> dict[str, Any] | None:
