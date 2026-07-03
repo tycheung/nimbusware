@@ -25,6 +25,8 @@ from nimbusware_orchestrator.llm.common import (
     LlmSelfRefinementCritiqueResponse,
     _parse_verdict,
     append_gate_decision_event,
+)
+from nimbusware_orchestrator.llm.common import (
     ollama_chat_json_via_plan_patch as _ollama_chat_json,
 )
 from nimbusware_orchestrator.llm.post_verify_role_bindings import (

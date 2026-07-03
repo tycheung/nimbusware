@@ -312,10 +312,7 @@ def caption_guard_bad_payload_matrix(raw: Mapping[str, Any]) -> list[tuple[str, 
 def caption_guard_load_error_matrix(
     raw: Mapping[str, Any],
 ) -> list[tuple[str, dict[str, Any]]]:
-    return [
-        (str(row["fn"]), dict(row["payload"]))
-        for row in raw.get("load_error_payload") or []
-    ]
+    return [(str(row["fn"]), dict(row["payload"])) for row in raw.get("load_error_payload") or []]
 
 
 def assert_caption_guard_returns_none(fn_path: str, payload: Any) -> None:

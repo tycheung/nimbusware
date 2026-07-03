@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "codegen:openapi": "python ../../scripts/codegen/openapi_to_ts.py",
+    "codegen:openapi": "poetry run python ../../scripts/codegen/openapi_to_ts.py",
     "dev": "npm run codegen:openapi && vite",
     "build": "npm run codegen:openapi && vite build",
     "test": "vitest run --passWithNoTests"
