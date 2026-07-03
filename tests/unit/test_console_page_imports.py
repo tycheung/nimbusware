@@ -12,7 +12,7 @@ os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token-for-import-smoke")
 
 _CONSOLE_MODULES: tuple[str, ...] = (
-    "nimbusware_console.main",
+    "nimbusware_console",
     "nimbusware_console.operator_chat",
     "nimbusware_console.operator_chat_core",
     "nimbusware_console.services.operator_chat",

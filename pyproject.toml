@@ -157,7 +157,6 @@ ignore = ["E501"]
 "packages/nimbusware_console/bundle_catalog/faiss_status/drilldown.py" = ["F401"]
 "packages/nimbusware_console/integrator_gate/latest_delta.py" = ["F401"]
 "packages/nimbusware_console/integrator_preview/merge.py" = ["F401"]
-"packages/nimbusware_console/main.py" = ["E402", "F401"]
 "packages/nimbusware_maker/main.py" = ["E402"]
 "tests/**" = ["E402"]
 
@@ -173,7 +172,6 @@ omit = [
   "packages/nimbusware_api/cli.py",
   "packages/nimbusware_config/cli.py",
   "packages/nimbusware_maker/cli.py",
-  "packages/nimbusware_console/main.py",
   "packages/nimbusware_maker/protocol.py",
   "packages/nimbusware_maker/session.py",
   "packages/nimbusware_maker/readiness.py",
@@ -284,7 +282,6 @@ ignore_errors = false
 # fo731 (Lane X2): UI ignore narrowed (replaces blanket nimbusware_console.* / nimbusware_maker.*).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_console.main",
   "nimbusware_maker.slice_workflow",
   "nimbusware_maker.slice_workflow.*",
   "nimbusware_console.bundle_catalog",

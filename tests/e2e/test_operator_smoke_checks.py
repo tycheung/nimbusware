@@ -26,7 +26,8 @@ def test_api_create_run_timeline(client: TestClient) -> None:
     assert len(t.json().get("events", [])) >= 1
 
 
-def test_console_main_importable() -> None:
-    import importlib.util
+def test_console_package_importable() -> None:
+    import importlib
 
-    assert importlib.util.find_spec("nimbusware_console.main") is not None
+    mod = importlib.import_module("nimbusware_console")
+    assert getattr(mod, "WEB_ENTRY", "").endswith("/v1/admin/app/")

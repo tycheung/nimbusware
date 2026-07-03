@@ -151,13 +151,6 @@ def nimbusware_ollama_base_url(
     canonical = env_str("NIMBUSWARE_OLLAMA_BASE_URL")
     if canonical:
         return canonical.rstrip("/")
-    legacy = os.environ.get("OLLAMA_HOST", "").strip()
-    if legacy:
-        _warn_legacy_env_once(
-            "OLLAMA_HOST",
-            "OLLAMA_HOST is deprecated; use NIMBUSWARE_OLLAMA_BASE_URL",
-        )
-        return legacy.rstrip("/")
     return default.rstrip("/")
 
 
@@ -166,16 +159,6 @@ def nimbusware_api_port(default: int = 8000) -> int:
     if port_raw:
         try:
             return int(port_raw.strip())
-        except ValueError:
-            pass
-    legacy = os.environ.get("PORT", "").strip()
-    if legacy:
-        try:
-            _warn_legacy_env_once(
-                "PORT",
-                "PORT is deprecated for Nimbusware API bind; use NIMBUSWARE_API_PORT",
-            )
-            return int(legacy)
         except ValueError:
             pass
     return default

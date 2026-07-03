@@ -55,7 +55,6 @@ def test_pipeline_mixins_use_explicit_helpers_imports() -> None:
             "__init__.py",
             "_helpers.py",
             "_helpers_std.py",
-            "_helpers_bundle.py",
             "compose.py",
             "critique_gates.py",
             "optional_stages.py",

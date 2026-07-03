@@ -5,10 +5,9 @@ from pathlib import Path
 from nimbusware_env import find_repo_root
 
 
-def test_main_exports_render_main() -> None:
-    from nimbusware_console.main import WEB_ENTRY, render_main
+def test_console_exports_web_entry() -> None:
+    from nimbusware_console import WEB_ENTRY
 
-    assert callable(render_main)
     assert "/v1/admin/app/" in WEB_ENTRY
 
 
