@@ -2,23 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from env import find_repo_root
+
 SMOKE_SPEC_REL = Path("tests/e2e/smoke.spec.ts")
 SMOKE_PYTEST_REL = Path("tests/test_smoke.py")
 
-SMOKE_SPEC_TEMPLATE = """import { test, expect } from "@playwright/test";
-
-test("workspace smoke", async ({ page }) => {
-  await page.goto("/");
-  await expect(page).toHaveTitle(/.+/);
-});
-"""
-
-SMOKE_PYTEST_TEMPLATE = '''"""Minimal smoke test scaffold for Safe Coding workspaces."""
+_TEMPLATE_DIR = find_repo_root() / "configs" / "templates"
 
 
-def test_smoke_import() -> None:
-    assert True
-'''
+def _template_text(name: str) -> str:
+    return (_TEMPLATE_DIR / name).read_text(encoding="utf-8")
 
 
 def scaffold_consumer_tests(workspace: Path) -> dict[str, object]:
@@ -33,13 +26,13 @@ def scaffold_consumer_tests(workspace: Path) -> dict[str, object]:
         skipped.append(str(SMOKE_SPEC_REL))
     else:
         spec_path.parent.mkdir(parents=True, exist_ok=True)
-        spec_path.write_text(SMOKE_SPEC_TEMPLATE, encoding="utf-8")
+        spec_path.write_text(_template_text("safe_coding_smoke.spec.ts"), encoding="utf-8")
         created.append(str(SMOKE_SPEC_REL))
     if pytest_path.is_file():
         skipped.append(str(SMOKE_PYTEST_REL))
     else:
         pytest_path.parent.mkdir(parents=True, exist_ok=True)
-        pytest_path.write_text(SMOKE_PYTEST_TEMPLATE, encoding="utf-8")
+        pytest_path.write_text(_template_text("safe_coding_smoke_test.py"), encoding="utf-8")
         created.append(str(SMOKE_PYTEST_REL))
     return {"workspace": str(root), "created": created, "skipped": skipped}
 
