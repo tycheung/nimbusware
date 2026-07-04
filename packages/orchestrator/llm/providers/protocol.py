@@ -13,6 +13,8 @@ class LlmProvider(Protocol):
         model_id: str,
         messages: list[dict[str, str]],
         timeout_seconds: float = 120.0,
+        cache_blocks: list[dict[str, Any]] | None = None,
+        stage_name: str = "",
     ) -> dict[str, Any]: ...
 
     def probe(self, *, timeout_seconds: float = 10.0) -> dict[str, Any]: ...

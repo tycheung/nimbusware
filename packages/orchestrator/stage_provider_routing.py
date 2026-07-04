@@ -19,6 +19,8 @@ def cloud_chat_json(
     *,
     messages: list[dict[str, str]],
     timeout_seconds: float = 120.0,
+    cache_blocks: list[dict[str, Any]] | None = None,
+    stage_name: str = "",
 ) -> dict[str, Any]:
     """OpenAI-compatible ``/chat/completions`` with JSON object response."""
     cloud = mapping_or_empty(routing.get("cloud_runtime"))
@@ -29,12 +31,14 @@ def cloud_chat_json(
         msg = f"missing API key env {api_key_env}"
         raise ValueError(msg)
     model = str(cloud.get("model_id") or "gpt-4o-mini")
+    provider_id = str(cloud.get("provider") or "openai")
     url = f"{base_url}/chat/completions"
     body = {
         "model": model,
         "messages": apply_provider_cache_metadata(
             messages,
-            provider_id="openai",
+            provider_id=provider_id,
+            cache_blocks=cache_blocks,
         ),
         "response_format": {"type": "json_object"},
     }
@@ -47,21 +51,12 @@ def cloud_chat_json(
     resp.raise_for_status()
     data = resp.json()
     if isinstance(data, dict):
-        from agent_core.token_telemetry import (
-            TokenTelemetrySample,
-            record_token_sample,
-            usage_from_provider_response,
-        )
+        from orchestrator.llm.provider_telemetry import record_provider_chat_telemetry
 
-        usage = usage_from_provider_response(data)
-        record_token_sample(
-            TokenTelemetrySample(
-                tokens_in=usage.get("tokens_in", 0),
-                tokens_out=usage.get("tokens_out", 0),
-                cache_read=usage.get("cache_read", 0),
-                cache_write=usage.get("cache_write", 0),
-                provider="cloud",
-            ),
+        record_provider_chat_telemetry(
+            data,
+            provider=provider_id,
+            stage_name=stage_name,
         )
     choices = data.get("choices") if isinstance(data, dict) else None
     if not isinstance(choices, list) or not choices:

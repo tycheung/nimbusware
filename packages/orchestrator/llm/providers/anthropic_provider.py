@@ -5,6 +5,8 @@ from typing import Any
 
 import httpx
 
+from orchestrator.llm.prompt_cache import anthropic_system_content_blocks
+from orchestrator.llm.provider_telemetry import record_provider_chat_telemetry
 from orchestrator.provider_registry import probe_anthropic_connection
 
 _ANTHROPIC_VERSION = "2023-06-01"
@@ -29,24 +31,38 @@ class AnthropicProvider:
         model_id: str,
         messages: list[dict[str, str]],
         timeout_seconds: float = 120.0,
+        cache_blocks: list[dict[str, Any]] | None = None,
+        stage_name: str = "",
     ) -> dict[str, Any]:
         system_parts: list[str] = [_JSON_SYSTEM]
         api_messages: list[dict[str, str]] = []
+        fallback_system = ""
         for row in messages:
             role = str(row.get("role") or "user")
             content = str(row.get("content") or "")
             if role == "system":
                 if content.strip():
+                    fallback_system = content.strip()
                     system_parts.append(content.strip())
                 continue
             api_role = "assistant" if role == "assistant" else "user"
             api_messages.append({"role": api_role, "content": content})
         if not api_messages:
             api_messages = [{"role": "user", "content": "Respond with JSON."}]
+        json_block = {"type": "text", "text": _JSON_SYSTEM}
+        tier_system = anthropic_system_content_blocks(
+            cache_blocks,
+            fallback_system=fallback_system,
+        )
+        if isinstance(tier_system, list):
+            system_field: list[dict[str, Any]] | str = [json_block, *tier_system]
+        else:
+            merged = "\n\n".join(system_parts)
+            system_field = merged
         body: dict[str, Any] = {
             "model": model_id,
             "max_tokens": 8192,
-            "system": "\n\n".join(system_parts),
+            "system": system_field,
             "messages": api_messages,
         }
         resp = httpx.post(
@@ -64,6 +80,7 @@ class AnthropicProvider:
         if not isinstance(data, dict):
             msg = "invalid anthropic response"
             raise ValueError(msg)
+        record_provider_chat_telemetry(data, provider=self.provider_id, stage_name=stage_name)
         content_blocks = data.get("content")
         if not isinstance(content_blocks, list) or not content_blocks:
             msg = "missing content in anthropic response"

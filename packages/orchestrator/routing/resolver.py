@@ -179,6 +179,8 @@ class ModelBindingResolver:
         timeout_seconds: float = 120.0,
         api_key: str | None = None,
         actor_user_id: str = "",
+        cache_blocks: list[dict[str, Any]] | None = None,
+        stage_name: str | None = None,
         **resolve_kwargs: Any,
     ) -> dict[str, Any]:
         binding = self.resolve(agent_role, **resolve_kwargs)
@@ -199,4 +201,6 @@ class ModelBindingResolver:
             model_id=binding.model_id,
             messages=messages,
             timeout_seconds=timeout_seconds,
+            cache_blocks=cache_blocks,
+            stage_name=stage_name or "",
         )

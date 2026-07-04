@@ -52,12 +52,20 @@ def assemble_prompt_with_cache_metadata(
 ) -> AssembledPrompt:
     system_parts: list[str] = [stable.strip()]
     cache_blocks: list[dict[str, Any]] = [
-        {"tier": PromptTier.STABLE.value, "cache_control": {"type": "ephemeral"}},
+        {
+            "tier": PromptTier.STABLE.value,
+            "text": stable.strip(),
+            "cache_control": {"type": "ephemeral"},
+        },
     ]
     if context.strip():
         system_parts.append(context.strip())
         cache_blocks.append(
-            {"tier": PromptTier.CONTEXT.value, "cache_control": {"type": "ephemeral"}},
+            {
+                "tier": PromptTier.CONTEXT.value,
+                "text": context.strip(),
+                "cache_control": {"type": "ephemeral"},
+            },
         )
     for section in dynamic_sections or []:
         if not section.content.strip():
@@ -66,6 +74,7 @@ def assemble_prompt_with_cache_metadata(
         cache_blocks.append(
             {
                 "tier": PromptTier.DYNAMIC.value,
+                "text": section.content.strip(),
                 "label": section.label,
                 "cache_breaking": section.cache_breaking,
             },
@@ -78,7 +87,13 @@ def assemble_prompt_with_cache_metadata(
     ]
     if user_parts:
         messages.append({"role": "user", "content": user_parts[0]})
-        cache_blocks.append({"tier": PromptTier.VOLATILE.value, "cache_breaking": True})
+        cache_blocks.append(
+            {
+                "tier": PromptTier.VOLATILE.value,
+                "text": user_parts[0],
+                "cache_breaking": True,
+            },
+        )
     return AssembledPrompt(messages=messages, cache_blocks=cache_blocks)
 
 

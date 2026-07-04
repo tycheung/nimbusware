@@ -22,6 +22,8 @@ class OllamaProvider:
         model_id: str,
         messages: list[dict[str, str]],
         timeout_seconds: float = 120.0,
+        cache_blocks: list[dict[str, Any]] | None = None,
+        stage_name: str = "",
     ) -> dict[str, Any]:
         return ollama_chat_json(
             base_url=self._base_url,

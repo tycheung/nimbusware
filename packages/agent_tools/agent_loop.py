@@ -258,6 +258,7 @@ def run(
                 base_url=base_url,
                 model=model_id,
                 messages=messages,
+                cache_blocks=assembled.cache_blocks,
                 timeout_seconds=timeout_seconds,
             )
         except Exception as exc:  # noqa: BLE001

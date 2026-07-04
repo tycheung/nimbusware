@@ -78,3 +78,29 @@ def test_implement_context_filter_and_sources() -> None:
     assert "slice.plan" in implement_context_sources()
     filtered = filter_implement_context({"slice.plan": "x", "chat_transcript": "y"})
     assert "chat_transcript" not in filtered
+
+
+def test_assembled_prompt_cache_blocks_carry_text() -> None:
+    assembled = assemble_prompt_with_cache_metadata(
+        stable="stable rules",
+        context="session ctx",
+        volatile="slice body",
+    )
+    texts = [str(b.get("text") or "") for b in assembled.cache_blocks]
+    assert "stable rules" in texts
+    assert "session ctx" in texts
+    assert "slice body" in texts
+
+
+def test_anthropic_system_blocks_split_tiers() -> None:
+    from orchestrator.llm.prompt_cache import anthropic_system_content_blocks
+
+    blocks = anthropic_system_content_blocks(
+        [
+            {"tier": "stable", "text": "A", "cache_control": {"type": "ephemeral"}},
+            {"tier": "context", "text": "B", "cache_control": {"type": "ephemeral"}},
+        ],
+    )
+    assert isinstance(blocks, list)
+    assert len(blocks) == 2
+    assert blocks[0].get("cache_control") == {"type": "ephemeral"}

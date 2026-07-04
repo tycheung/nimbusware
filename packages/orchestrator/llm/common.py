@@ -240,6 +240,7 @@ def ollama_chat_json_via_plan_patch(
     timeout_seconds: float = 120.0,
     stage_name: str | None = None,
     agent_role: str | None = None,
+    cache_blocks: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     role = (agent_role or "").strip() or None
     if not role and stage_name:
@@ -263,6 +264,8 @@ def ollama_chat_json_via_plan_patch(
             timeout_seconds=timeout_seconds,
             participant_overrides=mesh_participant_overrides(),
             actor_user_id=mesh_actor_user_id(),
+            cache_blocks=cache_blocks,
+            stage_name=stage_name,
         )
     if stage_name:
         from config.persist import load_model_routing_dict
@@ -278,6 +281,8 @@ def ollama_chat_json_via_plan_patch(
                 routing,
                 messages=messages,
                 timeout_seconds=timeout_seconds,
+                cache_blocks=cache_blocks,
+                stage_name=stage_name or "",
             )
     from orchestrator.routing import ollama_chat as _ollama_chat_mod
 
