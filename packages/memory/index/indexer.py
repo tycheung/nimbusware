@@ -10,7 +10,8 @@ from memory.event_scan import fetch_event_rows_for_memory_index
 from memory.index.chunking import chunks_from_event_rows
 from memory.index.embeddings import embed_text, embedding_model_id_for_mode
 from memory.index.faiss_index import build_memory_faiss_index
-from memory.index.manifest import MemoryIndexManifest, default_memory_index_dir, write_manifest
+from memory.index.fingerprint import memory_event_rows_fingerprint
+from memory.index.manifest import MemoryIndexManifest, default_memory_index_dir, read_manifest, write_manifest
 from memory.index.models import EmbeddingMode, MemoryChunkRecord
 from memory.index.repo_scope import repo_scope_hash, resolve_repo_root
 from memory.store.protocol import MemoryChunkStore
@@ -39,6 +40,7 @@ class RebuildIndexResult:
     embedding_mode: EmbeddingMode
     embedding_model_id: str
     manifest_path: Path
+    rebuild_skipped: bool
 
 
 def _drafts_to_records(
@@ -100,6 +102,31 @@ def rebuild_memory_index(
         conninfo=conninfo,
         in_memory_rows=in_memory_event_rows,
     )
+    fingerprint = memory_event_rows_fingerprint(rows)
+    max_seq = max((int(r.get("store_seq") or 0) for r in rows), default=0)
+    index_dir = default_memory_index_dir(root)
+    existing = read_manifest(index_dir)
+    if (
+        existing is not None
+        and existing.repo_scope_hash == scope
+        and existing.embedding_mode == embedding_mode
+        and existing.embedding_model_id == model_id
+        and existing.source_events_fingerprint == fingerprint
+    ):
+        try:
+            gen_id = UUID(existing.generation_id)
+        except ValueError:
+            gen_id = uuid4()
+        return RebuildIndexResult(
+            generation_id=gen_id,
+            repo_scope_hash=scope,
+            chunks_added=existing.chunk_count,
+            chunks_skipped=0,
+            embedding_mode=embedding_mode,
+            embedding_model_id=model_id,
+            manifest_path=index_dir / "manifest.json",
+            rebuild_skipped=True,
+        )
     drafts = chunks_from_event_rows(rows)
     gen_id = uuid4()
     records, skipped = _drafts_to_records(
@@ -109,7 +136,6 @@ def rebuild_memory_index(
         mode=embedding_mode,
         model_id=model_id,
     )
-    index_dir = default_memory_index_dir(root)
     manifest_relpath = (
         str(index_dir.relative_to(root))
         if index_dir.is_relative_to(root)
@@ -133,6 +159,8 @@ def rebuild_memory_index(
         embedding_model_id=model_id,
         chunk_count=len(records),
         built_at=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        source_events_fingerprint=fingerprint,
+        source_max_store_seq=max_seq,
     )
     manifest_path = write_manifest(index_dir, manifest)
     build_memory_faiss_index(chunks=records, index_dir=index_dir)
@@ -144,6 +172,7 @@ def rebuild_memory_index(
         embedding_mode=embedding_mode,
         embedding_model_id=model_id,
         manifest_path=manifest_path,
+        rebuild_skipped=False,
     )
     if audit_store is not None and audit_run_id is not None:
         from memory.index.audit import append_memory_indexed_event

@@ -95,6 +95,7 @@ def rebuild_fleet_memory_index(
         embedding_mode=embedding_mode,
         embedding_model_id=model_id,
         manifest_path=manifest_path,
+        rebuild_skipped=False,
     )
     if audit_store is not None and audit_run_id is not None:
         from memory.index.audit import append_memory_indexed_event

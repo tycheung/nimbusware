@@ -20,6 +20,8 @@ class MemoryIndexManifest(BaseModel):
     embedding_model_id: str
     chunk_count: int = Field(ge=0)
     built_at: str
+    source_events_fingerprint: str | None = None
+    source_max_store_seq: int | None = Field(default=None, ge=0)
 
 
 def default_memory_index_dir(repo_root: Path) -> Path:
