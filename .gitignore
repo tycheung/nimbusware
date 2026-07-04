@@ -142,6 +142,7 @@ packages/admin_ui/src/api/schema.d.ts
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
+standards.md
 efficiency.md
 benchmarks/*
 !benchmarks/README.md
