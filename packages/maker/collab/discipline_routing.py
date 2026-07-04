@@ -109,6 +109,7 @@ def maybe_route_collab_message(
         run_id=session.run_id,
         message=message,
         routed_from_user_id=str(actor_user_id) if actor_user_id is not None else None,
+        exclude_discipline_mentions=True,
     )
     routes.extend(surface_routes)
     append_routed_feedback_turns(

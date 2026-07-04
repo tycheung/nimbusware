@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -35,7 +36,8 @@ def test_writer_verifier_pass_delegates_to_micro_slice() -> None:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     orch, store = make_dev_orchestrator(repo)
     run_id = orch.create_run("micro_slice")
-    orch.execute_writer_verifier_pass(run_id, workspace=repo)
+    with patch("orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok")):
+        orch.execute_writer_verifier_pass(run_id, workspace=repo)
     rows = store.list_run_events(str(run_id))
     stage_names = [
         (r.get("payload") or {}).get("stage_name")
@@ -43,7 +45,7 @@ def test_writer_verifier_pass_delegates_to_micro_slice() -> None:
         if r.get("event_type") == "stage.started"
     ]
     assert "slice.plan" in stage_names
-    assert "implementation" not in stage_names
+    assert "implementation" in stage_names
 
 
 def test_micro_slice_count_env() -> None:

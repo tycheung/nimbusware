@@ -18,14 +18,15 @@ def normalize_surface_id(raw: str) -> str | None:
     return _normalize_surface_id(raw)
 
 
-def parse_surface_mentions(message: str) -> list[str]:
-    from maker.collab.disciplines import normalize_discipline
-
+def parse_surface_mentions(message: str, *, exclude_discipline_mentions: bool = False) -> list[str]:
     seen: set[str] = set()
     out: list[str] = []
     for match in _SURFACE_MENTION_RE.findall(str(message or "")):
-        if normalize_discipline(match):
-            continue
+        if exclude_discipline_mentions:
+            from maker.collab.disciplines import normalize_discipline
+
+            if normalize_discipline(match):
+                continue
         surface_id = normalize_surface_id(match)
         if surface_id and surface_id not in seen:
             seen.add(surface_id)
@@ -37,9 +38,12 @@ def parse_surface_steer_prefix(message: str) -> tuple[str, str | None]:
     return _parse_surface_steer_prefix(message)
 
 
-def surface_steer_routes(message: str) -> list[dict[str, str]]:
+def surface_steer_routes(message: str, *, exclude_discipline_mentions: bool = False) -> list[dict[str, str]]:
     routes: list[dict[str, str]] = []
-    for surface_id in parse_surface_mentions(message):
+    for surface_id in parse_surface_mentions(
+        message,
+        exclude_discipline_mentions=exclude_discipline_mentions,
+    ):
         routes.append({"surface_id": surface_id, "source": "mention"})
     _, prefix_surface = parse_surface_steer_prefix(message)
     if prefix_surface and not any(r["surface_id"] == prefix_surface for r in routes):
@@ -53,10 +57,11 @@ def enqueue_surface_steers(
     run_id: UUID | str,
     message: str,
     routed_from_user_id: str | None = None,
+    exclude_discipline_mentions: bool = False,
 ) -> list[dict[str, str]]:
     from orchestrator.slice.interjection import emit_interjection_enqueued
 
-    routes = surface_steer_routes(message)
+    routes = surface_steer_routes(message, exclude_discipline_mentions=exclude_discipline_mentions)
     if not routes:
         return []
     body, prefix_surface = parse_surface_steer_prefix(message)

@@ -28,9 +28,7 @@ def module_level_import_prefixes(path: Path, prefix: str) -> list[str]:
 
 def _iter_python_files(root: Path) -> list[Path]:
     return sorted(
-        path
-        for path in root.rglob("*.py")
-        if "__pycache__" not in path.parts and path.is_file()
+        path for path in root.rglob("*.py") if "__pycache__" not in path.parts and path.is_file()
     )
 
 

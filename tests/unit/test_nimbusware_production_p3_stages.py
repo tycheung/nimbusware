@@ -47,7 +47,11 @@ def test_nimbusware_production_verify_runs_micro_slice_stages(
         {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "0", "NIMBUSWARE_SLICE_P3_EVIDENCE": "0"},
         clear=False,
     ):
-        orch.execute_writer_verifier_pass(run_id, workspace=root)
+        with patch(
+            "orchestrator.verify_fanout.run_writer_verifier_bundle",
+            return_value=(0, "ok"),
+        ):
+            orch.execute_writer_verifier_pass(run_id, workspace=root)
 
     stage_names = [
         (r.get("payload") or {}).get("stage_name")

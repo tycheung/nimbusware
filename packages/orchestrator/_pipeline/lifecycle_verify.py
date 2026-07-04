@@ -20,6 +20,8 @@ class LifecycleVerifyMixin:
         workspace: Path | None = None,
     ) -> None:
         self.execute_micro_slice_pass(run_id, workspace=workspace)
+        self._run_writer_group_dispatch(run_id, workspace=workspace)
+        self._run_post_writer_critique_tail(run_id)
 
     def _run_post_writer_critique_tail(
         self: LifecycleVerifyHost,

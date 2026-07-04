@@ -62,7 +62,7 @@ def test_process_verify_dispatch_task_drains_queue() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     with patch(
-        "orchestrator.pipeline.run_writer_verifier_bundle",
+        "orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         orch.dispatch_or_run_verify(rid)
@@ -133,7 +133,7 @@ def test_redis_dispatch_worker_loop_drains_verify() -> None:
     rid = orch.create_run("default")
     queue.enqueue(RunDispatchTask(run_id=str(rid), step="verify", payload={}))
     with patch(
-        "orchestrator.pipeline.run_writer_verifier_bundle",
+        "orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         processed = run_worker_loop(queue, orch, max_tasks=1, idle_sleep_seconds=0.0)
@@ -155,7 +155,7 @@ def test_redis_dispatch_worker_loop_drains_multiple_tasks() -> None:
     queue.enqueue(RunDispatchTask(run_id=str(rid1), step="verify", payload={}))
     queue.enqueue(RunDispatchTask(run_id=str(rid2), step="verify", payload={}))
     with patch(
-        "orchestrator.pipeline.run_writer_verifier_bundle",
+        "orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         processed = run_worker_loop(queue, orch, max_tasks=2, idle_sleep_seconds=0.0)
@@ -171,7 +171,7 @@ def test_worker_loop_processes_verify_tasks() -> None:
     rid = orch.create_run("default")
     queue.enqueue(RunDispatchTask(run_id=str(rid), step="verify", payload={}))
     with patch(
-        "orchestrator.pipeline.run_writer_verifier_bundle",
+        "orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         processed = run_worker_loop(queue, orch, max_tasks=1, idle_sleep_seconds=0.0)

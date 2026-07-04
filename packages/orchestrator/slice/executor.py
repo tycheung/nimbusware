@@ -310,8 +310,6 @@ def execute_micro_slice_pass(
         results,
         emit_stage=_emit_slice_stage,
     )
-    orch._run_writer_group_dispatch(run_id, workspace=workspace)
-    orch._run_post_writer_critique_tail(run_id)
     if results and all(r.passed for r in results):
         rows = orch._store.list_run_events(str(run_id))
         orch._emit_bundle_integrator_gate(run_id)
