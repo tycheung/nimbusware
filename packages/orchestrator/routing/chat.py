@@ -24,6 +24,23 @@ def ollama_chat_json(
     r = httpx.post(url, json=body, timeout=timeout_seconds)
     r.raise_for_status()
     data = r.json()
+    if isinstance(data, dict):
+        from agent_core.token_telemetry import (
+            TokenTelemetrySample,
+            record_token_sample,
+            usage_from_provider_response,
+        )
+
+        usage = usage_from_provider_response(data)
+        record_token_sample(
+            TokenTelemetrySample(
+                tokens_in=usage.get("tokens_in", 0),
+                tokens_out=usage.get("tokens_out", 0),
+                cache_read=usage.get("cache_read", 0),
+                cache_write=usage.get("cache_write", 0),
+                provider="ollama",
+            ),
+        )
     msg = data.get("message") if isinstance(data, dict) else None
     content = msg.get("content") if isinstance(msg, dict) else None
     if not isinstance(content, str):

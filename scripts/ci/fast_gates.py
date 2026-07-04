@@ -40,6 +40,10 @@ def main() -> int:
             "import boundary check",
             [sys.executable, str(ROOT / "scripts" / "ci" / "import_boundary_check.py")],
         ),
+        (
+            "stage registry gate",
+            [sys.executable, str(ROOT / "scripts" / "ci" / "stage_registry_gate.py")],
+        ),
     ]
 
     failures: list[str] = []

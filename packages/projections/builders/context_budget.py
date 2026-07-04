@@ -158,4 +158,9 @@ def estimate_context_budget(events: list[dict[str, Any]]) -> dict[str, Any]:
     last = _last_compaction_detail(events)
     if last is not None:
         out["last_compaction"] = last
+    from agent_core.token_telemetry import token_savings_summary
+
+    savings = token_savings_summary()
+    if any(savings.values()):
+        out["token_savings"] = savings
     return out
