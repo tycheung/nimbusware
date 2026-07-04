@@ -68,8 +68,19 @@ export function renderContextBudget(body) {
     last && last.tokens_before != null && last.tokens_after != null
       ? ` · last compact ${last.tokens_before}→${last.tokens_after} tok`
       : "";
-  chip.textContent = `Context ${pct}% (${budget.estimated_tokens}/${budget.window_tokens} tok)${compactHint}`;
-  chip.title = "Advisory estimate of planner-facing context vs model window";
+  const samples = budget.token_samples || {};
+  const sampleParts = [];
+  if (samples.tokens_in) sampleParts.push(`in ${samples.tokens_in}`);
+  if (samples.tokens_out) sampleParts.push(`out ${samples.tokens_out}`);
+  if (samples.cache_read) sampleParts.push(`cache hit ${samples.cache_read}`);
+  if (samples.cache_write) sampleParts.push(`cache write ${samples.cache_write}`);
+  const sampleHint = sampleParts.length ? ` · LLM ${sampleParts.join(", ")}` : "";
+  const savings = budget.token_savings || {};
+  const savingsHint =
+    savings.offload_saved > 0 ? ` · offload saved ${savings.offload_saved} tok` : "";
+  chip.textContent = `Context ${pct}% (${budget.estimated_tokens}/${budget.window_tokens} tok)${compactHint}${sampleHint}${savingsHint}`;
+  chip.title =
+    "Advisory planner context vs model window; LLM totals from persisted budget samples when available";
   chip.dataset.testid = "maker-context-budget-chip";
   renderCompactionPreview(last);
 }
