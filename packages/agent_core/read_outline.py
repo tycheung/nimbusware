@@ -1,6 +1,62 @@
 from __future__ import annotations
 
 import ast
+import re
+
+_TS_DECL = re.compile(
+    r"^\s*(?:export\s+)?(?:declare\s+)?(?:abstract\s+)?class\s+(\w+)",
+    re.MULTILINE,
+)
+_TS_FUNC = re.compile(
+    r"^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(",
+    re.MULTILINE,
+)
+_TS_METHOD = re.compile(
+    r"^\s*(?:public\s+|private\s+|protected\s+)?(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::|\{)",
+    re.MULTILINE,
+)
+_GO_DECL = re.compile(r"^func\s+(?:\([^)]+\)\s+)?(\w+)\s*\(", re.MULTILINE)
+_GO_TYPE = re.compile(r"^type\s+(\w+)\s+(?:struct|interface)\b", re.MULTILINE)
+
+
+def typescript_file_outline(source: str, *, rel_path: str = "") -> str:
+    lines: list[str] = [f"// outline: {rel_path or 'module'}"]
+    seen: set[str] = set()
+    for rx in (_TS_DECL, _TS_FUNC, _TS_METHOD):
+        for match in rx.finditer(source):
+            name = match.group(1)
+            if name in seen or name in {"constructor"}:
+                continue
+            seen.add(name)
+            prefix = "class" if rx is _TS_DECL else "function"
+            if rx is _TS_METHOD and prefix == "function":
+                prefix = "method"
+            lines.append(f"{prefix} {name}(...)")
+            if len(lines) >= 120:
+                break
+    return "\n".join(lines)
+
+
+def go_file_outline(source: str, *, rel_path: str = "") -> str:
+    lines: list[str] = [f"// outline: {rel_path or 'module'}"]
+    for rx in (_GO_TYPE, _GO_DECL):
+        for match in rx.finditer(source, flags=re.MULTILINE):
+            kind = "type" if rx is _GO_TYPE else "func"
+            lines.append(f"{kind} {match.group(1)}(...)")
+            if len(lines) >= 120:
+                break
+    return "\n".join(lines)
+
+
+def file_outline(source: str, *, rel_path: str) -> str:
+    norm = rel_path.replace("\\", "/").lower()
+    if norm.endswith(".py"):
+        return python_file_outline(source, rel_path=rel_path)
+    if norm.endswith((".ts", ".tsx", ".js", ".jsx", ".mts", ".cts")):
+        return typescript_file_outline(source, rel_path=rel_path)
+    if norm.endswith(".go"):
+        return go_file_outline(source, rel_path=rel_path)
+    return python_file_outline(source, rel_path=rel_path)
 
 
 def python_file_outline(source: str, *, rel_path: str = "") -> str:
@@ -29,8 +85,7 @@ def python_file_outline(source: str, *, rel_path: str = "") -> str:
 
 
 def python_file_digest(source: str, *, rel_path: str = "") -> str:
-    """Signatures-only view between outline and full source."""
-    outline = python_file_outline(source, rel_path=rel_path)
+    outline = file_outline(source, rel_path=rel_path)
     lines = [line for line in outline.splitlines() if line.strip()]
     return "\n".join(lines[:80])
 
@@ -49,7 +104,8 @@ def read_mode_for_file(
     )
     if in_slice_targets:
         return "full"
-    if rel_path.endswith(".py"):
+    outline_exts = (".py", ".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".go")
+    if rel_path.endswith(outline_exts):
         if line_count >= digest_at:
             return "digest"
         if line_count >= threshold:

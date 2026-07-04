@@ -10,7 +10,7 @@ from agent_core.context_budget import (
     truncate_for_active_read,
     truncate_shell_output,
 )
-from agent_core.read_outline import python_file_outline, read_mode_for_file
+from agent_core.read_outline import file_outline, read_mode_for_file
 from agent_tools.allowlist import (
     normalise_rel,
     path_in_plan,
@@ -67,11 +67,11 @@ def tool_read_file(
                 line_count=line_count,
                 in_slice_targets=in_targets,
             )
-        if effective_mode == "outline" and rel.endswith(".py"):
-            body = python_file_outline(raw, rel_path=rel)
+        if effective_mode == "outline":
+            body = file_outline(raw, rel_path=rel)
             llm = truncate_for_active_read(body, max_chars=cap)
             audit = f"{rel} sha256={digest} lines={line_count} mode=outline"
-        elif effective_mode == "digest" and rel.endswith(".py"):
+        elif effective_mode == "digest":
             from agent_core.read_outline import python_file_digest
 
             body = python_file_digest(raw, rel_path=rel)
