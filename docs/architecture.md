@@ -37,8 +37,11 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [026-enforcement-depth-slider.md](adr/026-enforcement-depth-slider.md) | Enforcement depth 0–10 (workspace CI strictness) |
 | [028-package-directory-depth.md](adr/028-package-directory-depth.md) | Package depth vs breadth; orchestrator domain subpackages |
 | [026-host-transfer.md](adr/026-host-transfer.md) | Collaborative session host transfer MVP |
+| [031-context-budget-telemetry.md](adr/031-context-budget-telemetry.md) | Rate-limited `context.budget.sampled` events |
+| [032-incremental-maker-progress-sse.md](adr/032-incremental-maker-progress-sse.md) | Tail event fetch + `progress_delta` SSE |
+| [033-structure-over-source-reads.md](adr/033-structure-over-source-reads.md) | Agent read modes: outline, digest, full |
 
-Tier 3 context-efficiency modules (Pi transplant): `agent_tools` (dual tool output, allowlist, stable prompt file), `projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
+Tier 3 context-efficiency modules (Pi transplant): `agent_tools` (dual tool output, allowlist, stable prompt file), `projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`. Jul 2026 stack: cache_blocks provider plumbing (ADR 006), progressive compaction L0–L4 (ADR 007), persisted budget samples (ADR 031), incremental Progress SSE (ADR 032), structure-over-source reads (ADR 033).
 
 ## v1.2 operator docs
 

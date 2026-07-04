@@ -155,7 +155,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 ## Context efficiency (Jul 2026)
 
-Progressive compaction, cache-aware prompts, and token telemetry live under `agent_core/` and `agent_tools/agent_loop.py`:
+Progressive compaction, cache-aware prompts, and token telemetry live under `agent_core/` and `agent_tools/agent_loop.py`. ADRs: [006](docs/adr/006-prompt-tiers.md), [007](docs/adr/007-context-compaction.md), [031](docs/adr/031-context-budget-telemetry.md), [032](docs/adr/032-incremental-maker-progress-sse.md), [033](docs/adr/033-structure-over-source-reads.md).
 
 | Level | Trigger | Module |
 |-------|---------|--------|

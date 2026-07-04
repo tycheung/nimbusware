@@ -1,6 +1,6 @@
 # Context efficiency
 
-Token-aware caps keep LLM prompts bounded without deleting raw audit events. ADRs: [006](adr/006-prompt-tiers.md), [007](adr/007-context-compaction.md), [008](adr/008-context-artifacts-file-cache.md).
+Token-aware caps keep LLM prompts bounded without deleting raw audit events. ADRs: [006](adr/006-prompt-tiers.md), [007](adr/007-context-compaction.md), [008](adr/008-context-artifacts-file-cache.md), [031](adr/031-context-budget-telemetry.md), [032](adr/032-incremental-maker-progress-sse.md), [033](adr/033-structure-over-source-reads.md).
 
 ## Key flags
 
