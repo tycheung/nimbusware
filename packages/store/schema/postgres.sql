@@ -227,6 +227,7 @@ CREATE TABLE IF NOT EXISTS event_store (
     'maintenance.architecture.started',
     'maintenance.architecture.passed',
     'completion.evaluated',
+    'context.budget.sampled',
     'model.binding.overridden',
     'workload.role_claimed',
     'workload.role_released'

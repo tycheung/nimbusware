@@ -34,4 +34,6 @@ def test_via_plan_patch_uses_resolver_for_mapped_stage() -> None:
         timeout_seconds=120.0,
         participant_overrides=None,
         actor_user_id="",
+        cache_blocks=None,
+        stage_name="slice.plan",
     )

@@ -18,7 +18,7 @@ Each row below links to a package README when one exists.
 | Package | Responsibility | Notes |
 |---------|----------------|-------|
 | [`agent_core`](agent_core/) | Shared **domain models** and read helpers: event payloads (`models/`), `stage_graph`, `slice_plan`, `prompt_tiers` (cache-aware assembly), `context_budget`, `tool_output_offload`, `token_telemetry`, critique stage IDs, campaign/critic read parsers (`read/`). | No HTTP or UI. Import boundary for event shapes used by `store`, `orchestrator`, and `projections`. |
-| [`store`](store/) | **Append-only event store**: `PostgresEventStore`, `InMemoryEventStore`, migrations under `store/migrations/`. | Source of truth for run timelines. |
+| [`store`](store/) | **Append-only event store**: `PostgresEventStore`, `InMemoryEventStore`, migrations under `store/migrations/`. | `list_run_events_since` for incremental SSE tail reads. |
 | [`config`](config/) | Versioned config documents + materializer; `resolve_run_config()` with resolution trace (`resolved_config.py`); provider vault, model-routing sections, workflow reads. Canonical routing file: `configs/model-routing.yaml`. | CLI: `nimbusware-config`. |
 | [`env`](env/) | **Edition gate**, dotenv, desktop launchers, **~263-key** settings catalog (`settings_catalog*`, `env_flags`, `settings_resolve`), operator presets (`offline` / `local-llm` / `production` via `NIMBUSWARE_OPERATOR_PRESET`). | All `NIMBUSWARE_*` reads should go through helpers here. CLIs: `nimbusware-run`, `nimbusware-admin`, `nimbusware-launcher`. |
 | [`client`](client/) | Shared **HTTP client** for Maker/Admin UIs (`httpx`, API key / admin token headers). | Used by frontends and scripts; not for server `services/*` (those call domain code directly). |
@@ -30,7 +30,7 @@ Each row below links to a package README when one exists.
 | Package | Responsibility | Notes |
 |---------|----------------|-------|
 | [`orchestrator`](orchestrator/) | **Run pipeline**: `RunOrchestrator` (`pipeline.py`, `_pipeline/stage_registry.py` mixins), workflow blocks, slice loop, critics, gates, campaign driver, fleet policies, factory/PUT E2E, dev env, routing, replay. | Domain subpackages: `workflow/`, `slice/`, `fleet/`, `critique/`, `campaign/`, `factory/`, `dev_env/`, `routing/`, `integrator/`, `collab/`, `replay/`, `repo_intel/`, `profiles/`, `scraper/`, `stack/`, `llm/`, `launch/`, `escalation/`, `improvement/`, `interaction/`. CLIs: `nimbusware-preflight`, `nimbusware-run-worker`, `nimbusware-memory-replay`, etc. |
-| [`agent_tools`](agent_tools/) | **JIT agent loop** for slice implement: tool registry, allowlist, dual `ToolResult` output, filesystem jail, sandbox backends, risk caps. | Invoked from orchestrator slice stages. |
+| [`agent_tools`](agent_tools/) | **JIT agent loop** for slice implement: tool registry, allowlist, dual `ToolResult` output, filesystem jail, sandbox backends, risk caps. Passes `cache_blocks` to LLM resolver; read tool supports `outline` / `digest` / `full`. | Invoked from orchestrator slice stages. |
 | [`executor`](executor/) | **Role-gated outbound HTTP** allowlists for scraper and agent egress. | See [agent-sandbox.md](../docs/deploy/agent-sandbox.md). |
 | [`extensions`](extensions/) | **Personas**, bundle memory, escalation helpers, custom agents catalog integration. | Must not import `orchestrator` at module level. |
 | [`research`](research/) | **Research briefs**, stitch transplant stages, catalog candidates, outcome stats. | Feeds bundle catalog promotion. |

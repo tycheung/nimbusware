@@ -15,8 +15,27 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. ADR
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in campaigns |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
 | `NIMBUSWARE_THEATER_LLM_SUMMARY` | off | Optional theater summary when enabled |
+| `NIMBUSWARE_MEMORY_INDEX_FIRST` | 0 | Inject memory index table before FAISS excerpts |
+| `NIMBUSWARE_CONTEXT_DEDUP` | 1 | Dedupe repeated context blocks in agent loop |
+| `NIMBUSWARE_OPENAI_PREFIX_REUSE` | 0 | OpenAI-compatible prefix-cache hint header |
 
-Full catalog (246 keys): [operator-settings.md](../operator-settings.md) and `poetry run python scripts/ci/audit_operator_env.py`.
+Full catalog (264 keys): [operator-settings.md](../operator-settings.md) and `poetry run python scripts/ci/audit_operator_env.py`.
+
+## Cache-aware prompts
+
+`agent_core/prompt_tiers.py` assembles STABLE / CONTEXT / VOLATILE tiers and emits `cache_blocks` (text + tier metadata). The agent loop passes blocks through `ModelBindingResolver.chat_json()` to cloud providers; Anthropic requests use multi-block system content via `orchestrator/llm/prompt_cache.py`. Critique stages share a stable harness prefix in `orchestrator/critique/prompt_assembly.py`.
+
+## Token telemetry
+
+Each provider chat records in-process counters (`agent_core/token_telemetry.py`) and, when a run store is bound, persists rate-limited `context.budget.sampled` events (30s per run/stage) via `orchestrator/llm/budget_sample_emit.py`. Projections aggregate samples in `projections/builders/context_budget.py`.
+
+## Read modes
+
+The agent `read` tool selects `outline`, `digest`, or `full` based on file size and slice targets (`agent_core/read_outline.py`). Python outlines use AST; digest mode summarizes structure without full source. Campaign read staleness is tracked in `agent_core/read_staleness.py`.
+
+## Maker Progress SSE
+
+Run event streams use tail fetch (`store.list_run_events_since`) instead of replaying the full timeline on each poll. The API emits `progress_delta` events; the client merges deltas in `maker_web/static/js/tabs/progress.js`.
 
 ## APIs
 

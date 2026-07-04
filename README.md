@@ -32,7 +32,7 @@ python scripts/install_nimbusware.py --skip-postgres   # or full install with Po
 poetry run nimbusware-run --quick                      # in-memory demo, no DB
 ```
 
-Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Optional `.env` transport presets: `NIMBUSWARE_OPERATOR_PRESET=offline`, `local-llm`, or `production` (applied at startup via `load_dotenv`). Full install and run options: **[docs/getting-started.md](docs/getting-started.md)**.
+Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Optional `.env` transport presets: `NIMBUSWARE_OPERATOR_PRESET=offline`, `local-llm`, or `production` (applied at startup via `load_dotenv`). Token-efficiency env keys include `NIMBUSWARE_MEMORY_INDEX_FIRST`, `NIMBUSWARE_CONTEXT_DEDUP`, and `NIMBUSWARE_OPENAI_PREFIX_REUSE` — see [ARCHITECTURE.md](ARCHITECTURE.md#context-efficiency-jul-2026). Full install and run options: **[docs/getting-started.md](docs/getting-started.md)**.
 
 ### Desktop launcher (Windows / macOS / Linux)
 
@@ -62,6 +62,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Operator ribbons (Maker) | Progress + Chat: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md), [packages/README.md](packages/README.md) |
 | Configure settings (~263 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
+| Context efficiency (compaction, cache tiers, telemetry) | [ARCHITECTURE.md](ARCHITECTURE.md#context-efficiency-jul-2026) |
 | Collaborative chat & disciplines | [docs/collaborative-chat.md](docs/collaborative-chat.md) |
 | IDE bridge (MCP + VS Code extension) | [docs/ide-bridge.md](docs/ide-bridge.md) |
 | Deploy pipeline (Terraform / CI) | [docs/product/deploy.md](docs/product/deploy.md) |

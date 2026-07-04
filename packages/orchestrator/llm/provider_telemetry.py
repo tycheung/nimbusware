@@ -28,3 +28,13 @@ def record_provider_chat_telemetry(
             stage_name=stage_name,
         ),
     )
+    from orchestrator.llm.budget_sample_emit import maybe_emit_context_budget_sample
+
+    maybe_emit_context_budget_sample(
+        provider=provider,
+        stage_name=stage_name,
+        tokens_in=usage.get("tokens_in", 0),
+        tokens_out=usage.get("tokens_out", 0),
+        cache_read=usage.get("cache_read", 0),
+        cache_write=usage.get("cache_write", 0),
+    )

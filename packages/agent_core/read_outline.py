@@ -44,7 +44,9 @@ def read_mode_for_file(
     digest_threshold: int | None = None,
 ) -> str:
     threshold = outline_threshold if outline_threshold is not None else _outline_loc_threshold()
-    digest_at = digest_threshold if digest_threshold is not None else max(threshold * 2, threshold + 200)
+    digest_at = (
+        digest_threshold if digest_threshold is not None else max(threshold * 2, threshold + 200)
+    )
     if in_slice_targets:
         return "full"
     if rel_path.endswith(".py"):
