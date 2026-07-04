@@ -64,6 +64,71 @@ def test_read_mode_outline_for_large_non_target() -> None:
         )
         == "digest"
     )
+    assert (
+        read_mode_for_file(
+            "web/App.tsx",
+            line_count=500,
+            in_slice_targets=False,
+            outline_threshold=200,
+            digest_threshold=800,
+        )
+        == "outline"
+    )
+
+
+def test_typescript_outline_extracts_declarations() -> None:
+    from agent_core.read_outline import typescript_file_outline
+
+    src = "export class Widget {\n  async render() {}\n}\nexport function mount() {}\n"
+    outline = typescript_file_outline(src, rel_path="web/widget.tsx")
+    assert "Widget" in outline
+    assert "mount" in outline
+
+
+def test_campaign_artifact_bundle_omits_chat_transcript() -> None:
+    from orchestrator.campaign.artifact_bundle import build_campaign_artifact_bundle
+
+    bundle = build_campaign_artifact_bundle([], run_id="11111111-1111-4111-8111-111111111111")
+    assert "chat_transcript" in bundle["forbidden_omitted"]
+    assert "checksum_sha256" in bundle
+    assert "slice.plan" in bundle["sources"]
+
+
+def test_memory_index_fingerprint_skip_rebuild(tmp_path, monkeypatch) -> None:
+    from uuid import uuid4
+
+    from agent_core.models import EventType
+    from memory import InMemoryMemoryChunkStore, rebuild_memory_index
+    from memory.index.fingerprint import memory_event_rows_fingerprint
+
+    monkeypatch.chdir(tmp_path)
+    rid = uuid4()
+    rows = [
+        {
+            "store_seq": 1,
+            "run_id": rid,
+            "event_type": EventType.RUN_CREATED.value,
+            "metadata": {},
+            "payload": {},
+        },
+        {
+            "store_seq": 2,
+            "run_id": rid,
+            "event_type": EventType.FINDING_CREATED.value,
+            "payload": {
+                "finding_id": str(uuid4()),
+                "category": "note",
+                "severity": "info",
+                "source_artifact": "test",
+            },
+        },
+    ]
+    store = InMemoryMemoryChunkStore()
+    first = rebuild_memory_index(store, repo_root=tmp_path, in_memory_event_rows=rows)
+    second = rebuild_memory_index(store, repo_root=tmp_path, in_memory_event_rows=rows)
+    assert first.rebuild_skipped is False
+    assert second.rebuild_skipped is True
+    assert memory_event_rows_fingerprint(rows) == memory_event_rows_fingerprint(rows)
 
 
 def test_campaign_read_staleness_tracker(tmp_path) -> None:
