@@ -4,13 +4,13 @@ from config.listener import (
     start_config_notify_listener,
 )
 from config.materializer import ConfigMaterializer
-from config.resolved_config import ResolvedConfig, resolve_run_config
 from config.notify import (
     NOTIFY_CHANNEL,
     NOTIFY_EVENT_TYPE,
     ConfigDocumentUpdated,
     get_config_notify_hub,
 )
+from config.resolved_config import ResolvedConfig, resolve_run_config
 from config.seed import seed_config_from_repo, seed_t2_policy_documents_from_repo
 from config.store import InMemoryConfigStore, PostgresConfigStore
 from env.env_flags import (

@@ -100,6 +100,7 @@ When `NIMBUSWARE_CONFIG_FROM_DB=1`, hot paths (orchestrator `_base_cfg`, integra
 - `extensions` must not import `orchestrator` at module level (`tests/unit/test_import_graph.py`).
 - `orchestrator` must not import `api` (Lane R-C — use `projections`).
 - `projections` must not import `orchestrator` at module level (`tests/unit/test_import_graph.py`).
+- Console, API, maker, and projections must not import workflow block modules directly — use `orchestrator.workflow.registry` (`scripts/ci/workflow_registry_gate.py`).
 - Legacy package-name shims (`nimbusware_*` → short names) removed; import `api`, `orchestrator`, `env`, etc. directly.
 
 ## Architecture decision records
@@ -113,6 +114,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | Step | Command / guard |
 |------|-----------------|
 | Local CI | `./scripts/ci/ci_check.ps1` or `scripts/ci/ci_check.sh` |
+| Fast subset | `poetry run python scripts/ci/fast_gates.py` (ruff, workflow YAML, LOC, module size, import boundary, stage + workflow registry, complexity) |
 | After display package splits | `poetry run python scripts/ci/explicit_star_imports.py` |
 | After package `__init__` export changes | `poetry run python scripts/ci/sync_display_facade.py` |
 | Facade contract | `tests/unit/test_display_facade_exports.py` |
@@ -149,7 +151,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present; Admin `openapi.json` / `schema.d.ts` are **generated** at build via `npm run codegen:openapi` and gitignored), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (**~4256** collected / **~3355+** in the default unit job, ≥75% line coverage; packages LOC baseline **102,713** max via `scripts/ci/loc_baseline.json`; unified module size guard **≤1000 lines** per `packages/**/*.py` module via `test_package_module_size.py`; optional fast bundle via `scripts/ci/fast_gates.py`; see `tests/README.md`). Enterprise fleet tenant policies live in `fleet_policies.py` with YAML I/O via `fleet_policy_loader.py` and enforcement in `fleet_policy_guards.py`. Workflow block parsers for micro-slice, theater, dev-env, fast-slice, escalation, and integration-adapter-writer live in `workflow_blocks_simple.py`. `load_create_run_workflow_blocks` uses `workflow_registry.parse_workflow_block`; campaign requirement helpers live in `runs/create.py`; deploy models and policy helpers colocate in `platform_deploy.py`; collab discipline/settings routes inline in `platform.py`; intent classifier keyword tables in `intent_classifier_rules.py`; chat scope discovery, session-start, and compute routes colocate in `chat_session.py`; host-transfer and chat library ACL/folder routes colocate in `chat_collab.py`; chat participants + invite/join routes colocate in `chat_participants.py`; seven workflow explainers use YAML metric specs under `configs/explainers/` with caption parts resolved from `explainer_caption_parts` by slug. Optional workflow profiles should `extends: default` instead of copying the full default header block. Enterprise model policy is the `model_policy` section of `configs/model-routing.yaml` (standalone `configs/model_policy.yaml` is optional override on save).
 
-**Size guards:** `test_package_module_size.py` (1000 lines, all `packages/**/*.py`), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface), `scripts/ci/import_boundary_check.py` (orchestrator must not import `api` at module level), `scripts/ci/stage_registry_gate.py` (pipeline stage registry completeness).
+**Size guards:** `test_package_module_size.py` (1000 lines, all `packages/**/*.py`), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface), `scripts/ci/import_boundary_check.py` (orchestrator must not import `api` at module level), `scripts/ci/stage_registry_gate.py` (pipeline stage registry completeness), `scripts/ci/workflow_registry_gate.py` (console/API must use workflow registry loaders), `scripts/ci/complexity_gate.py` (nesting/branch limits on pipeline hot paths). Composite contract tests use matrix fixtures under `tests/unit/composite_contracts/` (target ~150 lines per file).
 
 ## Context efficiency (Jul 2026)
 

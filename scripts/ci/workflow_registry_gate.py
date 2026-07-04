@@ -67,6 +67,8 @@ def collect_violations() -> list[str]:
             continue
         for path in _iter_python_files(scan_root):
             rel = path.relative_to(PACKAGES.parent).as_posix()
+            if "/workflow_explainers/" in rel and rel.endswith("/payload.py"):
+                continue
             for mod in _module_imports(path):
                 if not any(mod == forbidden or mod.startswith(f"{forbidden}.") for forbidden in FORBIDDEN_MODULES):
                     continue

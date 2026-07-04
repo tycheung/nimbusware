@@ -19,8 +19,8 @@ Each row below links to a package README when one exists.
 |---------|----------------|-------|
 | [`agent_core`](agent_core/) | Shared **domain models** and read helpers: event payloads (`models/`), `stage_graph`, `slice_plan`, `prompt_tiers` (cache-aware assembly), `context_budget`, `tool_output_offload`, `token_telemetry`, critique stage IDs, campaign/critic read parsers (`read/`). | No HTTP or UI. Import boundary for event shapes used by `store`, `orchestrator`, and `projections`. |
 | [`store`](store/) | **Append-only event store**: `PostgresEventStore`, `InMemoryEventStore`, migrations under `store/migrations/`. | Source of truth for run timelines. |
-| [`config`](config/) | **Versioned configuration** in Postgres + YAML materializer; provider vault, model-routing sections, workflow reads. Canonical routing file: `configs/model-routing.yaml`. | CLI: `nimbusware-config`. |
-| [`env`](env/) | **Edition gate**, dotenv, desktop launchers, **~256-key** settings catalog (`settings_catalog*`, `env_flags`, `settings_resolve`). | All `NIMBUSWARE_*` reads should go through helpers here. CLIs: `nimbusware-run`, `nimbusware-admin`, `nimbusware-launcher`. |
+| [`config`](config/) | Versioned config documents + materializer; `resolve_run_config()` with resolution trace (`resolved_config.py`); provider vault, model-routing sections, workflow reads. Canonical routing file: `configs/model-routing.yaml`. | CLI: `nimbusware-config`. |
+| [`env`](env/) | **Edition gate**, dotenv, desktop launchers, **~263-key** settings catalog (`settings_catalog*`, `env_flags`, `settings_resolve`), operator presets (`offline` / `local-llm` / `production` via `NIMBUSWARE_OPERATOR_PRESET`). | All `NIMBUSWARE_*` reads should go through helpers here. CLIs: `nimbusware-run`, `nimbusware-admin`, `nimbusware-launcher`. |
 | [`client`](client/) | Shared **HTTP client** for Maker/Admin UIs (`httpx`, API key / admin token headers). | Used by frontends and scripts; not for server `services/*` (those call domain code directly). |
 
 ---

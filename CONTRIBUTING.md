@@ -46,6 +46,12 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
+**Fast gates** (subset before full CI): `poetry run python scripts/ci/fast_gates.py` — ruff, workflow YAML, LOC budget, module size, import boundary, stage registry, workflow registry, and complexity gates.
+
+**Operator presets:** set `NIMBUSWARE_OPERATOR_PRESET` to `offline`, `local-llm`, or `production` in `.env` to apply transport defaults at startup (`packages/env/operator_presets.py`).
+
+**Composite contract tests:** multi-case API/helper contracts belong in `tests/unit/composite_contracts/*_matrix.py` with parametrized runners (`matrix_runner.py`); keep per-file tests under ~150 lines.
+
 **Browser verify (`slice.e2e`)** is **on by default** in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml). Install Playwright locally or set `NIMBUSWARE_SLICE_E2E_COMMAND`; the stage **SKIP**s when no runner is available. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a command that asserts `index.html` exists in the fixture workspace; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
 
 PR **e2e** job (Postgres) retries flaky journeys once: `pytest tests/e2e -m e2e --reruns 1` via `pytest-rerunfailures` (`NIMBUSWARE_E2E_FLAKE_RETRIES=1`). Weekly [`.github/workflows/e2e_flake_monitor.yml`](.github/workflows/e2e_flake_monitor.yml) runs the same suite on a schedule and opens an issue when it fails. Local: `ci_check.ps1 -WithE2e` mirrors the same flags.
@@ -57,6 +63,7 @@ PR **e2e** job (Postgres) retries flaky journeys once: `pytest tests/e2e -m e2e 
 Architecture is enforced by [`tests/unit/test_import_graph.py`](tests/unit/test_import_graph.py):
 
 - `orchestrator` must not import `api` at module level
+- Console/API/maker/projections must not import workflow block modules directly (use `orchestrator.workflow.registry`)
 - `extensions` must not import `orchestrator` at module level
 - Web UIs call `/v1` via `fetch` or `client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
 

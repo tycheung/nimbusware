@@ -10,7 +10,6 @@ COMPOSITE_CONTRACT_MODULES: tuple[str, ...] = (
     "unit.test_anti_deadlock_helpers_composite_contract",
     "unit.test_critique_gate_fail_findings_composite_contract",
     "unit.test_critique_routing_quartet_composite_contract",
-    "unit.test_list_runs_query_helpers_composite_contract",
     "unit.test_runs_list_composite_contract",
     "unit.test_read_models_composite_contract",
     "unit.test_runs_list_wire_format_composite_contract",

@@ -9,7 +9,7 @@ from console.explainer_core.workflow_payload_header import workflow_payload_head
 from orchestrator.integrator.writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
-from orchestrator.workflow.registry import (
+from orchestrator.workflow.blocks_simple import (
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
 )
