@@ -4,7 +4,7 @@ import json
 import sys
 from typing import Any
 
-from mcp.tool_specs import TOOL_SPECS
+from mcp.tool_specs import MCP_TIER1_TOOLS, TOOL_SPECS, tool_spec_by_name
 from mcp.tools import call_tool
 
 _PROTOCOL_VERSION = "2024-11-05"
@@ -56,6 +56,27 @@ def _handle_request(msg: dict[str, Any]) -> dict[str, Any] | None:
             },
         }
     if method == "tools/list":
+        params = msg.get("params") if isinstance(msg.get("params"), dict) else {}
+        tier = str(params.get("tier") or "eager").strip().lower()
+        if tier == "lazy":
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {
+                    "tools": [
+                        {"name": n, "description": "lazy schema; call tool_schema for details"}
+                        for n in sorted(MCP_TIER1_TOOLS)
+                    ],
+                },
+            }
+        if tier == "schema":
+            name = str(params.get("name") or "").strip()
+            spec = tool_spec_by_name(name)
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {"tool": spec or {}},
+            }
         return {
             "jsonrpc": "2.0",
             "id": req_id,

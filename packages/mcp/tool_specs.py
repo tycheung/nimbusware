@@ -361,3 +361,21 @@ TOOL_SPECS: list[dict[str, Any]] = [
         },
     },
 ]
+
+MCP_TIER1_TOOLS: frozenset[str] = frozenset(
+    {
+        "maker_pending",
+        "nimbusware_run_status",
+        "nimbusware_prepare_slice",
+        "nimbusware_apply_slice",
+        "nimbusware_campaign_status",
+    },
+)
+
+
+def tool_spec_by_name(name: str) -> dict[str, Any] | None:
+    target = name.strip()
+    for spec in TOOL_SPECS:
+        if str(spec.get("name") or "") == target:
+            return spec
+    return None

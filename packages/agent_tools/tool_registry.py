@@ -11,10 +11,15 @@ def agent_tools_allowlist() -> frozenset[str]:
     return frozenset(agent_tools_list())
 
 
-def agent_tool_list_prompt() -> str:
-    tools = sorted(agent_tools_allowlist())
+def agent_tool_list_prompt(*, shorthand: bool = True) -> str:
+    from agent_core.tool_schema import default_tool_schema_resolver
+
+    tools = agent_tools_allowlist()
+    if shorthand:
+        return default_tool_schema_resolver().shorthand_list(tools)
+    names = sorted(tools)
     base = "read, write, edit, grep, shell"
-    extras = [t for t in ("find", "ls", "browser_act") if t in tools]
+    extras = [t for t in ("find", "ls", "browser_act", "memory_fetch") if t in names]
     if extras:
         return base + ", " + ", ".join(extras)
     return base
