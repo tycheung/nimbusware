@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from typing import Any
-from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel, Field, model_validator
 
 from api.admin import AdminDep
 from api.deps import IamStoreDep
-from api.errors import problem
+from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from orchestrator.fleet.policies import (
@@ -33,36 +32,13 @@ class FleetEnforcementPolicyBody(BaseModel):
         return self
 
 
-def _tenant_slug_for_ref(iam: IamStoreDep, tenant_ref: str) -> str:
-    ref = tenant_ref.strip()
-    if not ref:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("invalid_tenant", "tenant reference required"),
-        )
-    try:
-        tid = UUID(ref)
-        tenant = iam.get_tenant(tid)
-        if tenant is None:
-            raise HTTPException(
-                status_code=404,
-                detail=problem("tenant_not_found", f"unknown tenant_id: {ref}"),
-            )
-        return tenant.slug
-    except ValueError:
-        for tenant in iam.list_tenants():
-            if tenant.slug == ref:
-                return tenant.slug
-        return ref
-
-
 @router.get("/tenants/{tenant_ref}/enforcement-policy")
 def get_tenant_enforcement_policy(
     tenant_ref: str,
     _gate: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     policy = tenant_enforcement_policy(slug)
     return policy.to_dict()
 
@@ -75,7 +51,7 @@ def put_tenant_enforcement_policy(
     _gate: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     policy = FleetEnforcementPolicy(
         tenant_slug=slug,
         min_enforcement_level=body.min_enforcement_level,

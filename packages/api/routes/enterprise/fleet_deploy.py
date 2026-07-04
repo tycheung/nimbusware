@@ -10,9 +10,9 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import (
     fleet_tenant_policy_get,
     fleet_tenant_policy_put,
+    tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from orchestrator.fleet.policies import (
     FleetDeployPolicy,
     load_fleet_deploy_policies,
@@ -45,7 +45,7 @@ def put_fleet_deploy_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     targets = tuple(str(t).strip() for t in body.allowed_deploy_targets if str(t).strip())
     policy = FleetDeployPolicy(
         tenant_slug=slug,

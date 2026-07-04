@@ -6,8 +6,8 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from api.deps import IamStoreDep
+from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from config.tenant_policy_store import (
     load_tenant_model_policy,
@@ -30,7 +30,7 @@ def get_tenant_model_policy(
     _: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     policy = load_tenant_model_policy(slug)
     return {"tenant_slug": slug, "version": int(policy.get("version") or 1), **policy}
 
@@ -42,7 +42,7 @@ def put_tenant_model_policy(
     _: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     doc = {
         "version": 1,
         "allowed_cloud_providers": list(body.allowed_cloud_providers),

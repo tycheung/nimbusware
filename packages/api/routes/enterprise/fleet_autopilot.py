@@ -10,9 +10,9 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import (
     fleet_tenant_policy_get,
     fleet_tenant_policy_put,
+    tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,
@@ -46,7 +46,7 @@ def put_tenant_autopilot_policy(
     _gate: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     checkpoints = {c for c in body.required_checkpoints if c in CHECKPOINT_CATALOG}
     policy = FleetAutopilotPolicy(
         tenant_slug=slug,

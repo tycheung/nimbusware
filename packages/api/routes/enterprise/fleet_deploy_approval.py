@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import IamStoreDep
+from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
-from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from orchestrator.fleet.policies import (
     VALID_DEPLOY_APPROVAL_CHAINS,
@@ -32,7 +32,7 @@ def get_fleet_deploy_approval_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     return tenant_deploy_approval_policy(slug).to_dict()
 
 
@@ -44,7 +44,7 @@ def put_fleet_deploy_approval_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     chain = str(body.deploy_approval_chain or "maker_only").strip()
     if chain not in VALID_DEPLOY_APPROVAL_CHAINS:
         chain = "maker_only"

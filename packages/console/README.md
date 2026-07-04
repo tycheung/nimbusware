@@ -11,6 +11,18 @@ Python admin/dev control plane for inspecting runs, editing repo config, and dri
 
 Build Admin SPA before packaging: `cd packages/admin_ui && npm ci && npm run build`.
 
+## Import policy (display modules)
+
+Prefer **package-first** imports for console display code:
+
+| Prefer | Avoid |
+|--------|-------|
+| `from console.run_escalated import metrics` | Reaching through `run_escalated_display.py` shims from other packages |
+| `from console.workflow_explainers.security_critique import payload` | Duplicating explainer field maps in ad-hoc formatters |
+| `from projections.builders import …` for read-model fields | Re-parsing raw event payloads in console when a projection exists |
+
+Thin `*_display.py` facades exist only for Admin tab entry points and CI sync (`sync_display_facade.py`). New display logic belongs in the co-located package directory, not in facade barrels.
+
 ### Environment
 
 | Variable | Purpose |

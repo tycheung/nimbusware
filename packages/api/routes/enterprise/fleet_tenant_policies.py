@@ -10,6 +10,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import (
     fleet_tenant_policy_get,
     fleet_tenant_policy_put,
+    tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
 from orchestrator.fleet.policies import (
@@ -56,9 +57,7 @@ def put_fleet_slice_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
-
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     policy = FleetSlicePolicy(
         tenant_slug=slug,
         slice_budget_preset=body.slice_budget_preset.strip(),
@@ -94,9 +93,7 @@ def put_fleet_stack_policy(
     iam: IamStoreDep,
     __: AdminDep,
 ) -> dict[str, Any]:
-    from api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
-
-    slug = _tenant_slug_for_ref(iam, tenant_ref)
+    slug = tenant_slug_for_ref(iam, tenant_ref)
     allowed = normalize_allowed_stacks(body.allowed_stacks)
     policy = FleetStackPolicy(tenant_slug=slug, allowed_stacks=allowed)
     return fleet_tenant_policy_put(
