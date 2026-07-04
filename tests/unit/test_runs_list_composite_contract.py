@@ -1,23 +1,36 @@
 from __future__ import annotations
 
+import base64
+import json
+import re
 from typing import Any
+from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
 
 from api.app import app
-from api.routes.runs import _decode_run_list_cursor, _parse_query_datetime
+from api.routes.runs import (
+    _decode_run_list_cursor,
+    _encode_run_list_cursor,
+    _parse_query_datetime,
+    _sanitize_workflow_profile_prefix,
+)
 from unit.composite_contracts.matrix_runner import run_exception_matrix, run_value_matrix
 from unit.composite_contracts.runs_list_matrix import (
     CATCH_TUPLE_PREFLIGHT,
     DECODE_CURSOR_PART_A_EXCEPTION_CASES,
     DECODE_CURSOR_PART_B_EXCEPTION_CASES,
     DECODE_CURSOR_PART_C_EXCEPTION_CASES,
+    ENCODE_CURSOR_ROUNDTRIP_CASES,
     PARSE_DATETIME_EXCEPTION_CASES,
     PARSE_DATETIME_VALUE_CASES,
     ROUTE_EMPTY_CURSOR_200_CASES,
     ROUTE_INVALID_CURSOR_422_CASES,
+    SANITIZE_PROFILE_PREFIX_CASES,
 )
+
+_URLSAFE_ALPHABET_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
 @pytest.fixture
@@ -94,6 +107,36 @@ def test_route_invalid_cursor_422_matrix(client: TestClient, case: dict[str, Any
         assert isinstance(details, dict) and "reason" in details
         reason = details["reason"]
         assert isinstance(reason, str) and reason.strip() != ""
+
+
+def _invoke_sanitize_prefix(case: dict[str, Any]) -> Any:
+    return _sanitize_workflow_profile_prefix(case["raw"])
+
+
+@pytest.mark.parametrize("case", SANITIZE_PROFILE_PREFIX_CASES, ids=lambda c: c["case_id"])
+def test_sanitize_workflow_profile_prefix_matrix(case: dict[str, Any]) -> None:
+    run_value_matrix((case,), invoke=_invoke_sanitize_prefix)
+
+
+def test_encode_run_list_cursor_wire_invariants() -> None:
+    seq, rid = 1, UUID("11111111-1111-4111-8111-111111111111")
+    out = _encode_run_list_cursor(seq, rid)
+    assert isinstance(out, str) and not isinstance(out, bytes)
+    decoded_json = base64.urlsafe_b64decode(out + "=" * ((4 - len(out) % 4) % 4)).decode()
+    parsed = json.loads(decoded_json)
+    assert parsed == {"s": seq, "r": str(rid)}
+    assert ": " not in decoded_json and ", " not in decoded_json
+    assert _URLSAFE_ALPHABET_RE.fullmatch(out) is not None
+    assert not out.endswith("=")
+
+
+@pytest.mark.parametrize("case", ENCODE_CURSOR_ROUNDTRIP_CASES, ids=lambda c: c["case_id"])
+def test_encode_decode_cursor_roundtrip_matrix(case: dict[str, Any]) -> None:
+    encoded = _encode_run_list_cursor(case["seq"], case["rid"])
+    decoded = _decode_run_list_cursor(encoded)
+    assert decoded == (case["seq"], case["rid"])
+    assert type(decoded[0]) is int and not isinstance(decoded[0], bool)
+    assert isinstance(decoded[1], UUID)
 
 
 @pytest.mark.parametrize("case", ROUTE_EMPTY_CURSOR_200_CASES, ids=lambda c: c["case_id"])

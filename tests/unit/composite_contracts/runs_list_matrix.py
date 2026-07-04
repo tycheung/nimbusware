@@ -5,8 +5,12 @@ import binascii
 import json
 from datetime import datetime, timezone
 from typing import Any
+from uuid import UUID
 
 from unit.composite_contract_fixtures import urlsafe_b64_encode
+
+_SAMPLE_RID = UUID("11111111-1111-4111-8111-111111111111")
+_SAMPLE_RID_ALT = UUID("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee")
 
 _EXPECTED_ERROR_SUFFIX = " must be a valid ISO-8601 datetime"
 _UTC = timezone.utc
@@ -106,6 +110,46 @@ PARSE_DATETIME_VALUE_CASES: tuple[dict[str, Any], ...] = (
         "expected": datetime(2020, 1, 1, 0, 0, 0, 999999, tzinfo=_UTC),
         "validate": _validate_c5_microsecond,
         "expected_microsecond": 999999,
+    },
+    {
+        "case_id": "d2_z_literal",
+        "field": "created_after",
+        "raw": "2020-01-01T00:00:00Z",
+        "expected": datetime(2020, 1, 1, 0, 0, 0, tzinfo=_UTC),
+        "assert_tz_utc": True,
+        "tzinfo": _UTC,
+    },
+    {
+        "case_id": "d2_offset_literal",
+        "field": "created_after",
+        "raw": "2020-01-01T00:00:00+00:00",
+        "expected": datetime(2020, 1, 1, 0, 0, 0, tzinfo=_UTC),
+        "assert_tz_utc": True,
+        "tzinfo": _UTC,
+    },
+    {
+        "case_id": "d4_naive_wall_clock",
+        "field": "created_after",
+        "raw": "2020-06-15T12:34:56",
+        "expected": datetime(2020, 6, 15, 12, 34, 56, tzinfo=_UTC),
+        "assert_tz_utc": True,
+        "tzinfo": _UTC,
+    },
+    {
+        "case_id": "d5_positive_offset",
+        "field": "created_after",
+        "raw": "2020-06-15T12:00:00+05:00",
+        "expected": datetime(2020, 6, 15, 7, 0, 0, tzinfo=_UTC),
+        "assert_tz_utc": True,
+        "tzinfo": _UTC,
+    },
+    {
+        "case_id": "d5_negative_offset",
+        "field": "created_after",
+        "raw": "2020-06-15T03:00:00-04:00",
+        "expected": datetime(2020, 6, 15, 7, 0, 0, tzinfo=_UTC),
+        "assert_tz_utc": True,
+        "tzinfo": _UTC,
     },
 )
 
@@ -420,4 +464,34 @@ ROUTE_EMPTY_CURSOR_200_CASES: tuple[dict[str, Any], ...] = (
     {"case_id": "d5a_empty", "params": {"cursor": "", "limit": 5}},
     {"case_id": "d5b_omitted", "params": {"limit": 5}},
     {"case_id": "d5c_whitespace", "params": {"cursor": "   ", "limit": 5}},
+)
+
+SANITIZE_PROFILE_PREFIX_CASES: tuple[dict[str, Any], ...] = (
+    {"case_id": "none", "raw": None, "expected": None},
+    {"case_id": "empty", "raw": "", "expected": None},
+    {"case_id": "spaces", "raw": "   ", "expected": None},
+    {"case_id": "tab", "raw": "\t", "expected": None},
+    {"case_id": "newline", "raw": "\n", "expected": None},
+    {"case_id": "mixed_ws", "raw": "  \t\n  ", "expected": None},
+    {"case_id": "lowercase", "raw": "default", "expected": "default"},
+    {"case_id": "uppercase", "raw": "ADMIN", "expected": "ADMIN"},
+    {"case_id": "digits", "raw": "12345", "expected": "12345"},
+    {"case_id": "leading_digit", "raw": "1abc", "expected": "1abc"},
+    {"case_id": "hyphens", "raw": "abc-def", "expected": "abc-def"},
+    {"case_id": "underscores", "raw": "abc_def", "expected": "abc_def"},
+    {"case_id": "dots", "raw": "abc.def", "expected": "abc.def"},
+    {"case_id": "strip_padded", "raw": "  default  ", "expected": "default"},
+    {"case_id": "leading_underscore", "raw": "_foo", "expected": None},
+    {"case_id": "leading_dot", "raw": ".foo", "expected": None},
+    {"case_id": "leading_hyphen", "raw": "-foo", "expected": None},
+    {"case_id": "space_mid", "raw": "foo bar", "expected": None},
+    {"case_id": "slash_mid", "raw": "foo/bar", "expected": None},
+    {"case_id": "len_64", "raw": "a" + "b" * 63, "expected": "a" + "b" * 63},
+    {"case_id": "len_65", "raw": "a" + "b" * 64, "expected": None},
+)
+
+ENCODE_CURSOR_ROUNDTRIP_CASES: tuple[dict[str, Any], ...] = (
+    {"case_id": "seq_1", "seq": 1, "rid": _SAMPLE_RID},
+    {"case_id": "seq_42", "seq": 42, "rid": _SAMPLE_RID_ALT},
+    {"case_id": "seq_large", "seq": 9_999_999_999, "rid": _SAMPLE_RID_ALT},
 )
