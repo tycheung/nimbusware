@@ -158,9 +158,25 @@ def estimate_context_budget(events: list[dict[str, Any]]) -> dict[str, Any]:
     last = _last_compaction_detail(events)
     if last is not None:
         out["last_compaction"] = last
+    sampled = _token_samples_from_events(events)
+    if any(sampled.values()):
+        out["token_samples"] = sampled
     from agent_core.token_telemetry import token_savings_summary
 
     savings = token_savings_summary()
     if any(savings.values()):
         out["token_savings"] = savings
     return out
+
+
+def _token_samples_from_events(events: list[dict[str, Any]]) -> dict[str, int]:
+    totals = {"tokens_in": 0, "tokens_out": 0, "cache_read": 0, "cache_write": 0}
+    for row in events:
+        if row.get("event_type") != EventType.CONTEXT_BUDGET_SAMPLED.value:
+            continue
+        payload = _payload(row)
+        totals["tokens_in"] += int(payload.get("tokens_in") or 0)
+        totals["tokens_out"] += int(payload.get("tokens_out") or 0)
+        totals["cache_read"] += int(payload.get("cache_read") or 0)
+        totals["cache_write"] += int(payload.get("cache_write") or 0)
+    return totals

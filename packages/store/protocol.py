@@ -61,6 +61,9 @@ class EventStore(Protocol):
     def list_run_events(self, run_id: str) -> list[dict[str, Any]]:
         """Rows ordered by store_seq (for replay / API)."""
 
+    def list_run_events_since(self, run_id: str, after_seq: int) -> list[dict[str, Any]]:
+        """Rows with store_seq strictly greater than after_seq."""
+
     def list_run_events_many(self, run_ids: list[str]) -> dict[str, list[dict[str, Any]]]:
         """Batch rows by ``run_id`` for bounded multi-run replay reads."""
 

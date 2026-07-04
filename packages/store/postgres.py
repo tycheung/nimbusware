@@ -122,6 +122,22 @@ class PostgresEventStore:
                 )
                 return [dict(r) for r in cur.fetchall()]
 
+    def list_run_events_since(self, run_id: str, after_seq: int) -> list[dict[str, Any]]:
+        with self._connect() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(
+                    """
+                    SELECT store_seq, event_id, run_id, stage_id, task_id, event_type,
+                           event_version, occurred_at, actor_role, model_id,
+                           correlation_id, causation_id, payload, metadata
+                    FROM event_store
+                    WHERE run_id = %s AND store_seq > %s
+                    ORDER BY store_seq ASC
+                    """,
+                    (UUID(run_id), int(after_seq)),
+                )
+                return [dict(r) for r in cur.fetchall()]
+
     def list_run_events_many(self, run_ids: list[str]) -> dict[str, list[dict[str, Any]]]:
         wanted = [UUID(str(r)) for r in run_ids if str(r).strip()]
         if not wanted:

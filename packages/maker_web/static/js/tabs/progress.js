@@ -141,10 +141,24 @@ export async function mountProgress(root) {
     },
   });
 
+  let lastProgressSnapshot = null;
+
   progressHandle = openSseStream(`/runs/${id}/maker-progress/stream?simple=true`, {
+    onEvent: {
+      progress_delta: (ev) => {
+        const data = parseSseJson(ev);
+        if (!data || !lastProgressSnapshot) return;
+        Object.assign(lastProgressSnapshot, data);
+        enrichAndRenderProgress(lastProgressSnapshot).catch(() =>
+          renderProgressBody(lastProgressSnapshot),
+        );
+      },
+    },
     onMessage: (ev) => {
       const data = parseSseJson(ev);
-      if (data) enrichAndRenderProgress(data).catch(() => renderProgressBody(data));
+      if (!data) return;
+      lastProgressSnapshot = data;
+      enrichAndRenderProgress(data).catch(() => renderProgressBody(data));
     },
   });
 

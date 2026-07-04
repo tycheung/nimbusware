@@ -63,6 +63,17 @@ class InMemoryEventStore:
         out.sort(key=lambda r: r["store_seq"])
         return out
 
+    def list_run_events_since(self, run_id: str, after_seq: int) -> list[dict[str, Any]]:
+        rid = UUID(run_id)
+        floor = int(after_seq)
+        out = [
+            deepcopy(r)
+            for r in self._scoped_rows()
+            if r["run_id"] == rid and int(r["store_seq"]) > floor
+        ]
+        out.sort(key=lambda r: r["store_seq"])
+        return out
+
     def list_all_event_rows(self) -> list[dict[str, Any]]:
         """All append-only rows (for in-memory memory index rebuild)."""
         out = deepcopy(self._scoped_rows())

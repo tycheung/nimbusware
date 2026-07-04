@@ -43,8 +43,39 @@ def test_python_outline_extracts_signatures() -> None:
 
 
 def test_read_mode_outline_for_large_non_target() -> None:
-    assert read_mode_for_file("pkg/huge.py", line_count=400, in_slice_targets=False) == "outline"
+    assert (
+        read_mode_for_file(
+            "pkg/huge.py",
+            line_count=400,
+            in_slice_targets=False,
+            outline_threshold=200,
+            digest_threshold=800,
+        )
+        == "outline"
+    )
     assert read_mode_for_file("pkg/huge.py", line_count=400, in_slice_targets=True) == "full"
+    assert (
+        read_mode_for_file(
+            "pkg/huge.py",
+            line_count=900,
+            in_slice_targets=False,
+            outline_threshold=200,
+            digest_threshold=800,
+        )
+        == "digest"
+    )
+
+
+def test_campaign_read_staleness_tracker(tmp_path) -> None:
+    from pathlib import Path
+
+    from agent_core.read_staleness import CampaignReadStalenessTracker
+
+    fp = tmp_path / "ctx.py"
+    fp.write_text("a = 1\n", encoding="utf-8")
+    tracker = CampaignReadStalenessTracker()
+    tracker.note_read(Path(fp))
+    assert tracker.is_stale(Path(fp)) is False
 
 
 def test_cache_breaking_dynamic_section() -> None:

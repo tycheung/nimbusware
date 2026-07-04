@@ -71,6 +71,12 @@ def tool_read_file(
             body = python_file_outline(raw, rel_path=rel)
             llm = truncate_for_active_read(body, max_chars=cap)
             audit = f"{rel} sha256={digest} lines={line_count} mode=outline"
+        elif effective_mode == "digest" and rel.endswith(".py"):
+            from agent_core.read_outline import python_file_digest
+
+            body = python_file_digest(raw, rel_path=rel)
+            llm = truncate_for_active_read(body, max_chars=cap)
+            audit = f"{rel} sha256={digest} lines={line_count} mode=digest"
         else:
             llm = truncate_for_active_read(raw, max_chars=cap)
             audit = f"{rel} sha256={digest} lines={line_count} mode=full"
