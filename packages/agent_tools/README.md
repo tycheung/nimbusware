@@ -37,8 +37,13 @@ Per-slice limits (frozen on `run.created` as `agent_tools_effective.risk_caps`):
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn tool loop |
 | `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Comma allowlist (`find`, `ls` optional) |
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Read tool cap |
+| `NIMBUSWARE_READ_OUTLINE_MIN_LINES` | 200 | Outline mode for large non-target Python files |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Shell output cap |
+| `NIMBUSWARE_TOOL_OFFLOAD_CHARS` | 5000 | Spill oversized tool output to `.cache/nimbusware/tool-output/` |
+| `NIMBUSWARE_JIT_MICROCOMPACT_TURNS` | 8 | Keep last N tool results when microcompacting |
+| `NIMBUSWARE_CONTEXT_DEDUP` | balanced | Supersede duplicate read/grep/shell results in loop history |
+| `NIMBUSWARE_AGENT_COMPACT` | 1 / full | Handoff compaction; `full` enables L4 message summarize in loop |
 
 `edit` performs single-occurrence replacements; prefer it over `write` for existing files.
 
-Implementation: [`agent_loop.py`](agent_loop.py), [`tools.py`](tools.py), [`sandbox.py`](sandbox.py), [`filesystem_jail.py`](filesystem_jail.py).
+Implementation: [`agent_loop.py`](agent_loop.py), [`tools.py`](tools.py), [`sandbox.py`](sandbox.py), [`filesystem_jail.py`](filesystem_jail.py). Context compaction helpers: `agent_core/tool_output_offload.py`, `agent_core/agent_full_compact.py`.

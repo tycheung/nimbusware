@@ -56,8 +56,9 @@ def _handle_request(msg: dict[str, Any]) -> dict[str, Any] | None:
             },
         }
     if method == "tools/list":
-        params = msg.get("params") if isinstance(msg.get("params"), dict) else {}
-        tier = str(params.get("tier") or "eager").strip().lower()
+        raw_list_params = msg.get("params")
+        list_params: dict[str, Any] = raw_list_params if isinstance(raw_list_params, dict) else {}
+        tier = str(list_params.get("tier") or "eager").strip().lower()
         if tier == "lazy":
             return {
                 "jsonrpc": "2.0",
@@ -70,7 +71,7 @@ def _handle_request(msg: dict[str, Any]) -> dict[str, Any] | None:
                 },
             }
         if tier == "schema":
-            name = str(params.get("name") or "").strip()
+            name = str(list_params.get("name") or "").strip()
             spec = tool_spec_by_name(name)
             return {
                 "jsonrpc": "2.0",

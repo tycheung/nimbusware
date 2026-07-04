@@ -14,7 +14,8 @@ def fleet_tenant_policy_get(
     resolver: Callable[[str], Any],
 ) -> dict[str, Any]:
     slug = _tenant_slug_for_ref(iam, tenant_ref)
-    return resolver(slug).to_dict()
+    resolved = resolver(slug)
+    return dict(resolved.to_dict())
 
 
 def fleet_tenant_policy_put(
@@ -31,4 +32,4 @@ def fleet_tenant_policy_put(
     policies[slug] = policy
     save_policies(policies)
     log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind=policy_kind)
-    return policies[slug].to_dict()
+    return dict(policies[slug].to_dict())

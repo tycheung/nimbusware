@@ -4,7 +4,6 @@ from typing import Any
 
 
 def anthropic_cache_blocks(cache_blocks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Map assembler cache metadata to Anthropic cache_control breakpoints."""
     out: list[dict[str, Any]] = []
     for block in cache_blocks:
         cc = block.get("cache_control")
@@ -25,7 +24,6 @@ def apply_provider_cache_metadata(
     provider_id: str,
     cache_blocks: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Return provider-ready message list with cache hints when supported."""
     pid = provider_id.strip().lower()
     blocks = cache_blocks or []
     if pid == "anthropic":

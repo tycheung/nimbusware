@@ -39,7 +39,6 @@ class LifecycleVerifyMixin:
             self._store,
             self._registry,
             self._critique_router,
-            run_id=run_id,
         )
 
     def dispatch_or_run_verify(

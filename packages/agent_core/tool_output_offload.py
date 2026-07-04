@@ -22,7 +22,6 @@ def prepare_tool_output_for_llm(
     step: int,
     preview_chars: int | None = None,
 ) -> tuple[str, Path | None]:
-    """Write oversized tool output to disk; return LLM-facing preview and optional path."""
     threshold = _tool_offload_chars()
     if len(content) <= threshold:
         cap = preview_chars if preview_chars is not None else _default_preview_chars()
@@ -35,9 +34,7 @@ def prepare_tool_output_for_llm(
     cap = preview_chars if preview_chars is not None else _default_preview_chars()
     preview = truncate_for_llm_history(content, max_chars=cap)
     rel = path.relative_to(workspace).as_posix()
-    llm_facing = (
-        f"[offloaded {len(content)} chars to {rel}; preview below]\n{preview}"
-    )
+    llm_facing = f"[offloaded {len(content)} chars to {rel}; preview below]\n{preview}"
     return llm_facing, path
 
 

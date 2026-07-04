@@ -274,9 +274,8 @@ def maybe_emit_compaction_event(
 
     if not compaction_allowed(events):
         return None
-    budget_trigger = (
-        compaction_trigger == "auto_handoff"
-        and handoff_compact_budget_exceeded(events, keep_recent_tokens=keep_recent_tokens)
+    budget_trigger = compaction_trigger == "auto_handoff" and handoff_compact_budget_exceeded(
+        events, keep_recent_tokens=keep_recent_tokens
     )
     min_handoffs = 2 if budget_trigger else 3
     result = compact_campaign_context(

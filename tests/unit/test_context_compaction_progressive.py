@@ -9,7 +9,7 @@ from agent_core.agent_full_compact import (
     maybe_full_compact_messages,
 )
 from agent_core.tool_output_offload import offload_path, prepare_tool_output_for_llm
-from agent_tools.agent_loop import _LoopContext, _append_tool_result, _maybe_dedup_tool_messages
+from agent_tools.agent_loop import _append_tool_result, _LoopContext, _maybe_dedup_tool_messages
 
 
 def test_tool_output_offload_writes_preview(tmp_path: Path) -> None:

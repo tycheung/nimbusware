@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-import pytest
+from uuid import uuid4
 
 from agent_core.prompt_tiers import CacheBreakingSection, assemble_prompt_with_cache_metadata
 from agent_core.read_outline import python_file_outline, read_mode_for_file
+from agent_core.token_telemetry import (
+    TokenTelemetrySample,
+    record_token_sample,
+    token_savings_summary,
+)
 from agent_core.tool_schema import default_tool_schema_resolver
-from agent_core.token_telemetry import TokenTelemetrySample, record_token_sample, token_savings_summary
 from memory.index.index_table import build_memory_index_table
 from memory.index.models import MemoryRetrievalHit
 from orchestrator.role_context_audit import (
@@ -15,7 +17,6 @@ from orchestrator.role_context_audit import (
     filter_implement_context,
     implement_context_sources,
 )
-from uuid import uuid4
 
 
 def test_memory_index_table_is_compact() -> None:
@@ -42,10 +43,7 @@ def test_python_outline_extracts_signatures() -> None:
 
 
 def test_read_mode_outline_for_large_non_target() -> None:
-    assert (
-        read_mode_for_file("pkg/huge.py", line_count=400, in_slice_targets=False)
-        == "outline"
-    )
+    assert read_mode_for_file("pkg/huge.py", line_count=400, in_slice_targets=False) == "outline"
     assert read_mode_for_file("pkg/huge.py", line_count=400, in_slice_targets=True) == "full"
 
 

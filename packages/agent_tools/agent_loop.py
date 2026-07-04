@@ -7,11 +7,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agent_core.context_budget import estimate_tokens, truncate_for_llm_history
 from agent_core.agent_full_compact import maybe_full_compact_messages
-from agent_core.tool_output_offload import prepare_tool_output_for_llm
+from agent_core.context_budget import estimate_tokens, truncate_for_llm_history
 from agent_core.prompt_tiers import CacheBreakingSection, assemble_prompt_with_cache_metadata
 from agent_core.slice_plan import SlicePlan
+from agent_core.tool_output_offload import prepare_tool_output_for_llm
 from agent_tools.prompts import build_agent_stable_prompt
 from agent_tools.risk_caps import AgentRiskCaps
 from agent_tools.runtime import AgentStep, _allowed_paths, _execute_step

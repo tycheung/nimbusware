@@ -129,6 +129,12 @@ class MicroSliceHost(Protocol):
 
 class WritersHost(Protocol):
     _store: EventStore
+    _repo_root: Path
+    _config_materializer: Any | None
+
+    def _stage_graph_snapshot_for_run(self, run_id: UUID) -> dict[str, Any] | None: ...
+    def _base_cfg(self) -> dict[str, Any]: ...
+    def _selected_model_for_run(self, run_id: UUID) -> str | None: ...
 
     def _writer_stage_started_metadata(
         self,
@@ -144,6 +150,15 @@ class WritersHost(Protocol):
         sg_snapshot: dict[str, Any] | None,
         *,
         workspace: Path | None = None,
+    ) -> tuple[int, str]: ...
+    def _run_writers_parallel_dispatch(
+        self,
+        run_id: UUID,
+        sg_snapshot: dict[str, Any] | None,
+        writers_group: list[str],
+        *,
+        workspace: Path | None = None,
+        **kwargs: Any,
     ) -> tuple[int, str]: ...
     def _parallel_run_implementation(
         self,

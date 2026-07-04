@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import ast
-from pathlib import Path
 
 
 def python_file_outline(source: str, *, rel_path: str = "") -> str:
-    """Return signatures and class boundaries for a Python module."""
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:

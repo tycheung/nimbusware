@@ -38,7 +38,9 @@ def parse_surface_steer_prefix(message: str) -> tuple[str, str | None]:
     return _parse_surface_steer_prefix(message)
 
 
-def surface_steer_routes(message: str, *, exclude_discipline_mentions: bool = False) -> list[dict[str, str]]:
+def surface_steer_routes(
+    message: str, *, exclude_discipline_mentions: bool = False
+) -> list[dict[str, str]]:
     routes: list[dict[str, str]] = []
     for surface_id in parse_surface_mentions(
         message,

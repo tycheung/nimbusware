@@ -74,8 +74,8 @@ def handoff_compact_budget_exceeded(
     *,
     keep_recent_tokens: int | None = None,
 ) -> bool:
-    from orchestrator.context_compaction import _handoff_events
     from env.env_flags import nimbusware_campaign_keep_recent_tokens
+    from orchestrator.context_compaction import _handoff_events
 
     handoffs = _handoff_events(events)
     if len(handoffs) < 2:

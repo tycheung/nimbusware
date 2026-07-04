@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 IMPLEMENT_ROLE = "backend_writer"
 IMPLEMENT_FORBIDDEN_CONTEXT = frozenset(
     {"chat_transcript", "planner_exploration", "theater_dump"},

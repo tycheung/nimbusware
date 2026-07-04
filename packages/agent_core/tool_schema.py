@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 _TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     "read": {
         "description": "Read a workspace file (outline mode for large non-target files).",
