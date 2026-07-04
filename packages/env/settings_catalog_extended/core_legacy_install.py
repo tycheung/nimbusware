@@ -159,6 +159,17 @@ def core_legacy_install_defs() -> tuple[SettingDef, ...]:
             user_editable=True,
         ),
         SettingDef(
+            "NIMBUSWARE_OPERATOR_PRESET",
+            install,
+            s,
+            "",
+            "Operator environment preset",
+            "Apply offline, local-llm, or production transport defaults at startup.",
+            "Install — operator presets",
+            admin_editable=True,
+            user_editable=True,
+        ),
+        SettingDef(
             "NIMBUSWARE_OIDC_ENABLED",
             install,
             b,

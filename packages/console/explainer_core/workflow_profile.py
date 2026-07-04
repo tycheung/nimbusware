@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.mapping import mapping_or_empty
+from config.resolved_config import resolve_run_config
 from config.workflow_read import load_yaml, workflow_profile_path
 from console.config_materializer import console_config_materializer
 from console.explainer_core.repo_yaml import relative_under
@@ -62,6 +63,7 @@ class WorkflowDiskSnapshot:
     file_bytes: int | None
     load_error: str | None
     version_int: int | None
+    config_trace: tuple[str, ...] = ()
 
 
 def select_workflow_profile(workflow_profile: str | None) -> str | None:
@@ -80,6 +82,7 @@ def load_workflow_disk_snapshot(
     file_bytes: int | None = None
     load_error: str | None = None
     version_int: int | None = None
+    config_trace: tuple[str, ...] = ()
     if wf_sel:
         try:
             raw, _eff, wp, fb = load_workflow_profile_documents(
@@ -93,6 +96,12 @@ def load_workflow_disk_snapshot(
             vtop = disk_doc.get("version")
             if type(vtop) is int and not isinstance(vtop, bool):
                 version_int = vtop
+            resolved = resolve_run_config(
+                repo_root,
+                wf_sel,
+                materializer=mat if getattr(mat, "use_db", False) else None,
+            )
+            config_trace = resolved.trace
         except _LOAD_ERRORS as err:
             load_error = str(err)
     return WorkflowDiskSnapshot(
@@ -103,6 +112,7 @@ def load_workflow_disk_snapshot(
         file_bytes=file_bytes,
         load_error=load_error,
         version_int=version_int,
+        config_trace=config_trace,
     )
 
 

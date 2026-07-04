@@ -4,6 +4,7 @@ from config.listener import (
     start_config_notify_listener,
 )
 from config.materializer import ConfigMaterializer
+from config.resolved_config import ResolvedConfig, resolve_run_config
 from config.notify import (
     NOTIFY_CHANNEL,
     NOTIFY_EVENT_TYPE,
@@ -26,11 +27,13 @@ __all__ = [
     "NOTIFY_CHANNEL",
     "NOTIFY_EVENT_TYPE",
     "PostgresConfigStore",
+    "ResolvedConfig",
     "config_from_db_enabled",
     "config_notify_enabled",
     "config_notify_listener_enabled",
     "get_config_notify_hub",
     "listener_status",
+    "resolve_run_config",
     "seed_config_from_repo",
     "seed_t2_policy_documents_from_repo",
     "start_config_notify_listener",

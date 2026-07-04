@@ -1,0 +1,28 @@
+# Shared fragment: universal critique panels stubbed (no LLM).
+extends: default
+version: 1
+universal_critique:
+  implementation:
+    llm: false
+    stub: true
+    stage_failed_on_gate_fail: false
+  test_writer:
+    enabled: true
+    llm: false
+    stub: true
+    stage_failed_on_gate_fail: false
+  planner:
+    enabled: true
+    llm: false
+    stub: true
+    stage_failed_on_gate_fail: false
+  frontend_writer:
+    enabled: true
+    llm: false
+    stub: true
+    stage_failed_on_gate_fail: false
+  module_integrator:
+    enabled: true
+    llm: false
+    stub: true
+    stage_failed_on_gate_fail: false

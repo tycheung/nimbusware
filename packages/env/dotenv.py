@@ -50,6 +50,11 @@ def load_dotenv(
     from env.admin_token import apply_default_admin_token_env
 
     apply_default_admin_token_env()
+    preset_raw = os.environ.get("NIMBUSWARE_OPERATOR_PRESET", "").strip()
+    if preset_raw:
+        from env.operator_presets import apply_operator_preset
+
+        apply_operator_preset(preset_raw)
     return env_path.resolve() if env_path.is_file() else None
 
 
