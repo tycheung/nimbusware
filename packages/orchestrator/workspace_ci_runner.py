@@ -68,6 +68,7 @@ class EnforcementResult:
 
 
 def parity_contract_steps() -> tuple[str, ...]:
+    """Workspace parity at enforcement level 10 (lint, types, security, test — not full monorepo CI)."""
     return (
         "ruff_check",
         "ruff_format",

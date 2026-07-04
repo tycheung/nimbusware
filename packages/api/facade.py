@@ -34,6 +34,7 @@ from api.routes import (
     provider_subscription_oauth,
     runs,
     scraper_artifacts,
+    standards,
 )
 from api.routes.enterprise import build_enterprise_router
 from api.routes.maker_push import router as maker_push_router
@@ -62,6 +63,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
+    router.include_router(standards.router)
     router.include_router(platform.router)
     router.include_router(provider_connections.router)
     router.include_router(provider_subscription_oauth.router)

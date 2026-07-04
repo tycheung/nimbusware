@@ -17,6 +17,8 @@ from orchestrator.verifiers import (
     run_ruff_on_paths,
 )
 from orchestrator.workspace_ci_runner import run_enforcement_bundle
+from standards.profile import standards_platform_enabled
+from standards.workspace_standards import format_standards_log, run_workspace_standards
 
 
 def _workspace_stack(workspace: Path) -> str:
@@ -58,6 +60,15 @@ def run_slice_verify_and_test(
                 )
                 test_out = step.detail
                 break
+        if standards_platform_enabled():
+            std_ok, std_results = run_workspace_standards(
+                workspace,
+                enforcement_level=enforcement_profile.level,
+            )
+            if std_results:
+                bundle_sections.append(format_standards_log(std_results))
+            if not std_ok:
+                verify_ok = False
         return verify_ok, "\n".join(bundle_sections), tests_passed, test_out
 
     stack = _workspace_stack(workspace)
