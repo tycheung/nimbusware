@@ -44,6 +44,14 @@ def main() -> int:
             "stage registry gate",
             [sys.executable, str(ROOT / "scripts" / "ci" / "stage_registry_gate.py")],
         ),
+        (
+            "workflow registry gate",
+            [sys.executable, str(ROOT / "scripts" / "ci" / "workflow_registry_gate.py")],
+        ),
+        (
+            "complexity gate",
+            [sys.executable, str(ROOT / "scripts" / "ci" / "complexity_gate.py")],
+        ),
     ]
 
     failures: list[str] = []
