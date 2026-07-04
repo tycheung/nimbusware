@@ -28,18 +28,30 @@ def python_file_outline(source: str, *, rel_path: str = "") -> str:
     return "\n".join(lines[:120])
 
 
+def python_file_digest(source: str, *, rel_path: str = "") -> str:
+    """Signatures-only view between outline and full source."""
+    outline = python_file_outline(source, rel_path=rel_path)
+    lines = [line for line in outline.splitlines() if line.strip()]
+    return "\n".join(lines[:80])
+
+
 def read_mode_for_file(
     rel_path: str,
     *,
     line_count: int,
     in_slice_targets: bool,
     outline_threshold: int | None = None,
+    digest_threshold: int | None = None,
 ) -> str:
     threshold = outline_threshold if outline_threshold is not None else _outline_loc_threshold()
+    digest_at = digest_threshold if digest_threshold is not None else max(threshold * 2, threshold + 200)
     if in_slice_targets:
         return "full"
-    if rel_path.endswith(".py") and line_count >= threshold:
-        return "outline"
+    if rel_path.endswith(".py"):
+        if line_count >= digest_at:
+            return "digest"
+        if line_count >= threshold:
+            return "outline"
     return "full"
 
 

@@ -73,17 +73,19 @@ def execute_scan_critique_llm(
         return False
     tool_failed, failing = scan_failed_fn(scan_summary)
     try:
+        from orchestrator.critique.prompt_assembly import critique_messages_and_cache
+
+        messages, cache_blocks = critique_messages_and_cache(
+            role_rubric=system_prompt,
+            user_content=build_user_content(scan_summary, tool_failed, failing),
+        )
         raw = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {
-                    "role": "user",
-                    "content": build_user_content(scan_summary, tool_failed, failing),
-                },
-            ],
+            messages=messages,
+            cache_blocks=cache_blocks,
             timeout_seconds=timeout_seconds,
+            stage_name=stage_name,
             agent_role=agent_role,
         )
         parsed = response_model.model_validate(raw)

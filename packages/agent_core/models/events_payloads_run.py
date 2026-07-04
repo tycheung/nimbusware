@@ -187,6 +187,15 @@ class ResourcePressureWarnPayload(BasePayload):
     hook: str | None = Field(default=None, max_length=64)
 
 
+class ContextBudgetSampledPayload(BasePayload):
+    provider: str = Field(default="", max_length=64)
+    stage_name: str = Field(default="", max_length=128)
+    tokens_in: int = Field(ge=0, default=0)
+    tokens_out: int = Field(ge=0, default=0)
+    cache_read: int = Field(ge=0, default=0)
+    cache_write: int = Field(ge=0, default=0)
+
+
 class MemoryIndexedPayload(BasePayload):
     repo_scope_hash: str = Field(min_length=8, max_length=64)
     generation_id: str = Field(min_length=8, max_length=64)

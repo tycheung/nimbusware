@@ -47,6 +47,7 @@ from agent_core.models.events_payloads_campaign import (
     StitchPlanEmittedPayload,
 )
 from agent_core.models.events_payloads_run import (
+    ContextBudgetSampledPayload,
     HardwareProfileDetectedPayload,
     MemoryIndexedPayload,
     ModelBindingOverriddenPayload,
@@ -123,6 +124,7 @@ __all__ = [
     "ResearchBriefSourcePayload",
     "ResearchPatternIndexedPayload",
     "ResourcePressureWarnPayload",
+    "ContextBudgetSampledPayload",
     "RunCompletedPayload",
     "RunCreatedPayload",
     "RunEscalatedPayload",

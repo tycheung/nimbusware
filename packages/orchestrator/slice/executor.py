@@ -55,6 +55,9 @@ def execute_single_micro_slice(
     plan: SlicePlan | None = None,
     backlog_slice_id: str | None = None,
 ) -> SliceGateChainResult:
+    from orchestrator.llm.budget_sample_emit import bind_budget_sample_context
+
+    bind_budget_sample_context(store=orch._store, run_id=run_id)
     rows = orch._store.list_run_events(str(run_id))
     from maker.workspace.workspace import resolve_run_workspace
 

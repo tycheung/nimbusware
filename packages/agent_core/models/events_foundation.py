@@ -110,6 +110,7 @@ class EventType(str, Enum):
     MAINTENANCE_ARCHITECTURE_STARTED = "maintenance.architecture.started"
     MAINTENANCE_ARCHITECTURE_PASSED = "maintenance.architecture.passed"
     COMPLETION_EVALUATED = "completion.evaluated"
+    CONTEXT_BUDGET_SAMPLED = "context.budget.sampled"
 
 
 RoleId: TypeAlias = UUID

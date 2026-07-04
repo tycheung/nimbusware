@@ -15,6 +15,7 @@ from agent_core.models.events_payloads import (
     CampaignFailedPayload,
     CampaignPausedPayload,
     CompletionEvaluatedPayload,
+    ContextBudgetSampledPayload,
     CriticVerdictEmittedPayload,
     DeliveryBacklogGeneratedPayload,
     DeliveryBacklogRevisedPayload,
@@ -293,6 +294,11 @@ class ResourcePressureWarnEvent(BaseNimbuswareEvent):
     payload: ResourcePressureWarnPayload
 
 
+class ContextBudgetSampledEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.CONTEXT_BUDGET_SAMPLED]
+    payload: ContextBudgetSampledPayload
+
+
 class CampaignCreatedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.CAMPAIGN_CREATED]
     payload: CampaignCreatedPayload
@@ -403,6 +409,7 @@ NimbuswareEventUnion: TypeAlias = (
     | StitchFailedEvent
     | HardwareProfileDetectedEvent
     | ResourcePressureWarnEvent
+    | ContextBudgetSampledEvent
     | CampaignCreatedEvent
     | CampaignCompletedEvent
     | CampaignFailedEvent

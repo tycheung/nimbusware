@@ -55,6 +55,9 @@ def dispatch_role_execute(
 
     set_active_run_for_mesh(run_id)
     hydrate_mesh_binding_from_run(run_id)
+    from orchestrator.llm.budget_sample_emit import bind_budget_sample_context
+
+    bind_budget_sample_context(store=orch._store, run_id=run_id)
     key = taxonomy_key.strip().lower()
     if key not in _SUPPORTED_PRODUCERS:
         msg = f"role execute not supported for taxonomy_key={key!r}"
