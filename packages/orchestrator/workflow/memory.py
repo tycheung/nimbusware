@@ -207,7 +207,21 @@ def retrieve_memory_excerpt_for_slice(
         hits.sort(key=lambda h: h.score, reverse=True)
         hits = hits[: settings.retrieval_k]
     excerpt = format_memory_excerpt(hits, max_chars=settings.excerpt_max_chars)
+    if _memory_index_first_enabled():
+        from memory.index.index_table import build_memory_index_table
+
+        excerpt = build_memory_index_table(hits, max_chars=settings.excerpt_max_chars)
     return excerpt, hits, scope
+
+
+def memory_chunk_ids_from_hits(hits: list[MemoryRetrievalHit]) -> list[str]:
+    return [str(h.chunk_id) for h in hits]
+
+
+def _memory_index_first_enabled() -> bool:
+    from env.settings_resolve import resolve_bool
+
+    return resolve_bool("NIMBUSWARE_MEMORY_INDEX_FIRST", default=True)
 
 
 def pinned_generation_for_scope(

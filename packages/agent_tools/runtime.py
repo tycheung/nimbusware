@@ -87,7 +87,12 @@ def _execute_step(
 
         return _result(step.tool, False, f"tool not in allowlist: {step.tool}")
     if step.tool == "read":
-        return tool_read_file(workspace, str(step.arguments.get("path") or ""))
+        return tool_read_file(
+            workspace,
+            str(step.arguments.get("path") or ""),
+            mode=str(step.arguments.get("mode") or "") or None,
+            allowed_paths=allowed,
+        )
     if step.tool == "find":
         pattern = str(step.arguments.get("pattern") or "")
         paths = step.arguments.get("paths")

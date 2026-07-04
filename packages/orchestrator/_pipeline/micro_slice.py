@@ -173,6 +173,9 @@ class MicroSliceMixin:
             "slice_handoff": handoff.model_dump(mode="json"),
         }
         if memory_hits:
+            from orchestrator.workflow.memory import memory_chunk_ids_from_hits
+
+            meta["memory_chunk_ids"] = memory_chunk_ids_from_hits(memory_hits)
             from memory.index.audit import append_memory_retrieval_emitted_event
 
             chunk_store = self._memory_chunk_store
@@ -207,6 +210,11 @@ class MicroSliceMixin:
                     "slice_id": p.slice_id,
                     "slice_handoff": handoff.model_dump(mode="json"),
                     "handoff_summary": handoff_md,
+                    **(
+                        {"memory_chunk_ids": memory_chunk_ids_from_hits(memory_hits)}
+                        if memory_hits
+                        else {}
+                    ),
                 },
                 payload=StageStartedPayload(stage_name="slice.handoff", attempt=1),
             ),

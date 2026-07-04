@@ -10,6 +10,7 @@ from agent_core.context_budget import (
     truncate_for_active_read,
     truncate_shell_output,
 )
+from agent_core.read_outline import python_file_outline, read_mode_for_file
 from agent_tools.allowlist import (
     normalise_rel,
     path_in_plan,
@@ -41,7 +42,14 @@ def _result(tool: str, ok: bool, llm: str, *, audit: str | None = None) -> ToolR
     )
 
 
-def tool_read_file(workspace: Path, path: str, *, max_chars: int | None = None) -> ToolResult:
+def tool_read_file(
+    workspace: Path,
+    path: str,
+    *,
+    max_chars: int | None = None,
+    mode: str | None = None,
+    allowed_paths: set[str] | None = None,
+) -> ToolResult:
     cap = max_chars if max_chars is not None else nimbusware_read_max_chars()
     try:
         fp = resolve_workspace_file(workspace, path)
@@ -51,8 +59,21 @@ def tool_read_file(workspace: Path, path: str, *, max_chars: int | None = None) 
         rel = str(fp.relative_to(workspace.resolve())).replace("\\", "/")
         digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
         line_count = raw.count("\n") + (1 if raw and not raw.endswith("\n") else 0)
-        llm = truncate_for_active_read(raw, max_chars=cap)
-        audit = f"{rel} sha256={digest} lines={line_count}"
+        in_targets = bool(allowed_paths and path_in_plan(rel, allowed_paths))
+        effective_mode = (mode or "").strip().lower()
+        if not effective_mode:
+            effective_mode = read_mode_for_file(
+                rel,
+                line_count=line_count,
+                in_slice_targets=in_targets,
+            )
+        if effective_mode == "outline" and rel.endswith(".py"):
+            body = python_file_outline(raw, rel_path=rel)
+            llm = truncate_for_active_read(body, max_chars=cap)
+            audit = f"{rel} sha256={digest} lines={line_count} mode=outline"
+        else:
+            llm = truncate_for_active_read(raw, max_chars=cap)
+            audit = f"{rel} sha256={digest} lines={line_count} mode=full"
         return _result("read", True, llm, audit=audit)
     except (OSError, ValueError) as exc:
         return _result("read", False, str(exc))
@@ -323,3 +344,31 @@ def tool_run_shell(
         return _result("shell", ok, llm, audit=audit)
     except (OSError, TimeoutError, ValueError) as exc:
         return _result("shell", False, str(exc))
+
+
+def tool_memory_fetch(
+    memory_store: object,
+    chunk_id: str,
+    *,
+    repo_root: Path | None = None,
+    max_chars: int | None = None,
+) -> ToolResult:
+    from uuid import UUID
+
+    from memory.index.repo_scope import repo_scope_hash, resolve_repo_root
+    from memory.store.protocol import MemoryChunkStore
+
+    cap = max_chars if max_chars is not None else nimbusware_read_max_chars()
+    try:
+        cid = UUID(str(chunk_id).strip())
+    except ValueError:
+        return _result("memory_fetch", False, "invalid chunk_id")
+    if not isinstance(memory_store, MemoryChunkStore):
+        return _result("memory_fetch", False, "memory store unavailable")
+    root = resolve_repo_root(repo_root)
+    scope = repo_scope_hash(root)
+    for ch in memory_store.list_chunks_for_scope(scope):
+        if ch.chunk_id == cid:
+            body = truncate_for_active_read(ch.excerpt, max_chars=cap)
+            return _result("memory_fetch", True, body, audit=f"chunk={cid}")
+    return _result("memory_fetch", False, f"chunk not found: {chunk_id}")
