@@ -1,0 +1,6 @@
+default:
+  min_bundle_ids:
+    - nimbusware-core
+  blocked_origins:
+    - community
+  required_facade_id: ""

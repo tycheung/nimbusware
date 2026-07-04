@@ -21,6 +21,7 @@ from api.routes.enterprise.fleet_deploy_approval import (
 )
 from api.routes.enterprise.fleet_discovery import router as fleet_discovery_router
 from api.routes.enterprise.fleet_enforcement import router as fleet_enforcement_router
+from api.routes.enterprise.fleet_standards import router as fleet_standards_router
 from api.routes.enterprise.fleet_learnings import router as fleet_learnings_router
 from api.routes.enterprise.fleet_memory import router as fleet_memory_router
 from api.routes.enterprise.fleet_mesh import router as fleet_mesh_router
@@ -69,6 +70,7 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_analytics_router)
     router.include_router(fleet_autopilot_router)
     router.include_router(fleet_enforcement_router)
+    router.include_router(fleet_standards_router)
     router.include_router(fleet_tenant_policies_router)
     router.include_router(fleet_commit_router)
     router.include_router(fleet_deploy_router)

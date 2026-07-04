@@ -285,6 +285,44 @@ TOOL_SPECS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "nimbusware_standards_run",
+        "description": "Run a standards stream, bundle, or profile against the run workspace.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "stream": {"type": "string"},
+                "bundle": {"type": "string"},
+                "profile": {"type": "string"},
+            },
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_standards_report",
+        "description": "Fetch failing standards check ids from the run workspace.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_standards_profile",
+        "description": "Get or update the effective standards profile for a run.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "facade_id": {"type": "string"},
+                "bundles": {"type": "array", "items": {"type": "string"}},
+                "connectors": {"type": "array", "items": {"type": "string"}},
+                "verdict_overrides": {"type": "object"},
+            },
+            "required": ["run_id"],
+        },
+    },
+    {
         "name": "nimbusware_chat_graph",
         "description": "Fetch conversation DAG for a chat session.",
         "inputSchema": {

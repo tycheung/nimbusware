@@ -153,6 +153,39 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(post_json(f"/runs/{run_id}/interjection-queue", interject_body))
     if name == "nimbusware_run_tests":
         return _text_result(post_json(f"/runs/{run_id}/maker/run-tests", {}))
+    if name == "nimbusware_standards_run":
+        body: dict[str, Any] = {}
+        stream = str(arguments.get("stream") or "").strip()
+        bundle = str(arguments.get("bundle") or "").strip()
+        profile = str(arguments.get("profile") or "").strip()
+        if stream:
+            body["stream"] = stream
+        if bundle:
+            body["bundle"] = bundle
+        if profile:
+            body["profile"] = profile
+        return _text_result(post_json(f"/runs/{run_id}/standards/run", body))
+    if name == "nimbusware_standards_report":
+        return _text_result(get_json(f"/runs/{run_id}/standards/report"))
+    if name == "nimbusware_standards_profile":
+        if arguments.get("facade_id") is not None or arguments.get("bundles") is not None:
+            put_body: dict[str, Any] = {}
+            facade_id = str(arguments.get("facade_id") or "").strip()
+            if facade_id:
+                put_body["facade_id"] = facade_id
+            bundles = arguments.get("bundles")
+            if isinstance(bundles, list):
+                put_body["bundles"] = [str(b) for b in bundles if str(b).strip()]
+            connectors = arguments.get("connectors")
+            if isinstance(connectors, list):
+                put_body["connectors"] = [str(c) for c in connectors if str(c).strip()]
+            overrides = arguments.get("verdict_overrides")
+            if isinstance(overrides, dict):
+                put_body["verdict_overrides"] = overrides
+            resp = put_response(f"/runs/{run_id}/standards", put_body)
+            payload = resp.json()
+            return _text_result(payload if isinstance(payload, dict) else {"data": payload})
+        return _text_result(get_json(f"/runs/{run_id}/standards"))
     if name == "nimbusware_swap_role_model":
         agent_role = str(arguments.get("agent_role") or "").strip()
         provider_id = str(arguments.get("provider_id") or "").strip()

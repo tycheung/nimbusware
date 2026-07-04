@@ -465,3 +465,61 @@ def tenant_enforcement_policy(
     repo_root: Path | None = None,
 ) -> FleetEnforcementPolicy:
     return _tenant_enforcement(tenant_slug, repo_root=repo_root)
+
+
+@dataclass(frozen=True)
+class FleetStandardsPolicy:
+    tenant_slug: str
+    min_bundle_ids: tuple[str, ...] = ()
+    blocked_origins: tuple[str, ...] = ("community",)
+    required_facade_id: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "tenant_slug": self.tenant_slug,
+            "min_bundle_ids": list(self.min_bundle_ids),
+            "blocked_origins": list(self.blocked_origins),
+            "required_facade_id": self.required_facade_id,
+        }
+
+
+def _normalize_str_list(raw: Any) -> tuple[str, ...]:
+    if not isinstance(raw, list):
+        return ()
+    return tuple(str(item).strip() for item in raw if str(item).strip())
+
+
+def _parse_standards_entry(slug: str, entry: dict[str, Any]) -> FleetStandardsPolicy:
+    blocked = _normalize_str_list(entry.get("blocked_origins"))
+    return FleetStandardsPolicy(
+        tenant_slug=slug,
+        min_bundle_ids=_normalize_str_list(entry.get("min_bundle_ids")),
+        blocked_origins=blocked or ("community",),
+        required_facade_id=str(entry.get("required_facade_id") or "").strip(),
+    )
+
+
+def _serialize_standards_entry(policy: FleetStandardsPolicy) -> dict[str, Any]:
+    return {
+        "min_bundle_ids": list(policy.min_bundle_ids),
+        "blocked_origins": list(policy.blocked_origins),
+        "required_facade_id": policy.required_facade_id,
+    }
+
+
+load_fleet_standards_policies, save_fleet_standards_policies, _tenant_standards = (
+    _tenant_policy_set(
+        "fleet_standards_policies.yaml",
+        FleetStandardsPolicy,
+        _parse_standards_entry,
+        _serialize_standards_entry,
+    )
+)
+
+
+def tenant_standards_policy(
+    tenant_slug: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> FleetStandardsPolicy:
+    return _tenant_standards(tenant_slug, repo_root=repo_root)
