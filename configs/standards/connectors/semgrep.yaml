@@ -1,0 +1,9 @@
+id: semgrep
+display_name: Semgrep
+requires:
+  env: []
+  binaries: [semgrep]
+modes: [cli_scan]
+default_verdict: warn
+stream: security
+runner: standards.connectors.semgrep:run_semgrep_check
