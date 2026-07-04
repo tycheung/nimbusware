@@ -85,6 +85,7 @@ def compact_campaign_context(
     scope: CompactionScope = "all",
     scope_n: int | None = None,
     source_refs: list[str] | None = None,
+    min_handoffs: int = 3,
 ) -> CompactionResult | None:
     """Summarize older slice handoffs; keep recent verbatim within token budget."""
     if not campaign_compact_enabled():
@@ -98,7 +99,7 @@ def compact_campaign_context(
         if not ref_set:
             return None
         handoffs = [row for row in handoffs if str(row.get("store_seq") or "").strip() in ref_set]
-    if len(handoffs) < 3:
+    if len(handoffs) < max(2, min_handoffs):
         return None
 
     keep = keep_recent_tokens if keep_recent_tokens is not None else _default_keep_recent_tokens()
@@ -268,10 +269,16 @@ def maybe_emit_compaction_event(
     source_refs: list[str] | None = None,
 ) -> CompactionResult | None:
     """Compact when enabled and append a campaign.context.compacted marker event."""
+    from agent_core.agent_full_compact import handoff_compact_budget_exceeded
     from orchestrator.replay.replay_from import compaction_allowed
 
     if not compaction_allowed(events):
         return None
+    budget_trigger = (
+        compaction_trigger == "auto_handoff"
+        and handoff_compact_budget_exceeded(events, keep_recent_tokens=keep_recent_tokens)
+    )
+    min_handoffs = 2 if budget_trigger else 3
     result = compact_campaign_context(
         events,
         keep_recent_tokens=keep_recent_tokens,
@@ -279,6 +286,7 @@ def maybe_emit_compaction_event(
         scope=scope,
         scope_n=scope_n,
         source_refs=source_refs,
+        min_handoffs=min_handoffs,
     )
     if result is None:
         return None

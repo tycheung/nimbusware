@@ -327,12 +327,43 @@ def nimbusware_llm_history_max_chars(default: int = 2000) -> int:
     return _context_max_chars_from_preset("llm_history_max_chars", default)
 
 
+
+
+def nimbusware_read_outline_min_lines(default: int = 200) -> int:
+    return resolve_int("NIMBUSWARE_READ_OUTLINE_MIN_LINES", default=default)
+
+
 def nimbusware_read_max_chars(default: int = 16000) -> int:
     return resolve_int("NIMBUSWARE_READ_MAX_CHARS", default=default)
 
 
 def nimbusware_shell_output_max_chars(default: int = 4000) -> int:
     return resolve_int("NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS", default=default)
+
+def nimbusware_tool_offload_chars(default: int = 5000) -> int:
+    return resolve_int("NIMBUSWARE_TOOL_OFFLOAD_CHARS", default=default)
+
+
+def nimbusware_jit_microcompact_turns(default: int = 8) -> int:
+    return resolve_int("NIMBUSWARE_JIT_MICROCOMPACT_TURNS", default=default)
+
+
+def nimbusware_jit_microcompact_token_threshold(default: int = 12000) -> int:
+    return resolve_int("NIMBUSWARE_JIT_MICROCOMPACT_TOKEN_THRESHOLD", default=default)
+
+
+def nimbusware_context_dedup_mode(default: str = "balanced") -> str:
+    from env.settings_resolve import resolve_str
+
+    mode = resolve_str("NIMBUSWARE_CONTEXT_DEDUP", default=default).strip().lower()
+    if mode in ("balanced", "compact", "verbose", "off"):
+        return mode
+    return default
+
+
+
+def nimbusware_agent_context_window_tokens(default: int = 32000) -> int:
+    return resolve_int("NIMBUSWARE_AGENT_CONTEXT_WINDOW", default=default)
 
 
 def nimbusware_agent_jit_loop_enabled() -> bool:

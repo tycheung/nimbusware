@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agent_core.context_budget import truncate_for_llm_history
-from agent_core.prompt_tiers import assemble_prompt
+from agent_core.context_budget import estimate_tokens, truncate_for_llm_history
+from agent_core.agent_full_compact import maybe_full_compact_messages
+from agent_core.tool_output_offload import prepare_tool_output_for_llm
+from agent_core.prompt_tiers import CacheBreakingSection, assemble_prompt_with_cache_metadata
 from agent_core.slice_plan import SlicePlan
 from agent_tools.prompts import build_agent_stable_prompt
 from agent_tools.risk_caps import AgentRiskCaps
@@ -81,20 +84,113 @@ def _parse_turn(data: dict[str, Any]) -> tuple[bool, list[AgentStep]]:
     return False, steps
 
 
+_MICROCOMPACT_TOOLS = frozenset({"read", "write", "edit", "grep", "shell", "find", "ls"})
+
+
+@dataclass
+class _LoopContext:
+    tool_result_indices: list[int] = field(default_factory=list)
+    dedup_index: dict[str, int] = field(default_factory=dict)
+    turn: int = 0
+
+
+def _dedup_key(tool: str, arguments: dict[str, Any]) -> str | None:
+    from env.env_flags import nimbusware_context_dedup_mode
+
+    mode = nimbusware_context_dedup_mode()
+    if mode == "off":
+        return None
+    t = tool.lower()
+    if t in ("read", "write", "edit"):
+        path = str(arguments.get("path") or "").strip().replace("\\", "/")
+        return f"{t}:{path}" if path else None
+    if t == "grep" and mode in ("balanced", "compact"):
+        pattern = str(arguments.get("pattern") or arguments.get("query") or "")
+        path = str(arguments.get("path") or ".").strip().replace("\\", "/")
+        return f"grep:{pattern}:{path}"
+    if t == "shell" and mode == "compact":
+        cmd = str(arguments.get("command") or arguments.get("cmd") or "")
+        if not cmd:
+            return None
+        digest = hashlib.sha256(cmd.encode("utf-8")).hexdigest()[:16]
+        return f"shell:{digest}"
+    return None
+
+
+def _maybe_dedup_tool_messages(
+    messages: list[dict[str, str]],
+    *,
+    ctx: _LoopContext,
+    tool: str,
+    arguments: dict[str, Any],
+) -> None:
+    key = _dedup_key(tool, arguments)
+    if not key:
+        return
+    prior = ctx.dedup_index.get(key)
+    if prior is not None and 0 <= prior < len(messages):
+        messages[prior] = {
+            **messages[prior],
+            "content": f"[superseded by turn {ctx.turn}]",
+        }
+    ctx.dedup_index[key] = len(messages) - 1
+
+
+def _maybe_microcompact_messages(
+    messages: list[dict[str, str]],
+    *,
+    ctx: _LoopContext,
+    tool: str,
+) -> None:
+    if tool not in _MICROCOMPACT_TOOLS:
+        return
+    from env.env_flags import (
+        nimbusware_jit_microcompact_token_threshold,
+        nimbusware_jit_microcompact_turns,
+    )
+
+    est = sum(estimate_tokens(str(m.get("content") or "")) for m in messages)
+    if est < nimbusware_jit_microcompact_token_threshold():
+        return
+    keep = nimbusware_jit_microcompact_turns()
+    if len(ctx.tool_result_indices) <= keep:
+        return
+    for idx in ctx.tool_result_indices[:-keep]:
+        msg = messages[idx]
+        if msg.get("role") == "user" and msg.get("content", "").startswith("Tool "):
+            messages[idx] = {**msg, "content": "[cleared prior tool result]"}
+    ctx.tool_result_indices = ctx.tool_result_indices[-keep:]
+
+
 def _append_tool_result(
     messages: list[dict[str, str]],
     *,
     tool: str,
     output: str,
     ok: bool,
+    workspace: Path | None = None,
+    run_id: str = "",
+    step: int = 0,
+    ctx: _LoopContext | None = None,
 ) -> None:
-    bounded = truncate_for_llm_history(output)
+    llm_output = output
+    if workspace is not None and run_id:
+        llm_output, _ = prepare_tool_output_for_llm(
+            output,
+            workspace=workspace,
+            run_id=run_id,
+            step=step,
+        )
+    else:
+        llm_output = truncate_for_llm_history(output)
     messages.append(
         {
             "role": "user",
-            "content": f"Tool {tool} ({'ok' if ok else 'error'}):\n{bounded}",
+            "content": f"Tool {tool} ({'ok' if ok else 'error'}):\n{llm_output}",
         },
     )
+    if ctx is not None:
+        ctx.tool_result_indices.append(len(messages) - 1)
 
 
 def run(
@@ -128,21 +224,33 @@ def run(
 
     chat = chat_fn or _default_chat
 
-    messages = assemble_prompt(
+    dynamic: list[CacheBreakingSection] = []
+    if steer_excerpt.strip():
+        dynamic.append(
+            CacheBreakingSection(
+                label="operator_steer",
+                content=f"Operator steer (follow for this slice):\n{truncate_for_llm_history(steer_excerpt)}",
+            ),
+        )
+    assembled = assemble_prompt_with_cache_metadata(
         stable=_stable_system_prompt(base_prompt=system_prompt),
         volatile=_volatile_user_prompt(
             plan,
             handoff_summary=handoff_summary,
             memory_excerpt=memory_excerpt,
             learning_excerpt=learning_excerpt,
-            steer_excerpt=steer_excerpt,
+            steer_excerpt="",
         ),
+        dynamic_sections=dynamic,
     )
+    messages = assembled.messages
 
     result = AgentLoopResult()
     shell_invocations = 0
     write_bytes = 0
     touched: list[str] = []
+    run_id = plan.slice_id or "agent-loop"
+    loop_ctx = _LoopContext()
 
     while True:
         try:
@@ -170,6 +278,7 @@ def run(
             break
 
         for step in steps:
+            loop_ctx.turn += 1
             if not is_agent_tool_enabled(step.tool):
                 result.logs.append(f"{step.tool}: tool not in allowlist")
                 result.exit_code = max(result.exit_code, 1)
@@ -285,7 +394,21 @@ def run(
                 tool=tool_result.tool,
                 output=tool_result.llm_output,
                 ok=tool_result.ok,
+                workspace=ws,
+                run_id=run_id,
+                step=result.tool_steps,
+                ctx=loop_ctx,
             )
+            _maybe_microcompact_messages(messages, ctx=loop_ctx, tool=tool_result.tool)
+            _maybe_dedup_tool_messages(
+                messages,
+                ctx=loop_ctx,
+                tool=tool_result.tool,
+                arguments=step.arguments,
+            )
+            compacted, _saved = maybe_full_compact_messages(messages)
+            if compacted is not messages:
+                messages[:] = compacted
 
     result.paths_touched = list(dict.fromkeys(touched))
     return result
