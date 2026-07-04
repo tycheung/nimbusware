@@ -1,0 +1,110 @@
+profiles:
+  nimbusware-monorepo:
+    streams:
+      - hygiene
+      - architecture
+      - complexity
+      - lint
+      - types
+      - security
+      - test
+      - product
+      - performance
+  nimbusware-core:
+    streams:
+      - architecture
+      - complexity
+  attached-default:
+    streams:
+      - lint
+      - test
+      - security
+
+streams:
+  hygiene:
+    label: Size and hygiene
+    checks:
+      - id: loc.budget
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/run_loc_budget_ci_gate.py"]
+      - id: module.line_cap
+        default_verdict: hard_gate
+        command: ["{python}", "-m", "pytest", "tests/unit/test_package_module_size.py", "-q"]
+      - id: workflow.yaml_lines
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/run_workflow_yaml_ci_gate.py"]
+      - id: prune.comments
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/run_prune_comments_ci_gate.py"]
+  architecture:
+    label: Layering and registry
+    checks:
+      - id: import.orchestrator_no_api
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/import_boundary_check.py"]
+      - id: import.graph_contract
+        default_verdict: hard_gate
+        command: ["{python}", "-m", "pytest", "tests/unit/test_import_graph.py", "-q"]
+      - id: registry.pipeline_stages
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/stage_registry_gate.py"]
+      - id: registry.workflow_loaders
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/workflow_registry_gate.py"]
+  complexity:
+    label: Structural complexity
+    checks:
+      - id: ast.hot_path_limits
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/complexity_gate.py"]
+  lint:
+    label: Style and format
+    checks:
+      - id: ruff.check
+        default_verdict: hard_gate
+        command: ["poetry", "run", "ruff", "check", "packages", "tests"]
+      - id: ruff.format
+        default_verdict: hard_gate
+        command: ["poetry", "run", "ruff", "format", "--check", "packages", "tests"]
+  types:
+    label: Static typing
+    checks:
+      - id: mypy.packages
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/run_mypy_stream_check.py"]
+  security:
+    label: AppSec and dependencies
+    checks:
+      - id: bandit
+        default_verdict: hard_gate
+        command: ["poetry", "run", "bandit", "-c", "pyproject.toml", "-r", "packages", "-lll", "-q"]
+      - id: pip.audit
+        default_verdict: hard_gate
+        command: ["poetry", "run", "pip-audit"]
+      - id: semgrep.ci
+        default_verdict: warn
+        runner: standards.connectors.semgrep:run_semgrep_check
+  test:
+    label: Tests and coverage
+    checks:
+      - id: pytest.unit
+        default_verdict: hard_gate
+        command: ["poetry", "run", "pytest", "tests", "-q", "-m", "not integration and not slow and not benchmark and not e2e_stack"]
+  product:
+    label: Nimbusware product contract
+    checks:
+      - id: operator.env_audit
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/audit_operator_env.py"]
+      - id: openapi.ts
+        default_verdict: hard_gate
+        command: ["{python}", "scripts/ci/run_openapi_ts_ci_gate.py"]
+  performance:
+    label: Performance heuristics
+    checks:
+      - id: perf.n_plus_one
+        default_verdict: warn
+        runner: standards.bundles.performance:check_n_plus_one
+      - id: perf.ruff
+        default_verdict: warn
+        runner: standards.bundles.performance:check_ruff_perf

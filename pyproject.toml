@@ -31,6 +31,7 @@ packages = [
   { include = "agent_tools", from = "packages" },
   { include = "hw", from = "packages" },
   { include = "compute", from = "packages" },
+  { include = "standards", from = "packages" },
 ]
 
 [tool.poetry.dependencies]

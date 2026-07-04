@@ -9,60 +9,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _run_step(name: str, cmd: list[str]) -> int:
+def _run(name: str, cmd: list[str]) -> int:
     print(f"=== {name} ===", flush=True)
-    proc = subprocess.run(cmd, cwd=ROOT)
-    return proc.returncode
+    return subprocess.run(cmd, cwd=ROOT).returncode
 
 
 def main() -> int:
-    steps: list[tuple[str, list[str]]] = [
-        ("ruff check", ["poetry", "run", "ruff", "check", "packages", "tests"]),
-        (
-            "workflow yaml gate",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "run_workflow_yaml_ci_gate.py")],
-        ),
-        (
-            "loc budget gate",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "run_loc_budget_ci_gate.py")],
-        ),
-        (
-            "package module size",
-            [
-                sys.executable,
-                "-m",
-                "pytest",
-                "tests/unit/test_package_module_size.py",
-                "-q",
-            ],
-        ),
-        (
-            "import boundary check",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "import_boundary_check.py")],
-        ),
-        (
-            "stage registry gate",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "stage_registry_gate.py")],
-        ),
-        (
-            "workflow registry gate",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "workflow_registry_gate.py")],
-        ),
-        (
-            "complexity gate",
-            [sys.executable, str(ROOT / "scripts" / "ci" / "complexity_gate.py")],
-        ),
-    ]
-
-    failures: list[str] = []
-    for name, cmd in steps:
-        if _run_step(name, cmd) != 0:
-            failures.append(name)
-
-    if failures:
-        print(f"fast gates failed: {', '.join(failures)}", file=sys.stderr)
-        return 1
-
+    code = _run(
+        "standards architecture+complexity",
+        [sys.executable, str(ROOT / "scripts" / "ci" / "run_all_streams.py"), "--profile", "nimbusware-core"],
+    )
+    if code != 0:
+        return code
     print("fast gates: ok")
     return 0
 
