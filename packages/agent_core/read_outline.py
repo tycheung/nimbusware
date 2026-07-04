@@ -40,7 +40,7 @@ def typescript_file_outline(source: str, *, rel_path: str = "") -> str:
 def go_file_outline(source: str, *, rel_path: str = "") -> str:
     lines: list[str] = [f"// outline: {rel_path or 'module'}"]
     for rx in (_GO_TYPE, _GO_DECL):
-        for match in rx.finditer(source, flags=re.MULTILINE):
+        for match in rx.finditer(source):
             kind = "type" if rx is _GO_TYPE else "func"
             lines.append(f"{kind} {match.group(1)}(...)")
             if len(lines) >= 120:

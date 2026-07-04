@@ -6,7 +6,6 @@ from typing import Any
 
 
 def memory_event_rows_fingerprint(rows: list[dict[str, Any]]) -> str:
-    """Stable digest of memory-index source events for skip-rebuild checks."""
     h = hashlib.sha256()
     for row in rows:
         h.update(str(row.get("store_seq")).encode("utf-8"))

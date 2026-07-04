@@ -50,7 +50,7 @@ See [tests/README.md](tests/README.md) for test layout and markers.
 
 **Operator presets:** set `NIMBUSWARE_OPERATOR_PRESET` to `offline`, `local-llm`, or `production` in `.env` to apply transport defaults at startup (`packages/env/operator_presets.py`).
 
-**Context efficiency:** cache-aware prompts thread `cache_blocks` through `ModelBindingResolver`; token usage persists as rate-limited `context.budget.sampled` events; Maker Progress SSE uses tail fetch + `progress_delta` merge. See [ARCHITECTURE.md](../ARCHITECTURE.md#context-efficiency-jul-2026).
+**Context efficiency:** cache-aware prompts thread `cache_blocks` through `ModelBindingResolver`; token usage persists as rate-limited `context.budget.sampled` events; Maker Progress SSE uses tail fetch + `progress_delta` merge; memory index rebuild skips unchanged event fingerprints; campaign artifact bundle at `GET /v1/runs/{id}/campaign-artifact-bundle`. See [ARCHITECTURE.md](../ARCHITECTURE.md#context-efficiency-jul-2026).
 
 **Composite contract tests:** multi-case API/helper contracts belong in `tests/unit/composite_contracts/*_matrix.py` with parametrized runners (`matrix_runner.py`); keep per-file tests under ~150 lines.
 

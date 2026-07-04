@@ -27,11 +27,19 @@ Full catalog (264 keys): [operator-settings.md](../operator-settings.md) and `po
 
 ## Token telemetry
 
-Each provider chat records in-process counters (`agent_core/token_telemetry.py`) and, when a run store is bound, persists rate-limited `context.budget.sampled` events (30s per run/stage) via `orchestrator/llm/budget_sample_emit.py`. Projections aggregate samples in `projections/builders/context_budget.py`.
+Each provider chat records in-process counters (`agent_core/token_telemetry.py`) and, when a run store is bound, persists rate-limited `context.budget.sampled` events (30s per run) via `orchestrator/llm/budget_sample_emit.py`. Projections aggregate samples in `projections/builders/context_budget.py`. Maker Progress renders `token_samples` and `token_savings` on the context budget chip when present.
 
 ## Read modes
 
-The agent `read` tool selects `outline`, `digest`, or `full` based on file size and slice targets (`agent_core/read_outline.py`). Python outlines use AST; digest mode summarizes structure without full source. Campaign read staleness is tracked in `agent_core/read_staleness.py`.
+The agent `read` tool selects `outline`, `digest`, or `full` based on file size and slice targets (`agent_core/read_outline.py`). Python uses AST; TypeScript/JavaScript and Go use regex signature extraction. Digest mode summarizes structure without full source. Campaign read staleness is tracked in `agent_core/read_staleness.py`.
+
+## Memory index rebuild
+
+`rebuild_memory_index` stores `source_events_fingerprint` on the manifest and skips embedding/FAISS rebuild when memory-source events are unchanged (`memory/index/fingerprint.py`).
+
+## Campaign artifact bundle
+
+`GET /v1/runs/{id}/campaign-artifact-bundle` exports implement-safe sources (slice plan, handoff, memory hits, steer messages, findings) and omits `chat_transcript` and theater dumps per `orchestrator/role_context_audit.py`.
 
 ## Maker Progress SSE
 
@@ -41,7 +49,8 @@ Run event streams use tail fetch (`store.list_run_events_since`) instead of repl
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /v1/runs/{id}/context_budget` | Advisory budget chip on Maker Progress |
+| `GET /v1/runs/{id}/context_budget` | Advisory budget chip on Maker Progress (includes token samples when sampled) |
+| `GET /v1/runs/{id}/campaign-artifact-bundle` | Implement-safe context export for campaign handoff |
 | `POST /v1/runs/{id}/compact` | Compact agent context (scopes: all, last_n, source_refs) |
 | `POST /v1/runs/{id}/compactions/{id}/revert` | Revert compaction |
 | `POST /v1/runs/{id}/replay-from` | Replay from checkpoint (re-enqueues campaign tick) |

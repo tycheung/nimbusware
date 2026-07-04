@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from api.routes.runs.autopilot import router as autopilot_router
 from api.routes.runs.artifact_bundle import router as artifact_bundle_router
+from api.routes.runs.autopilot import router as autopilot_router
 from api.routes.runs.compact import router as compact_router
 from api.routes.runs.compactions import router as compactions_router
 from api.routes.runs.constants import INCLUDE_SUMMARY_MAX_LIMIT

@@ -24,7 +24,7 @@ Thresholds are env-tunable; slice-target paths always receive `full` so implemen
 see complete source for files they may modify. `agent_core/read_staleness.py` tracks when
 a digest/outline read should be refreshed after upstream edits.
 
-Non-Python structure extraction (tree-sitter for TS/Go) is deferred; Python uses `ast` today.
+Non-Python structure extraction uses regex signatures for `.ts`/`.tsx`/`.js`/`.jsx`/`.go` today. Optional tree-sitter parsers remain a future enhancement for richer outlines.
 
 Related agent-side token tactics (no separate ADR): index-first memory injection
 (`NIMBUSWARE_MEMORY_INDEX_FIRST`), lazy tool/MCP schema loading, and loop-history dedup

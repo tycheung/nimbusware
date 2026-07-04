@@ -33,7 +33,8 @@ All routes are under `/v1`. OpenAPI groups operations as **user** (Maker) or **a
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /v1/runs/{id}/context_budget` | Advisory context budget chip |
+| `GET /v1/runs/{id}/context_budget` | Advisory budget chip |
+| `GET /v1/runs/{id}/campaign-artifact-bundle` | Implement-safe artifact bundle (no chat transcript) |
 | `POST /v1/runs/{id}/compact` | Agent context compaction |
 | `POST /v1/runs/{id}/replay-from` | Replay from checkpoint |
 | `GET/POST /v1/projects/{id}/context-artifacts` | Context artifact library |

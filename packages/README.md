@@ -30,11 +30,11 @@ Each row below links to a package README when one exists.
 | Package | Responsibility | Notes |
 |---------|----------------|-------|
 | [`orchestrator`](orchestrator/) | **Run pipeline**: `RunOrchestrator` (`pipeline.py`, `_pipeline/stage_registry.py` mixins), workflow blocks, slice loop, critics, gates, campaign driver, fleet policies, factory/PUT E2E, dev env, routing, replay. | Domain subpackages: `workflow/`, `slice/`, `fleet/`, `critique/`, `campaign/`, `factory/`, `dev_env/`, `routing/`, `integrator/`, `collab/`, `replay/`, `repo_intel/`, `profiles/`, `scraper/`, `stack/`, `llm/`, `launch/`, `escalation/`, `improvement/`, `interaction/`. CLIs: `nimbusware-preflight`, `nimbusware-run-worker`, `nimbusware-memory-replay`, etc. |
-| [`agent_tools`](agent_tools/) | **JIT agent loop** for slice implement: tool registry, allowlist, dual `ToolResult` output, filesystem jail, sandbox backends, risk caps. Passes `cache_blocks` to LLM resolver; read tool supports `outline` / `digest` / `full`. | Invoked from orchestrator slice stages. |
+| [`agent_tools`](agent_tools/) | **JIT agent loop** for slice implement: tool registry, allowlist, dual `ToolResult` output, filesystem jail, sandbox backends, risk caps. Passes `cache_blocks` to LLM resolver; read tool supports `outline` / `digest` / `full` for Python, TS/JS, and Go. | Invoked from orchestrator slice stages. |
 | [`executor`](executor/) | **Role-gated outbound HTTP** allowlists for scraper and agent egress. | See [agent-sandbox.md](../docs/deploy/agent-sandbox.md). |
 | [`extensions`](extensions/) | **Personas**, bundle memory, escalation helpers, custom agents catalog integration. | Must not import `orchestrator` at module level. |
 | [`research`](research/) | **Research briefs**, stitch transplant stages, catalog candidates, outcome stats. | Feeds bundle catalog promotion. |
-| [`memory`](memory/) | **Repo-scoped retrieval index** (chunk store, embeddings, FAISS, fleet sync). Subpackages: `store/`, `index/`, `fleet/`. | CLIs: `nimbusware-memory-index`, `nimbusware-memory-sync`. |
+| [`memory`](memory/) | **Repo-scoped retrieval index** (chunk store, embeddings, FAISS, fleet sync). Subpackages: `store/`, `index/` (`fingerprint.py` skip-rebuild), `fleet/`. | CLIs: `nimbusware-memory-index`, `nimbusware-memory-sync`. |
 | [`compute`](compute/) | **Distributed compute mesh**: node registry, work-unit queue, worker policy. | CLI: `nimbusware-compute-worker`. See [compute-mesh.md](../docs/compute-mesh.md). |
 
 ---

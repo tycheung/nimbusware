@@ -11,7 +11,12 @@ from memory.index.chunking import chunks_from_event_rows
 from memory.index.embeddings import embed_text, embedding_model_id_for_mode
 from memory.index.faiss_index import build_memory_faiss_index
 from memory.index.fingerprint import memory_event_rows_fingerprint
-from memory.index.manifest import MemoryIndexManifest, default_memory_index_dir, read_manifest, write_manifest
+from memory.index.manifest import (
+    MemoryIndexManifest,
+    default_memory_index_dir,
+    read_manifest,
+    write_manifest,
+)
 from memory.index.models import EmbeddingMode, MemoryChunkRecord
 from memory.index.repo_scope import repo_scope_hash, resolve_repo_root
 from memory.store.protocol import MemoryChunkStore
