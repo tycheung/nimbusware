@@ -9,6 +9,7 @@ import httpx
 from agent_core.mapping import mapping_or_empty
 from env.env_flags import env_str
 from orchestrator.routing.presets import load_model_routing_yaml
+from orchestrator.llm.prompt_cache import apply_provider_cache_metadata
 
 ProviderKind = Literal["local", "cloud"]
 
@@ -31,7 +32,10 @@ def cloud_chat_json(
     url = f"{base_url}/chat/completions"
     body = {
         "model": model,
-        "messages": messages,
+        "messages": apply_provider_cache_metadata(
+            messages,
+            provider_id="openai",
+        ),
         "response_format": {"type": "json_object"},
     }
     resp = httpx.post(
@@ -42,6 +46,23 @@ def cloud_chat_json(
     )
     resp.raise_for_status()
     data = resp.json()
+    if isinstance(data, dict):
+        from agent_core.token_telemetry import (
+            TokenTelemetrySample,
+            record_token_sample,
+            usage_from_provider_response,
+        )
+
+        usage = usage_from_provider_response(data)
+        record_token_sample(
+            TokenTelemetrySample(
+                tokens_in=usage.get("tokens_in", 0),
+                tokens_out=usage.get("tokens_out", 0),
+                cache_read=usage.get("cache_read", 0),
+                cache_write=usage.get("cache_write", 0),
+                provider="cloud",
+            ),
+        )
     choices = data.get("choices") if isinstance(data, dict) else None
     if not isinstance(choices, list) or not choices:
         msg = "missing choices in cloud chat response"
