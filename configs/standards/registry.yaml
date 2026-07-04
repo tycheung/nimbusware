@@ -1,0 +1,59 @@
+bundles:
+  nimbusware-core:
+    path: bundles/nimbusware-core.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+  python-agent-hygiene:
+    path: bundles/python-agent-hygiene.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+  typescript-agent-hygiene:
+    path: bundles/typescript-agent-hygiene.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+  go-agent-hygiene:
+    path: bundles/go-agent-hygiene.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+  error-handling:
+    path: bundles/error-handling.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+  performance-n-plus-one:
+    path: bundles/performance-n-plus-one.yaml
+    origin: core
+    min_nimbusware: "0.5.0"
+
+facades:
+  python-fastapi:
+    path: facades/python-fastapi.yaml
+    origin: core
+  typescript-react:
+    path: facades/typescript-react.yaml
+    origin: core
+  go-service:
+    path: facades/go-service.yaml
+    origin: core
+  nimbusware-monorepo:
+    path: facades/nimbusware-monorepo.yaml
+    origin: core
+
+connectors:
+  semgrep:
+    path: connectors/semgrep.yaml
+    origin: core
+    stream: external
+
+tiers:
+  core:
+    badge: Core
+    hard_gate_allowed: true
+  curated:
+    badge: Curated
+    hard_gate_allowed: true
+  community:
+    badge: Community
+    hard_gate_allowed: false
+  enterprise:
+    badge: Enterprise
+    hard_gate_allowed: true

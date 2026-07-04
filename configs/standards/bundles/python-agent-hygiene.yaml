@@ -1,0 +1,27 @@
+id: python-agent-hygiene
+version: 1
+display_name: Python agent hygiene
+description: Anti god-file, Pydantic v2, exports-only __init__.py patterns
+tags: [python, agent-output]
+checks:
+  - id: py.config_module_max_loc
+    runner: standards.bundles.python_hygiene:check_config_module_loc
+    default_verdict: critique
+    params:
+      max_loc: 250
+      path_globs: ["**/settings.py", "**/config.py", "**/config/*.py"]
+  - id: py.pydantic_v2_only
+    runner: standards.bundles.python_hygiene:check_pydantic_v2
+    default_verdict: hard_gate
+    params:
+      path_globs: ["**/models/**", "**/schemas/**", "**/*model*.py", "**/*schema*.py"]
+  - id: py.package_init_exports_only
+    runner: standards.bundles.python_hygiene:check_init_exports_only
+    default_verdict: critique
+    params:
+      max_non_import_loc: 40
+  - id: py.env_no_raw_environ
+    runner: standards.bundles.python_hygiene:check_env_access_pattern
+    default_verdict: warn
+    params:
+      allow_globs: ["**/env.py", "**/settings.py", "**/config/**"]

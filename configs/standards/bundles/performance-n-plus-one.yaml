@@ -1,0 +1,12 @@
+id: performance-n-plus-one
+version: 1
+display_name: Performance N+1
+description: ORM loop heuristics and ruff perf rules
+tags: [performance, python]
+checks:
+  - id: perf.n_plus_one_heuristic
+    runner: standards.bundles.performance:check_n_plus_one
+    default_verdict: warn
+  - id: perf.ruff_perflint
+    runner: standards.bundles.performance:check_ruff_perf
+    default_verdict: warn

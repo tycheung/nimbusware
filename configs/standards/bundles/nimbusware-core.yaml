@@ -1,0 +1,14 @@
+id: nimbusware-core
+version: 1
+display_name: Nimbusware core hygiene
+description: Wraps repository hygiene and architecture CI gates for attached workspaces
+tags: [core, hygiene]
+checks:
+  - id: hygiene.loc_budget
+    runner: standards.bundles.nimbusware_core:check_loc_budget
+    default_verdict: critique
+  - id: hygiene.module_line_cap
+    runner: standards.bundles.nimbusware_core:check_module_line_cap
+    default_verdict: critique
+    params:
+      max_lines: 1000

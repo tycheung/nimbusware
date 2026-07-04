@@ -1,0 +1,14 @@
+id: go-service
+display_name: Go HTTP service
+stacks: [go]
+streams:
+  hygiene: { enabled: true }
+  lint: { enabled: true }
+  security: { enabled: true }
+  test: { enabled: true }
+bundles:
+  - go-agent-hygiene
+  - error-handling
+  - performance-n-plus-one
+connectors: []
+nimbusware_runner: local

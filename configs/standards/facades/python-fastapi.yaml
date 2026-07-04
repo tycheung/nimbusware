@@ -1,0 +1,16 @@
+id: python-fastapi
+display_name: Python FastAPI service
+stacks: [python]
+streams:
+  hygiene: { enabled: true }
+  lint: { enabled: true }
+  types: { enabled: true }
+  security: { enabled: true }
+  test: { enabled: true, coverage_floor: 0.80 }
+bundles:
+  - nimbusware-core
+  - python-agent-hygiene
+  - error-handling
+  - performance-n-plus-one
+connectors: []
+nimbusware_runner: local

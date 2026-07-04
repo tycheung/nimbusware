@@ -1,0 +1,13 @@
+id: typescript-react
+display_name: TypeScript React frontend
+stacks: [node]
+streams:
+  hygiene: { enabled: true }
+  lint: { enabled: true }
+  types: { enabled: true }
+  test: { enabled: true, coverage_floor: 0.70 }
+bundles:
+  - typescript-agent-hygiene
+  - error-handling
+connectors: []
+nimbusware_runner: local

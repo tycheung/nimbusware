@@ -1,0 +1,20 @@
+id: nimbusware-monorepo
+display_name: Nimbusware monorepo
+stacks: [python, node]
+streams:
+  hygiene: { enabled: true }
+  architecture: { enabled: true }
+  complexity: { enabled: true }
+  lint: { enabled: true }
+  types: { enabled: true }
+  security: { enabled: true }
+  test: { enabled: true }
+  product: { enabled: true }
+  performance: { enabled: true }
+  standards: { enabled: true }
+  external: { enabled: true }
+bundles:
+  - nimbusware-core
+connectors:
+  - semgrep
+nimbusware_runner: local

@@ -1,0 +1,19 @@
+id: typescript-agent-hygiene
+version: 1
+display_name: TypeScript agent hygiene
+description: Barrel exports, config size, env centralization
+tags: [typescript, agent-output]
+checks:
+  - id: ts.config_module_max_loc
+    runner: standards.bundles.typescript_hygiene:check_config_loc
+    default_verdict: critique
+    params:
+      max_loc: 300
+  - id: ts.barrel_exports_only
+    runner: standards.bundles.typescript_hygiene:check_barrel_exports
+    default_verdict: critique
+    params:
+      max_non_export_loc: 30
+  - id: ts.env_centralized
+    runner: standards.bundles.typescript_hygiene:check_env_access
+    default_verdict: warn

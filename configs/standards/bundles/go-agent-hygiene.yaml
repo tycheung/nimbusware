@@ -1,0 +1,14 @@
+id: go-agent-hygiene
+version: 1
+display_name: Go agent hygiene
+description: File size caps and ignored error patterns
+tags: [go, agent-output]
+checks:
+  - id: go.file_max_loc
+    runner: standards.bundles.go_hygiene:check_file_loc
+    default_verdict: critique
+    params:
+      max_loc: 400
+  - id: go.no_ignored_errors
+    runner: standards.bundles.go_hygiene:check_ignored_errors
+    default_verdict: hard_gate

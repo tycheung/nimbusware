@@ -1,0 +1,11 @@
+id: error-handling
+version: 1
+display_name: Error handling
+description: Bare except and empty catch patterns
+tags: [python, typescript]
+checks:
+  - id: err.no_bare_except
+    runner: standards.bundles.error_handling:check_bare_except
+    default_verdict: hard_gate
+    params:
+      path_globs: ["**/*.py"]
