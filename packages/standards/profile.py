@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from standards.registry import load_facade_manifest, load_registry_config
+from standards.registry import load_facade_manifest
 from standards.verdict import VerdictMode
 
 
@@ -112,4 +112,14 @@ def streams_for_enforcement_level(level: int) -> tuple[str, ...]:
         return ("lint", "test", "security", "performance")
     if level <= 9:
         return ("lint", "types", "test", "security", "hygiene", "complexity", "performance")
-    return ("lint", "types", "test", "security", "hygiene", "architecture", "complexity", "performance", "standards")
+    return (
+        "lint",
+        "types",
+        "test",
+        "security",
+        "hygiene",
+        "architecture",
+        "complexity",
+        "performance",
+        "standards",
+    )

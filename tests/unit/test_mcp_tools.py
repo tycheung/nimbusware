@@ -42,6 +42,9 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_launch_eval",
         "nimbusware_swap_role_model",
         "nimbusware_set_discipline",
+        "nimbusware_standards_profile",
+        "nimbusware_standards_report",
+        "nimbusware_standards_run",
         "nimbusware_update_agent_overlay",
     }
 

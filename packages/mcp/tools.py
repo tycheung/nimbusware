@@ -154,17 +154,17 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     if name == "nimbusware_run_tests":
         return _text_result(post_json(f"/runs/{run_id}/maker/run-tests", {}))
     if name == "nimbusware_standards_run":
-        body: dict[str, Any] = {}
+        standards_body: dict[str, Any] = {}
         stream = str(arguments.get("stream") or "").strip()
         bundle = str(arguments.get("bundle") or "").strip()
         profile = str(arguments.get("profile") or "").strip()
         if stream:
-            body["stream"] = stream
+            standards_body["stream"] = stream
         if bundle:
-            body["bundle"] = bundle
+            standards_body["bundle"] = bundle
         if profile:
-            body["profile"] = profile
-        return _text_result(post_json(f"/runs/{run_id}/standards/run", body))
+            standards_body["profile"] = profile
+        return _text_result(post_json(f"/runs/{run_id}/standards/run", standards_body))
     if name == "nimbusware_standards_report":
         return _text_result(get_json(f"/runs/{run_id}/standards/report"))
     if name == "nimbusware_standards_profile":

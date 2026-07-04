@@ -23,7 +23,11 @@ def run_workspace_standards(
                 verdict_overrides=effective.verdict_overrides,
             ),
         )
-    if enforcement_level is not None and enforcement_level >= 5 and "error-handling" not in effective.bundle_ids:
+    if (
+        enforcement_level is not None
+        and enforcement_level >= 5
+        and "error-handling" not in effective.bundle_ids
+    ):
         results.append(run_bundle("error-handling", workspace=workspace))
     passed = all(r.passed for r in results)
     return passed, results

@@ -17,6 +17,7 @@
 | `poetry run nimbusware-maker` | API + Maker web UI (`--quick` for solo dev) |
 | `poetry run nimbusware-git-pr` | Open GitHub PR for a run branch |
 | `poetry run nimbusware-mcp` | Stdio MCP server for IDE integration |
+| `poetry run nimbusware-standards` | Standards stream runner and GitHub workflow export (`export-github-workflow --facade …`) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI (Quick or Full setup) |
 | `poetry run nimbusware-compute-worker` | Compute mesh worker |
 

@@ -36,6 +36,7 @@ Each row below links to a package README when one exists.
 | [`research`](research/) | **Research briefs**, stitch transplant stages, catalog candidates, outcome stats. | Feeds bundle catalog promotion. |
 | [`memory`](memory/) | **Repo-scoped retrieval index** (chunk store, embeddings, FAISS, fleet sync). Subpackages: `store/`, `index/` (`fingerprint.py` skip-rebuild), `fleet/`. | CLIs: `nimbusware-memory-index`, `nimbusware-memory-sync`. |
 | [`compute`](compute/) | **Distributed compute mesh**: node registry, work-unit queue, worker policy. | CLI: `nimbusware-compute-worker`. See [compute-mesh.md](../docs/compute-mesh.md). |
+| [`standards`](standards/) | **CI streams, rule bundles, facades, connectors**: stream runner, agent-hygiene bundles, mart registry, workspace overlay resolver. | CLI: `nimbusware-standards`. Config: `configs/standards/`. ADRs [029](../docs/adr/029-standards-ci-streams.md), [030](../docs/adr/030-standards-bundles-mart.md). |
 
 ---
 
@@ -47,7 +48,7 @@ Each row below links to a package README when one exists.
 | [`projections`](projections/) | **Event → read models**: `builders/` (timeline, theater, maker-progress, context budget, …), `fields/` (display order), `exporters/`. | API and `console` consume builders; no HTTP in builders. |
 | [`iam`](iam/) | **Enterprise IAM**: tenants, API keys, action log for audit export. | Middleware + `iam/store.py`. |
 | [`auth`](auth/) | **Collaborative-chat auth** (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1`. | Individual edition loopback; Enterprise uses IAM keys. |
-| [`mcp`](mcp/) | **Stdio MCP IDE bridge** — classify, patch, interject, chat graph/fork, run status, theater. | CLI: `nimbusware-mcp`. [ide-bridge.md](../docs/ide-bridge.md). |
+| [`mcp`](mcp/) | **Stdio MCP IDE bridge** — classify, patch, interject, chat graph/fork, run status, theater, standards run/report. | CLI: `nimbusware-mcp`. [ide-bridge.md](../docs/ide-bridge.md). |
 
 ---
 

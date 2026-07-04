@@ -21,12 +21,12 @@ from api.routes.enterprise.fleet_deploy_approval import (
 )
 from api.routes.enterprise.fleet_discovery import router as fleet_discovery_router
 from api.routes.enterprise.fleet_enforcement import router as fleet_enforcement_router
-from api.routes.enterprise.fleet_standards import router as fleet_standards_router
 from api.routes.enterprise.fleet_learnings import router as fleet_learnings_router
 from api.routes.enterprise.fleet_memory import router as fleet_memory_router
 from api.routes.enterprise.fleet_mesh import router as fleet_mesh_router
 from api.routes.enterprise.fleet_ops import ollama_sli_router as fleet_ollama_sli_router
 from api.routes.enterprise.fleet_ops import worker_router as fleet_worker_router
+from api.routes.enterprise.fleet_standards import router as fleet_standards_router
 from api.routes.enterprise.fleet_tenant_policies import router as fleet_tenant_policies_router
 from api.routes.enterprise.iam import router as iam_router
 from api.routes.enterprise.model_policy import router as model_policy_router

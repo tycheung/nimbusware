@@ -36,7 +36,7 @@ Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 ./scripts/ci/ci_check.sh --with-integration --with-e2e
 ```
 
-GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); integration and e2e run as separate PR jobs. `tests/unit/test_ci_check_parity.py` guards script drift.
+GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); **stream-guardrails** (architecture + complexity) runs before unit. Integration and e2e run as separate PR jobs. `tests/unit/test_ci_check_parity.py` guards script drift.
 
 Standalone integration (same as `-WithIntegration`):
 
@@ -46,7 +46,7 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
-**Fast gates** (subset before full CI): `poetry run python scripts/ci/fast_gates.py` — ruff, workflow YAML, LOC budget, module size, import boundary, stage registry, workflow registry, and complexity gates.
+**Fast gates** (subset before full CI): `poetry run python scripts/ci/fast_gates.py` — standards architecture + complexity streams (`nimbusware-core` profile).
 
 **Operator presets:** set `NIMBUSWARE_OPERATOR_PRESET` to `offline`, `local-llm`, or `production` in `.env` to apply transport defaults at startup (`packages/env/operator_presets.py`).
 

@@ -30,6 +30,8 @@ poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_all_streams.py --profile nimbusware-core
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_loc_budget_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_loc_report.py

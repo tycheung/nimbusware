@@ -48,9 +48,8 @@ def put_tenant_standards_policy(
     policy = FleetStandardsPolicy(
         tenant_slug=slug,
         min_bundle_ids=tuple(b.strip() for b in body.min_bundle_ids if b.strip()),
-        blocked_origins=tuple(
-            o.strip() for o in body.blocked_origins if o.strip()
-        ) or ("community",),
+        blocked_origins=tuple(o.strip() for o in body.blocked_origins if o.strip())
+        or ("community",),
         required_facade_id=body.required_facade_id.strip(),
     )
     policies = load_fleet_standards_policies()

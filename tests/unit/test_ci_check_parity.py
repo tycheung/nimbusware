@@ -7,6 +7,8 @@ _CI = _REPO / ".github" / "workflows" / "ci.yml"
 _PS1 = _REPO / "scripts" / "ci" / "ci_check.ps1"
 _SH = _REPO / "scripts" / "ci" / "ci_check.sh"
 
+_STREAM_STEPS = ("run_all_streams.py",)
+
 _CRITICAL_STEPS = (
     "rebuild_bundle_faiss_if_stale.py --dry-run",
     "ruff check packages tests",
@@ -30,6 +32,13 @@ _CRITICAL_STEPS = (
 )
 
 
+def test_ci_yml_stream_guardrails_job_includes_streams() -> None:
+    text = _CI.read_text(encoding="utf-8")
+    guard_block = text[text.index("  stream-guardrails:") : text.index("  unit:")]
+    for step in _STREAM_STEPS:
+        assert step in guard_block, f"missing in ci.yml stream-guardrails job: {step}"
+
+
 def test_ci_yml_unit_job_includes_critical_steps() -> None:
     text = _CI.read_text(encoding="utf-8")
     unit_block = text[text.index("  unit:") : text.index("  web:")]
@@ -39,13 +48,13 @@ def test_ci_yml_unit_job_includes_critical_steps() -> None:
 
 def test_ci_check_ps1_includes_critical_steps() -> None:
     text = _PS1.read_text(encoding="utf-8")
-    for step in _CRITICAL_STEPS:
+    for step in (*_STREAM_STEPS, *_CRITICAL_STEPS):
         assert step in text, f"missing in ci_check.ps1: {step}"
 
 
 def test_ci_check_sh_includes_critical_steps() -> None:
     text = _SH.read_text(encoding="utf-8")
-    for step in _CRITICAL_STEPS:
+    for step in (*_STREAM_STEPS, *_CRITICAL_STEPS):
         assert step in text, f"missing in ci_check.sh: {step}"
 
 

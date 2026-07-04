@@ -20,6 +20,9 @@ See [docs/ide-bridge.md](../../docs/ide-bridge.md) for Cursor MCP settings. Requ
 | `nimbusware_patch_from_selection` | Same as `nimbusware_patch` — IDE selection / Problems panel context |
 | `nimbusware_interject` | `POST /v1/runs/{run_id}/interjection-queue` |
 | `nimbusware_run_tests` | `POST /v1/runs/{run_id}/maker/run-tests` |
+| `nimbusware_standards_run` | `POST /v1/runs/{run_id}/standards/run` |
+| `nimbusware_standards_report` | `GET /v1/runs/{run_id}/standards/report` |
+| `nimbusware_standards_profile` | `GET/PUT /v1/runs/{run_id}/standards` |
 | `nimbusware_run_status` | `GET /v1/runs/{run_id}` |
 | `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
 | `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |

@@ -147,7 +147,6 @@ def run_bundle(
         verdict: VerdictMode = overrides.get(cid) or spec.get("default_verdict") or "warn"
         spec = {**spec, "default_verdict": verdict}
         checks.append(run_check_definition(spec, workspace=workspace, default_verdict=verdict))
-    passed = all(c.passed or c.verdict in ("warn", "skip") for c in checks)
     hard_fail = any((not c.passed) and c.verdict in ("hard_gate", "critique") for c in checks)
     return StreamResult(stream_id=f"bundle:{bundle_id}", passed=not hard_fail, checks=checks)
 
@@ -162,7 +161,9 @@ def run_bundles_for_facade(
 
     results: list[StreamResult] = []
     for bundle_id in facade_bundle_ids(facade_id):
-        results.append(run_bundle(bundle_id, workspace=workspace, verdict_overrides=verdict_overrides))
+        results.append(
+            run_bundle(bundle_id, workspace=workspace, verdict_overrides=verdict_overrides)
+        )
     return results
 
 

@@ -26,7 +26,9 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 
 Failures in bandit or pip-audit block merge the same way as pytest coverage floors.
 
-**Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 mirrors applicable subsets of this table (see `tests/unit/test_workspace_ci_parity_contract.py` for the step contract). Terminal runs emit `enforcement.gate` with optional GitHub/GitLab status when `terminal_parity_ci` is active. API: `GET/PUT /v1/runs/{id}/enforcement`; enterprise tenants: `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
+**Standards streams (Jul 2026):** Architecture and complexity checks run via `packages/standards` and block merge in the `stream-guardrails` CI job (`scripts/ci/run_all_streams.py --profile nimbusware-core`). Full monorepo profile (`nimbusware-monorepo`) adds hygiene, lint, types, security, test, product, and performance streams. Attached workspaces run facade bundles during `micro_slice.verify` when `NIMBUSWARE_STANDARDS_PLATFORM=1` (default). API: `GET /v1/standards/registry`, `GET/PUT /v1/runs/{id}/standards`, `POST /v1/runs/{id}/standards/run`. See [ADR 029](adr/029-standards-ci-streams.md) and [ADR 030](adr/030-standards-bundles-mart.md).
+
+**Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 runs applicable workspace parity steps (lint, types, security, tests — not the full monorepo stream set). Terminal runs emit `enforcement.gate` with optional GitHub/GitLab status when `terminal_parity_ci` is active. API: `GET/PUT /v1/runs/{id}/enforcement`; enterprise tenants: `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
 
 ## Operator surfacing
 

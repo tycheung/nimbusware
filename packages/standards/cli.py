@@ -28,9 +28,9 @@ def _workflow_yaml(facade_id: str, *, api_url: str) -> str:
                         "env": {"NIMBUSWARE_API_URL": api_url},
                         "run": (
                             "curl -sfS -X POST "
-                            f"\"${{NIMBUSWARE_API_URL}}/v1/standards/export-run\" "
+                            f'"${{NIMBUSWARE_API_URL}}/v1/standards/export-run" '
                             f"-H 'Content-Type: application/json' "
-                            f"-d '{{\"facade_id\":\"{facade_id}\"}}'"
+                            f'-d \'{{"facade_id":"{facade_id}"}}\''
                         ),
                     },
                 ],
