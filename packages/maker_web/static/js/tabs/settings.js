@@ -2,6 +2,7 @@ import { apiJson, toast } from "../api-client.js";
 import {
   AUTOPILOT_PROFILE_STORAGE_KEY,
   ENFORCEMENT_PROFILE_STORAGE_KEY,
+  STANDARDS_PROFILE_STORAGE_KEY,
   writeStoredProfileId,
 } from "../operator-default-profiles.js";
 import { loadPlatformUserProfiles, populateProfileSelect } from "../ribbon-shared.js";
@@ -101,6 +102,44 @@ export async function mountSettings(root) {
     enforcementSelect.addEventListener("change", () => {
       writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, enforcementSelect.value);
       toast("Default enforcement profile saved", "success");
+    });
+    const levelInput = root.querySelector("#settings-enforcement-level");
+    const profileIdInput = root.querySelector("#settings-enforcement-profile-id");
+    const profileNameInput = root.querySelector("#settings-enforcement-profile-name");
+    root.querySelector("#settings-enforcement-profile-save")?.addEventListener("click", async () => {
+      const profileId = profileIdInput?.value?.trim();
+      if (!profileId) {
+        toast("Profile id is required", "error");
+        return;
+      }
+      const name = profileNameInput?.value?.trim() || profileId;
+      const level = Number(levelInput?.value || 5);
+      try {
+        await apiJson(`/platform/enforcement/user-profiles/${encodeURIComponent(profileId)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, level }),
+        });
+        toast(`Saved strictness profile ${profileId}`, "success");
+        const refreshed = await loadPlatformUserProfiles(apiJson, "/platform/enforcement/user-profiles");
+        populateProfileSelect(enforcementSelect, refreshed);
+        enforcementSelect.value = profileId;
+        writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, profileId);
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+  }
+
+  const standardsSelect = root.querySelector("#settings-default-standards-profile");
+  if (standardsSelect) {
+    const profiles = await loadPlatformUserProfiles(apiJson, "/users/me/standards-profile");
+    populateProfileSelect(standardsSelect, profiles);
+    const savedStandards = localStorage.getItem(STANDARDS_PROFILE_STORAGE_KEY) || "";
+    if (savedStandards) standardsSelect.value = savedStandards;
+    standardsSelect.addEventListener("change", () => {
+      writeStoredProfileId(STANDARDS_PROFILE_STORAGE_KEY, standardsSelect.value);
+      toast("Default standards profile saved", "success");
     });
   }
 

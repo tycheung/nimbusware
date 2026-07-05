@@ -133,6 +133,28 @@ export function settingsShellHtml() {
           <option value="">— none —</option>
         </select>
       </label>
+      <div class="actions">
+        <label>Level 0–10
+          <input type="range" id="settings-enforcement-level" min="0" max="10" value="5" data-testid="maker-settings-enforcement-level" />
+        </label>
+        <label>Profile id
+          <input type="text" id="settings-enforcement-profile-id" placeholder="my-strict" data-testid="maker-settings-enforcement-profile-id" />
+        </label>
+        <label>Display name
+          <input type="text" id="settings-enforcement-profile-name" placeholder="My strict profile" data-testid="maker-settings-enforcement-profile-name" />
+        </label>
+        <button type="button" id="settings-enforcement-profile-save" data-testid="maker-settings-enforcement-profile-save">Save strictness profile</button>
+      </div>
+    </section>
+    <section id="settings-standards-panel" class="panel" data-testid="maker-settings-standards-panel">
+      <h3>Standards profile defaults</h3>
+      <p class="muted">Optional saved standards bundle profile at run start. When unset, language- and rigor-aware defaults apply.</p>
+      <label>
+        Default saved profile
+        <select id="settings-default-standards-profile" data-testid="maker-settings-default-standards-profile">
+          <option value="">— auto defaults —</option>
+        </select>
+      </label>
     </section>
     <section id="settings-memory-library" class="panel" data-testid="maker-settings-memory-library">
       <h3>Memory library</h3>

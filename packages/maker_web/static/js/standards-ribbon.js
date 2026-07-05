@@ -92,6 +92,33 @@ export async function wireStandardsRibbon(root, runId) {
     },
   );
 
+  ribbonControl(root, "data-standards-profile-save", "standards-profile-save-btn")?.addEventListener(
+    "click",
+    async () => {
+      const profileId = window.prompt("Profile id (slug)", "default")?.trim();
+      if (!profileId) return;
+      const name = window.prompt("Display name", profileId)?.trim() || profileId;
+      const facadeId = facadeSelect?.value || null;
+      const bundles = bundleSelect
+        ? Array.from(bundleSelect.selectedOptions).map((o) => o.value)
+        : [];
+      try {
+        await apiJson(`/users/me/standards-profile/${encodeURIComponent(profileId)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, facade_id: facadeId, bundles }),
+        });
+        toast(`Saved standards profile ${profileId}`, "success");
+        const refreshed = await loadStandardsUserProfiles();
+        profiles.splice(0, profiles.length, ...refreshed);
+        populateProfileSelect(profileSelect, profiles);
+        if (profileSelect) profileSelect.value = profileId;
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    },
+  );
+
   ribbonControl(root, "data-standards-run", "standards-run-btn")?.addEventListener(
     "click",
     async () => {
@@ -138,6 +165,7 @@ export function standardsRibbonHtml({ compact = false, rootId = "" } = {}) {
             <option value="">— custom —</option>
           </select>
         </label>
+        <button type="button" data-standards-profile-save data-testid="maker-standards-profile-save">Save profile</button>
         <button type="button" data-standards-save data-testid="maker-standards-save">Apply to run</button>
         <button type="button" data-standards-run data-testid="maker-standards-run">Run now</button>
       </div>

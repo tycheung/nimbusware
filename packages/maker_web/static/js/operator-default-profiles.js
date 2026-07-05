@@ -1,5 +1,6 @@
 export const AUTOPILOT_PROFILE_STORAGE_KEY = "maker_default_autopilot_profile_id";
 export const ENFORCEMENT_PROFILE_STORAGE_KEY = "maker_default_enforcement_profile_id";
+export const STANDARDS_PROFILE_STORAGE_KEY = "maker_default_standards_profile_id";
 export const WORKFLOW_PROFILE_STORAGE_KEY = "maker_default_workflow_profile";
 export const ARCHETYPE_SUBCHOICE_STORAGE_KEY = "maker_archetype_subchoice";
 
@@ -17,6 +18,9 @@ export function applyBootstrapDefaultProfilesIfUnset() {
   }
   if (!readStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY) && d.enforcement_profile_id) {
     writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, d.enforcement_profile_id);
+  }
+  if (!readStoredProfileId(STANDARDS_PROFILE_STORAGE_KEY) && d.standards_profile_id) {
+    writeStoredProfileId(STANDARDS_PROFILE_STORAGE_KEY, d.standards_profile_id);
   }
   if (!readStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY) && d.workflow_profile) {
     writeStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY, d.workflow_profile);
@@ -41,10 +45,15 @@ export function defaultEnforcementProfileId() {
   return readStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY);
 }
 
+export function defaultStandardsProfileId() {
+  return readStoredProfileId(STANDARDS_PROFILE_STORAGE_KEY);
+}
+
 export function defaultOperatorProfileIds() {
   return {
     autopilot: defaultAutopilotProfileId(),
     enforcement: defaultEnforcementProfileId(),
+    standards: defaultStandardsProfileId(),
   };
 }
 
@@ -53,10 +62,11 @@ export function defaultWorkflowProfileId() {
 }
 
 export function applyDefaultProfilesToPayload(payload) {
-  const { autopilot, enforcement } = defaultOperatorProfileIds();
+  const { autopilot, enforcement, standards } = defaultOperatorProfileIds();
   const workflow = defaultWorkflowProfileId();
   if (autopilot) payload.autopilot_profile_id = autopilot;
   if (enforcement) payload.enforcement_profile_id = enforcement;
+  if (standards) payload.standards_profile_id = standards;
   if (workflow) payload.workflow_profile = workflow;
   return payload;
 }
