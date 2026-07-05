@@ -25,6 +25,29 @@ def _is_fragment_key(key: str) -> bool:
     return key.startswith(_FRAGMENT_PREFIX)
 
 
+def _fragment_fallback_roots(repo_root: Path) -> tuple[Path, ...]:
+    from env import find_repo_root
+
+    seen: set[Path] = set()
+    roots: list[Path] = []
+    repo_resolved = repo_root.resolve()
+    for start in (None, Path(__file__).resolve().parents[2]):
+        alt_root = find_repo_root() if start is None else find_repo_root(start=start)
+        key = alt_root.resolve()
+        if key in seen or key == repo_resolved:
+            continue
+        seen.add(key)
+        roots.append(alt_root)
+    return tuple(roots)
+
+
+def _workflow_source_relpath(path: Path, repo_root: Path) -> str:
+    try:
+        return path.relative_to(repo_root.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def workflow_yaml_path_for_key(repo_root: Path, key: str) -> Path:
     k = key.strip()
     if _is_fragment_key(k):
@@ -33,10 +56,14 @@ def workflow_yaml_path_for_key(repo_root: Path, key: str) -> Path:
             msg = f"invalid workflow fragment: {key!r}"
             raise ValueError(msg)
         path = repo_root / "configs" / "workflows" / "fragments" / f"{name}.yaml"
-        if not path.is_file():
-            msg = f"unknown workflow fragment (no file): {key!r}"
-            raise FileNotFoundError(msg)
-        return path
+        if path.is_file():
+            return path
+        for alt_root in _fragment_fallback_roots(repo_root):
+            alt = alt_root / "configs" / "workflows" / "fragments" / f"{name}.yaml"
+            if alt.is_file():
+                return alt
+        msg = f"unknown workflow fragment (no file): {key!r}"
+        raise FileNotFoundError(msg)
     if not k or not _PROFILE_NAME_RE.fullmatch(k):
         msg = f"invalid workflow_profile: {key!r}"
         raise ValueError(msg)
@@ -87,7 +114,7 @@ def collect_workflow_extends_trace(
         raise ValueError(msg)
     if _is_fragment_key(key):
         path = workflow_yaml_path_for_key(repo_root, key)
-        trace = [f"extends:fragment {key} <- {path.relative_to(repo_root.resolve())}"]
+        trace = [f"extends:fragment {key} <- {_workflow_source_relpath(path, repo_root)}"]
     elif materializer is not None and getattr(materializer, "use_db", False):
         trace = [f"extends:db workflows/{key}"]
     else:
@@ -174,8 +201,6 @@ def workflow_profile_dict(
     *,
     materializer: Any | None = None,
 ) -> dict[str, Any]:
-    if materializer is not None and getattr(materializer, "use_db", False):
-        return cast(dict[str, Any], materializer.get_workflow_profile_dict(profile))
     return _resolve_workflow_profile_raw(repo_root, profile, materializer=materializer)
 
 

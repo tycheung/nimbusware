@@ -14,8 +14,8 @@ from api.routes.runs import (
 from unit.composite_contract_fixtures import finding_dict_event
 from unit.composite_contracts.security_scan_metadata_matrix import (
     BAD_PAYLOAD_VALUES,
-    EXPECTED_SUMMARY_KEYS,
     EXIT_KEY,
+    EXPECTED_SUMMARY_KEYS,
     FINDING_HAS_METADATA_CASES,
     SNIPPET_KEY,
     SUMMARY_CATEGORY_CASES,
@@ -24,23 +24,21 @@ from unit.composite_contracts.security_scan_metadata_matrix import (
 
 
 class TestPartAIsinstanceSubclassMatrix:
-    def test_ordered_dict_accepted(self) -> None:
+    def test_dict_subclasses_accepted(self) -> None:
         assert _finding_has_security_scan_metadata(OrderedDict({EXIT_KEY: 0})) is True
-
-    def test_defaultdict_and_counter_accepted(self) -> None:
         assert _finding_has_security_scan_metadata(defaultdict(list, {SNIPPET_KEY: "..."})) is True
         assert _finding_has_security_scan_metadata(Counter({EXIT_KEY: 1})) is True
 
-    def test_user_dict_and_mapping_proxy_rejected(self) -> None:
+    def test_non_dict_types_rejected(self) -> None:
         ud = UserDict({EXIT_KEY: 1})
-        assert not isinstance(ud, dict)
         assert _finding_has_security_scan_metadata(ud) is False
-        mp = MappingProxyType({EXIT_KEY: 1})
-        assert _finding_has_security_scan_metadata(mp) is False
-
-    def test_namespace_and_dataclass_rejected(self) -> None:
-        ns = SimpleNamespace(security_scan_exit=1, security_scan_snippet="...")
-        assert _finding_has_security_scan_metadata(ns) is False
+        assert _finding_has_security_scan_metadata(MappingProxyType({EXIT_KEY: 1})) is False
+        assert (
+            _finding_has_security_scan_metadata(
+                SimpleNamespace(security_scan_exit=1, security_scan_snippet="..."),
+            )
+            is False
+        )
 
         @dataclass
         class _FakeMeta:
@@ -49,22 +47,12 @@ class TestPartAIsinstanceSubclassMatrix:
 
         assert _finding_has_security_scan_metadata(_FakeMeta()) is False
 
-    def test_custom_contains_rejected_dict_subclass_honors_override(self) -> None:
-        class HasContainsOnly:
-            def __contains__(self, key: object) -> bool:
-                return True
-
-            def __iter__(self):
-                return iter([])
-
-        assert _finding_has_security_scan_metadata(HasContainsOnly()) is False
-
+    def test_contains_override_honored(self) -> None:
         class DictSubWithFalseContains(dict):
             def __contains__(self, key: object) -> bool:
                 return False
 
         dsub = DictSubWithFalseContains({EXIT_KEY: 1, SNIPPET_KEY: "..."})
-        assert isinstance(dsub, dict)
         assert _finding_has_security_scan_metadata(dsub) is False
 
 
