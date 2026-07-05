@@ -6,6 +6,7 @@ import { RunDetailPage } from "./pages/RunDetailPage";
 import { ConfigPage } from "./pages/ConfigPage";
 import { OperatorChatPage } from "./pages/OperatorChatPage";
 import { CustomAgentsPage } from "./pages/CustomAgentsPage";
+import { StandardsMartPage } from "./pages/StandardsMartPage";
 import { PreflightPage } from "./pages/PreflightPage";
 import { MetricsPage } from "./pages/MetricsPage";
 import { FleetPage } from "./pages/FleetPage";
@@ -54,6 +55,7 @@ export function App() {
         <a href="/v1/admin/app/config">Config</a>
         <a href="/v1/admin/app/chat">Chat</a>
         <a href="/v1/admin/app/agents">Agents</a>
+        <a href="/v1/admin/app/standards">Standards</a>
         <a href="/v1/admin/app/preflight">Preflight</a>
         <a href="/v1/admin/app/metrics">Metrics</a>
         <a href="/v1/admin/app/hardware">Hardware</a>
@@ -67,6 +69,7 @@ export function App() {
           <ConfigPage path="/config" />
           <OperatorChatPage path="/chat" />
           <CustomAgentsPage path="/agents" />
+          <StandardsMartPage path="/standards" />
           <PreflightPage path="/preflight" />
           <MetricsPage path="/metrics" />
           <HardwarePage path="/hardware" />
