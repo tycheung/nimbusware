@@ -389,6 +389,11 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     enforcement_status = enforcement_status_from_events(events)
     if enforcement_status:
         out["enforcement_status"] = enforcement_status
+    from projections.builders.standards_status import standards_status_from_events
+
+    standards_status = standards_status_from_events(events)
+    if standards_status:
+        out["standards_status"] = standards_status
 
     latest_stage = _latest_slice_stage(events)
     gate_summary = _gate_summary_plain(

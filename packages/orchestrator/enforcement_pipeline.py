@@ -125,6 +125,19 @@ def emit_terminal_enforcement_gate(
         "enforcement_level": profile.level,
         **result.to_metadata(),
     }
+    from standards.profile import standards_platform_enabled
+
+    if standards_platform_enabled():
+        from standards.workspace_standards import run_workspace_standards
+
+        std_ok, std_results = run_workspace_standards(
+            workspace,
+            enforcement_level=profile.level,
+        )
+        meta["standards_passed"] = std_ok
+        meta["standards_streams"] = [r.stream_id for r in std_results]
+        if not std_ok:
+            result.passed = False
     verdict = "PASS" if result.passed else "FAIL"
     attach_external_ci_metadata(
         meta,

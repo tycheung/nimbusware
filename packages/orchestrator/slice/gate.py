@@ -77,6 +77,8 @@ def run_slice_gate_chain(
     unanimous_required: bool = True,
     autopilot_level: int = 5,
     enforcement_profile: EnforcementProfile | None = None,
+    standards_passed: bool | None = None,
+    standards_detail: str = "",
     resolution_callback: Any | None = None,
 ) -> SliceGateChainResult:
     steps: list[SliceGateStep] = []
@@ -134,6 +136,14 @@ def run_slice_gate_chain(
         e_verdict = "PASS" if e2e_passed else "FAIL"
         e_detail = e2e_detail
     steps.append(SliceGateStep("slice.e2e", e_verdict, e_detail))
+
+    if standards_passed is None:
+        s_verdict = "SKIP"
+        s_detail = standards_detail or "standards disabled"
+    else:
+        s_verdict = "PASS" if standards_passed else "FAIL"
+        s_detail = standards_detail or ("ok" if standards_passed else "standards checks failed")
+    steps.append(SliceGateStep("slice.standards", s_verdict, s_detail))
 
     if enforcement_profile is not None:
         steps = list(

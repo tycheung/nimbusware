@@ -256,6 +256,28 @@ def finish_micro_slice_gate_chain(
         )
     diff_for_gate = diff_unified or final_stats.unified_diff
 
+    standards_passed: bool | None = None
+    standards_detail = ""
+    from standards.profile import standards_platform_enabled
+
+    if standards_platform_enabled():
+        from standards.persist import standards_profile_from_rows
+        from standards.workspace_standards import format_standards_log, run_workspace_standards
+
+        std_profile = standards_profile_from_rows(rows, workspace=ws)
+        enforcement = _active_enforcement(rows)
+        std_ok, std_results = run_workspace_standards(
+            ws,
+            profile=std_profile,
+            enforcement_level=enforcement.level if enforcement else None,
+        )
+        standards_passed = std_ok
+        if std_results:
+            standards_detail = format_standards_log(std_results)[:500]
+        if not std_ok:
+            verify_ok = False
+            verify_log = f"{verify_log}\n[standards] {standards_detail}".strip()
+
     gate = orch.record_micro_slice_gate(
         run_id,
         active_plan,
@@ -266,6 +288,8 @@ def finish_micro_slice_gate_chain(
         e2e_detail=e2e_detail,
         diff_unified=diff_for_gate[:8000],
         test_output=test_out[:4000],
+        standards_passed=standards_passed,
+        standards_detail=standards_detail,
     )
     if not gate.passed:
         handle_gate_failure_learning(orch._store, run_id, ws, active_plan, gate)

@@ -122,6 +122,8 @@ class MicroSliceMixin:
             autopilot_level=profile.level,
             enforcement_profile=enforcement,
             resolution_callback=_resolution_cb,
+            standards_passed=standards_passed,
+            standards_detail=standards_detail,
         )
         run_meta = self._run_created_metadata(run_id)
         memory_excerpt = ""

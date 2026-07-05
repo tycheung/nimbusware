@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from standards.profile import StandardsProfile, resolve_standards_profile
-from standards.runner import run_bundle
+from standards.profile import (
+    StandardsProfile,
+    resolve_standards_profile,
+    streams_for_enforcement_level,
+)
+from standards.runner import run_bundle, run_streams
 from standards.stream_results import StreamResult
 
 
@@ -29,6 +33,11 @@ def run_workspace_standards(
         and "error-handling" not in effective.bundle_ids
     ):
         results.append(run_bundle("error-handling", workspace=workspace))
+    if enforcement_level is not None:
+        stream_ids = list(streams_for_enforcement_level(enforcement_level))
+        if stream_ids:
+            for _sid, stream_result in run_streams(stream_ids, workspace=workspace).items():
+                results.append(stream_result)
     passed = all(r.passed for r in results)
     return passed, results
 

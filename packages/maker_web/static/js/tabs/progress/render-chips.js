@@ -7,10 +7,16 @@ import { renderGateSummaryBanner, renderGateFailSteps } from "./findings-gates.j
 import {
   renderEnforcementStatus,
   renderFactoryStatus,
+  renderStandardsStatus,
   renderWorkType,
 } from "./progress_status_chips.js";
 
-export { renderWorkType, renderEnforcementStatus, renderFactoryStatus } from "./progress_status_chips.js";
+export {
+  renderWorkType,
+  renderEnforcementStatus,
+  renderStandardsStatus,
+  renderFactoryStatus,
+} from "./progress_status_chips.js";
 
 export function renderCompactionPreview(last) {
   const panel = document.getElementById("compaction-preview");
@@ -277,6 +283,7 @@ export function renderProgressBody(body) {
   renderPressure(body);
   renderWorkType(body);
   renderEnforcementStatus(body);
+  renderStandardsStatus(body);
   renderFactoryStatus(body);
   renderContextBudget(body);
   renderGateSummaryBanner(body);

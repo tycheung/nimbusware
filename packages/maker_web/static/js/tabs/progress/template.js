@@ -2,9 +2,11 @@
 import { autopilotRibbonHtml } from "../../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../../enforcement-ribbon.js";
 import { interjectionRibbonHtml } from "../../interjection-ribbon.js";
+import { standardsRibbonHtml } from "../../standards-ribbon.js";
 import { deployCockpitHtml } from "../../deploy_cockpit.js";
 
 const ENFORCEMENT_RIBBON = enforcementRibbonHtml({ rootId: "enforcement-ribbon" });
+const STANDARDS_RIBBON = standardsRibbonHtml({ rootId: "standards-ribbon" });
 const AUTOPILOT_RIBBON = autopilotRibbonHtml({ rootId: "autopilot-ribbon" });
 const INTERJECTION_RIBBON = interjectionRibbonHtml({ rootId: "interjection-ribbon" });
 
@@ -48,6 +50,7 @@ export const PROGRESS_MOUNT_HTML = `
       </section>
       ${deployCockpitHtml()}
       ${INTERJECTION_RIBBON}
+      ${STANDARDS_RIBBON}
       ${ENFORCEMENT_RIBBON}
       ${AUTOPILOT_RIBBON}
       <section id="learnings-ribbon" class="panel" data-testid="maker-learnings-ribbon">
@@ -70,6 +73,7 @@ export const PROGRESS_MOUNT_HTML = `
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="factory-status-chip" class="factory-status-chip" hidden data-testid="maker-factory-status"></p>
       <p id="enforcement-chip" class="enforcement-chip" hidden data-testid="maker-enforcement-chip"></p>
+      <p id="standards-chip" class="standards-chip" hidden data-testid="maker-standards-chip"></p>
       <p id="gate-summary-banner" class="gate-summary-banner" hidden></p>
       <span id="role-cost-chip" class="role-cost-chip" hidden></span>
       <p id="handoff-preview" class="handoff-preview" hidden></p>

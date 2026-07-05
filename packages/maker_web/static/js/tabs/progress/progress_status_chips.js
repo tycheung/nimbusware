@@ -39,6 +39,22 @@ export function renderEnforcementStatus(body) {
   chip.textContent = `Enforcement ${es.level} · ${es.name || "Custom"}${gate}`;
 }
 
+export function renderStandardsStatus(body) {
+  const chip = document.getElementById("standards-chip");
+  if (!chip) return;
+  const ss = body.standards_status;
+  if (!ss || (!ss.facade_id && !(ss.bundle_ids || []).length)) {
+    chip.hidden = true;
+    chip.textContent = "";
+    return;
+  }
+  chip.hidden = false;
+  const bundles = (ss.bundle_ids || []).join(", ") || "default bundles";
+  const gate =
+    ss.gate_passed === true ? " · pass" : ss.gate_passed === false ? " · fail" : "";
+  chip.textContent = `Standards ${ss.facade_id || "custom"} · ${bundles}${gate}`;
+}
+
 export function renderFactoryStatus(body) {
   const chip = document.getElementById("factory-status-chip");
   if (!chip) return;

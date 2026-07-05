@@ -16,3 +16,4 @@ def test_maker_tab_modules_present() -> None:
     tabs = _STATIC / "js" / "tabs"
     for name in ("chat", "home", "build", "review", "progress", "models", "settings"):
         assert (tabs / f"{name}.js").is_file()
+    assert (_STATIC / "js" / "standards-ribbon.js").is_file()

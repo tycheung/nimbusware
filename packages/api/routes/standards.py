@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from api.deps import StoreDep
+from api.deps import OrchDep, StoreDep
 from api.errors import problem
 from standards import (
     mart_catalog,
@@ -15,12 +15,17 @@ from standards import (
     run_profile,
     run_stream,
 )
+from standards.persist import persist_run_standards, standards_profile_from_rows
 from standards.profile import (
     StandardsProfile,
     resolve_standards_profile,
     standards_platform_enabled,
 )
 from standards.registry import load_facade_manifest
+from standards.user_profiles import (
+    load_user_standards_profiles,
+    upsert_user_standards_profile,
+)
 from standards.verdict import VerdictMode
 from standards.workspace_standards import run_workspace_standards
 
@@ -62,6 +67,13 @@ class StandardsProfileBody(BaseModel):
     verdict_overrides: dict[str, VerdictMode] = Field(default_factory=dict)
 
 
+class UserStandardsProfileBody(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    facade_id: str | None = None
+    bundles: list[str] = Field(default_factory=list)
+    connectors: list[str] = Field(default_factory=list)
+
+
 @router.get("/standards/registry")
 def get_standards_registry() -> dict[str, Any]:
     if not standards_platform_enabled():
@@ -101,7 +113,7 @@ def get_run_standards(run_id: UUID, store: StoreDep) -> dict[str, Any]:
         from pathlib import Path
 
         workspace = Path(workspace_raw)
-    profile = resolve_standards_profile(workspace=workspace, facade_id=None)
+    profile = standards_profile_from_rows(rows, workspace=workspace)
     return {"run_id": str(run_id), "standards_effective": profile.to_dict()}
 
 
@@ -154,6 +166,7 @@ def put_run_standards(run_id: UUID, body: StandardsProfileBody, store: StoreDep)
         stream_ids=effective.stream_ids,
         verdict_overrides=overrides,
     )
+    persist_run_standards(store, run_id, merged, workspace=workspace)
     return {"run_id": str(run_id), "standards_effective": merged.to_dict()}
 
 
@@ -178,3 +191,32 @@ def post_run_standards_run(run_id: UUID, body: StandardsRunBody, store: StoreDep
         "run_id": str(run_id),
         "results": [r.to_dict() for r in bundle_results],
     }
+
+
+@router.get("/users/me/standards-profile")
+def get_user_standards_profile(orch: OrchDep) -> dict[str, Any]:
+    profiles = load_user_standards_profiles(orch.repo_root)
+    return {"profiles": [p.to_dict() for p in profiles.values()]}
+
+
+@router.put("/users/me/standards-profile/{profile_id}")
+def put_user_standards_profile(
+    profile_id: str,
+    body: UserStandardsProfileBody,
+    orch: OrchDep,
+) -> dict[str, Any]:
+    pid = profile_id.strip()
+    if not pid:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_profile_id", "profile_id is required"),
+        )
+    entry = upsert_user_standards_profile(
+        profile_id=pid,
+        name=body.name,
+        facade_id=body.facade_id,
+        bundle_ids=body.bundles,
+        connector_ids=body.connectors,
+        repo_root=orch.repo_root,
+    )
+    return entry.to_dict()

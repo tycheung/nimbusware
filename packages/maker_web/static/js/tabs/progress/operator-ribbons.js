@@ -2,6 +2,7 @@ import { apiJson, toast } from "../../api-client.js";
 import { wireAutopilotRibbon } from "../../autopilot-ribbon.js";
 import { wireEnforcementRibbon } from "../../enforcement-ribbon.js";
 import { wireInterjectionRibbon } from "../../interjection-ribbon.js";
+import { wireStandardsRibbon } from "../../standards-ribbon.js";
 import {
   refreshCouncilRibbon,
   refreshDevEnvStatus,
@@ -41,6 +42,8 @@ export function wireOperatorRibbons(runId) {
   if (interjectionRibbon) wireInterjectionRibbon(interjectionRibbon, runId);
   const enforcementRibbon = document.getElementById("enforcement-ribbon");
   if (enforcementRibbon) void wireEnforcementRibbon(enforcementRibbon, runId);
+  const standardsRibbon = document.getElementById("standards-ribbon");
+  if (standardsRibbon) void wireStandardsRibbon(standardsRibbon, runId);
   const autopilotRibbon = document.getElementById("autopilot-ribbon");
   if (autopilotRibbon) void wireAutopilotRibbon(autopilotRibbon, runId);
   void refreshDevEnvStatus(runId);
