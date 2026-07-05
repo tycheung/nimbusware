@@ -50,7 +50,11 @@ See [tests/README.md](tests/README.md) for test layout and markers.
 
 **Workflow profiles:** new toggle profiles must use `extends:` with a fragment under [`configs/workflows/fragments/`](configs/workflows/fragments/) rather than inlining YAML in `*_on.yaml` overlays.
 
-**Workflow explainers:** YAML metrics specs live in [`configs/explainers/`](configs/explainers/); standard explainers bootstrap via [`packages/console/explainer_core/bootstrap.py`](packages/console/explainer_core/bootstrap.py).
+**Workflow explainers:** YAML metrics specs live in [`configs/explainers/`](configs/explainers/); standard explainers bootstrap via [`packages/console/explainer_core/bootstrap.py`](packages/console/explainer_core/bootstrap.py). Caption helpers follow the `{slug}_caption_parts` naming convention in [`explainer_caption_parts.py`](packages/console/explainer_core/explainer_caption_parts.py).
+
+**Run profile bootstrap:** autopilot, enforcement, and standards saved profiles apply at run start via [`packages/api/routes/run_profiles.py`](packages/api/routes/run_profiles.py) (shared by chat, run create, and campaigns).
+
+**Projection builders:** prefer [`packages/projections/scan.py`](packages/projections/scan.py) for event metadata walks before adding bespoke reversed loops.
 
 **Operator presets:** set `NIMBUSWARE_OPERATOR_PRESET` to `offline`, `local-llm`, or `production` in `.env` to apply transport defaults at startup (`packages/env/operator_presets.py`).
 
