@@ -16,6 +16,8 @@ _CRITICAL_STEPS = (
     "audit_operator_env.py",
     "run_openapi_ts_ci_gate.py",
     "ruff format --check packages tests",
+    "run_prune_comments_ci_gate.py",
+    "run_trim_docstrings_ci_gate.py",
     "mypy_ci_targets.py",
     "bandit",
     "pip-audit",

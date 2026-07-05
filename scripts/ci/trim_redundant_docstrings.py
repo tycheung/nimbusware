@@ -471,12 +471,38 @@ def _process(path: Path) -> bool:
 
 
 def main() -> int:
+    import sys
+
+    check_only = "--check" in sys.argv
     changed = 0
+    would_change = 0
     for root in _TARGETS:
         if not root.is_dir():
             continue
         for path in sorted(root.rglob("*.py")):
             if "__pycache__" in path.parts:
+                continue
+            if check_only:
+                original = path.read_text(encoding="utf-8")
+                file_changed = False
+                if _process(path):
+                    file_changed = True
+                if _strip_contract_test_docstrings(path):
+                    file_changed = True
+                if _strip_test_module_docstring(path):
+                    file_changed = True
+                if _strip_oneline_class_docstrings(path):
+                    file_changed = True
+                if _strip_oneline_function_docstrings(path):
+                    file_changed = True
+                if _strip_verbose_multiline_docstrings(path):
+                    file_changed = True
+                if _strip_contract_helper_docstrings(path):
+                    file_changed = True
+                if file_changed:
+                    path.write_text(original, encoding="utf-8")
+                    would_change += 1
+                    print(_rel(path))
                 continue
             file_changed = False
             if _process(path):
@@ -496,6 +522,12 @@ def main() -> int:
             if file_changed:
                 changed += 1
                 print(_rel(path))
+    if check_only:
+        if would_change:
+            print(f"trim check: {would_change} file(s) need trimming", file=sys.stderr)
+            return 1
+        print("trim check: ok")
+        return 0
     print(f"trimmed {changed} files")
     return 0
 

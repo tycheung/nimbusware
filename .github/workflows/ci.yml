@@ -88,6 +88,8 @@ jobs:
         run: poetry run ruff format --check packages tests
       - name: Prune verbose comments gate
         run: poetry run python scripts/ci/run_prune_comments_ci_gate.py
+      - name: Trim redundant docstrings gate
+        run: poetry run python scripts/ci/run_trim_docstrings_ci_gate.py
       - name: Explainer export lint gate
         run: poetry run python scripts/ci/run_explainer_export_lint_gate.py
       - name: Workflow explainer init gate
