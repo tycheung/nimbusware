@@ -40,10 +40,11 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [031-context-budget-telemetry.md](adr/031-context-budget-telemetry.md) | Rate-limited `context.budget.sampled` events |
 | [032-incremental-maker-progress-sse.md](adr/032-incremental-maker-progress-sse.md) | Tail event fetch + `progress_delta` SSE |
 | [033-structure-over-source-reads.md](adr/033-structure-over-source-reads.md) | Agent read modes: outline, digest, full |
+| [034-standards-platform-rollout.md](adr/034-standards-platform-rollout.md) | Standards platform v1 rollout (parallel CI, gate, UI) |
 | [029-standards-ci-streams.md](adr/029-standards-ci-streams.md) | Named CI streams, verdict modes, stream runner |
 | [030-standards-bundles-mart.md](adr/030-standards-bundles-mart.md) | Standards bundles, facades, mart tiers |
 
-Tier 3 context-efficiency modules (Pi transplant): `agent_tools` (dual tool output, allowlist, stable prompt file), `projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`. Jul 2026 stack: cache_blocks provider plumbing (ADR 006), progressive compaction L0–L4 (ADR 007), persisted budget samples (ADR 031), incremental Progress SSE (ADR 032), structure-over-source reads (ADR 033). **Standards platform** (Jul 2026): `packages/standards`, `configs/standards/`, merge-blocking `stream-guardrails` job (architecture + complexity), slice verify bundle runs (ADR 029–030).
+Tier 3 context-efficiency (EFF track **complete** Jul 2026): ADRs 006, 007, 031–033; operator reference [reference/context-efficiency.md](reference/context-efficiency.md). **Standards platform v1** (Jul 2026): parallel CI stream matrix + aggregate, `slice.standards` gate, Maker/Admin UI, MCP/fleet (ADRs 029–030, 034). Backlog: local `PLAN_GAP.md`.
 
 ## v1.2 operator docs
 

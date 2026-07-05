@@ -21,7 +21,8 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Package catalog: 
 |----------|-------|
 | [reference/cli.md](reference/cli.md) | CLI commands and ops scripts |
 | [reference/env-vars.md](reference/env-vars.md) | Common environment variables |
-| [reference/context-efficiency.md](reference/context-efficiency.md) | Context budget, compaction, artifacts |
+| [reference/context-efficiency.md](reference/context-efficiency.md) | Context budget, compaction, artifacts (EFF track complete) |
+| [reference/operator-presets.md](reference/operator-presets.md) | Offline / local-llm / production preset bundles |
 | [reference/benchmarks.md](reference/benchmarks.md) | SWE-bench harness, intent→patch snapshots |
 | [reference/launch-eval.md](reference/launch-eval.md) | Workspace quality rubric |
 | [architecture.md](architecture.md) | ADR index |
