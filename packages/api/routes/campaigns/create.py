@@ -9,13 +9,12 @@ from pydantic import BaseModel, Field
 from api.access import assert_project_accessible
 from api.deps import OrchDep, ProjectStoreDep, StoreDep
 from api.errors import problem
+from api.routes.run_profiles import apply_operator_profiles_at_run_start
 from api.routes.runs.create import (
     RunRequirementsBody,
     build_requirements_from_body,
     enforce_discovery_gate,
 )
-from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 router = APIRouter()
 
@@ -75,38 +74,14 @@ def create_campaign(
             from pathlib import Path
 
             ws = Path(project.workspace_path)
-        if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-            applied = apply_user_autopilot_at_run_start(
-                store,
-                run_id,
-                str(body.autopilot_profile_id),
-                repo_root=orch.repo_root,
-            )
-            if applied is None:
-                raise HTTPException(
-                    status_code=422,
-                    detail=problem(
-                        "autopilot_profile_not_found",
-                        "Unknown autopilot profile id",
-                        details={"profile_id": body.autopilot_profile_id},
-                    ),
-                )
-        if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
-            applied_enf = apply_user_enforcement_at_run_start(
-                store,
-                run_id,
-                str(body.enforcement_profile_id),
-                repo_root=orch.repo_root,
-            )
-            if applied_enf is None:
-                raise HTTPException(
-                    status_code=422,
-                    detail=problem(
-                        "enforcement_profile_not_found",
-                        "Unknown enforcement profile id",
-                        details={"profile_id": body.enforcement_profile_id},
-                    ),
-                )
+        apply_operator_profiles_at_run_start(
+            store,
+            run_id,
+            orch=orch,
+            workspace_path=project.workspace_path,
+            autopilot_profile_id=body.autopilot_profile_id,
+            enforcement_profile_id=body.enforcement_profile_id,
+        )
         mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
     except FileNotFoundError as exc:
         raise HTTPException(

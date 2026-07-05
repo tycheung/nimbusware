@@ -46,14 +46,12 @@ __all__ = (
     "start_campaign",
     "start_run",
 )
+from api.routes.run_profiles import apply_operator_profiles_at_run_start
 from api.routes.runs.create import PatchContextBody, RunRequirementsBody
 from maker.intent.classifier import WorkType
 from maker.intent.requirements import build_requirements_artifact
 from maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabled
 from orchestrator.patch_context import normalize_patch_context
-from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
-from standards.persist import apply_standards_after_run_profiles
 
 
 class CreateChatSessionBody(BaseModel):
@@ -106,34 +104,6 @@ class StartChatSessionBody(BaseModel):
     autonomous: bool = True
     align_run_replay: bool = False
     replay_from_seq: int | None = Field(default=None, ge=0)
-
-
-def _apply_standards_profile_at_run_start(
-    store: StoreDep,
-    orch: OrchDep,
-    run_id: UUID,
-    *,
-    workspace_path: str | None,
-    standards_profile_id: str | None,
-) -> None:
-    if not workspace_path or not str(workspace_path).strip():
-        return
-    applied = apply_standards_after_run_profiles(
-        store,
-        run_id,
-        workspace_path=workspace_path,
-        repo_root=orch.repo_root,
-        standards_profile_id=standards_profile_id,
-    )
-    if standards_profile_id and str(standards_profile_id).strip() and applied is None:
-        raise HTTPException(
-            status_code=422,
-            detail=problem(
-                "standards_profile_not_found",
-                "Unknown standards profile id",
-                details={"profile_id": standards_profile_id},
-            ),
-        )
 
 
 class ChatSessionResponse(BaseModel):
@@ -252,43 +222,13 @@ def start_campaign(
         work_type_source=work_type_source,
     )
     ws = Path(project.workspace_path) if project.workspace_path else None
-    if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-        applied = apply_user_autopilot_at_run_start(
-            store,
-            run_id,
-            str(body.autopilot_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "autopilot_profile_not_found",
-                    "Unknown autopilot profile id",
-                    details={"profile_id": body.autopilot_profile_id},
-                ),
-            )
-    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
-        applied_enf = apply_user_enforcement_at_run_start(
-            store,
-            run_id,
-            str(body.enforcement_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied_enf is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "enforcement_profile_not_found",
-                    "Unknown enforcement profile id",
-                    details={"profile_id": body.enforcement_profile_id},
-                ),
-            )
-    _apply_standards_profile_at_run_start(
+    apply_operator_profiles_at_run_start(
         store,
-        orch,
         run_id,
+        orch=orch,
         workspace_path=project.workspace_path,
+        autopilot_profile_id=body.autopilot_profile_id,
+        enforcement_profile_id=body.enforcement_profile_id,
         standards_profile_id=body.standards_profile_id,
     )
     mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
@@ -329,43 +269,13 @@ def start_run(
         work_type=work_type.value,
         work_type_source=work_type_source,
     )
-    if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-        applied = apply_user_autopilot_at_run_start(
-            store,
-            run_id,
-            str(body.autopilot_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "autopilot_profile_not_found",
-                    "Unknown autopilot profile id",
-                    details={"profile_id": body.autopilot_profile_id},
-                ),
-            )
-    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
-        applied_enf = apply_user_enforcement_at_run_start(
-            store,
-            run_id,
-            str(body.enforcement_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied_enf is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "enforcement_profile_not_found",
-                    "Unknown enforcement profile id",
-                    details={"profile_id": body.enforcement_profile_id},
-                ),
-            )
-    _apply_standards_profile_at_run_start(
+    apply_operator_profiles_at_run_start(
         store,
-        orch,
         run_id,
+        orch=orch,
         workspace_path=project.workspace_path,
+        autopilot_profile_id=body.autopilot_profile_id,
+        enforcement_profile_id=body.enforcement_profile_id,
         standards_profile_id=body.standards_profile_id,
     )
     return {"run_id": str(run_id), "campaign_id": None, "dispatch_mode": None}

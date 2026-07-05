@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from api.access import assert_project_accessible
 from api.deps import OrchDep, ProjectStoreDep, StoreDep
 from api.errors import problem
+from api.routes.run_profiles import apply_operator_profiles_at_run_start
 from api.schemas.openapi import (
     CREATE_RUN_RESPONSE_200,
     CREATE_RUN_RESPONSE_422,
@@ -18,10 +19,7 @@ from api.schemas.openapi import (
 from env.settings_catalog import SettingScope
 from env.settings_store import validate_patch
 from maker.intent.requirements import build_requirements_artifact
-from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
-from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
 from orchestrator.workflow.profile import default_workflow_profile
-from standards.persist import apply_standards_after_run_profiles
 
 router = APIRouter()
 
@@ -259,58 +257,14 @@ def create_run(
             status_code=422,
             detail=problem("registry_key_error", str(exc)),
         ) from exc
-    if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-        applied = apply_user_autopilot_at_run_start(
-            store,
-            run_id,
-            str(body.autopilot_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "autopilot_profile_not_found",
-                    "Unknown autopilot profile id",
-                    details={"profile_id": body.autopilot_profile_id},
-                ),
-            )
-    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
-        applied_enf = apply_user_enforcement_at_run_start(
-            store,
-            run_id,
-            str(body.enforcement_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied_enf is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "enforcement_profile_not_found",
-                    "Unknown enforcement profile id",
-                    details={"profile_id": body.enforcement_profile_id},
-                ),
-            )
     workspace_path = project.workspace_path if project is not None else None
-    if workspace_path:
-        applied_std = apply_standards_after_run_profiles(
-            store,
-            run_id,
-            workspace_path=workspace_path,
-            repo_root=orch.repo_root,
-            standards_profile_id=body.standards_profile_id,
-        )
-        if (
-            body.standards_profile_id
-            and str(body.standards_profile_id).strip()
-            and applied_std is None
-        ):
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "standards_profile_not_found",
-                    "Unknown standards profile id",
-                    details={"profile_id": body.standards_profile_id},
-                ),
-            )
+    apply_operator_profiles_at_run_start(
+        store,
+        run_id,
+        orch=orch,
+        workspace_path=workspace_path,
+        autopilot_profile_id=body.autopilot_profile_id,
+        enforcement_profile_id=body.enforcement_profile_id,
+        standards_profile_id=body.standards_profile_id,
+    )
     return {"run_id": str(run_id)}
