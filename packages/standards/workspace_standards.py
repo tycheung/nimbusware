@@ -27,12 +27,6 @@ def run_workspace_standards(
                 verdict_overrides=effective.verdict_overrides,
             ),
         )
-    if (
-        enforcement_level is not None
-        and enforcement_level >= 5
-        and "error-handling" not in effective.bundle_ids
-    ):
-        results.append(run_bundle("error-handling", workspace=workspace))
     if enforcement_level is not None:
         stream_ids = (
             list(effective.stream_ids)
