@@ -23,6 +23,18 @@ bundles:
     path: bundles/performance-n-plus-one.yaml
     origin: core
     min_nimbusware: "0.5.0"
+  oop-solid:
+    path: bundles/oop-solid.yaml
+    origin: curated
+    min_nimbusware: "0.5.0"
+  fp-immutability:
+    path: bundles/fp-immutability.yaml
+    origin: curated
+    min_nimbusware: "0.5.0"
+  nasa-rule-of-ten:
+    path: bundles/nasa-rule-of-ten.yaml
+    origin: curated
+    min_nimbusware: "0.5.0"
 
 facades:
   python-fastapi:
@@ -42,6 +54,18 @@ connectors:
   semgrep:
     path: connectors/semgrep.yaml
     origin: core
+    stream: external
+  sonarqube:
+    path: connectors/sonarqube.yaml
+    origin: curated
+    stream: external
+  codeql:
+    path: connectors/codeql.yaml
+    origin: curated
+    stream: external
+  snyk:
+    path: connectors/snyk.yaml
+    origin: curated
     stream: external
 
 tiers:

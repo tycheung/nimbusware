@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -39,4 +41,38 @@ def check_ignored_errors(*, workspace: Path, params: dict[str, Any]) -> CheckRes
         verdict="hard_gate",
         detail="; ".join(hits[:20]) or "ok",
         exit_code=0 if not hits else 1,
+    )
+
+
+def check_errcheck(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
+    if not (workspace / "go.mod").is_file():
+        return CheckResult(
+            check_id="go.errcheck",
+            passed=True,
+            verdict="skip",
+            detail="no go.mod",
+            exit_code=0,
+        )
+    errcheck = shutil.which("errcheck")
+    if errcheck is None:
+        return CheckResult(
+            check_id="go.errcheck",
+            passed=True,
+            verdict="warn",
+            detail="errcheck not installed",
+            exit_code=0,
+        )
+    proc = subprocess.run(
+        [errcheck, "./..."],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+    )
+    detail = ((proc.stdout or "") + (proc.stderr or "")).strip()[:4000]
+    return CheckResult(
+        check_id="go.errcheck",
+        passed=proc.returncode == 0,
+        verdict="hard_gate",
+        detail=detail or "ok",
+        exit_code=proc.returncode,
     )

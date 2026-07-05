@@ -1,0 +1,11 @@
+id: oop-solid
+version: 1
+display_name: OOP / SOLID heuristics
+description: Class size caps for agent-generated OOP code
+tags: [oop, python]
+checks:
+  - id: oop.class_max_loc
+    runner: standards.bundles.oop:check_class_loc
+    default_verdict: critique
+    params:
+      max_class_loc: 200

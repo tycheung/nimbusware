@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import fnmatch
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -70,4 +72,67 @@ def check_env_access(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
         verdict="warn",
         detail="; ".join(hits[:20]) or "ok",
         exit_code=0 if not hits else 1,
+    )
+
+
+def check_eslint(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
+    if not (workspace / "package.json").is_file():
+        return CheckResult(
+            check_id="ts.eslint",
+            passed=True,
+            verdict="skip",
+            detail="no package.json",
+            exit_code=0,
+        )
+    eslint = shutil.which("npx") or shutil.which("eslint")
+    if eslint is None:
+        return CheckResult(
+            check_id="ts.eslint",
+            passed=True,
+            verdict="warn",
+            detail="eslint not available",
+            exit_code=0,
+        )
+    cmd = ["npx", "--yes", "eslint", ".", "--max-warnings", "0"]
+    proc = subprocess.run(cmd, cwd=workspace, capture_output=True, text=True)
+    detail = ((proc.stdout or "") + (proc.stderr or "")).strip()[:4000]
+    return CheckResult(
+        check_id="ts.eslint",
+        passed=proc.returncode == 0,
+        verdict="critique",
+        detail=detail or "ok",
+        exit_code=proc.returncode,
+    )
+
+
+def check_tsc(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
+    if not (workspace / "package.json").is_file():
+        return CheckResult(
+            check_id="ts.tsc",
+            passed=True,
+            verdict="skip",
+            detail="no package.json",
+            exit_code=0,
+        )
+    if not (workspace / "tsconfig.json").is_file():
+        return CheckResult(
+            check_id="ts.tsc",
+            passed=True,
+            verdict="skip",
+            detail="no tsconfig.json",
+            exit_code=0,
+        )
+    proc = subprocess.run(
+        ["npx", "--yes", "tsc", "--noEmit"],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+    )
+    detail = ((proc.stdout or "") + (proc.stderr or "")).strip()[:4000]
+    return CheckResult(
+        check_id="ts.tsc",
+        passed=proc.returncode == 0,
+        verdict="hard_gate",
+        detail=detail or "ok",
+        exit_code=proc.returncode,
     )

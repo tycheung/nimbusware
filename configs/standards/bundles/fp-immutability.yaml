@@ -1,0 +1,9 @@
+id: fp-immutability
+version: 1
+display_name: FP immutability hints
+description: Discourage in-place array mutation in TypeScript
+tags: [fp, typescript]
+checks:
+  - id: fp.no_array_mutation
+    runner: standards.bundles.fp:check_no_array_mutation
+    default_verdict: warn

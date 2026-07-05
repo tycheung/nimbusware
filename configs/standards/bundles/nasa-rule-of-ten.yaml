@@ -1,0 +1,11 @@
+id: nasa-rule-of-ten
+version: 1
+display_name: NASA JPL Rule of Ten (function size)
+description: Function LOC cap aligned with NASA-10 guidance
+tags: [nasa, python]
+checks:
+  - id: nasa.function_max_loc
+    runner: standards.bundles.nasa:check_function_loc
+    default_verdict: hard_gate
+    params:
+      max_function_loc: 60

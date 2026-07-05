@@ -17,3 +17,9 @@ checks:
   - id: ts.env_centralized
     runner: standards.bundles.typescript_hygiene:check_env_access
     default_verdict: warn
+  - id: ts.eslint
+    runner: standards.bundles.typescript_hygiene:check_eslint
+    default_verdict: critique
+  - id: ts.tsc
+    runner: standards.bundles.typescript_hygiene:check_tsc
+    default_verdict: hard_gate

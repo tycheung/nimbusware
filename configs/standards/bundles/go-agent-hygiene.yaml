@@ -12,3 +12,6 @@ checks:
   - id: go.no_ignored_errors
     runner: standards.bundles.go_hygiene:check_ignored_errors
     default_verdict: hard_gate
+  - id: go.errcheck
+    runner: standards.bundles.go_hygiene:check_errcheck
+    default_verdict: hard_gate

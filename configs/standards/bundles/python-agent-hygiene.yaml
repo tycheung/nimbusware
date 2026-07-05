@@ -25,3 +25,13 @@ checks:
     default_verdict: warn
     params:
       allow_globs: ["**/env.py", "**/settings.py", "**/config/**"]
+  - id: py.no_orphan_modules
+    runner: standards.bundles.python_hygiene:check_orphan_modules
+    default_verdict: critique
+    params:
+      package_roots: ["src", "app", "packages"]
+  - id: py.mypy_scoped
+    runner: standards.bundles.python_hygiene:check_mypy_on_paths
+    default_verdict: critique
+    params:
+      path_globs: ["**/*.py"]
