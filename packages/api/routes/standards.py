@@ -21,6 +21,7 @@ from standards.profile import (
     resolve_standards_profile,
     standards_platform_enabled,
 )
+from standards.preset_defaults import preset_defaults_summary
 from standards.registry import load_facade_manifest
 from standards.user_profiles import (
     load_user_standards_profiles,
@@ -85,14 +86,28 @@ def get_standards_registry() -> dict[str, Any]:
 
 
 @router.get("/standards/presets/{preset_id}")
-def get_standards_preset(preset_id: str) -> dict[str, Any]:
+def get_standards_preset(preset_id: str, level: int = 5) -> dict[str, Any]:
     manifest = load_facade_manifest(preset_id)
     if manifest is None:
         raise HTTPException(
             status_code=404,
             detail=problem("preset_not_found", f"standards preset not found: {preset_id}"),
         )
-    return manifest
+    return {
+        **manifest,
+        "defaults": preset_defaults_summary(preset_id, level),
+    }
+
+
+@router.get("/standards/presets/{preset_id}/defaults")
+def get_standards_preset_defaults(preset_id: str, level: int = 5) -> dict[str, Any]:
+    manifest = load_facade_manifest(preset_id)
+    if manifest is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("preset_not_found", f"standards preset not found: {preset_id}"),
+        )
+    return preset_defaults_summary(preset_id, level)
 
 
 @router.get("/runs/{run_id}/standards")
@@ -165,6 +180,7 @@ def put_run_standards(run_id: UUID, body: StandardsProfileBody, store: StoreDep)
         connector_ids=tuple(connector_ids),
         stream_ids=effective.stream_ids,
         verdict_overrides=overrides,
+        custom=True,
     )
     persist_run_standards(store, run_id, merged, workspace=workspace)
     return {"run_id": str(run_id), "standards_effective": merged.to_dict()}

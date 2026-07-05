@@ -21,6 +21,7 @@ from maker.intent.requirements import build_requirements_artifact
 from orchestrator.profiles.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from orchestrator.profiles.user_enforcement_profiles import apply_user_enforcement_at_run_start
 from orchestrator.workflow.profile import default_workflow_profile
+from standards.persist import apply_standards_after_run_profiles
 
 router = APIRouter()
 
@@ -127,6 +128,11 @@ class CreateRunBody(BaseModel):
         default=None,
         max_length=120,
         description="Saved operator enforcement profile to apply at run start",
+    )
+    standards_profile_id: str | None = Field(
+        default=None,
+        max_length=120,
+        description="Saved standards profile to apply at run start",
     )
     consumer_archetype: str | None = Field(default=None, max_length=64)
 
@@ -283,6 +289,24 @@ def create_run(
                     "enforcement_profile_not_found",
                     "Unknown enforcement profile id",
                     details={"profile_id": body.enforcement_profile_id},
+                ),
+            )
+    workspace_path = project.workspace_path if project is not None else None
+    if workspace_path:
+        applied_std = apply_standards_after_run_profiles(
+            store,
+            run_id,
+            workspace_path=workspace_path,
+            repo_root=orch.repo_root,
+            standards_profile_id=body.standards_profile_id,
+        )
+        if body.standards_profile_id and str(body.standards_profile_id).strip() and applied_std is None:
+            raise HTTPException(
+                status_code=422,
+                detail=problem(
+                    "standards_profile_not_found",
+                    "Unknown standards profile id",
+                    details={"profile_id": body.standards_profile_id},
                 ),
             )
     return {"run_id": str(run_id)}
