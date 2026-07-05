@@ -24,7 +24,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | `api-client.js`, `sse-client.js`, `app-shell.js`, `tab-loader.js` | Shell, routing, API |
 | `archetype-picker.js` | First-run Safe Coding vs Engineer preset |
 | `operator-default-profiles.js` | Default autopilot/enforcement/workflow ids |
-| `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js` | Progress + Chat operator ribbons (interjection prefix chips) |
+| `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `standards-ribbon.js`, `ribbon-shared.js` | Progress + Chat operator ribbons (interjection prefix chips) |
 | `deploy_cockpit.js`, `chat_mention_ui.js`, `chat_join.js` | Deploy cockpit (validate + approve); `@` discipline autocomplete + routing |
 | `launch-scorecard.js` | Shared launch scorecard renderer + per-surface launch summary chips |
 | `configs/workflows/safe_coding_campaign_fullstack.yaml` | Safe Coding + full-stack campaign merge (server-side) |

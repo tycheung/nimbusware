@@ -36,7 +36,7 @@ Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 ./scripts/ci/ci_check.sh --with-integration --with-e2e
 ```
 
-GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); **stream-guardrails** (architecture + complexity) runs before unit. Integration and e2e run as separate PR jobs. `tests/unit/test_ci_check_parity.py` guards script drift.
+GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); **standards streams** (matrix per stream + aggregate) run before unit. Integration and e2e run as separate PR jobs. `tests/unit/test_ci_check_parity.py` guards script drift.
 
 Standalone integration (same as `-WithIntegration`):
 
