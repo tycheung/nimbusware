@@ -1,0 +1,9 @@
+id: codeql
+display_name: CodeQL
+requires:
+  env: [CODEQL_TOKEN]
+  binaries: []
+modes: [github_advanced_security]
+default_verdict: warn
+stream: security
+runner: standards.connectors.codeql:run_codeql_check

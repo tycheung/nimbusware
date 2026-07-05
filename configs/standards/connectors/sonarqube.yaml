@@ -1,0 +1,9 @@
+id: sonarqube
+display_name: SonarQube
+requires:
+  env: [SONAR_TOKEN, SONAR_HOST_URL]
+  binaries: []
+modes: [quality_gate]
+default_verdict: warn
+stream: security
+runner: standards.connectors.sonarqube:run_sonarqube_check

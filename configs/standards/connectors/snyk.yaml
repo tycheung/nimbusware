@@ -1,0 +1,9 @@
+id: snyk
+display_name: Snyk
+requires:
+  env: [SNYK_TOKEN]
+  binaries: []
+modes: [dependency_scan]
+default_verdict: warn
+stream: security
+runner: standards.connectors.snyk:run_snyk_check

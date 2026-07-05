@@ -84,6 +84,15 @@ streams:
       - id: semgrep.ci
         default_verdict: warn
         runner: standards.connectors.semgrep:run_semgrep_check
+      - id: sonarqube.scan
+        default_verdict: warn
+        runner: standards.connectors.sonarqube:run_sonarqube_check
+      - id: codeql.scan
+        default_verdict: warn
+        runner: standards.connectors.codeql:run_codeql_check
+      - id: snyk.test
+        default_verdict: warn
+        runner: standards.connectors.snyk:run_snyk_check
   test:
     label: Tests and coverage
     checks:
