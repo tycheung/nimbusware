@@ -26,7 +26,7 @@ poetry run python scripts/ci/run_prune_comments_ci_gate.py
 poetry run python scripts/ci/run_explainer_export_lint_gate.py
 poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
 poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
-poetry run python scripts/ci/run_all_streams.py --profile nimbusware-core
+poetry run python scripts/ci/run_all_streams.py --profile nimbusware-monorepo
 poetry run python scripts/ci/run_loc_budget_ci_gate.py
 mapfile -t _mypy_targets < <(poetry run python scripts/ci/mypy_ci_targets.py)
 poetry run mypy "${_mypy_targets[@]}"

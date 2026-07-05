@@ -17,7 +17,20 @@ on:
 # Optional fast pre-check bundle: poetry run python scripts/ci/fast_gates.py
 
 jobs:
-  stream-guardrails:
+  streams:
+    strategy:
+      fail-fast: false
+      matrix:
+        stream:
+          - hygiene
+          - architecture
+          - complexity
+          - lint
+          - types
+          - security
+          - test
+          - product
+          - performance
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -25,11 +38,34 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
-      - name: Architecture and complexity streams
-        run: poetry run python scripts/ci/run_all_streams.py --profile nimbusware-core
+      - name: Run standards stream
+        run: poetry run python scripts/ci/run_stream.py --stream ${{ matrix.stream }} --json > stream-result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stream-${{ matrix.stream }}
+          path: stream-result.json
+          retention-days: 3
+
+  stream-aggregate:
+    needs: [streams]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stream-*
+          path: stream-results
+          merge-multiple: true
+      - name: Aggregate stream results
+        run: poetry run python scripts/ci/aggregate_stream_results.py stream-results/*.json
 
   unit:
-    needs: [stream-guardrails]
+    needs: [stream-aggregate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
