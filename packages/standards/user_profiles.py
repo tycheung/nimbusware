@@ -115,4 +115,5 @@ def resolve_user_standards_profile(
         connector_ids=tuple(connectors),
         stream_ids=base.stream_ids,
         verdict_overrides=base.verdict_overrides,
+        custom=True,
     )

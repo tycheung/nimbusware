@@ -16,6 +16,7 @@ class StandardsProfile:
     connector_ids: tuple[str, ...] = ()
     stream_ids: tuple[str, ...] = ()
     verdict_overrides: dict[str, VerdictMode] = field(default_factory=dict)
+    custom: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -25,6 +26,7 @@ class StandardsProfile:
             "connector_ids": list(self.connector_ids),
             "stream_ids": list(self.stream_ids),
             "verdict_overrides": dict(self.verdict_overrides),
+            "custom": self.custom,
         }
 
 
@@ -69,33 +71,100 @@ def resolve_standards_profile(
     workspace: Path | None = None,
     facade_id: str | None = None,
     profile_id: str = "default",
+    enforcement_level: int | None = None,
+    user_profile_id: str | None = None,
+    repo_root: Path | None = None,
 ) -> StandardsProfile:
+    from standards.preset_defaults import (
+        default_bundle_ids_for_preset,
+        default_connector_ids_for_preset,
+        default_stream_ids_for_preset,
+        infer_facade_from_workspace,
+        workspace_standards_is_custom,
+    )
+
+    if user_profile_id and str(user_profile_id).strip():
+        from standards.user_profiles import resolve_user_standards_profile
+
+        user_resolved = resolve_user_standards_profile(
+            str(user_profile_id).strip(),
+            repo_root=repo_root,
+        )
+        if user_resolved is not None:
+            return StandardsProfile(
+                profile_id=user_resolved.profile_id,
+                facade_id=user_resolved.facade_id,
+                bundle_ids=user_resolved.bundle_ids,
+                connector_ids=user_resolved.connector_ids,
+                stream_ids=user_resolved.stream_ids,
+                verdict_overrides=user_resolved.verdict_overrides,
+                custom=True,
+            )
+
     overlay: dict[str, Any] = {}
     if workspace is not None:
         overlay = read_workspace_standards_overlay(workspace)
+    overlay_custom = overlay.get("custom") is True or workspace_standards_is_custom(workspace)
     effective_facade = str(overlay.get("facade_id") or facade_id or "").strip() or None
-    bundles = facade_bundle_ids(effective_facade) if effective_facade else []
-    extra = overlay.get("bundles")
-    if isinstance(extra, list):
-        bundles = list(dict.fromkeys([*bundles, *[str(b) for b in extra]]))
-    streams = facade_stream_ids(effective_facade) if effective_facade else []
-    overrides_raw = overlay.get("verdict_overrides")
-    overrides: dict[str, VerdictMode] = {}
-    if isinstance(overrides_raw, dict):
-        for k, v in overrides_raw.items():
-            if v in ("skip", "warn", "critique", "hard_gate"):
-                overrides[str(k)] = v
-    connectors_raw = overlay.get("connectors")
-    connectors: list[str] = []
-    if isinstance(connectors_raw, list):
-        connectors = [str(c) for c in connectors_raw]
+    if effective_facade is None and workspace is not None:
+        effective_facade = infer_facade_from_workspace(workspace)
+
+    if overlay_custom:
+        extra = overlay.get("bundles")
+        if isinstance(extra, list) and extra:
+            bundles = [str(b) for b in extra]
+        else:
+            bundles = facade_bundle_ids(effective_facade) if effective_facade else []
+        streams = facade_stream_ids(effective_facade) if effective_facade else []
+        overrides_raw = overlay.get("verdict_overrides")
+        overrides: dict[str, VerdictMode] = {}
+        if isinstance(overrides_raw, dict):
+            for k, v in overrides_raw.items():
+                if v in ("skip", "warn", "critique", "hard_gate"):
+                    overrides[str(k)] = v
+        connectors_raw = overlay.get("connectors")
+        connectors: list[str] = []
+        if isinstance(connectors_raw, list):
+            connectors = [str(c) for c in connectors_raw]
+        return StandardsProfile(
+            profile_id=profile_id,
+            facade_id=effective_facade,
+            bundle_ids=tuple(bundles),
+            connector_ids=tuple(connectors),
+            stream_ids=tuple(streams),
+            verdict_overrides=overrides,
+            custom=True,
+        )
+
+    level = 5 if enforcement_level is None else max(0, min(10, enforcement_level))
+    if effective_facade:
+        bundles = list(
+            default_bundle_ids_for_preset(
+                effective_facade,
+                level,
+                repo_root=repo_root,
+            ),
+        )
+        connectors = list(
+            default_connector_ids_for_preset(
+                effective_facade,
+                level,
+                repo_root=repo_root,
+            ),
+        )
+        streams = list(default_stream_ids_for_preset(effective_facade, level))
+    else:
+        bundles = []
+        connectors = []
+        streams = list(streams_for_enforcement_level(level))
     return StandardsProfile(
         profile_id=profile_id,
         facade_id=effective_facade,
         bundle_ids=tuple(bundles),
         connector_ids=tuple(connectors),
         stream_ids=tuple(streams),
-        verdict_overrides=overrides,
+        verdict_overrides={},
+        custom=False,
     )
 
 

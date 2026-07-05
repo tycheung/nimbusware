@@ -1,0 +1,64 @@
+# Default standards bundles/connectors per facade preset and enforcement level (0–10).
+# User-saved profiles and workspace overlays with custom: true are never overridden.
+
+languages:
+  python:
+    memory_safe: false
+    stacks: [python]
+  typescript:
+    memory_safe: true
+    stacks: [node]
+  go:
+    memory_safe: true
+    stacks: [go]
+  rust:
+    memory_safe: true
+    stacks: [rust]
+
+# Bundle applicability: min_level gates rigor; language + memory_safe filter paradigm rules.
+bundle_rules:
+  python-agent-hygiene:
+    min_level: 3
+    languages: [python]
+  typescript-agent-hygiene:
+    min_level: 3
+    languages: [typescript]
+  go-agent-hygiene:
+    min_level: 3
+    languages: [go]
+  error-handling:
+    min_level: 5
+    languages: [python, typescript, go]
+  performance-n-plus-one:
+    min_level: 6
+    languages: [python, go]
+  oop-solid:
+    min_level: 7
+    languages: [python]
+  fp-immutability:
+    min_level: 7
+    languages: [typescript]
+  nasa-rule-of-ten:
+    min_level: 9
+    languages: [python]
+    skip_if_memory_safe: true
+  nimbusware-core:
+    min_level: 8
+    languages: [python]
+
+connector_rules:
+  semgrep:
+    min_level: 8
+    languages: [python, typescript, go]
+
+facades:
+  python-fastapi:
+    language: python
+  typescript-react:
+    language: typescript
+  go-service:
+    language: go
+  nimbusware-monorepo:
+    language: python
+    extra_bundles:
+      - nimbusware-core

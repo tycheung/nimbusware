@@ -26,6 +26,8 @@ def write_workspace_standards_overlay(workspace: Path, profile: StandardsProfile
         payload["connectors"] = list(profile.connector_ids)
     if profile.verdict_overrides:
         payload["verdict_overrides"] = dict(profile.verdict_overrides)
+    if profile.custom:
+        payload["custom"] = True
     path = overlay_dir / "standards.yaml"
     path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
 
@@ -55,6 +57,92 @@ def persist_run_standards(
     return profile
 
 
+def apply_standards_at_run_start(
+    store: Any,
+    run_id: UUID | str,
+    *,
+    workspace: Path | None = None,
+    repo_root: Path | None = None,
+    user_profile_id: str | None = None,
+    enforcement_level: int = 5,
+) -> StandardsProfile | None:
+    from standards.preset_defaults import workspace_standards_is_custom
+    from standards.profile import resolve_standards_profile, standards_platform_enabled
+
+    if not standards_platform_enabled():
+        return None
+    if workspace is None or not workspace.is_dir():
+        return None
+    if user_profile_id and str(user_profile_id).strip():
+        profile = resolve_standards_profile(
+            workspace=workspace,
+            user_profile_id=str(user_profile_id).strip(),
+            enforcement_level=enforcement_level,
+            repo_root=repo_root,
+        )
+        return persist_run_standards(
+            store,
+            run_id,
+            profile,
+            workspace=workspace,
+            write_overlay=True,
+        )
+    if workspace_standards_is_custom(workspace):
+        profile = resolve_standards_profile(workspace=workspace, repo_root=repo_root)
+        return persist_run_standards(
+            store,
+            run_id,
+            profile,
+            workspace=workspace,
+            write_overlay=True,
+        )
+    profile = resolve_standards_profile(
+        workspace=workspace,
+        enforcement_level=enforcement_level,
+        repo_root=repo_root,
+    )
+    return persist_run_standards(
+        store,
+        run_id,
+        profile,
+        workspace=workspace,
+        write_overlay=False,
+    )
+
+
+def apply_standards_after_run_profiles(
+    store: Any,
+    run_id: UUID | str,
+    *,
+    workspace_path: str | None,
+    repo_root: Path | None = None,
+    standards_profile_id: str | None = None,
+) -> StandardsProfile | None:
+    from orchestrator.profiles.enforcement_profiles import enforcement_level_from_rows
+    from standards.user_profiles import resolve_user_standards_profile
+
+    if standards_profile_id and str(standards_profile_id).strip():
+        if (
+            resolve_user_standards_profile(
+                str(standards_profile_id).strip(),
+                repo_root=repo_root,
+            )
+            is None
+        ):
+            return None
+    rows = store.list_run_events(str(run_id))
+    level = enforcement_level_from_rows(rows) if rows else 5
+    workspace = Path(workspace_path) if workspace_path and str(workspace_path).strip() else None
+    return apply_standards_at_run_start(
+        store,
+        run_id,
+        workspace=workspace,
+        repo_root=repo_root,
+        user_profile_id=standards_profile_id,
+        enforcement_level=level,
+    )
+
+
 def latest_standards_block_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     for row in reversed(rows):
         pl = mapping_or_empty(row.get("payload"))
@@ -70,12 +158,19 @@ def standards_profile_from_rows(
     rows: list[dict[str, Any]],
     *,
     workspace: Path | None = None,
+    repo_root: Path | None = None,
 ) -> StandardsProfile:
+    from orchestrator.profiles.enforcement_profiles import enforcement_level_from_rows
     from standards.profile import resolve_standards_profile
 
     block = latest_standards_block_from_rows(rows)
     if block is None:
-        return resolve_standards_profile(workspace=workspace)
+        level = enforcement_level_from_rows(rows) if rows else 5
+        return resolve_standards_profile(
+            workspace=workspace,
+            enforcement_level=level,
+            repo_root=repo_root,
+        )
     return StandardsProfile(
         profile_id=str(block.get("profile_id") or "default"),
         facade_id=str(block.get("facade_id") or "").strip() or None,
@@ -87,4 +182,5 @@ def standards_profile_from_rows(
             for k, v in (block.get("verdict_overrides") or {}).items()
             if v in ("skip", "warn", "critique", "hard_gate")
         },
+        custom=bool(block.get("custom", True)),
     )

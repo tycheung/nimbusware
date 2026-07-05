@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from standards.preset_defaults import preset_defaults_summary
 from standards.profile import (
     StandardsProfile,
     facade_bundle_ids,
@@ -44,6 +45,7 @@ __all__ = [
     "load_registry_config",
     "load_streams_config",
     "mart_catalog",
+    "preset_defaults_summary",
     "profile_stream_ids",
     "read_workspace_standards_overlay",
     "resolve_standards_profile",

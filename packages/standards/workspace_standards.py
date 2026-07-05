@@ -34,7 +34,11 @@ def run_workspace_standards(
     ):
         results.append(run_bundle("error-handling", workspace=workspace))
     if enforcement_level is not None:
-        stream_ids = list(streams_for_enforcement_level(enforcement_level))
+        stream_ids = (
+            list(effective.stream_ids)
+            if effective.stream_ids
+            else list(streams_for_enforcement_level(enforcement_level))
+        )
         if stream_ids:
             for _sid, stream_result in run_streams(stream_ids, workspace=workspace).items():
                 results.append(stream_result)
