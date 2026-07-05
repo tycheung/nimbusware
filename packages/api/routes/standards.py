@@ -16,12 +16,12 @@ from standards import (
     run_stream,
 )
 from standards.persist import persist_run_standards, standards_profile_from_rows
+from standards.preset_defaults import preset_defaults_summary
 from standards.profile import (
     StandardsProfile,
     resolve_standards_profile,
     standards_platform_enabled,
 )
-from standards.preset_defaults import preset_defaults_summary
 from standards.registry import load_facade_manifest
 from standards.user_profiles import (
     load_user_standards_profiles,
