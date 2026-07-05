@@ -1,4 +1,4 @@
-from console.explainer_core.generic_workflow_explainer import install_explainer_metrics
+from console.explainer_core.bootstrap import bootstrap_standard_explainer
 from console.explainer_core.universal_critique_counts import (
     universal_critique_top_level_enabled_false_count as _universal_critique_top_level_enabled_false_count,
 )
@@ -22,12 +22,6 @@ from console.explainer_core.universal_critique_counts import (
 )
 from console.explainer_core.universal_critique_counts import (
     universal_critique_yaml_value_nonempty as _universal_critique_yaml_value_nonempty,
-)
-from console.explainer_core.workflow_explainer_registry import (
-    install_package_workflow_explainer_exports,
-)
-from console.explainer_core.workflow_exports import (
-    install_named_workflow_explainer_exports,
 )
 from console.workflow_explainers.universal_critique.captions import (
     _UNIVERSAL_CRITIQUE_STAGE_KEYS_CAP,
@@ -53,8 +47,4 @@ from console.workflow_explainers.universal_critique.payload import (
     universal_critique_workflow_explainer_payload,
 )
 
-install_explainer_metrics("universal_critique", globals())
-
-install_package_workflow_explainer_exports(
-    globals(), "universal_critique"
-)  # workflow-explainer-exports
+bootstrap_standard_explainer("universal_critique", globals())
