@@ -24,6 +24,7 @@ poetry run ruff format --check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_prune_comments_ci_gate.py
 poetry run python scripts/ci/run_trim_docstrings_ci_gate.py
+poetry run python scripts/ci/run_composite_test_size_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_explainer_export_lint_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

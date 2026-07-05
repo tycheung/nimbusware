@@ -9,6 +9,10 @@ from orchestrator.integrator.gate import (
     load_integrator_min_score_from_thresholds,
     parse_integrator_gate_min_score_to_pass,
 )
+from unit.composite_contracts.integrator_gate_emit_matrix import (
+    INTEGRATOR_GATE_EMIT_BOOL_LADDER_CASES,
+    INTEGRATOR_GATE_EMIT_DEFENSIVE_CASES,
+)
 from unit.composite_repo_fixtures import (
     write_integrator_thresholds,
     write_workflow_integrator_min_score_yaml,
@@ -17,152 +21,29 @@ from unit.composite_repo_fixtures import (
 _YAML_ROOT_MAPPING_PREFIX = "YAML root must be a mapping:"
 
 
-def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
-    tmp_path: Path,
-) -> None:
-    a1_repo = tmp_path / "a1_file_absent"
-    a1_repo.mkdir()
-    assert load_integrator_gate_emit_enabled(a1_repo) is False, (
-        "A1: thresholds.yaml absent -> `is_file()` fallback at line 55-56 "
-        "returns False. A refactor that dropped the `is_file` guard would "
-        "let `load_yaml` raise FileNotFoundError up to callers"
-    )
-
-    a2_repo = tmp_path / "a2_key_missing"
-    a2_repo.mkdir()
-    write_integrator_thresholds(a2_repo, "version: 1\nmin_score_to_pass: 0.5\n")
-    assert load_integrator_gate_emit_enabled(a2_repo) is False, (
-        "A2: file present without `enabled` key -> `raw.get('enabled', "
-        "False)` returns the default False -> `bool(False) is False`. "
-        "Pins the missing-key default (a refactor changing the default "
-        "to True would flip this axis)"
-    )
-
-    a3_repo = tmp_path / "a3_explicit_null"
-    a3_repo.mkdir()
-    write_integrator_thresholds(a3_repo, "version: 1\nenabled: null\n")
-    assert load_integrator_gate_emit_enabled(a3_repo) is False, (
-        "A3: `enabled: null` -> `raw.get` returns None (key present, "
-        "value None; NOT the default) -> `bool(None) is False`. "
-        "Distinct path from A2 (missing-key default) but same end state. "
-        "A refactor swapping `bool()` for a strict `is True` check would "
-        "flip both A3 and A2 but Part A4 still pins explicit True"
-    )
-
-    a4_repo = tmp_path / "a4_explicit_true"
-    a4_repo.mkdir()
-    write_integrator_thresholds(a4_repo, "version: 1\nenabled: true\n")
-    assert load_integrator_gate_emit_enabled(a4_repo) is True, (
-        "A4: `enabled: true` -> happy explicit True path. Mirrors the "
-        "fo21 sample but co-locates with the defensive matrix so a "
-        "refactor regressing the happy path while passing every "
-        "defensive axis would still fail here"
-    )
-
-    a5_repo = tmp_path / "a5_explicit_false"
-    a5_repo.mkdir()
-    write_integrator_thresholds(a5_repo, "version: 1\nenabled: false\n")
-    assert load_integrator_gate_emit_enabled(a5_repo) is False, (
-        "A5: `enabled: false` -> happy explicit False path. Distinct "
-        "from A2/A3 because the YAML scalar reaches `bool(False)` "
-        "directly (not via missing-key default or None coercion)"
-    )
+def _write_thresholds(repo: Path, yaml_body: str | None) -> None:
+    if yaml_body is None:
+        return
+    write_integrator_thresholds(repo, yaml_body)
 
 
-def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
-    tmp_path: Path,
-) -> None:
-    int_cases: list[tuple[str, str, bool]] = [
-        ("int_zero", "enabled: 0", False),
-        ("int_one", "enabled: 1", True),
-        ("int_two", "enabled: 2", True),
-        ("int_negative", "enabled: -1", True),
-    ]
-    for name, body, expected in int_cases:
-        repo = tmp_path / f"b1_{name}"
-        repo.mkdir()
-        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
-        actual = load_integrator_gate_emit_enabled(repo)
-        assert actual is expected, (
-            f"B1 {name}: `{body}` -> bool() of int -> expected "
-            f"{expected!r}, got {actual!r}. Pins that ANY non-zero int "
-            "is truthy (a refactor restricting to `== 1` like "
-            "`_coerce_yaml_bool` would flip B1 int_two / int_negative)"
-        )
+def _load_gate_emit(repo: Path, case: dict) -> bool:
+    _write_thresholds(repo, case.get("yaml_body"))
+    return load_integrator_gate_emit_enabled(repo)
 
-    float_cases: list[tuple[str, str, bool]] = [
-        ("float_zero", "enabled: 0.0", False),
-        ("float_half", "enabled: 0.5", True),
-        ("float_one", "enabled: 1.0", True),
-    ]
-    for name, body, expected in float_cases:
-        repo = tmp_path / f"b2_{name}"
-        repo.mkdir()
-        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
-        actual = load_integrator_gate_emit_enabled(repo)
-        assert actual is expected, (
-            f"B2 {name}: `{body}` -> bool() of float -> expected "
-            f"{expected!r}, got {actual!r}. Pins that ANY non-zero "
-            "float is truthy (mirrors B1 for the float arm)"
-        )
 
-    string_divergence_cases: list[tuple[str, str, bool]] = [
-        ("str_false_literal", 'enabled: "false"', True),
-        ("str_no_literal", 'enabled: "no"', True),
-        ("str_off_literal", 'enabled: "off"', True),
-        ("str_zero_literal", 'enabled: "0"', True),
-        ("str_random", 'enabled: "anything"', True),
-    ]
-    for name, body, expected in string_divergence_cases:
-        repo = tmp_path / f"b3_{name}"
-        repo.mkdir()
-        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
-        actual = load_integrator_gate_emit_enabled(repo)
-        assert actual is expected, (
-            f"B3 KEY DIVERGENCE {name}: `{body}` -> Python `bool()` "
-            "treats any non-empty string as truthy, so the literal "
-            f'string `"false"` / `"no"` / `"off"` resolves to True. '
-            f"Expected {expected!r}, got {actual!r}. A refactor swapping "
-            "`bool(...)` for `_coerce_yaml_bool(...)` (which only "
-            'accepts ("1", "true", "yes", "on") after '
-            "`.strip().lower()`) would flip every case in B3 to False. "
-            "This axis catches any silent migration from Python `bool()` "
-            "to the strict YAML coercer"
-        )
+@pytest.mark.parametrize("case", INTEGRATOR_GATE_EMIT_DEFENSIVE_CASES, ids=lambda c: c["case_id"])
+def test_load_integrator_gate_emit_enabled_defensive_matrix(tmp_path: Path, case: dict) -> None:
+    repo = tmp_path / case["case_id"]
+    repo.mkdir()
+    assert _load_gate_emit(repo, case) is case["expected"]
 
-    falsy_container_cases: list[tuple[str, str, bool]] = [
-        ("str_empty", 'enabled: ""', False),
-        ("list_empty", "enabled: []", False),
-        ("dict_empty", "enabled: {}", False),
-    ]
-    for name, body, expected in falsy_container_cases:
-        repo = tmp_path / f"b4_{name}"
-        repo.mkdir()
-        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
-        actual = load_integrator_gate_emit_enabled(repo)
-        assert actual is expected, (
-            f"B4 {name}: `{body}` -> Python `bool()` treats empty "
-            f"string / empty list / empty dict as falsy. Expected "
-            f"{expected!r}, got {actual!r}. Pins that the bool() ladder "
-            "is symmetric -- container emptiness drives the answer not "
-            "the container type"
-        )
 
-    truthy_container_cases: list[tuple[str, str, bool]] = [
-        ("list_nonempty", 'enabled: ["any"]', True),
-        ("dict_nonempty", "enabled: {key: val}", True),
-    ]
-    for name, body, expected in truthy_container_cases:
-        repo = tmp_path / f"b5_{name}"
-        repo.mkdir()
-        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
-        actual = load_integrator_gate_emit_enabled(repo)
-        assert actual is expected, (
-            f"B5 {name}: `{body}` -> Python `bool()` treats non-empty "
-            f"list / dict as truthy. Expected {expected!r}, got "
-            f"{actual!r}. Pairs with B4 to prove emptiness (not type) "
-            "is the only thing that matters for the container ladder"
-        )
+@pytest.mark.parametrize("case", INTEGRATOR_GATE_EMIT_BOOL_LADDER_CASES, ids=lambda c: c["case_id"])
+def test_load_integrator_gate_emit_enabled_bool_ladder_matrix(tmp_path: Path, case: dict) -> None:
+    repo = tmp_path / case["case_id"]
+    repo.mkdir()
+    assert _load_gate_emit(repo, case) is case["expected"]
 
 
 def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(

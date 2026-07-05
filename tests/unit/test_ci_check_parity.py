@@ -18,6 +18,7 @@ _CRITICAL_STEPS = (
     "ruff format --check packages tests",
     "run_prune_comments_ci_gate.py",
     "run_trim_docstrings_ci_gate.py",
+    "run_composite_test_size_gate.py",
     "mypy_ci_targets.py",
     "bandit",
     "pip-audit",

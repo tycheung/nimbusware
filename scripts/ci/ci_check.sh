@@ -24,6 +24,7 @@ poetry run python scripts/ci/run_openapi_ts_ci_gate.py
 poetry run ruff format --check packages tests
 poetry run python scripts/ci/run_prune_comments_ci_gate.py
 poetry run python scripts/ci/run_trim_docstrings_ci_gate.py
+poetry run python scripts/ci/run_composite_test_size_gate.py
 poetry run python scripts/ci/run_explainer_export_lint_gate.py
 poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
 poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
