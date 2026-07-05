@@ -15,7 +15,6 @@ ALLOWLIST = frozenset(
         "test_runs_list_composite_contract.py",
         "test_runs_list_wire_format_composite_contract.py",
         "test_scraper_artifact_retention_composite_contract.py",
-        "test_security_scan_metadata_siblings_composite_contract.py",
         "test_strictness_context_critique_seam_composite_contract.py",
         "test_thresholds_loader_composite_contract.py",
         "test_timeline_summary_quintet_composite_contract.py",
