@@ -30,6 +30,17 @@ Failures in bandit or pip-audit block merge the same way as pytest coverage floo
 
 **Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 runs applicable workspace parity steps and includes standards results in `enforcement.gate` metadata when the standards platform is enabled. Terminal runs emit `enforcement.gate` with optional GitHub/GitLab status when `terminal_parity_ci` is active. API: `GET/PUT /v1/runs/{id}/enforcement`; enterprise tenants: `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
 
+## Tiered CI layout (Jul 2026)
+
+| Layer | What runs |
+|-------|-----------|
+| **streams** (matrix) | Nine standards streams in parallel; `stream-aggregate` merges JSON |
+| **unit** | Product gates not yet deduped into streams (coverage floors, bootstrap, SLO gates) + prune/trim docstring gates |
+| **web** | Vitest (maker_web, admin_ui) + Playwright |
+| **integration / e2e** | Postgres journeys (separate jobs) |
+
+Fast local subset: `poetry run python scripts/ci/fast_gates.py` (architecture + complexity only). Full local parity: `scripts/ci/ci_check.sh` or `ci_check.ps1` (includes `run_all_streams.py --profile nimbusware-monorepo`).
+
 ## Operator surfacing
 
 - **Admin → Metrics** — competitive run analytics snapshot (not a substitute for SOC tooling).
