@@ -23,6 +23,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Package catalog: 
 | [reference/env-vars.md](reference/env-vars.md) | Common environment variables |
 | [reference/context-efficiency.md](reference/context-efficiency.md) | Context budget, compaction, artifacts (EFF track complete) |
 | [reference/operator-presets.md](reference/operator-presets.md) | Offline / local-llm / production preset bundles |
+| [../configs/workflows/fragments/](../configs/workflows/fragments/) | Reusable workflow YAML fragments (`extends:` from `*_on.yaml` profiles) |
 | [reference/benchmarks.md](reference/benchmarks.md) | SWE-bench harness, intent→patch snapshots |
 | [reference/launch-eval.md](reference/launch-eval.md) | Workspace quality rubric |
 | [architecture.md](architecture.md) | ADR index |

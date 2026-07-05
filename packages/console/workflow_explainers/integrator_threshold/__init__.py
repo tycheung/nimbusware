@@ -39,4 +39,6 @@ install_workflow_metrics_from_spec(
     custom_caption_fn=integrator_threshold_caption,
 )
 
-install_package_workflow_explainer_exports(globals(), "integrator_threshold")  # workflow-explainer-exports
+install_package_workflow_explainer_exports(
+    globals(), "integrator_threshold"
+)  # workflow-explainer-exports

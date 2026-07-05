@@ -98,12 +98,10 @@ def sync_package_init(spec_package: str, slug: str, *, dry_run: bool = False) ->
     line = codegen_install_line(slug)
     text = init_path.read_text(encoding="utf-8")
     uses_bootstrap = bool(_BOOTSTRAP_RE.search(text))
-    if (
-        uses_bootstrap
-        and _has_install_line(text, slug)
-        and "workflow_explainer_registry" in text
-    ):
-        return False
+    if _has_install_line(text, slug) and "workflow_explainer_registry" in text:
+        has_legacy = bool(_LEGACY_BLOCK_RE.search(text) or _LEGACY_CODEGEN_RE.search(text))
+        if not has_legacy:
+            return False
     new_text = _LEGACY_BLOCK_RE.sub("", text)
     new_text = _LEGACY_CODEGEN_RE.sub("", new_text)
     new_text = _remove_install_line(new_text, slug)

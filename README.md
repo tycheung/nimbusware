@@ -71,6 +71,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
 | Run tests & CI locally | [CONTRIBUTING.md](CONTRIBUTING.md), [tests/README.md](tests/README.md) |
+| Standards platform (CI streams, bundles, mart) | [docs/security-quality-gates.md](docs/security-quality-gates.md), [docs/adr/034-standards-platform-rollout.md](docs/adr/034-standards-platform-rollout.md) |
 | Compute mesh & workers | [docs/compute-mesh.md](docs/compute-mesh.md) |
 | Security & compliance | [SECURITY.md](SECURITY.md), [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
 | **Full doc index** | **[docs/README.md](docs/README.md)** |

@@ -24,7 +24,7 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci/ci_check.sh
 ```
 
-This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, **prune-comments gate** (`run_prune_comments_ci_gate.py`), **explainer-export lint** (`run_explainer_export_lint_gate.py`), **LOC budget** (`run_loc_budget_ci_gate.py`), mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **106** Playwright tests across **60** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, **prune-comments gate** (`run_prune_comments_ci_gate.py`), **trim-docstrings gate** (`run_trim_docstrings_ci_gate.py`), **composite test size gate** (`run_composite_test_size_gate.py`), **explainer-export lint** (`run_explainer_export_lint_gate.py`), **LOC budget** (`run_loc_budget_ci_gate.py`), mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **106** Playwright tests across **60** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
 
 Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 
@@ -46,7 +46,11 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
-**Fast gates** (subset before full CI): `poetry run python scripts/ci/fast_gates.py` — standards architecture + complexity streams (`nimbusware-core` profile).
+**Fast gates** (PR-tier subset before full CI): `poetry run python scripts/ci/fast_gates.py` — ruff check, composite test size gate, and standards architecture + complexity streams (`nimbusware-core` profile).
+
+**Workflow profiles:** new toggle profiles must use `extends:` with a fragment under [`configs/workflows/fragments/`](configs/workflows/fragments/) rather than inlining YAML in `*_on.yaml` overlays.
+
+**Workflow explainers:** YAML metrics specs live in [`configs/explainers/`](configs/explainers/); standard explainers bootstrap via [`packages/console/explainer_core/bootstrap.py`](packages/console/explainer_core/bootstrap.py).
 
 **Operator presets:** set `NIMBUSWARE_OPERATOR_PRESET` to `offline`, `local-llm`, or `production` in `.env` to apply transport defaults at startup (`packages/env/operator_presets.py`).
 
