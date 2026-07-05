@@ -29,6 +29,8 @@ def resolve_sandbox_backend() -> str:
     raw = nimbusware_sandbox_backend(default="none")
     if raw not in VALID_BACKENDS:
         return "none"
+    if raw == "stub":
+        return "none"
     return raw
 
 

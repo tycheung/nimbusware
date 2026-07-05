@@ -13,7 +13,6 @@ from orchestrator._pipeline.scan_critique_emit import ScanCritiqueEmitSpec
 from orchestrator._pipeline.stage_dispatch import PIPELINE_STAGES
 from orchestrator._pipeline.stage_registry import (
     PIPELINE_STAGE_MIXINS,
-    PipelineStage,
     PipelineStageRegistration,
     build_run_orchestrator_base,
 )
@@ -30,12 +29,10 @@ def test_pipeline_stages_align_with_stage_mixins() -> None:
     assert "role_execute" in names
 
 
-def test_pipeline_stage_registration_is_pipeline_stage_protocol() -> None:
+def test_pipeline_stage_registration_names_mixins() -> None:
     entry: PipelineStageRegistration = PIPELINE_STAGES[0]
-    assert isinstance(entry, PipelineStage)
     assert entry.name == "create_run"
-    with pytest.raises(NotImplementedError, match="stage dispatch not implemented"):
-        entry.run(object())
+    assert issubclass(entry.mixin, object)
 
 
 def test_build_run_orchestrator_base_appends_extras() -> None:

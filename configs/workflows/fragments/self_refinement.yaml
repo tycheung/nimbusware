@@ -1,0 +1,9 @@
+extends: default
+version: 1
+self_refinement:
+  enabled: true
+  version: 1
+  max_iterations: 3
+  auto_promote_probation: false
+  llm_critique_enabled: true
+  description: "Workflow-opt-in self-refinement marker (follow-on 12 / §14 #17)."

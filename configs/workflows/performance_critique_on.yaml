@@ -1,7 +1,2 @@
 # Phase 3 fo144 — Performance Critic stage (uses ruff_perf + N+1 heuristic evidence).
-extends: fragments/base
-performance_critique:
-  enabled: true
-  stub: true
-  llm_enabled: false
-  severity_floor: MEDIUM
+extends: fragments/performance_critique

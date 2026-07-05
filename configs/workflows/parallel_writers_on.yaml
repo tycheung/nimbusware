@@ -1,19 +1,2 @@
 # Enable concurrent writer-group dispatch (``asyncio.gather``) after plan.
-extends: default
-version: 1
-parallel_writers:
-  enabled: true
-universal_critique:
-  implementation:
-    llm: false
-    stub: false
-  test_writer:
-    enabled: false
-  planner:
-    enabled: false
-  frontend_writer:
-    enabled: false
-  module_integrator:
-    enabled: false
-escalation:
-  suppress_automatic_escalation: false
+extends: fragments/parallel_writers

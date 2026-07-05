@@ -1,0 +1,7 @@
+extends: fragments/base
+network_resilience_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  backend_only: true
+  severity_floor: MEDIUM

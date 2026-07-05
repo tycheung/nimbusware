@@ -1,0 +1,5 @@
+extends: default
+parallel_writers:
+  enabled: true
+  test_writer_stage:
+    enabled: true

@@ -1,0 +1,6 @@
+extends: fragments/base
+performance_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  severity_floor: MEDIUM

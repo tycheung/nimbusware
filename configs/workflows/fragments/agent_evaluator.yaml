@@ -1,0 +1,8 @@
+extends: default
+version: 1
+agent_evaluator:
+  enabled: true
+  persona_id: commerce
+  persona_coverage_critique:
+    enabled: true
+    stub: true

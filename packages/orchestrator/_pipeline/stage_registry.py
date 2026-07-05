@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from orchestrator._pipeline.stage_dispatch import (
     PIPELINE_STAGES,
-    PipelineStage,
     PipelineStageRegistration,
 )
 
@@ -16,7 +15,6 @@ def build_run_orchestrator_base(*extra_bases: type) -> tuple[type, ...]:
 __all__ = (
     "PIPELINE_STAGE_MIXINS",
     "PIPELINE_STAGES",
-    "PipelineStage",
     "PipelineStageRegistration",
     "build_run_orchestrator_base",
 )

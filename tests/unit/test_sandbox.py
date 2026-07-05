@@ -12,7 +12,6 @@ from agent_tools.sandbox import (
     resolve_sandbox_docker_image,
     run_subprocess_in_sandbox,
 )
-from agent_tools.tools import tool_run_shell
 
 
 def test_resolve_sandbox_backend_defaults_none(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -70,11 +69,11 @@ def test_docker_backend_invokes_container(tmp_path: Path) -> None:
     assert docker_argv[1] == "run"
 
 
-def test_stub_backend_tags_output(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_stub_backend_alias_resolves_to_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "stub")
-    if Path("python").exists() or Path("python3").exists():
-        result = tool_run_shell(tmp_path, "python", ["-c", "print('ok')"])
-        assert "[sandbox:stub]" in result.output or result.ok
+    assert resolve_sandbox_backend() == "none"
 
 
 def test_run_subprocess_in_sandbox_none_prefix(tmp_path: Path) -> None:

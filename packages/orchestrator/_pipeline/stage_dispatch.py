@@ -1,14 +1,11 @@
-"""Pipeline stage registry scaffold (documentation-only; mixins remain authoritative).
+"""Pipeline stage registry: maps logical stage names to mixin classes.
 
-``PIPELINE_STAGES`` maps logical stage names to mixin classes from
-``stage_registry.PIPELINE_STAGE_MIXINS``. Future work may dispatch through
-``PipelineStage.run`` instead of MRO-composed mixins.
+Mixins remain authoritative for execution via MRO composition on ``RunOrchestrator``.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Protocol, runtime_checkable
 
 from orchestrator._pipeline.campaign_dispatch import CampaignDispatchMixin
 from orchestrator._pipeline.create_run import CreateRunMixin
@@ -25,23 +22,10 @@ from orchestrator._pipeline.role_execute import RoleExecuteMixin
 from orchestrator._pipeline.writers import WritersMixin
 
 
-@runtime_checkable
-class PipelineStage(Protocol):
-    name: str
-
-    def run(self, host: Any, **kwargs: Any) -> None: ...
-
-
 @dataclass(frozen=True)
 class PipelineStageRegistration:
-    """Documents one pipeline stage; ``run`` is not wired yet."""
-
     name: str
     mixin: type
-
-    def run(self, host: Any, **kwargs: Any) -> None:
-        msg = f"stage dispatch not implemented for {self.name!r}"
-        raise NotImplementedError(msg)
 
 
 PIPELINE_STAGES: tuple[PipelineStageRegistration, ...] = (

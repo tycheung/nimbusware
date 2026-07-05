@@ -1,7 +1,4 @@
 # Optional profile: enables bundle integrator ``gate.decision.emitted`` via workflow YAML
 # (``integrator_gate.enabled``) without ``NIMBUSWARE_EMIT_INTEGRATOR_GATE`` or integrator
 # ``thresholds.yaml`` ``enabled`` (see §14 #13).
-extends: default
-version: 1
-integrator_gate:
-  enabled: true
+extends: fragments/integrator_gate

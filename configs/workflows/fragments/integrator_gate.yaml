@@ -1,0 +1,4 @@
+extends: default
+version: 1
+integrator_gate:
+  enabled: true

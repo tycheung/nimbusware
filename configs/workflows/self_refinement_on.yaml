@@ -1,11 +1,3 @@
 # Optional profile: emit ``stage.started`` ``self_refinement:policy`` after verify via workflow
 # ``self_refinement.enabled`` even when ``configs/self_refinement/policy.yaml`` has ``enabled: false``.
-extends: default
-version: 1
-self_refinement:
-  enabled: true
-  version: 1
-  max_iterations: 3
-  auto_promote_probation: false
-  llm_critique_enabled: true
-  description: "Workflow-opt-in self-refinement marker (follow-on 12 / §14 #17)."
+extends: fragments/self_refinement
