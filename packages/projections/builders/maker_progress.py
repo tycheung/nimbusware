@@ -393,7 +393,13 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
 
     standards_status = standards_status_from_events(events)
     if standards_status:
+        facade = standards_status.get("facade_id") or "custom"
+        bundles = standards_status.get("bundle_ids") or []
         out["standards_status"] = standards_status
+        if bundles or facade:
+            out["display_caption"] = out.get("display_caption") or (
+                f"Standards {facade} · {', '.join(bundles) if bundles else 'default'}"
+            )
 
     latest_stage = _latest_slice_stage(events)
     gate_summary = _gate_summary_plain(
