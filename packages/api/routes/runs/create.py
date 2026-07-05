@@ -300,7 +300,11 @@ def create_run(
             repo_root=orch.repo_root,
             standards_profile_id=body.standards_profile_id,
         )
-        if body.standards_profile_id and str(body.standards_profile_id).strip() and applied_std is None:
+        if (
+            body.standards_profile_id
+            and str(body.standards_profile_id).strip()
+            and applied_std is None
+        ):
             raise HTTPException(
                 status_code=422,
                 detail=problem(

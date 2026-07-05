@@ -2517,6 +2517,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/standards/presets/{preset_id}/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Standards Preset Defaults */
+        get: operations["get_standards_preset_defaults_v1_standards_presets__preset_id__defaults_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/runs/{run_id}/standards": {
         parameters: {
             query?: never;
@@ -5746,6 +5763,11 @@ export interface components {
              * @description Saved operator enforcement profile to apply at run start
              */
             enforcement_profile_id?: string | null;
+            /**
+             * Standards Profile Id
+             * @description Saved standards profile to apply at run start
+             */
+            standards_profile_id?: string | null;
             /** Consumer Archetype */
             consumer_archetype?: string | null;
         };
@@ -7742,6 +7764,8 @@ export interface components {
             autopilot_profile_id?: string | null;
             /** Enforcement Profile Id */
             enforcement_profile_id?: string | null;
+            /** Standards Profile Id */
+            standards_profile_id?: string | null;
             /**
              * Autonomous
              * @default true
@@ -25631,7 +25655,91 @@ export interface operations {
     };
     get_standards_preset_v1_standards_presets__preset_id__get: {
         parameters: {
-            query?: never;
+            query?: {
+                level?: number;
+            };
+            header?: never;
+            path: {
+                preset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_standards_preset_defaults_v1_standards_presets__preset_id__defaults_get: {
+        parameters: {
+            query?: {
+                level?: number;
+            };
             header?: never;
             path: {
                 preset_id: string;
