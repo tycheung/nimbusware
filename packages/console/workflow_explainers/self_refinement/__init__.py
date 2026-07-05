@@ -1,4 +1,7 @@
 from console.explainer_core.bootstrap import bootstrap_standard_explainer
+from console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from console.workflow_explainers.self_refinement.captions import (
     self_refinement_merged_description_preview_caption,
     self_refinement_merged_version_caption,
@@ -32,3 +35,7 @@ from console.workflow_explainers.self_refinement.payload import (
 )
 
 bootstrap_standard_explainer("self_refinement", globals())
+
+install_package_workflow_explainer_exports(
+    globals(), "self_refinement"
+)  # workflow-explainer-exports

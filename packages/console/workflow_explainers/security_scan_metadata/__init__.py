@@ -1,5 +1,8 @@
 from console.components.operator_metrics import FIELD_VALUE_COLUMNS
 from console.explainer_core.bootstrap import bootstrap_standard_explainer
+from console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from console.workflow_explainers.security_scan_metadata.captions import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
@@ -20,3 +23,7 @@ _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS = FIELD_VALUE_COLUMNS
 _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS = FIELD_VALUE_COLUMNS
 
 bootstrap_standard_explainer("security_scan_metadata", globals())
+
+install_package_workflow_explainer_exports(
+    globals(), "security_scan_metadata"
+)  # workflow-explainer-exports

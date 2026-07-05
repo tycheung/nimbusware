@@ -11,7 +11,6 @@ from console.explainer_core.workflow_explainer_registry import (
 
 def bootstrap_standard_explainer(slug: str, namespace: dict[str, object]) -> None:
     install_explainer_metrics(slug, namespace)
-    install_package_workflow_explainer_exports(namespace, slug)  # workflow-explainer-exports
 
 
 def load_all_workflow_explainers() -> None:

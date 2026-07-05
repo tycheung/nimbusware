@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from orchestrator._pipeline.critique_emit_registry import (
     CRITIQUE_EMIT_SPECS,
     security_critique_scan_spec,

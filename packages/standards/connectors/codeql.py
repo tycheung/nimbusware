@@ -14,5 +14,7 @@ def run_codeql_check(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
         env_names=("CODEQL_TOKEN",),
         skip_detail="CODEQL_TOKEN not set; skipped",
         params=params,
-        configured_detail=lambda: "CodeQL manifest registered; run via GitHub Advanced Security workflow",
+        configured_detail=lambda: (
+            "CodeQL manifest registered; run via GitHub Advanced Security workflow"
+        ),
     )

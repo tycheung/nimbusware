@@ -22,7 +22,11 @@ INTEGRATOR_GATE_EMIT_BOOL_LADDER_CASES: tuple[dict[str, Any], ...] = (
     {"case_id": "float_zero", "yaml_body": "version: 1\nenabled: 0.0\n", "expected": False},
     {"case_id": "float_half", "yaml_body": "version: 1\nenabled: 0.5\n", "expected": True},
     {"case_id": "float_one", "yaml_body": "version: 1\nenabled: 1.0\n", "expected": True},
-    {"case_id": "str_false_literal", "yaml_body": 'version: 1\nenabled: "false"\n', "expected": True},
+    {
+        "case_id": "str_false_literal",
+        "yaml_body": 'version: 1\nenabled: "false"\n',
+        "expected": True,
+    },
     {"case_id": "str_no_literal", "yaml_body": 'version: 1\nenabled: "no"\n', "expected": True},
     {"case_id": "str_off_literal", "yaml_body": 'version: 1\nenabled: "off"\n', "expected": True},
     {"case_id": "str_zero_literal", "yaml_body": 'version: 1\nenabled: "0"\n', "expected": True},
@@ -31,5 +35,9 @@ INTEGRATOR_GATE_EMIT_BOOL_LADDER_CASES: tuple[dict[str, Any], ...] = (
     {"case_id": "list_empty", "yaml_body": "version: 1\nenabled: []\n", "expected": False},
     {"case_id": "dict_empty", "yaml_body": "version: 1\nenabled: {}\n", "expected": False},
     {"case_id": "list_nonempty", "yaml_body": 'version: 1\nenabled: ["any"]\n', "expected": True},
-    {"case_id": "dict_nonempty", "yaml_body": "version: 1\nenabled: {key: val}\n", "expected": True},
+    {
+        "case_id": "dict_nonempty",
+        "yaml_body": "version: 1\nenabled: {key: val}\n",
+        "expected": True,
+    },
 )

@@ -1,4 +1,7 @@
 from console.explainer_core.bootstrap import bootstrap_standard_explainer
+from console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from console.workflow_explainers.agent_evaluator.captions import (
     agent_evaluator_auto_create_env_gate_caption,
     agent_evaluator_auto_promote_env_gate_caption,
@@ -22,3 +25,7 @@ from console.workflow_explainers.agent_evaluator.payload import (
 )
 
 bootstrap_standard_explainer("agent_evaluator", globals())
+
+install_package_workflow_explainer_exports(
+    globals(), "agent_evaluator"
+)  # workflow-explainer-exports

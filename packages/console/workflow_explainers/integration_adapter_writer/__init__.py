@@ -59,6 +59,4 @@ __all__ = [
     "integration_adapter_writer_workflow_explainer_payload",
 ]
 
-install_package_workflow_explainer_exports(
-    globals(), "integration_adapter_writer"
-)  # workflow-explainer-exports
+install_package_workflow_explainer_exports(globals(), "integration_adapter_writer")  # workflow-explainer-exports

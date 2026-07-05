@@ -1,5 +1,8 @@
 from console.explainer_core.bootstrap import bootstrap_standard_explainer
 from console.explainer_core.time import age_seconds_utc as _age_seconds_utc
+from console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from console.workflow_explainers.escalation_suppress.captions import (
     escalation_policy_yaml_age_caption,
     escalation_policy_yaml_anti_deadlock_min_progress_caption,
@@ -32,3 +35,7 @@ from console.workflow_explainers.escalation_suppress.policy_tables import (
 )
 
 bootstrap_standard_explainer("escalation_suppress", globals())
+
+install_package_workflow_explainer_exports(
+    globals(), "escalation_suppress"
+)  # workflow-explainer-exports

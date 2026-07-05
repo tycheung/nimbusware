@@ -16,6 +16,10 @@ from console.explainer_core.workflow_explainer_registry import (  # noqa: E402
     codegen_install_line,
 )
 
+_BOOTSTRAP_RE = re.compile(
+    r'bootstrap_standard_explainer\("[^"]+",\s*globals\(\)\)\n',
+)
+
 _LEGACY_BLOCK_RE = re.compile(
     r"(?:from console\.explainer_core\.workflow_exports import \(\n"
     r"    install_named_workflow_explainer_exports,\n"
@@ -41,9 +45,21 @@ _REGISTRY_IMPORT = (
     ")\n"
 )
 
-_INSTALL_RE = re.compile(
-    rf'install_package_workflow_explainer_exports\(globals\(\), "[^"]+"\)\s*{re.escape(EXPORT_INSTALL_MARKER)}\n?',
-)
+
+def _install_line_pattern(slug: str) -> str:
+    return (
+        rf"install_package_workflow_explainer_exports\s*\(\s*globals\(\)\s*,\s*"
+        rf'"{re.escape(slug)}"\s*\)\s*{re.escape(EXPORT_INSTALL_MARKER)}'
+    )
+
+
+def _has_install_line(text: str, slug: str) -> bool:
+    return bool(re.search(_install_line_pattern(slug), text, re.DOTALL))
+
+
+def _remove_install_line(text: str, slug: str) -> str:
+    pattern = rf"\n?{_install_line_pattern(slug)}\n?"
+    return re.sub(pattern, "\n", text, flags=re.DOTALL)
 
 
 def _insert_registry_import(text: str) -> str:
@@ -81,12 +97,32 @@ def sync_package_init(spec_package: str, slug: str, *, dry_run: bool = False) ->
         return False
     line = codegen_install_line(slug)
     text = init_path.read_text(encoding="utf-8")
+    uses_bootstrap = bool(_BOOTSTRAP_RE.search(text))
+    if (
+        uses_bootstrap
+        and _has_install_line(text, slug)
+        and "workflow_explainer_registry" in text
+    ):
+        return False
     new_text = _LEGACY_BLOCK_RE.sub("", text)
     new_text = _LEGACY_CODEGEN_RE.sub("", new_text)
-    new_text = _INSTALL_RE.sub("", new_text)
-    new_text = _insert_registry_import(new_text)
-    if EXPORT_INSTALL_MARKER not in new_text:
+    new_text = _remove_install_line(new_text, slug)
+    uses_bootstrap = bool(_BOOTSTRAP_RE.search(new_text))
+    if not uses_bootstrap:
+        new_text = _insert_registry_import(new_text)
+    if not uses_bootstrap and EXPORT_INSTALL_MARKER not in new_text:
         new_text = new_text.rstrip() + "\n\n" + line
+    elif uses_bootstrap:
+        new_text = re.sub(
+            r"\nfrom console\.explainer_core\.workflow_explainer_registry import \(\n"
+            r"    install_package_workflow_explainer_exports,\n"
+            r"\)\n",
+            "\n",
+            new_text,
+        )
+        new_text = _insert_registry_import(new_text)
+        if not _has_install_line(new_text, slug):
+            new_text = new_text.rstrip() + "\n\n" + line
     if new_text == text:
         return False
     if dry_run:
