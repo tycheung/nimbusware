@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from config.resolved_config import resolve_run_config
 from orchestrator.merge import load_yaml
 from orchestrator.workflow.profiles import workflow_profile_dict, workflow_profile_path
 from orchestrator.workflow.registry import (
@@ -25,6 +26,7 @@ __all__ = [
     "parse_security_scan_metadata_on_verify_workflow",
     "parse_self_refinement_workflow_block",
     "parse_universal_critique_workflow_block",
+    "resolved_workflow_profile_dict",
     "security_scan_metadata_on_verify_enabled",
     "workflow_profile_dict",
     "workflow_profile_path",
@@ -32,8 +34,18 @@ __all__ = [
 ]
 
 
+def resolved_workflow_profile_dict(
+    repo_root: Path,
+    profile: str,
+) -> tuple[dict[str, Any], tuple[str, ...]]:
+    resolved = resolve_run_config(
+        repo_root=repo_root,
+        workflow_profile=profile.strip(),
+    )
+    return dict(resolved.workflow_dict), tuple(resolved.trace)
+
+
 def escalation_policy_breadth(repo_root: Path) -> dict[str, Any]:
-    """Lazy import — optional policy breadth helper for escalation explainers."""
     from orchestrator.escalation.escalation_policy_breadth import escalation_policy_breadth as _fn
 
     return _fn(repo_root)
