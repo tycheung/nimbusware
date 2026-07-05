@@ -11,7 +11,9 @@ _AGG = _REPO / "scripts" / "ci" / "aggregate_stream_results.py"
 
 def test_aggregate_stream_results_pass_and_fail(tmp_path: Path) -> None:
     ok = tmp_path / "hygiene.json"
-    ok.write_text(json.dumps({"stream_id": "hygiene", "passed": True, "checks": []}), encoding="utf-8")
+    ok.write_text(
+        json.dumps({"stream_id": "hygiene", "passed": True, "checks": []}), encoding="utf-8"
+    )
     fail = tmp_path / "lint.json"
     fail.write_text(
         json.dumps(
@@ -26,7 +28,9 @@ def test_aggregate_stream_results_pass_and_fail(tmp_path: Path) -> None:
     py = sys.executable
     good = subprocess.run([py, str(_AGG), str(ok)], capture_output=True, text=True, check=False)
     assert good.returncode == 0
-    bad = subprocess.run([py, str(_AGG), str(ok), str(fail)], capture_output=True, text=True, check=False)
+    bad = subprocess.run(
+        [py, str(_AGG), str(ok), str(fail)], capture_output=True, text=True, check=False
+    )
     assert bad.returncode == 1
 
 

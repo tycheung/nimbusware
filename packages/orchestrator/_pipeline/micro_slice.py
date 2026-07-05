@@ -59,6 +59,8 @@ class MicroSliceMixin:
         diff_unified: str = "",
         test_output: str = "",
         test_detail: str = "",
+        standards_passed: bool | None = None,
+        standards_detail: str = "",
     ) -> SliceGateChainResult:
         from orchestrator.collab.binding_resolver import participant_memory_policy
         from orchestrator.slice.context_packet import build_slice_context_packet
