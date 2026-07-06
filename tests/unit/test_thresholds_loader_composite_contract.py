@@ -56,14 +56,18 @@ def _load_min_score(repo: Path, case: dict[str, Any]) -> float:
 
 
 @pytest.mark.parametrize("case", INTEGRATOR_GATE_EMIT_DEFENSIVE_CASES, ids=lambda c: c["case_id"])
-def test_load_integrator_gate_emit_enabled_defensive_matrix(tmp_path: Path, case: dict[str, Any]) -> None:
+def test_load_integrator_gate_emit_enabled_defensive_matrix(
+    tmp_path: Path, case: dict[str, Any]
+) -> None:
     repo = tmp_path / case["case_id"]
     repo.mkdir()
     assert _load_gate_emit(repo, case) is case["expected"]
 
 
 @pytest.mark.parametrize("case", INTEGRATOR_GATE_EMIT_BOOL_LADDER_CASES, ids=lambda c: c["case_id"])
-def test_load_integrator_gate_emit_enabled_bool_ladder_matrix(tmp_path: Path, case: dict[str, Any]) -> None:
+def test_load_integrator_gate_emit_enabled_bool_ladder_matrix(
+    tmp_path: Path, case: dict[str, Any]
+) -> None:
     repo = tmp_path / case["case_id"]
     repo.mkdir()
     assert _load_gate_emit(repo, case) is case["expected"]
@@ -152,7 +156,9 @@ def test_cross_function_d4_return_types_matrix(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize("case", CROSS_FUNCTION_D5_CASES, ids=lambda c: c["case_id"])
-def test_cross_function_d5_propagate_non_mapping_matrix(tmp_path: Path, case: dict[str, Any]) -> None:
+def test_cross_function_d5_propagate_non_mapping_matrix(
+    tmp_path: Path, case: dict[str, Any]
+) -> None:
     repo = tmp_path / case["case_id"]
     repo.mkdir()
     write_integrator_thresholds(repo, case["yaml_body"])

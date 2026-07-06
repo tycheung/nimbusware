@@ -263,9 +263,9 @@ def run_eff_none_fallback_parity() -> None:
         orch_none._maybe_emit_critique_gate_fail_findings(rid_none)  # noqa: SLF001
         eff_explicit = effective_universal_critique(ROOT, "default")
         orch_expl._maybe_emit_critique_gate_fail_findings(rid_expl, eff_explicit)  # noqa: SLF001
-    assert stage_names_from_findings(findings_for_run(mem_none, rid_none)) == stage_names_from_findings(
-        findings_for_run(mem_expl, rid_expl)
-    )
+    assert stage_names_from_findings(
+        findings_for_run(mem_none, rid_none)
+    ) == stage_names_from_findings(findings_for_run(mem_expl, rid_expl))
 
 
 def run_eff_none_fallback_resolver() -> None:

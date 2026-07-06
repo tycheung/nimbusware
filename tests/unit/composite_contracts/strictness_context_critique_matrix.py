@@ -44,7 +44,9 @@ def _validate_b4_single_snapshot_call(case: dict[str, Any], _actual: Any) -> Non
     assert mock_snap.call_args.args == (case["rid"],)
 
 
-def _validate_b5_fresh_instances(_case: dict[str, Any], ctx_pair: tuple[dict[str, Any], dict[str, Any]]) -> None:
+def _validate_b5_fresh_instances(
+    _case: dict[str, Any], ctx_pair: tuple[dict[str, Any], dict[str, Any]]
+) -> None:
     ctx_first, ctx_second = ctx_pair
     assert ctx_first == ctx_second
     assert ctx_first["finding_fix_strictness"] is not ctx_second["finding_fix_strictness"]
@@ -95,7 +97,9 @@ def _validate_d4_repo_root(_case: dict[str, Any], captured: dict[str, Any]) -> N
     assert captured["repo_root"] == captured["orch_repo_root"]
 
 
-def _validate_d5_asymmetric_errors(_case: dict[str, Any], result: EffectiveUniversalCritique) -> None:
+def _validate_d5_asymmetric_errors(
+    _case: dict[str, Any], result: EffectiveUniversalCritique
+) -> None:
     assert isinstance(result, EffectiveUniversalCritique)
 
 
@@ -120,7 +124,9 @@ STRICTNESS_FS_VALUE_CASES: tuple[dict[str, Any], ...] = (
 STRICTNESS_FS_EXCEPTION_CASES: tuple[dict[str, Any], ...] = (
     {
         "case_id": "a3_bad_enum",
-        "policy_snapshot": {"finding_fix_strictness": {"minimum_severity_requiring_fixes": "BOGUS"}},
+        "policy_snapshot": {
+            "finding_fix_strictness": {"minimum_severity_requiring_fixes": "BOGUS"}
+        },
         "exc_type": ValidationError,
         "msg_contains": ("FindingFixStrictnessSettings",),
     },
@@ -132,7 +138,9 @@ STRICTNESS_FS_EXCEPTION_CASES: tuple[dict[str, Any], ...] = (
     },
     {
         "case_id": "a3_wrong_type",
-        "policy_snapshot": {"finding_fix_strictness": {"also_require_fixes_for_low_severity": "not-a-bool"}},
+        "policy_snapshot": {
+            "finding_fix_strictness": {"also_require_fixes_for_low_severity": "not-a-bool"}
+        },
         "exc_type": ValidationError,
         "msg_contains": ("FindingFixStrictnessSettings",),
     },
@@ -140,15 +148,27 @@ STRICTNESS_FS_EXCEPTION_CASES: tuple[dict[str, Any], ...] = (
 
 STRICTNESS_FS_EMPTY_CASES: tuple[dict[str, Any], ...] = (
     {"case_id": "a4_missing_key", "policy_snapshot": {}, "expected": {}},
-    {"case_id": "a4_explicit_none", "policy_snapshot": {"finding_fix_strictness": None}, "expected": {}},
+    {
+        "case_id": "a4_explicit_none",
+        "policy_snapshot": {"finding_fix_strictness": None},
+        "expected": {},
+    },
     *(
-        {"case_id": f"a5_non_dict_{type(v).__name__}", "policy_snapshot": {"finding_fix_strictness": v}, "expected": {}}
+        {
+            "case_id": f"a5_non_dict_{type(v).__name__}",
+            "policy_snapshot": {"finding_fix_strictness": v},
+            "expected": {},
+        }
         for v in NON_DICT_FS_VALUES
     ),
 )
 
 STRICTNESS_REAL_PATH_VALUE_CASES: tuple[dict[str, Any], ...] = (
-    {"case_id": "b1_bare_default", "setup": "create_run_default", "validate": _validate_b1_bare_default},
+    {
+        "case_id": "b1_bare_default",
+        "setup": "create_run_default",
+        "validate": _validate_b1_bare_default,
+    },
     {
         "case_id": "b2_overrides",
         "setup": "create_run_overrides",
@@ -177,16 +197,40 @@ STRICTNESS_IDEMPOTENCY_CASE: dict[str, Any] = {
 
 EUC_SEAM_CASES: tuple[dict[str, Any], ...] = (
     {"case_id": "c1_no_rows", "setup": "no_rows", "validate": _validate_c1_no_rows},
-    {"case_id": "c2_default_profile", "setup": "create_run_default", "validate": _validate_c2_default_profile},
+    {
+        "case_id": "c2_default_profile",
+        "setup": "create_run_default",
+        "validate": _validate_c2_default_profile,
+    },
     {"case_id": "c3_real_call", "setup": "no_rows", "validate": _validate_c3_real_call},
-    {"case_id": "c4_int_coercion", "setup": "inject_int_profile", "validate": _validate_c4_int_coercion},
-    {"case_id": "c5_first_wins", "setup": "inject_two_profiles", "validate": _validate_c5_first_wins},
+    {
+        "case_id": "c4_int_coercion",
+        "setup": "inject_int_profile",
+        "validate": _validate_c4_int_coercion,
+    },
+    {
+        "case_id": "c5_first_wins",
+        "setup": "inject_two_profiles",
+        "validate": _validate_c5_first_wins,
+    },
 )
 
 CROSS_HELPER_CASES: tuple[dict[str, Any], ...] = (
-    {"case_id": "d1_list_run_events", "setup": "dual_call", "validate": _validate_d1_list_run_events},
-    {"case_id": "d2_facet_independence", "setup": "strictness_and_euc", "validate": _validate_d2_facet_independence},
+    {
+        "case_id": "d1_list_run_events",
+        "setup": "dual_call",
+        "validate": _validate_d1_list_run_events,
+    },
+    {
+        "case_id": "d2_facet_independence",
+        "setup": "strictness_and_euc",
+        "validate": _validate_d2_facet_independence,
+    },
     {"case_id": "d3_read_only", "setup": "dual_call_readonly", "validate": _validate_d3_read_only},
     {"case_id": "d4_repo_root", "setup": "euc_no_rows", "validate": _validate_d4_repo_root},
-    {"case_id": "d5_asymmetric_errors", "setup": "bad_strictness_euc_ok", "validate": _validate_d5_asymmetric_errors},
+    {
+        "case_id": "d5_asymmetric_errors",
+        "setup": "bad_strictness_euc_ok",
+        "validate": _validate_d5_asymmetric_errors,
+    },
 )

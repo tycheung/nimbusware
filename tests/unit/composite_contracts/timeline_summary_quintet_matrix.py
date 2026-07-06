@@ -677,9 +677,7 @@ AGENT_EVALUATOR_PERSONA_CASES: tuple[dict[str, Any], ...] = (
     {
         "case_id": "b4_empty_suffix",
         "events": [
-            stage_started_event(
-                event_id=RID2, payload={"stage_name": "agent_eval:", "attempt": 0}
-            ),
+            stage_started_event(event_id=RID2, payload={"stage_name": "agent_eval:", "attempt": 0}),
         ],
         "fn": agent_evaluator_timeline_summary,
         "validate": _validate_agent_b4,
@@ -775,86 +773,90 @@ SELF_REFINEMENT_AND_ESCALATED_CASES: tuple[dict[str, Any], ...] = (
     ),
 )
 
-SECURITY_SCAN_GUARD_CASES: tuple[dict[str, Any], ...] = tuple(
-    {
-        "case_id": f"d1_{name}",
-        "name": name,
-        "value": value,
-        "fn": _finding_has_security_scan_metadata,
-        "input": value,
-        "validate": _validate_security_d1,
-    }
-    for name, value in (
-        ("none", None),
-        ("string", "not-a-dict"),
-        ("list", ["security_scan_exit"]),
-        ("tuple", ("security_scan_exit", 0)),
-        ("int", 42),
-        ("zero", 0),
-        ("true", True),
-        ("false", False),
+SECURITY_SCAN_GUARD_CASES: tuple[dict[str, Any], ...] = (
+    tuple(
+        {
+            "case_id": f"d1_{name}",
+            "name": name,
+            "value": value,
+            "fn": _finding_has_security_scan_metadata,
+            "input": value,
+            "validate": _validate_security_d1,
+        }
+        for name, value in (
+            ("none", None),
+            ("string", "not-a-dict"),
+            ("list", ["security_scan_exit"]),
+            ("tuple", ("security_scan_exit", 0)),
+            ("int", 42),
+            ("zero", 0),
+            ("true", True),
+            ("false", False),
+        )
     )
-) + tuple(
-    {
-        "case_id": f"d2_{name}",
-        "name": name,
-        "meta_variant": meta_variant,
-        "expected": expected,
-        "fn": _finding_has_security_scan_metadata,
-        "input": meta_variant,
-        "validate": _validate_security_d2,
-    }
-    for name, meta_variant, expected in (
-        ("empty_dict", {}, False),
-        ("unrelated_keys_only", {"unrelated": "x", "other": 1}, False),
-        ("exit_only_zero", {"security_scan_exit": 0}, True),
-        ("exit_only_non_zero", {"security_scan_exit": 1}, True),
-        ("snippet_only", {"security_scan_snippet": "ok"}, True),
-        ("snippet_only_empty_str", {"security_scan_snippet": ""}, True),
-        ("both_keys", {"security_scan_exit": 0, "security_scan_snippet": "ok"}, True),
-        ("exit_none_value", {"security_scan_exit": None}, True),
-        ("snippet_none_value", {"security_scan_snippet": None}, True),
+    + tuple(
+        {
+            "case_id": f"d2_{name}",
+            "name": name,
+            "meta_variant": meta_variant,
+            "expected": expected,
+            "fn": _finding_has_security_scan_metadata,
+            "input": meta_variant,
+            "validate": _validate_security_d2,
+        }
+        for name, meta_variant, expected in (
+            ("empty_dict", {}, False),
+            ("unrelated_keys_only", {"unrelated": "x", "other": 1}, False),
+            ("exit_only_zero", {"security_scan_exit": 0}, True),
+            ("exit_only_non_zero", {"security_scan_exit": 1}, True),
+            ("snippet_only", {"security_scan_snippet": "ok"}, True),
+            ("snippet_only_empty_str", {"security_scan_snippet": ""}, True),
+            ("both_keys", {"security_scan_exit": 0, "security_scan_snippet": "ok"}, True),
+            ("exit_none_value", {"security_scan_exit": None}, True),
+            ("snippet_none_value", {"security_scan_snippet": None}, True),
+        )
     )
-) + (
-    {
-        "case_id": "d3_wrong_type",
-        "events": [
-            stage_started_event(
-                event_id=RID1,
-                payload={"stage_name": "verify"},
-                metadata={
-                    "security_scan_exit": 0,
-                    "security_scan_snippet": "fake",
-                },
-            ),
-        ],
-        "fn": security_scan_on_verify_timeline_summary,
-        "validate": _validate_security_d3_wrong_type,
-    },
-    {
-        "case_id": "d3_no_scan_meta",
-        "events": [
-            finding_created_event(
-                event_id=RID2,
-                metadata={"category": "lint", "unrelated": True},
-                payload={"finding_id": "f-99", "category": "lint", "severity": "low"},
-            ),
-        ],
-        "fn": security_scan_on_verify_timeline_summary,
-        "validate": _validate_security_d3_no_meta,
-    },
-    {
-        "case_id": "d4_happy",
-        "events": _HAPPY_SCAN_EVENTS,
-        "fn": security_scan_on_verify_timeline_summary,
-        "validate": _validate_security_d4,
-    },
-    {
-        "case_id": "d5_latest_wins",
-        "events": _SCAN_LATEST_WINS_EVENTS,
-        "fn": security_scan_on_verify_timeline_summary,
-        "validate": _validate_security_d5,
-    },
+    + (
+        {
+            "case_id": "d3_wrong_type",
+            "events": [
+                stage_started_event(
+                    event_id=RID1,
+                    payload={"stage_name": "verify"},
+                    metadata={
+                        "security_scan_exit": 0,
+                        "security_scan_snippet": "fake",
+                    },
+                ),
+            ],
+            "fn": security_scan_on_verify_timeline_summary,
+            "validate": _validate_security_d3_wrong_type,
+        },
+        {
+            "case_id": "d3_no_scan_meta",
+            "events": [
+                finding_created_event(
+                    event_id=RID2,
+                    metadata={"category": "lint", "unrelated": True},
+                    payload={"finding_id": "f-99", "category": "lint", "severity": "low"},
+                ),
+            ],
+            "fn": security_scan_on_verify_timeline_summary,
+            "validate": _validate_security_d3_no_meta,
+        },
+        {
+            "case_id": "d4_happy",
+            "events": _HAPPY_SCAN_EVENTS,
+            "fn": security_scan_on_verify_timeline_summary,
+            "validate": _validate_security_d4,
+        },
+        {
+            "case_id": "d5_latest_wins",
+            "events": _SCAN_LATEST_WINS_EVENTS,
+            "fn": security_scan_on_verify_timeline_summary,
+            "validate": _validate_security_d5,
+        },
+    )
 )
 
 

@@ -405,9 +405,7 @@ QUERY_STRING_BASE_OFFSET_CASES: tuple[dict[str, Any], ...] = (
     {
         "case_id": "c5_cursor_and_offset",
         "kwargs": {**_BASE_QUERY_KWARGS, "offset": 10, "cursor": "abc"},
-        "expected": (
-            "limit=50&offset=10&order=newest_first&include_summary=0&cursor=abc"
-        ),
+        "expected": ("limit=50&offset=10&order=newest_first&include_summary=0&cursor=abc"),
     },
 )
 
