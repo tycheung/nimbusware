@@ -32,6 +32,8 @@ poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_workflow_yaml_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+# Skip test stream here; pytest with coverage runs below (avoids ~3500 duplicate unit runs).
+$env:NIMBUSWARE_CI_STREAMS_SKIP_TEST = "1"
 poetry run python scripts/ci/run_all_streams.py --profile nimbusware-monorepo
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_loc_budget_ci_gate.py

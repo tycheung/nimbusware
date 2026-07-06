@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
+"""Run all streams in a standards profile (local CI parity for GHA stream matrix).
+
+Set NIMBUSWARE_CI_STREAMS_SKIP_TEST=1 to omit the ``test`` stream (pytest.unit).
+Used by ci_check.ps1 / ci_check.sh so unit pytest runs once with coverage afterward.
+GitHub Actions stream jobs are unaffected (each job uses run_stream.py directly).
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
-from standards.runner import aggregate_passed, run_profile
+from standards.registry import profile_stream_ids
+from standards.runner import aggregate_passed, run_streams
 
 
 def main() -> int:
@@ -24,7 +32,11 @@ def main() -> int:
         help="Write per-stream JSON files to this directory (for CI artifact aggregation)",
     )
     args = parser.parse_args()
-    results = run_profile(args.profile)
+    stream_ids = profile_stream_ids(args.profile)
+    skip_test = os.environ.get("NIMBUSWARE_CI_STREAMS_SKIP_TEST", "").strip().lower()
+    if skip_test in ("1", "true", "yes"):
+        stream_ids = [sid for sid in stream_ids if sid != "test"]
+    results = run_streams(stream_ids)
     if args.out_dir:
         out_dir = Path(args.out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
