@@ -19,7 +19,7 @@ def main() -> int:
     if proc.returncode != 0:
         print(proc.stderr or proc.stdout, file=sys.stderr)
         return proc.returncode
-    targets = [line.strip() for line in proc.stdout.splitlines() if line.strip()]
+    targets = proc.stdout.split()
     if not targets:
         print("mypy stream: no targets", file=sys.stderr)
         return 1
