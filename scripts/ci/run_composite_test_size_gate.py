@@ -6,20 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_UNIT = ROOT / "tests" / "unit"
 MAX_LINES = 200
-ALLOWLIST = frozenset(
-    {
-        "test_anti_deadlock_helpers_composite_contract.py",
-        "test_critique_gate_fail_findings_composite_contract.py",
-        "test_critique_routing_quartet_composite_contract.py",
-        "test_read_models_composite_contract.py",
-        "test_runs_list_composite_contract.py",
-        "test_runs_list_wire_format_composite_contract.py",
-        "test_scraper_artifact_retention_composite_contract.py",
-        "test_strictness_context_critique_seam_composite_contract.py",
-        "test_thresholds_loader_composite_contract.py",
-        "test_timeline_summary_quintet_composite_contract.py",
-    }
-)
+ALLOWLIST = frozenset()
 
 
 def main() -> int:
