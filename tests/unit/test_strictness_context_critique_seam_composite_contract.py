@@ -5,7 +5,6 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
-
 from pydantic import ValidationError
 
 from orchestrator._pipeline import base as orchestrator_base

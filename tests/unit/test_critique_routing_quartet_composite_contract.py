@@ -16,14 +16,14 @@ from orchestrator.critique.routing import (
 )
 from orchestrator.registry import RoleRegistry
 from unit.composite_contracts.critique_routing_matrix import (
+    _ALL_CRITIC_REGISTRY,
+    _SUFFIX_BOUNDARY_REGISTRY,
+    LIFECYCLE_TAXONOMY_CASES,
     LOAD_ROUTER_EXCEPTION_CASES,
     LOAD_ROUTER_FROM_YAML_WIRING_CASE,
     LOAD_ROUTER_VALUE_CASES,
-    LIFECYCLE_TAXONOMY_CASES,
     PATH_COMPOSITION_CASES,
     PRODUCER_TAXONOMY_CASES,
-    _ALL_CRITIC_REGISTRY,
-    _SUFFIX_BOUNDARY_REGISTRY,
 )
 from unit.composite_contracts.matrix_runner import run_exception_matrix, run_value_matrix
 from unit.composite_orchestrator_fixtures import (
