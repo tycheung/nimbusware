@@ -25,6 +25,9 @@ poetry run python -m pip install --upgrade "pyinstaller>=6"
 
 mkdir -p dist build/pyinstaller
 
+echo "Rendering launcher logo assets..."
+poetry run python scripts/publish/render_launcher_logo.py
+
 echo "Building NimbuswareLauncher..."
 poetry run python -m PyInstaller \
   --noconfirm \

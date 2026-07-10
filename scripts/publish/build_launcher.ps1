@@ -32,6 +32,13 @@ if ($LASTEXITCODE -ne 0) {
 
 New-Item -ItemType Directory -Force -Path dist, build/pyinstaller | Out-Null
 
+Write-Host "Rendering launcher logo assets..."
+poetry run python scripts/publish/render_launcher_logo.py
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "render_launcher_logo failed (exit $LASTEXITCODE)"
+    exit $LASTEXITCODE
+}
+
 Write-Host "Building NimbuswareLauncher.exe..."
 poetry run python -m PyInstaller `
   --noconfirm `

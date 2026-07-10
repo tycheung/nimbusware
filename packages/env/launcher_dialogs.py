@@ -6,6 +6,8 @@ import tkinter as tk
 from dataclasses import dataclass
 from tkinter import ttk
 
+from env.launcher_theme import style_dialog
+
 DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 
 
@@ -30,50 +32,58 @@ class PostgresSetupDialog(tk.Toplevel):
         self.title("PostgreSQL connection")
         self.resizable(False, False)
         self.result: PostgresDialogResult | None = None
+        style_dialog(self)
 
-        frame = ttk.Frame(self, padding=12)
+        frame = ttk.Frame(self, padding=16, style="Dialog.TFrame")
         frame.pack(fill=tk.BOTH, expand=True)
 
         ttk.Label(
             frame,
+            text="PostgreSQL for Full / Enterprise setup",
+            style="Dialog.TLabel",
+            font=("Segoe UI", 12, "bold"),
+        ).pack(anchor=tk.W, pady=(0, 6))
+        ttk.Label(
+            frame,
             text=(
-                "Provide PostgreSQL for Full / Enterprise setup.\n"
                 "Use an application URL if the nimbusware database already exists,\n"
                 "or an admin URL (superuser) to create the role and database."
             ),
+            style="DialogMuted.TLabel",
             justify=tk.LEFT,
-        ).pack(anchor=tk.W, pady=(0, 8))
+        ).pack(anchor=tk.W, pady=(0, 12))
 
-        ttk.Label(frame, text="Application database URL").pack(anchor=tk.W)
+        ttk.Label(frame, text="Application database URL", style="Dialog.TLabel").pack(anchor=tk.W)
         self.database_var = tk.StringVar(value=default_database_url)
-        ttk.Entry(frame, textvariable=self.database_var, width=72).pack(
-            fill=tk.X,
-            pady=(2, 8),
-        )
+        db_entry = ttk.Entry(frame, textvariable=self.database_var, width=72, style="Dialog.TEntry")
+        db_entry.pack(fill=tk.X, pady=(4, 10))
 
-        ttk.Label(frame, text="Admin URL (optional — postgres superuser)").pack(anchor=tk.W)
+        ttk.Label(frame, text="Admin URL (optional)", style="Dialog.TLabel").pack(anchor=tk.W)
         self.admin_var = tk.StringVar(value=default_admin_url)
-        ttk.Entry(frame, textvariable=self.admin_var, width=72).pack(
+        ttk.Entry(frame, textvariable=self.admin_var, width=72, style="Dialog.TEntry").pack(
             fill=tk.X,
-            pady=(2, 8),
+            pady=(4, 8),
         )
 
         ttk.Label(
             frame,
-            text="Example admin: postgresql://postgres:secret@dbhost:5432/postgres",
-            foreground="#555555",
-        ).pack(anchor=tk.W, pady=(0, 8))
+            text="Example: postgresql://postgres:secret@dbhost:5432/postgres",
+            style="DialogMuted.TLabel",
+        ).pack(anchor=tk.W, pady=(0, 12))
 
-        buttons = ttk.Frame(frame)
+        buttons = ttk.Frame(frame, style="Dialog.TFrame")
         buttons.pack(fill=tk.X)
         ttk.Button(buttons, text="Cancel", command=self._cancel).pack(side=tk.RIGHT)
-        ttk.Button(buttons, text="Continue", command=self._ok).pack(side=tk.RIGHT, padx=(0, 8))
+        ttk.Button(buttons, text="Continue", style="Accent.TButton", command=self._ok).pack(
+            side=tk.RIGHT,
+            padx=(0, 8),
+        )
 
         self.transient(parent)
         self.grab_set()
         self.protocol("WM_DELETE_WINDOW", self._cancel)
         self.wait_visibility()
-        self.focus_set()
+        db_entry.focus_set()
 
     def _cancel(self) -> None:
         self.result = None

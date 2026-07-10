@@ -4,14 +4,18 @@ import os
 
 REPO_ROOT = os.path.abspath(os.path.join(SPECPATH, "..", ".."))
 LAUNCHER = os.path.join(REPO_ROOT, "launcher.py")
+ASSETS_DIR = os.path.join(REPO_ROOT, "packages", "env", "assets")
 INSTALL_SCRIPT = os.path.join(REPO_ROOT, "scripts", "install", "install_nimbusware.py")
 
 a = Analysis(
     [LAUNCHER],
     pathex=[os.path.join(REPO_ROOT, "packages")],
     binaries=[],
-    datas=[(INSTALL_SCRIPT, "install")],
-    hiddenimports=["env.launcher_fetch"],
+    datas=[
+        (INSTALL_SCRIPT, "install"),
+        (ASSETS_DIR, "assets"),
+    ],
+    hiddenimports=["env.launcher_fetch", "env.launcher_theme"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

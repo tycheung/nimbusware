@@ -15,8 +15,14 @@ def main() -> int:
     text = spec.read_text(encoding="utf-8")
     if "install_nimbusware.py" not in text:
         errors.append("NimbuswareLauncher.spec must bundle install_nimbusware.py")
+    if "assets" not in text:
+        errors.append("NimbuswareLauncher.spec must bundle launcher assets")
     if 'join(SPECPATH, "..", "..")' not in text:
         errors.append("NimbuswareLauncher.spec must resolve REPO_ROOT from SPECPATH")
+
+    logo_png = ROOT / "packages" / "env" / "assets" / "nimbusware_logo.png"
+    if not logo_png.is_file():
+        errors.append(f"missing launcher logo: {logo_png}")
 
     proc = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "publish" / "launcher_artifact_name.py")],

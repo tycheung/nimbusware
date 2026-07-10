@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import subprocess
-import sys
 import threading
 import time
 import tkinter as tk
@@ -24,8 +23,6 @@ from env.desktop_common import (
     resolve_python_command,
     run_log_path,
     subprocess_spawn_kwargs,
-    ui_mono_font,
-    ui_title_font,
     updates_check_supported,
     updates_supported,
 )
@@ -47,6 +44,12 @@ from env.launcher_manage import (
     run_convert_install,
     uninstall_nimbusware,
 )
+from env.launcher_theme import (
+    BG,
+    apply_launcher_theme,
+    mono_font,
+    style_log_widget,
+)
 
 
 class NimbuswareLauncherApp:
@@ -55,20 +58,36 @@ class NimbuswareLauncherApp:
         self.repo = repo_root()
         self._busy = False
 
+        self.theme = apply_launcher_theme(root)
+        self._logo_photo = self.theme.logo
+
         root.title("Nimbusware")
-        root.geometry("760x580")
-        root.minsize(620, 480)
+        root.geometry("820x660")
+        root.minsize(700, 540)
 
-        header = ttk.Frame(root, padding=12)
-        header.pack(fill=tk.X)
-        ttk.Label(header, text="Nimbusware", font=ui_title_font()).pack(anchor=tk.W)
-        self.version_label = ttk.Label(header, text="")
-        self.version_label.pack(anchor=tk.W, pady=(4, 0))
-        self.status_label = ttk.Label(header, text="Ready.")
-        self.status_label.pack(anchor=tk.W, pady=(4, 0))
+        shell = ttk.Frame(root, padding=16)
+        shell.pack(fill=tk.BOTH, expand=True)
 
-        buttons = ttk.Frame(root, padding=(12, 0))
+        header = ttk.Frame(shell)
+        header.pack(fill=tk.X, pady=(0, 14))
+        header_left = ttk.Frame(header)
+        header_left.pack(side=tk.LEFT)
+        if self._logo_photo is not None:
+            ttk.Label(header_left, image=self._logo_photo).pack(side=tk.LEFT, padx=(0, 14))
+        header_text = ttk.Frame(header_left)
+        header_text.pack(side=tk.LEFT, fill=tk.Y)
+        ttk.Label(header_text, text="Nimbusware", style="Title.TLabel").pack(anchor=tk.W)
+        self.version_label = ttk.Label(header_text, text="", style="Muted.TLabel")
+        self.version_label.pack(anchor=tk.W, pady=(2, 0))
+        self.status_label = ttk.Label(header_text, text="Ready.", style="Muted.TLabel")
+        self.status_label.pack(anchor=tk.W, pady=(2, 0))
+
+        setup_panel = ttk.LabelFrame(shell, text="  Setup  ", padding=(12, 10), style="TLabelframe")
+        setup_panel.pack(fill=tk.X, pady=(0, 10))
+        buttons = ttk.Frame(setup_panel, style="Panel.TFrame")
         buttons.pack(fill=tk.X)
+        buttons_row2 = ttk.Frame(setup_panel, style="Panel.TFrame")
+        buttons_row2.pack(fill=tk.X, pady=(8, 0))
         self.check_btn = ttk.Button(
             buttons,
             text="Check for updates",
@@ -102,18 +121,23 @@ class NimbuswareLauncherApp:
             ),
         )
         self.install_enterprise_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.run_btn = ttk.Button(buttons, text="Run Nimbusware", command=self.run_nimbusware)
+        self.run_btn = ttk.Button(
+            buttons_row2,
+            text="Run Nimbusware",
+            style="Accent.TButton",
+            command=self.run_nimbusware,
+        )
         self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.admin_btn = ttk.Button(
-            buttons,
-            text="Admin Console...",
+            buttons_row2,
+            text="Admin Console",
             command=self.run_admin_console,
         )
         self.admin_btn.pack(side=tk.LEFT)
 
-        manage = ttk.LabelFrame(root, text="Manage install", padding=(12, 6))
-        manage.pack(fill=tk.X, padx=12, pady=(10, 0))
-        manage_row = ttk.Frame(manage)
+        manage = ttk.LabelFrame(shell, text="  Manage install  ", padding=(12, 10))
+        manage.pack(fill=tk.X, pady=(0, 10))
+        manage_row = ttk.Frame(manage, style="Panel.TFrame")
         manage_row.pack(fill=tk.X)
         self.to_full_btn = ttk.Button(
             manage_row,
@@ -161,15 +185,16 @@ class NimbuswareLauncherApp:
         )
         self.uninstall_btn.pack(side=tk.LEFT)
 
-        log_frame = ttk.LabelFrame(root, text="Activity", padding=8)
-        log_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
+        log_frame = ttk.LabelFrame(shell, text="  Activity  ", padding=(10, 8))
+        log_frame.pack(fill=tk.BOTH, expand=True)
         self.log = scrolledtext.ScrolledText(
             log_frame,
             height=16,
             wrap=tk.WORD,
             state=tk.DISABLED,
-            font=ui_mono_font(),
+            font=mono_font(root),
         )
+        style_log_widget(self.log)
         self.log.pack(fill=tk.BOTH, expand=True)
 
         self._append_log(f"Workspace: {self.repo}")
@@ -707,10 +732,7 @@ class NimbuswareLauncherApp:
 
 def main() -> int:
     root = tk.Tk()
-    try:
-        ttk.Style().theme_use("vista" if sys.platform == "win32" else "default")
-    except tk.TclError:
-        pass
+    root.configure(bg=BG)
     NimbuswareLauncherApp(root)
     root.mainloop()
     return 0

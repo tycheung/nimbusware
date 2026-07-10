@@ -62,7 +62,8 @@ poetry run python scripts/publish/package_launcher_release.py   # zip + INSTALL.
 
 ## Operator notes
 
-- The PyInstaller binary bundles `install_nimbusware.py` only; the full repo is fetched on first setup.
+- The PyInstaller binary bundles `install_nimbusware.py` and `packages/env/assets/` (logo). Brand background: `#00132d`.
+- Regenerate `nimbusware_logo.png` from SVG before release builds: `poetry run python scripts/publish/render_launcher_logo.py` (requires Node/npx).
 - Linux desktop runs still need GTK/WebKit packages for pywebview (`linux_desktop_deps`).
 - Windows runs need WebView2 (Edge Chromium backend).
 - Signing/notarization for wide distribution is not automated in CI yet.
