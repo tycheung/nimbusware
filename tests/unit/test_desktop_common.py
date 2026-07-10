@@ -152,6 +152,19 @@ def test_updates_supported_requires_git_checkout(tmp_path: Path) -> None:
         assert updates_supported(tmp_path)
 
 
+def test_can_init_git_updates_for_archive_install(tmp_path: Path) -> None:
+    from env.desktop_common import NIMBUSWARE_SCHEMA_REL, can_init_git_updates
+
+    (tmp_path / "pyproject.toml").write_text('version = "0.0.0"\n', encoding="utf-8")
+    schema = tmp_path / NIMBUSWARE_SCHEMA_REL
+    schema.parent.mkdir(parents=True)
+    schema.write_text("-- schema\n", encoding="utf-8")
+    if resolve_git_executable() is None:
+        assert not can_init_git_updates(tmp_path)
+    else:
+        assert can_init_git_updates(tmp_path)
+
+
 def test_linux_desktop_deps_skipped_off_linux() -> None:
     from env.linux_desktop_deps import ensure_linux_desktop_deps
 

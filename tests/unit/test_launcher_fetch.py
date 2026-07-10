@@ -22,10 +22,22 @@ def test_install_script_args_barebones() -> None:
     assert args[args.index("--install-profile") + 1] == INSTALL_PROFILE_BAREBONES
 
 
-def test_install_script_args_full() -> None:
+def test_install_script_args_full_uses_provided_postgres() -> None:
     args = install_script_args(INSTALL_PROFILE_FULL)
     assert "--postgres-choice" in args
+    assert args[args.index("--postgres-choice") + 1] == "provided"
+    assert "--skip-docker" in args
+    assert "docker" not in args
     assert args[args.index("--install-profile") + 1] == INSTALL_PROFILE_FULL
+
+
+def test_install_script_args_extra_args() -> None:
+    args = install_script_args(
+        INSTALL_PROFILE_FULL,
+        extra_args=["--database-url", "postgresql://u:p@h/d"],
+    )
+    assert "--database-url" in args
+    assert "postgresql://u:p@h/d" in args
 
 
 def test_github_archive_url() -> None:
