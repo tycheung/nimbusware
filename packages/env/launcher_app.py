@@ -11,10 +11,12 @@ from pathlib import Path
 from tkinter import messagebox, scrolledtext, ttk
 
 from env.desktop_common import (
+    can_init_git_updates,
     check_for_updates,
     default_clone_target,
     default_clone_url,
     git_pull,
+    init_git_remote_for_updates,
     is_git_checkout,
     is_nimbusware_checkout,
     read_poetry_version,
@@ -24,8 +26,10 @@ from env.desktop_common import (
     subprocess_spawn_kwargs,
     ui_mono_font,
     ui_title_font,
+    updates_check_supported,
     updates_supported,
 )
+from env.launcher_dialogs import prompt_postgres_setup
 from env.launcher_fetch import (
     INSTALL_PROFILE_BAREBONES,
     INSTALL_PROFILE_FULL,
@@ -33,6 +37,15 @@ from env.launcher_fetch import (
     SETUP_BUNDLE_ENTERPRISE,
     fetch_nimbusware_source,
     run_install_script,
+)
+from env.launcher_manage import (
+    InstallState,
+    convert_label,
+    postgres_extra_args,
+    read_env_file,
+    read_install_state,
+    run_convert_install,
+    uninstall_nimbusware,
 )
 
 
@@ -43,8 +56,8 @@ class NimbuswareLauncherApp:
         self._busy = False
 
         root.title("Nimbusware")
-        root.geometry("640x520")
-        root.minsize(520, 420)
+        root.geometry("760x580")
+        root.minsize(620, 480)
 
         header = ttk.Frame(root, padding=12)
         header.pack(fill=tk.X)
@@ -93,10 +106,60 @@ class NimbuswareLauncherApp:
         self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.admin_btn = ttk.Button(
             buttons,
-            text="Admin Console…",
+            text="Admin Console...",
             command=self.run_admin_console,
         )
         self.admin_btn.pack(side=tk.LEFT)
+
+        manage = ttk.LabelFrame(root, text="Manage install", padding=(12, 6))
+        manage.pack(fill=tk.X, padx=12, pady=(10, 0))
+        manage_row = ttk.Frame(manage)
+        manage_row.pack(fill=tk.X)
+        self.to_full_btn = ttk.Button(
+            manage_row,
+            text="Switch to Full",
+            command=lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_DEFAULT,
+                needs_postgres=True,
+            ),
+        )
+        self.to_full_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.to_quick_btn = ttk.Button(
+            manage_row,
+            text="Switch to Quick",
+            command=lambda: self.run_convert(
+                INSTALL_PROFILE_BAREBONES,
+                SETUP_BUNDLE_DEFAULT,
+            ),
+        )
+        self.to_quick_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.to_enterprise_btn = ttk.Button(
+            manage_row,
+            text="Switch to Enterprise",
+            command=lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_ENTERPRISE,
+                needs_postgres=True,
+            ),
+        )
+        self.to_enterprise_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.to_individual_btn = ttk.Button(
+            manage_row,
+            text="Switch to Individual",
+            command=lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_DEFAULT,
+                needs_postgres=True,
+            ),
+        )
+        self.to_individual_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.uninstall_btn = ttk.Button(
+            manage_row,
+            text="Uninstall",
+            command=self.run_uninstall,
+        )
+        self.uninstall_btn.pack(side=tk.LEFT)
 
         log_frame = ttk.LabelFrame(root, text="Activity", padding=8)
         log_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
@@ -111,27 +174,60 @@ class NimbuswareLauncherApp:
 
         self._append_log(f"Workspace: {self.repo}")
         self._sync_repo_ui()
-        if updates_supported(self.repo):
+        if updates_check_supported(self.repo):
             self.root.after(400, self.check_updates)
 
     def _refresh_version(self) -> None:
         version = read_poetry_version(self.repo)
-        self.version_label.configure(text=f"Installed version: {version}")
+        if is_nimbusware_checkout(self.repo):
+            state = read_install_state(self.repo)
+            self.version_label.configure(
+                text=f"Installed version: {version}  |  {convert_label(state)}",
+            )
+        else:
+            self.version_label.configure(text=f"Installed version: {version}")
 
     def _sync_repo_ui(self) -> None:
         self._refresh_version()
-        if is_nimbusware_checkout(self.repo):
+        installed = is_nimbusware_checkout(self.repo)
+        if installed:
             self.status_label.configure(text="Ready.")
         else:
             self.status_label.configure(text="No Nimbusware install found — use Install / setup.")
-        if updates_supported(self.repo):
+        if updates_check_supported(self.repo):
             self.check_btn.configure(state=tk.NORMAL)
         else:
             self.check_btn.configure(state=tk.DISABLED)
-            if not is_git_checkout(self.repo):
+            if installed and not is_git_checkout(self.repo):
                 self._append_log(
-                    "Updates disabled: no git checkout (clone first via Install / setup)."
+                    "Updates: archive install — use Check for updates to connect git.",
                 )
+        if installed:
+            state = read_install_state(self.repo)
+            self.to_full_btn.configure(
+                state=tk.NORMAL
+                if state.install_profile == INSTALL_PROFILE_BAREBONES
+                else tk.DISABLED,
+            )
+            self.to_quick_btn.configure(
+                state=tk.NORMAL if state.install_profile == INSTALL_PROFILE_FULL else tk.DISABLED,
+            )
+            self.to_enterprise_btn.configure(
+                state=tk.NORMAL if state.setup_bundle != SETUP_BUNDLE_ENTERPRISE else tk.DISABLED,
+            )
+            self.to_individual_btn.configure(
+                state=tk.NORMAL if state.setup_bundle == SETUP_BUNDLE_ENTERPRISE else tk.DISABLED,
+            )
+            self.uninstall_btn.configure(state=tk.NORMAL)
+        else:
+            for btn in (
+                self.to_full_btn,
+                self.to_quick_btn,
+                self.to_enterprise_btn,
+                self.to_individual_btn,
+                self.uninstall_btn,
+            ):
+                btn.configure(state=tk.DISABLED)
 
     def _set_repo(self, repo: Path) -> None:
         self.repo = repo.resolve()
@@ -151,15 +247,25 @@ class NimbuswareLauncherApp:
     def _set_busy(self, busy: bool) -> None:
         self._busy = busy
         state = tk.DISABLED if busy else tk.NORMAL
-        if busy or updates_supported(self.repo):
+        if busy or updates_check_supported(self.repo):
             self.check_btn.configure(state=state)
-        else:
+        elif not updates_check_supported(self.repo):
             self.check_btn.configure(state=tk.DISABLED)
-        self.install_btn.configure(state=state)
-        self.install_full_btn.configure(state=state)
-        self.install_enterprise_btn.configure(state=state)
-        self.run_btn.configure(state=state)
-        self.admin_btn.configure(state=state)
+        for btn in (
+            self.install_btn,
+            self.install_full_btn,
+            self.install_enterprise_btn,
+            self.run_btn,
+            self.admin_btn,
+            self.to_full_btn,
+            self.to_quick_btn,
+            self.to_enterprise_btn,
+            self.to_individual_btn,
+            self.uninstall_btn,
+        ):
+            btn.configure(state=state)
+        if not busy:
+            self._sync_repo_ui()
 
     def _run_background(self, label: str, worker: Callable[[], None]) -> None:
         if self._busy:
@@ -175,8 +281,42 @@ class NimbuswareLauncherApp:
 
         threading.Thread(target=_target, daemon=True).start()
 
+    def _ensure_git_for_updates(self) -> bool:
+        if updates_supported(self.repo):
+            return True
+        if not can_init_git_updates(self.repo):
+            messagebox.showerror(
+                "Updates unavailable",
+                "Install git to receive updates, or run setup from a git clone.",
+            )
+            return False
+        if not messagebox.askyesno(
+            "Connect git for updates",
+            "This install came from a zip archive and is not a git checkout.\n\n"
+            f"Initialize git and connect to {default_clone_url()}?\n\n"
+            "Your .env and database data are preserved.",
+        ):
+            return False
+
+        ok, message = init_git_remote_for_updates(
+            self.repo,
+            default_clone_url(),
+            log=self._append_log,
+        )
+        self._append_log(message)
+        if not ok:
+            messagebox.showerror("Git setup failed", message)
+            return False
+        self._sync_repo_ui()
+        messagebox.showinfo("Git ready", message)
+        return True
+
     def check_updates(self) -> None:
-        if not updates_supported(self.repo):
+        if not updates_check_supported(self.repo):
+            messagebox.showinfo(
+                "Updates unavailable",
+                "Install Nimbusware first, then install git to check for updates.",
+            )
             return
         if self._busy:
             return
@@ -184,6 +324,29 @@ class NimbuswareLauncherApp:
         self.status_label.configure(text="Checking for updates...")
 
         def _worker() -> None:
+            if not updates_supported(self.repo):
+                if not can_init_git_updates(self.repo):
+
+                    def _no_git() -> None:
+                        messagebox.showerror(
+                            "Updates unavailable",
+                            "Install git to receive updates.",
+                        )
+                        self._set_busy(False)
+
+                    self.root.after(0, _no_git)
+                    return
+
+                def _offer_init() -> None:
+                    if self._ensure_git_for_updates():
+                        self._set_busy(False)
+                        self.check_updates()
+                    else:
+                        self._set_busy(False)
+
+                self.root.after(0, _offer_init)
+                return
+
             self._append_log("Checking for updates...")
             status, available, detail = check_for_updates(self.repo, fetch=True)
             self._append_log(detail)
@@ -231,6 +394,29 @@ class NimbuswareLauncherApp:
 
         threading.Thread(target=_worker, daemon=True).start()
 
+    def _postgres_extra_args(self, *, needs_postgres: bool) -> list[str] | None:
+        if not needs_postgres:
+            return None
+        env = read_env_file(self.repo)
+        default_db = env.get(
+            "NIMBUSWARE_DATABASE_URL",
+            "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware",
+        )
+        default_admin = env.get("NIMBUSWARE_POSTGRES_ADMIN_URL", "")
+        result = prompt_postgres_setup(
+            self.root,
+            default_database_url=default_db,
+            default_admin_url=default_admin,
+        )
+        if result is None:
+            return None
+        extras = postgres_extra_args(
+            self.repo,
+            database_url=result.database_url,
+            admin_url=result.admin_url,
+        )
+        return extras
+
     def run_install(
         self,
         profile: str = INSTALL_PROFILE_BAREBONES,
@@ -242,17 +428,18 @@ class NimbuswareLauncherApp:
         clone_url = default_clone_url()
         full = profile == INSTALL_PROFILE_FULL
         enterprise = setup_bundle == SETUP_BUNDLE_ENTERPRISE
+        needs_postgres = full
 
         if needs_source:
             if enterprise:
                 setup_desc = (
-                    "Enterprise setup installs Poetry deps, Docker Postgres when available, "
-                    "Ollama with default models, and Enterprise strict env defaults."
+                    "Enterprise setup installs Poetry deps, connects to your PostgreSQL "
+                    "(application or admin URL), Ollama with default models, and Enterprise env."
                 )
             elif full:
                 setup_desc = (
-                    "Full setup installs Poetry deps, Docker Postgres when available, "
-                    "and Ollama with default models."
+                    "Full setup installs Poetry deps, connects to your PostgreSQL "
+                    "(application or admin URL), and Ollama with default models."
                 )
             else:
                 setup_desc = (
@@ -265,12 +452,25 @@ class NimbuswareLauncherApp:
             )
         else:
             if enterprise:
-                prompt = "Run Enterprise Nimbusware setup (Postgres + Ollama + strict env)?"
+                prompt = (
+                    "Run Enterprise Nimbusware setup (Postgres + Ollama + strict env)?\n\n"
+                    "Existing database and .env data are preserved."
+                )
             elif full:
-                prompt = "Run full Nimbusware setup (Postgres + Ollama)?"
+                prompt = (
+                    "Run full Nimbusware setup (Postgres + Ollama)?\n\n"
+                    "Existing database and .env data are preserved."
+                )
             else:
-                prompt = "Run quick Nimbusware setup (Poetry deps, barebones profile)?"
+                prompt = (
+                    "Run quick Nimbusware setup (Poetry deps, barebones profile)?\n\n"
+                    "Existing database and .env data are preserved."
+                )
         if not messagebox.askyesno("Install Nimbusware", prompt):
+            return
+
+        extra_args = self._postgres_extra_args(needs_postgres=needs_postgres)
+        if needs_postgres and extra_args is None:
             return
 
         def _worker() -> None:
@@ -299,6 +499,7 @@ class NimbuswareLauncherApp:
                     repo,
                     profile=profile,
                     setup_bundle=setup_bundle,
+                    extra_args=extra_args,
                     log=self._append_log,
                 )
             except FileNotFoundError as exc:
@@ -310,6 +511,7 @@ class NimbuswareLauncherApp:
                 )
                 return
             if code == 0:
+                self.root.after(0, self._sync_repo_ui)
                 self.root.after(
                     0,
                     lambda: messagebox.showinfo("Install complete", "Setup finished successfully."),
@@ -321,6 +523,103 @@ class NimbuswareLauncherApp:
                 )
 
         self._run_background("Installing...", _worker)
+
+    def run_convert(
+        self,
+        profile: str,
+        setup_bundle: str,
+        *,
+        needs_postgres: bool = False,
+    ) -> None:
+        if not is_nimbusware_checkout(self.repo):
+            messagebox.showerror("Convert failed", "Install Nimbusware before converting.")
+            return
+        state = read_install_state(self.repo)
+        target = InstallState(
+            install_profile=profile,
+            setup_bundle=setup_bundle,
+            edition="enterprise" if setup_bundle == SETUP_BUNDLE_ENTERPRISE else "individual",
+            database_url=state.database_url,
+        )
+        target_label = convert_label(target)
+        prompt = (
+            f"Switch from {convert_label(state)} to {target_label}?\n\n"
+            "This re-runs setup for the selected profile and bundle.\n"
+            "Your database, .env, and Ollama models are preserved."
+        )
+        if not messagebox.askyesno("Convert install", prompt):
+            return
+
+        extra_args = self._postgres_extra_args(needs_postgres=needs_postgres)
+        if needs_postgres and extra_args is None:
+            return
+
+        def _worker() -> None:
+            self._append_log(f"Converting install to {target_label}...")
+            try:
+                code = run_convert_install(
+                    self.repo,
+                    profile=profile,
+                    setup_bundle=setup_bundle,
+                    extra_args=extra_args,
+                    log=self._append_log,
+                )
+            except FileNotFoundError as exc:
+                message = str(exc)
+                self._append_log(message)
+                self.root.after(
+                    0,
+                    lambda msg=message: messagebox.showerror("Convert failed", msg),
+                )
+                return
+            if code == 0:
+                self.root.after(0, self._sync_repo_ui)
+                self.root.after(
+                    0,
+                    lambda: messagebox.showinfo(
+                        "Convert complete", "Install updated successfully."
+                    ),
+                )
+            else:
+                self.root.after(
+                    0,
+                    lambda: messagebox.showerror("Convert failed", f"Exit code {code}"),
+                )
+
+        self._run_background("Converting...", _worker)
+
+    def run_uninstall(self) -> None:
+        if not is_nimbusware_checkout(self.repo):
+            messagebox.showerror("Uninstall failed", "No Nimbusware install found.")
+            return
+        if not messagebox.askyesno(
+            "Uninstall Nimbusware",
+            "Remove the Python virtualenv and Poetry environment?\n\n"
+            "Your .env, PostgreSQL data, and Ollama models are preserved.\n"
+            "Re-run any setup button to reinstall dependencies.",
+        ):
+            return
+
+        def _worker() -> None:
+            try:
+                uninstall_nimbusware(self.repo, log=self._append_log)
+            except OSError as exc:
+                message = str(exc)
+                self._append_log(f"ERROR: {message}")
+                self.root.after(
+                    0,
+                    lambda msg=message: messagebox.showerror("Uninstall failed", msg),
+                )
+                return
+            self.root.after(
+                0,
+                lambda: messagebox.showinfo(
+                    "Uninstall complete",
+                    "Python environment removed. User data preserved.",
+                ),
+            )
+
+        self._run_background("Uninstalling...", _worker)
 
     def run_nimbusware(self) -> None:
         run_py = self.repo / "run.py"

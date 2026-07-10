@@ -352,3 +352,83 @@ def git_pull(root: Path, *, log: Callable[[str], None] | None = None) -> tuple[b
     if proc.returncode != 0:
         return False, out.strip() or "git pull failed"
     return True, out.strip() or "Updated successfully."
+
+
+def can_init_git_updates(root: Path) -> bool:
+    return (
+        is_nimbusware_checkout(root)
+        and not is_git_checkout(root)
+        and resolve_git_executable() is not None
+    )
+
+
+def updates_check_supported(root: Path) -> bool:
+    return updates_supported(root) or can_init_git_updates(root)
+
+
+def init_git_remote_for_updates(
+    root: Path,
+    remote_url: str,
+    *,
+    branch: str = "main",
+    log: Callable[[str], None] | None = None,
+) -> tuple[bool, str]:
+    """Turn an archive install into a git checkout tracking origin/main."""
+    if is_git_checkout(root):
+        return True, "Already a git checkout."
+    git = resolve_git_executable()
+    if not git:
+        return False, "git is not installed or not on PATH."
+
+    def _step(args: list[str]) -> subprocess.CompletedProcess[str]:
+        return run_git(root, *args, log=log)
+
+    init = _step(["init"])
+    if init.returncode != 0:
+        err = (init.stderr or init.stdout or "").strip()
+        return False, err or "git init failed"
+
+    remote = _step(["remote", "add", "origin", remote_url])
+    if remote.returncode != 0 and "already exists" not in (remote.stderr or "").lower():
+        err = (remote.stderr or remote.stdout or "").strip()
+        return False, err or "git remote add failed"
+
+    fetch = _step(["fetch", "origin", branch])
+    if fetch.returncode != 0:
+        err = (fetch.stderr or fetch.stdout or "").strip()
+        return False, err or f"git fetch origin {branch} failed"
+
+    add = _step(["add", "-A"])
+    if add.returncode != 0:
+        err = (add.stderr or add.stdout or "").strip()
+        return False, err or "git add failed"
+
+    status = _step(["status", "--porcelain"])
+    if status.returncode == 0 and status.stdout.strip():
+        commit = _step(["commit", "-m", "Nimbusware local install (archive)"])
+        if commit.returncode != 0:
+            err = (commit.stderr or commit.stdout or "").strip()
+            return False, err or "git commit failed"
+    elif status.returncode != 0:
+        err = (status.stderr or status.stdout or "").strip()
+        return False, err or "git status failed"
+
+    branch_proc = _step(["checkout", "-B", branch])
+    if branch_proc.returncode != 0:
+        err = (branch_proc.stderr or branch_proc.stdout or "").strip()
+        return False, err or "git checkout failed"
+
+    upstream = f"origin/{branch}"
+    merge = _step(["merge", "--allow-unrelated-histories", "--no-edit", upstream])
+    if merge.returncode != 0:
+        err = (merge.stderr or merge.stdout or "").strip()
+        return False, (
+            err or "Could not merge upstream. Resolve conflicts manually, then retry updates."
+        )
+
+    track = _step(["branch", "--set-upstream-to", upstream, branch])
+    if track.returncode != 0:
+        err = (track.stderr or track.stdout or "").strip()
+        return False, err or "git branch --set-upstream-to failed"
+
+    return True, f"Git initialized and tracking {upstream}."
