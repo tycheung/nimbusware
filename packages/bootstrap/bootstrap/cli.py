@@ -18,7 +18,11 @@ def curl_bootstrap_line(
     profile: str = _PROFILE_RECOMMENDED,
     target_dir: str = "./Nimbusware",
 ) -> str:
-    extras = "--skip-postgres" if profile == _PROFILE_BAREBONES else "--postgres-choice docker"
+    extras = (
+        "--skip-postgres"
+        if profile == _PROFILE_BAREBONES
+        else "--postgres-choice provided --skip-docker"
+    )
     seed = "--seed-config" if profile == _PROFILE_RECOMMENDED else ""
     flags = f"--non-interactive {extras} {seed}".split()
     flag_str = " ".join(flag for flag in flags if flag)
@@ -47,7 +51,8 @@ def install_script_argv(profile: str) -> list[str]:
             "--non-interactive",
             "--seed-config",
             "--postgres-choice",
-            "docker",
+            "provided",
+            "--skip-docker",
             "--install-profile",
             _PROFILE_RECOMMENDED,
         ]

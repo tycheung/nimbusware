@@ -275,9 +275,7 @@ def _resolve_postgres_choice(
     if args.postgres_choice:
         return args.postgres_choice.strip().lower()
     if args.non_interactive:
-        if docker_available and not args.skip_docker:
-            return "docker"
-        return "skip"
+        return "provided"
     (
         build_postgres_setup_options,
         _print_hints,
@@ -346,7 +344,7 @@ def _bootstrap_postgres(
         prompt_press_enter_when_ready,
         run_winget_postgresql_install,
     ) = _import_postgres_menu()
-    if choice != "skip":
+    if choice not in ("skip", "provided"):
         options = build_postgres_setup_options(
             docker_available=docker_available,
             skip_docker=args.skip_docker,
@@ -359,6 +357,66 @@ def _bootstrap_postgres(
                 f"PostgreSQL setup {choice!r} is not available: {opt.unavailable_reason}",
             )
     _log(f"\nPostgreSQL setup: {choice}")
+
+    if choice == "provided":
+        scripts_dir = _scripts_dir()
+        if str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+        from postgres_provision import (  # noqa: PLC0415
+            PostgresProvisionError,
+            postgres_url_reachable,
+            provision_from_admin_url,
+            resolve_admin_url,
+        )
+
+        packages = repo / "packages"
+        if str(packages) not in sys.path:
+            sys.path.insert(0, str(packages))
+        from env import set_env_var  # noqa: PLC0415
+        from env.dotenv import load_dotenv  # noqa: PLC0415
+
+        load_dotenv(repo_root=repo, override=False)
+        app_url = url.strip()
+        if postgres_url_reachable(app_url) or _postgres_reachable(app_url):
+            _log(f"PostgreSQL already reachable at {app_url}")
+            set_env_var("NIMBUSWARE_DATABASE_URL", app_url, repo_root=repo)
+            return True, app_url
+
+        admin_url = resolve_admin_url(
+            cli_admin_url=getattr(args, "postgres_admin_url", None),
+        )
+        if admin_url:
+            _log("Provisioning nimbusware role/database from admin URL...")
+            try:
+                app_url = provision_from_admin_url(admin_url, log=_log)
+            except PostgresProvisionError as exc:
+                raise SetupError(str(exc)) from exc
+            set_env_var("NIMBUSWARE_DATABASE_URL", app_url, repo_root=repo)
+            set_env_var("NIMBUSWARE_POSTGRES_ADMIN_URL", admin_url, repo_root=repo)
+            _wait_for_postgres(app_url)
+            return True, app_url
+
+        if _try_boot_existing_postgres_windows(args, repo, url):
+            _log("PostgreSQL is running (existing local installation).")
+            set_env_var("NIMBUSWARE_DATABASE_URL", url, repo_root=repo)
+            return True, url
+
+        if args.non_interactive:
+            _warn(
+                "PostgreSQL not reachable. Provide --database-url for an existing database "
+                "or --postgres-admin-url with superuser credentials to provision "
+                "nimbusware/nimbusware.",
+            )
+            return False, url
+
+        _, _, prompt_database_url, _, _, _ = _import_postgres_menu()
+        resolved = prompt_database_url(url)
+        if postgres_url_reachable(resolved) or _postgres_reachable(resolved):
+            set_env_var("NIMBUSWARE_DATABASE_URL", resolved, repo_root=repo)
+            return True, resolved
+        raise SetupError(
+            "PostgreSQL is not reachable. Pass --postgres-admin-url or install PostgreSQL locally.",
+        )
 
     if choice == "skip":
         _log("Skipping PostgreSQL setup.")
@@ -969,6 +1027,14 @@ def main(argv: list[str] | None = None) -> int:
         help=f"PostgreSQL URL (default: {DEFAULT_DATABASE_URL})",
     )
     parser.add_argument(
+        "--postgres-admin-url",
+        default=os.environ.get("NIMBUSWARE_POSTGRES_ADMIN_URL"),
+        help=(
+            "PostgreSQL superuser URL used to create the nimbusware role/database "
+            "(e.g. postgresql://postgres:secret@host:5432/postgres)"
+        ),
+    )
+    parser.add_argument(
         "--skip-postgres",
         action="store_true",
         help="Do not start Docker Postgres or apply schema",
@@ -1075,7 +1141,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--postgres-choice",
-        choices=("docker", "native", "winget", "manual", "custom_url", "skip", "packages"),
+        choices=(
+            "docker",
+            "native",
+            "winget",
+            "manual",
+            "custom_url",
+            "skip",
+            "packages",
+            "provided",
+        ),
         default=None,
         help="Non-interactive Postgres setup method (skips the menu)",
     )
@@ -1153,7 +1228,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.consumer_plan:
-        clone_url = "https://github.com/nimbusware/nimbusware.git"
+        clone_url = "https://github.com/tycheung/nimbusware.git"
         recommended = (
             f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
             f"| python - --clone {clone_url} --target-dir ./Nimbusware "
@@ -1258,7 +1333,7 @@ def main(argv: list[str] | None = None) -> int:
         if not postgres_ready and args.non_interactive:
             _warn(
                 "PostgreSQL was not configured. Re-run without --non-interactive for an "
-                "interactive menu, or pass --postgres-choice docker|native|manual|skip.",
+                "interactive menu, or pass --postgres-choice provided|native|manual|skip.",
             )
 
     if postgres_ready:

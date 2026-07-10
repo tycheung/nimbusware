@@ -25,27 +25,33 @@ def install_script_args(
     profile: str = INSTALL_PROFILE_BAREBONES,
     *,
     setup_bundle: str = SETUP_BUNDLE_DEFAULT,
+    extra_args: list[str] | None = None,
 ) -> list[str]:
     bundle_args = ["--setup-bundle", setup_bundle]
     if setup_bundle == SETUP_BUNDLE_ENTERPRISE:
         bundle_args.extend(["--edition", "enterprise"])
     if profile == INSTALL_PROFILE_FULL:
-        return [
+        args = [
             *bundle_args,
             "--non-interactive",
             "--seed-config",
             "--postgres-choice",
-            "docker",
+            "provided",
+            "--skip-docker",
             "--install-profile",
             INSTALL_PROFILE_FULL,
         ]
-    return [
-        *bundle_args,
-        "--non-interactive",
-        "--skip-postgres",
-        "--install-profile",
-        INSTALL_PROFILE_BAREBONES,
-    ]
+    else:
+        args = [
+            *bundle_args,
+            "--non-interactive",
+            "--skip-postgres",
+            "--install-profile",
+            INSTALL_PROFILE_BAREBONES,
+        ]
+    if extra_args:
+        args.extend(extra_args)
+    return args
 
 
 def github_archive_url(repo_url: str, *, branch: str = "main") -> str:
@@ -176,6 +182,7 @@ def run_install_script(
     *,
     profile: str = INSTALL_PROFILE_BAREBONES,
     setup_bundle: str = SETUP_BUNDLE_DEFAULT,
+    extra_args: list[str] | None = None,
     log: Callable[[str], None] | None = None,
 ) -> int:
     import os
@@ -185,7 +192,7 @@ def run_install_script(
     cmd = [
         *resolve_bootstrap_python(root),
         str(script),
-        *install_script_args(profile, setup_bundle=setup_bundle),
+        *install_script_args(profile, setup_bundle=setup_bundle, extra_args=extra_args),
     ]
     if log:
         log(f"$ {' '.join(cmd)}")
