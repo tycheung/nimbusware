@@ -53,6 +53,8 @@ Profile is persisted as `NIMBUSWARE_INSTALL_PROFILE` in `.env`.
 | Full setup | default | recommended |
 | Enterprise setup | enterprise | recommended |
 
+Full and Enterprise setup use `--postgres-choice provided` (your application URL or a superuser admin URL). The launcher also offers **Manage install** actions: switch between Quick/Full and Individual/Enterprise, or uninstall the Python environment without deleting database data.
+
 ## Examples
 
 ```bash

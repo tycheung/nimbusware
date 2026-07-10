@@ -11,7 +11,7 @@ Download launcher for your OS
         ↓
 Quick setup  →  Poetry deps, barebones profile, default setup bundle (no Postgres/Ollama)
    or
-Full setup   →  Poetry + Docker Postgres (when available) + Ollama recommended profile (default bundle)
+Full setup   →  Poetry + your PostgreSQL (app or admin URL) + Ollama recommended profile (default bundle)
    or
 Enterprise setup  →  Full setup + enterprise edition strict env + fleet seeds
         ↓
