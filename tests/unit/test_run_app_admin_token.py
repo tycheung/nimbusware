@@ -16,6 +16,7 @@ def test_start_servers_rejects_default_admin_token_on_public_bind(
     with pytest.raises(RuntimeError, match="dev default"):
         start_servers(root=tmp_path, api_host="0.0.0.0", api_port=18000)
 
+
 def test_start_servers_sets_nimbusware_api_port(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -54,4 +55,3 @@ def test_start_servers_sets_nimbusware_api_port(
     assert "34567" in api_url
     assert "34567" in console_url
     assert spawned
-
