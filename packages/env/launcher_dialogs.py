@@ -23,7 +23,7 @@ class PostgresSetupDialog(tk.Toplevel):
 
     def __init__(
         self,
-        parent: tk.Misc,
+        parent: tk.Tk | tk.Toplevel,
         *,
         default_database_url: str = DEFAULT_DATABASE_URL,
         default_admin_url: str = "",
@@ -102,7 +102,7 @@ class PostgresSetupDialog(tk.Toplevel):
 
 
 def prompt_postgres_setup(
-    parent: tk.Misc,
+    parent: tk.Tk | tk.Toplevel,
     *,
     default_database_url: str = DEFAULT_DATABASE_URL,
     default_admin_url: str = "",

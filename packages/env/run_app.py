@@ -138,6 +138,7 @@ def start_servers(
         env_port = os.environ.get("NIMBUSWARE_API_PORT", "").strip()
         api_port = int(env_port) if env_port else _pick_free_port(api_host)
     os.environ["NIMBUSWARE_API_HOST"] = api_host
+    os.environ["NIMBUSWARE_API_PORT"] = str(api_port)
     os.environ["PORT"] = str(api_port)
     os.environ["NIMBUSWARE_API_BASE"] = f"http://{api_host}:{api_port}/v1"
     os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")

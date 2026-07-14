@@ -159,7 +159,7 @@ def apply_launcher_theme(root: tk.Tk) -> LauncherTheme:
 
 def mono_font(root: tk.Misc) -> tkfont.Font:
     fonts = getattr(root, "_launcher_fonts", None)
-    if fonts:
+    if isinstance(fonts, tuple) and len(fonts) >= 3 and isinstance(fonts[2], tkfont.Font):
         return fonts[2]
     return tkfont.Font(family="Consolas" if sys.platform == "win32" else "Menlo", size=10)
 
