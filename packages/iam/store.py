@@ -278,7 +278,7 @@ class PostgresIamStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO api_key (
+                    INSERT INTO nimbusware_api_key (
                       key_id, tenant_id, key_prefix, key_hash, label,
                       role_taxonomy_keys, api_scopes
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -316,7 +316,7 @@ class PostgresIamStore:
                     """
                     SELECT k.key_id, k.tenant_id, k.role_taxonomy_keys, k.api_scopes,
                            k.revoked_at, t.slug
-                    FROM api_key k
+                    FROM nimbusware_api_key k
                     JOIN nimbusware_tenant t ON t.tenant_id = k.tenant_id
                     WHERE k.key_hash = %s
                     LIMIT 1

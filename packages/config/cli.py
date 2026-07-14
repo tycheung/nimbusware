@@ -86,7 +86,7 @@ def _build_parser() -> argparse.ArgumentParser:
         prog=_TOOL_NAME,
         description=(
             "Bootstrap or export Nimbusware operator config between Postgres "
-            "(config_document) and repo configs/ YAML for git review."
+            "(nimbusware_config_document) and repo configs/ YAML for git review."
         ),
     )
     _add_repo_root_arg(parser)

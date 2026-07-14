@@ -22,7 +22,7 @@ def start_config_notify_listener(
     hub: ConfigNotifyHub,
     stop_event: threading.Event,
 ) -> threading.Thread:
-    """Background thread: LISTEN on ``config_document`` until ``stop_event``."""
+    """Background thread: LISTEN on ``nimbusware_config_document`` until ``stop_event``."""
 
     def _run() -> None:
         try:

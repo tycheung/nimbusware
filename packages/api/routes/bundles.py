@@ -53,7 +53,7 @@ def get_bundle_catalog_source(orch: OrchDep) -> dict[str, Any]:
     if mat is not None and getattr(mat, "use_db", False):
         return {
             "authoritative": "postgres",
-            "document": "config_document",
+            "document": "nimbusware_config_document",
             "namespace": "policy",
             "document_key": "bundle-catalog",
         }

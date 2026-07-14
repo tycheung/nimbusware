@@ -95,7 +95,7 @@ def test_config_flags_and_listener_status() -> None:
     assert isinstance(config_notify_enabled(), bool)
     assert isinstance(config_notify_listener_enabled(), bool)
     status = listener_status(ConfigNotifyHub())
-    assert status["channel"] == "config_document"
+    assert status["channel"] == "nimbusware_config_document"
 
 
 def test_seed_preview_from_repo() -> None:

@@ -51,7 +51,7 @@ class PostgresMemoryChunkStore:
                 cur.execute(
                     """
 
-                    DELETE FROM memory_chunk
+                    DELETE FROM nimbusware_memory_chunk
 
                     WHERE tenant_id = %s AND org_scope_hash = %s
 
@@ -62,7 +62,7 @@ class PostgresMemoryChunkStore:
                 cur.execute(
                     """
 
-                    DELETE FROM memory_index_generation
+                    DELETE FROM nimbusware_memory_index_generation
 
                     WHERE tenant_id = %s AND org_scope_hash = %s
 
@@ -73,7 +73,7 @@ class PostgresMemoryChunkStore:
                 cur.execute(
                     """
 
-                    INSERT INTO memory_index_generation (
+                    INSERT INTO nimbusware_memory_index_generation (
 
                       generation_id, tenant_id, org_scope_hash, repo_scope_hash,
 
@@ -98,7 +98,7 @@ class PostgresMemoryChunkStore:
                     cur.execute(
                         """
 
-                        INSERT INTO memory_chunk (
+                        INSERT INTO nimbusware_memory_chunk (
 
                           chunk_id, generation_id, tenant_id, org_scope_hash, repo_scope_hash,
 
@@ -162,7 +162,7 @@ class PostgresMemoryChunkStore:
 
                            embedding_dim, embedding_vector
 
-                    FROM memory_chunk
+                    FROM nimbusware_memory_chunk
 
                     WHERE repo_scope_hash = %s
 
@@ -198,7 +198,7 @@ class PostgresMemoryChunkStore:
 
                            embedding_dim, embedding_vector
 
-                    FROM memory_chunk
+                    FROM nimbusware_memory_chunk
 
                     WHERE tenant_id = %s AND org_scope_hash = %s
 
@@ -247,7 +247,7 @@ class PostgresMemoryChunkStore:
 
                            manifest_relpath, created_at
 
-                    FROM memory_index_generation
+                    FROM nimbusware_memory_index_generation
 
                     WHERE {clause}
 

@@ -67,7 +67,7 @@ class PostgresConfigStore:
                     """
                     SELECT namespace, document_key, version, content,
                            content_sha256_16, updated_at
-                    FROM config_document
+                    FROM nimbusware_config_document
                     WHERE namespace = %s AND document_key = %s
                     """,
                     (namespace, document_key),
@@ -94,7 +94,7 @@ class PostgresConfigStore:
                 if expected_version is not None:
                     cur.execute(
                         """
-                        UPDATE config_document
+                        UPDATE nimbusware_config_document
                         SET version = version + 1,
                             content = %s,
                             content_sha256_16 = %s,
@@ -122,12 +122,12 @@ class PostgresConfigStore:
                 else:
                     cur.execute(
                         """
-                        INSERT INTO config_document (
+                        INSERT INTO nimbusware_config_document (
                           namespace, document_key, version, content,
                           content_sha256_16, updated_at
                         ) VALUES (%s, %s, 1, %s, %s, NOW())
                         ON CONFLICT (namespace, document_key) DO UPDATE SET
-                          version = config_document.version + 1,
+                          version = nimbusware_config_document.version + 1,
                           content = EXCLUDED.content,
                           content_sha256_16 = EXCLUDED.content_sha256_16,
                           updated_at = NOW()
@@ -150,7 +150,7 @@ class PostgresConfigStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT document_key FROM config_document
+                    SELECT document_key FROM nimbusware_config_document
                     WHERE namespace = %s ORDER BY document_key
                     """,
                     (namespace,),
@@ -163,7 +163,7 @@ class PostgresConfigStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    DELETE FROM config_document
+                    DELETE FROM nimbusware_config_document
                     WHERE namespace = %s AND document_key = %s
                     """,
                     (namespace, document_key),

@@ -50,27 +50,47 @@ def _connection_args(url: str) -> tuple[list[str], dict[str, str]]:
     return args, env
 
 
-def apply_sql_file(url: str, sql_path: Path, *, log=print) -> bool:
-    """Apply a SQL file. Returns True on success."""
+def apply_sql_file(url: str, sql_path: Path, *, log=print, reset: bool = False) -> bool:
+    """Apply a SQL file. Returns True on success.
+
+    When ``reset`` is True (or ``sql_path`` is the bootstrap ``postgres.sql``),
+    drop and recreate ``public`` before applying so leftover tables cannot drift.
+    """
     if not sql_path.is_file():
         raise FileNotFoundError(sql_path)
+    reset_path = sql_path.parent / "reset_public.sql"
+    should_reset = reset or sql_path.name == "postgres.sql"
+    files: list[Path] = []
+    if should_reset and reset_path.is_file():
+        files.append(reset_path)
+    files.append(sql_path)
     psql = find_psql_binary()
     if psql:
         conn_args, env = _connection_args(url)
-        cmd = [psql, *conn_args, "-f", str(sql_path)]
-        log(f"  $ {' '.join(cmd)}")
-        proc = subprocess.run(cmd, env=env, text=True)
-        return proc.returncode == 0
+        for path in files:
+            cmd = [psql, *conn_args, "-f", str(path)]
+            log(f"  $ {' '.join(cmd)}")
+            proc = subprocess.run(cmd, env=env, text=True)
+            if proc.returncode != 0:
+                return False
+        return True
     # psycopg cannot reliably execute multi-statement bootstrap SQL on all platforms.
     try:
         import psycopg
     except ImportError:
         return False
-    sql = sql_path.read_text(encoding="utf-8")
     with psycopg.connect(url, autocommit=True) as conn:
         with conn.cursor() as cur:
-            cur.execute(sql)
+            for path in files:
+                cur.execute(path.read_text(encoding="utf-8"))
     return True
+
+
+def reset_and_apply_schema(url: str, *, log=print) -> bool:
+    """Drop public schema and apply packages/store/schema/postgres.sql."""
+    repo = Path(__file__).resolve().parents[2]
+    sql_path = repo / "packages" / "store" / "schema" / "postgres.sql"
+    return apply_sql_file(url, sql_path, log=log, reset=True)
 
 
 def event_store_present(url: str) -> bool:

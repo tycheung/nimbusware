@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from config.materializer import ConfigMaterializer
 
-NOTIFY_CHANNEL = "config_document"
+NOTIFY_CHANNEL = "nimbusware_config_document"
 NOTIFY_EVENT_TYPE = "config.document.updated"
 
 
