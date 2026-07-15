@@ -1,5 +1,3 @@
-"""Launcher install management: read state, convert profiles, uninstall."""
-
 from __future__ import annotations
 
 import re

@@ -1,5 +1,3 @@
-"""Provision the Nimbusware application role/database from an admin PostgreSQL URL."""
-
 from __future__ import annotations
 
 import os

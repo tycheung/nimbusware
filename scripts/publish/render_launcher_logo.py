@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Rasterize launcher SVG logo to PNG for Tkinter (dev/build helper)."""
 
 from __future__ import annotations
 

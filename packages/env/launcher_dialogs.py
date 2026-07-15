@@ -1,5 +1,3 @@
-"""Tkinter dialogs used by the desktop launcher."""
-
 from __future__ import annotations
 
 import tkinter as tk

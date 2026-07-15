@@ -1,5 +1,3 @@
-"""Visual theme for the Nimbusware desktop launcher."""
-
 from __future__ import annotations
 
 import sys
