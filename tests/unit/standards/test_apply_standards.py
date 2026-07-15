@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from uuid import uuid4
 
+import pytest
+
 from standards.persist import apply_standards_at_run_start, standards_profile_from_rows
 from standards.preset_defaults import workspace_standards_is_custom
 
@@ -18,6 +20,11 @@ class _Store:
                 "metadata": event.metadata,
             },
         )
+
+
+@pytest.fixture(autouse=True)
+def _enable_standards_platform(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_STANDARDS_PLATFORM", "1")
 
 
 def test_apply_default_standards_at_run_start(tmp_path) -> None:
