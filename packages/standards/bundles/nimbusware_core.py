@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from standards.fs_walk import iter_workspace_files
 from standards.stream_results import CheckResult
 
 
@@ -39,9 +40,7 @@ def check_loc_budget(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
 def check_module_line_cap(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     max_lines = int(params.get("max_lines") or 1000)
     hits: list[str] = []
-    for path in workspace.rglob("*.py"):
-        if "__pycache__" in path.parts:
-            continue
+    for path in iter_workspace_files(workspace, suffix=".py"):
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
         if len(lines) > max_lines:
             hits.append(f"{path.relative_to(workspace)}: {len(lines)}")

@@ -5,13 +5,14 @@ import fnmatch
 from pathlib import Path
 from typing import Any
 
+from standards.fs_walk import iter_workspace_files
 from standards.stream_results import CheckResult
 
 
 def check_bare_except(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     globs = list(params.get("path_globs") or ["**/*.py"])
     hits: list[str] = []
-    for path in workspace.rglob("*.py"):
+    for path in iter_workspace_files(workspace, suffix=".py"):
         rel = str(path.relative_to(workspace)).replace("\\", "/")
         if not any(fnmatch.fnmatch(rel, g) for g in globs):
             continue

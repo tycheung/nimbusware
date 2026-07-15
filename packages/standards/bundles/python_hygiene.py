@@ -154,12 +154,17 @@ def check_orphan_modules(*, workspace: Path, params: dict[str, Any]) -> CheckRes
         root = workspace / root_name
         if not root.is_dir():
             continue
-        for path in root.rglob("*.py"):
+        for path in _iter_files(root, ["**/*.py"]):
+            # _iter_files paths are relative to ``root`` matching; rebase to workspace.
+            try:
+                rel_to_ws = path.relative_to(workspace.resolve())
+            except ValueError:
+                continue
             if path.name == "__init__.py" or path.name.startswith("test_"):
                 continue
             parent_init = path.parent / "__init__.py"
             if not parent_init.is_file() and path.parent != root:
-                orphans.append(str(path.relative_to(workspace)).replace("\\", "/"))
+                orphans.append(str(rel_to_ws).replace("\\", "/"))
     passed = not orphans
     return CheckResult(
         check_id="py.no_orphan_modules",
@@ -173,10 +178,8 @@ def check_orphan_modules(*, workspace: Path, params: dict[str, Any]) -> CheckRes
 def check_mypy_on_paths(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     globs = list(params.get("path_globs") or ["**/*.py"])
     targets: list[str] = []
-    for pattern in globs:
-        for path in workspace.rglob("*"):
-            if path.is_file() and path.match(pattern):
-                targets.append(str(path.relative_to(workspace)).replace("\\", "/"))
+    for path in _iter_files(workspace, globs):
+        targets.append(str(path.relative_to(workspace)).replace("\\", "/"))
     if not targets:
         return CheckResult(
             check_id="py.mypy_scoped",

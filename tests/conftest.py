@@ -27,6 +27,10 @@ def _unit_tests_use_file_config(
     monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
     # Avoid spawning pyright-langserver during ordinary unit runs (slow / flaky).
     monkeypatch.setenv("NIMBUSWARE_SLICE_LSP_ENABLED", "0")
+    # Full-repo standards / PERF+security evidence walks are integration territory.
+    # Leaving them on makes unit jobs hang on poetry `.venv` trees.
+    monkeypatch.setenv("NIMBUSWARE_STANDARDS_PLATFORM", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_P3_EVIDENCE", "0")
 
 
 @pytest.fixture(autouse=True)

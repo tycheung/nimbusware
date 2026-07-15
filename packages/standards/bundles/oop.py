@@ -4,15 +4,14 @@ import ast
 from pathlib import Path
 from typing import Any
 
+from standards.fs_walk import iter_workspace_files
 from standards.stream_results import CheckResult
 
 
 def check_class_loc(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     max_loc = int(params.get("max_class_loc") or 200)
     hits: list[str] = []
-    for path in workspace.rglob("*.py"):
-        if not path.is_file():
-            continue
+    for path in iter_workspace_files(workspace, suffix=".py"):
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
         except SyntaxError:
