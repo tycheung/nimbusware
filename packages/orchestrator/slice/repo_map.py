@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import ast
+import os
+from collections.abc import Iterator
 from pathlib import Path
 
 _SKIP_DIR_NAMES: frozenset[str] = frozenset(
@@ -25,6 +27,16 @@ _SKIP_DIR_NAMES: frozenset[str] = frozenset(
 
 def _should_skip_dir(name: str) -> bool:
     return name in _SKIP_DIR_NAMES or name.startswith(".")
+
+
+def _iter_repo_py_files(root: Path) -> Iterator[Path]:
+    """Yield ``*.py`` under root, pruning cache/venv/hidden dirs before descent."""
+    root_s = str(root)
+    for dirpath, dirnames, filenames in os.walk(root_s, topdown=True, followlinks=False):
+        dirnames[:] = [d for d in dirnames if not _should_skip_dir(d)]
+        for name in filenames:
+            if name.endswith(".py"):
+                yield Path(dirpath, name)
 
 
 def _truncate(text: str, limit: int) -> str:
@@ -71,9 +83,12 @@ def build_repo_tree_excerpt(
 
 def _module_name_for_path(repo_root: Path, path: Path) -> str | None:
     try:
-        rel = path.resolve().relative_to(repo_root.resolve())
+        rel = path.relative_to(repo_root)
     except ValueError:
-        return None
+        try:
+            rel = path.resolve().relative_to(repo_root.resolve())
+        except ValueError:
+            return None
     if rel.suffix != ".py":
         return None
     parts = list(rel.parts)
@@ -85,13 +100,12 @@ def _module_name_for_path(repo_root: Path, path: Path) -> str | None:
 
 
 def _resolve_import_to_path(repo_root: Path, module: str, *, level: int = 0) -> Path | None:
-    root = repo_root.resolve()
     if level > 0:
         return None
-    candidate = root.joinpath(*module.split(".")).with_suffix(".py")
+    candidate = repo_root.joinpath(*module.split(".")).with_suffix(".py")
     if candidate.is_file():
         return candidate
-    init_candidate = root.joinpath(*module.split("."), "__init__.py")
+    init_candidate = repo_root.joinpath(*module.split("."), "__init__.py")
     if init_candidate.is_file():
         return init_candidate
     return None
@@ -180,9 +194,12 @@ def _imports_in_file(path: Path) -> list[str]:
 
 def _rel_py_path(root: Path, path: Path) -> str | None:
     try:
-        rel = path.resolve().relative_to(root)
+        rel = path.relative_to(root)
     except ValueError:
-        return None
+        try:
+            rel = path.resolve().relative_to(root)
+        except ValueError:
+            return None
     if rel.suffix != ".py":
         return None
     return str(rel).replace("\\", "/")
@@ -200,6 +217,50 @@ def _forward_neighbor_rels(root: Path, path: Path, *, seen: set[str]) -> list[st
     return out
 
 
+_REVERSE_SCAN_FILE_CAP = 400
+
+
+def _scan_roots_for_targets(root: Path, target_modules: dict[str, Path]) -> list[Path]:
+    """Limit reverse scans to target package trees instead of the whole repo."""
+    scan: set[Path] = set()
+    for path in target_modules.values():
+        try:
+            rel = path.relative_to(root)
+        except ValueError:
+            continue
+        parts = rel.parts
+        if len(parts) >= 2:
+            scan.add(root.joinpath(*parts[:2]))
+        elif parts:
+            scan.add(root / parts[0])
+        if path.parent != root:
+            scan.add(path.parent)
+    return [p for p in sorted(scan) if p.is_dir()] or [root]
+
+
+def _iter_scoped_py_files(scan_roots: list[Path], *, cap: int) -> Iterator[Path]:
+    seen: set[str] = set()
+    count = 0
+    for base in scan_roots:
+        for path in _iter_repo_py_files(base):
+            key = str(path)
+            if key in seen:
+                continue
+            seen.add(key)
+            yield path
+            count += 1
+            if count >= cap:
+                return
+
+
+def _imports_mention_targets(imports: list[str], target_modules: dict[str, Path]) -> bool:
+    for imp in imports:
+        for tmod in target_modules:
+            if imp == tmod.split(".")[0] or imp.startswith(tmod):
+                return True
+    return False
+
+
 def _reverse_neighbor_rels(
     root: Path,
     target_modules: dict[str, Path],
@@ -209,26 +270,26 @@ def _reverse_neighbor_rels(
     budget: int,
 ) -> list[str]:
     out: list[str] = []
-    for other in root.rglob("*.py"):
+    scan_roots = _scan_roots_for_targets(root, target_modules)
+    needles = {tmod.split(".")[0] for tmod in target_modules}
+    needles.update(target_modules)
+    for other in _iter_scoped_py_files(scan_roots, cap=_REVERSE_SCAN_FILE_CAP):
         if len(out) >= budget:
             break
-        if any(part in _SKIP_DIR_NAMES for part in other.parts):
-            continue
         other_mod = _module_name_for_path(root, other)
         if not other_mod or other_mod in target_modules:
             continue
-        for imp in _imports_resolved(root, other):
-            for tmod in target_modules:
-                if imp == tmod.split(".")[0] or imp.startswith(tmod):
-                    rel_other = _rel_py_path(root, other)
-                    if (
-                        rel_other
-                        and rel_other not in seen
-                        and rel_other not in extras
-                        and rel_other not in out
-                    ):
-                        out.append(rel_other)
-                    break
+        try:
+            text = other.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if not any(needle in text for needle in needles):
+            continue
+        if not _imports_mention_targets(_imports_in_file(other), target_modules):
+            continue
+        rel_other = _rel_py_path(root, other)
+        if rel_other and rel_other not in seen and rel_other not in extras and rel_other not in out:
+            out.append(rel_other)
         if len(out) >= budget:
             break
     return out
@@ -345,11 +406,12 @@ def build_import_graph_excerpt(
         if len(edges) >= max_edges:
             break
 
-    for other in root.rglob("*.py"):
+    for other in _iter_scoped_py_files(
+        _scan_roots_for_targets(root, target_modules),
+        cap=_REVERSE_SCAN_FILE_CAP,
+    ):
         if len(edges) >= max_edges:
             break
-        if any(part in _SKIP_DIR_NAMES for part in other.parts):
-            continue
         other_mod = _module_name_for_path(root, other)
         if not other_mod or other_mod in target_modules:
             continue

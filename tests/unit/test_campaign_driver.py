@@ -30,6 +30,10 @@ def test_generate_heuristic_backlog_has_bounded_slices() -> None:
 @pytest.fixture(autouse=True)
 def _single_stub_slice(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
+    monkeypatch.setenv("NIMBUSWARE_STANDARDS_PLATFORM", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_LSP_ENABLED", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_P3_EVIDENCE", "0")
 
 
 def test_campaign_driver_tick_generates_backlog() -> None:

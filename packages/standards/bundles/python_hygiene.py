@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import fnmatch
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -9,15 +10,44 @@ from typing import Any
 
 from standards.stream_results import CheckResult
 
+_SKIP_DIR_NAMES: frozenset[str] = frozenset(
+    {
+        ".git",
+        ".hg",
+        ".svn",
+        "__pycache__",
+        ".venv",
+        "venv",
+        "node_modules",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+        "dist",
+        "build",
+        ".tox",
+        ".eggs",
+    },
+)
+
+
+def _should_skip_dir(name: str) -> bool:
+    return name in _SKIP_DIR_NAMES or name.startswith(".")
+
 
 def _iter_files(workspace: Path, globs: list[str]) -> list[Path]:
+    root = workspace.resolve()
     out: list[Path] = []
-    for path in sorted(workspace.rglob("*")):
-        if not path.is_file():
-            continue
-        if any(path.match(g) for g in globs):
-            out.append(path)
-    return out
+    for dirpath, dirnames, filenames in os.walk(str(root), topdown=True, followlinks=False):
+        dirnames[:] = [d for d in dirnames if not _should_skip_dir(d)]
+        for name in filenames:
+            path = Path(dirpath, name)
+            try:
+                rel = str(path.relative_to(root)).replace("\\", "/")
+            except ValueError:
+                continue
+            if any(path.match(g) or fnmatch.fnmatch(rel, g) for g in globs):
+                out.append(path)
+    return sorted(out)
 
 
 def check_config_module_loc(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
@@ -69,9 +99,7 @@ def check_pydantic_v2(*, workspace: Path, params: dict[str, Any]) -> CheckResult
 def check_init_exports_only(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     max_non_import = int(params.get("max_non_import_loc") or 40)
     violations: list[str] = []
-    for path in workspace.rglob("__init__.py"):
-        if not path.is_file():
-            continue
+    for path in _iter_files(workspace, ["**/__init__.py"]):
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
         except SyntaxError:
@@ -102,9 +130,7 @@ def check_init_exports_only(*, workspace: Path, params: dict[str, Any]) -> Check
 def check_env_access_pattern(*, workspace: Path, params: dict[str, Any]) -> CheckResult:
     allow = list(params.get("allow_globs") or ["**/env.py", "**/settings.py"])
     hits: list[str] = []
-    for path in workspace.rglob("*.py"):
-        if not path.is_file():
-            continue
+    for path in _iter_files(workspace, ["**/*.py"]):
         rel = str(path.relative_to(workspace)).replace("\\", "/")
         if any(fnmatch.fnmatch(rel, g) for g in allow):
             continue

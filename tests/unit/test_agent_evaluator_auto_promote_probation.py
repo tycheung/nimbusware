@@ -30,6 +30,15 @@ from store.memory import InMemoryEventStore
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
+def _enable_agent_evaluator_auto_promote(tmp: Path) -> None:
+    """Overlay thin ``agent_evaluator_on`` (extends fragment) with auto-promote."""
+    wf_path = tmp / "configs" / "workflows" / "agent_evaluator_on.yaml"
+    wf_path.write_text(
+        "extends: fragments/agent_evaluator\nagent_evaluator:\n  auto_promote_probation: true\n",
+        encoding="utf-8",
+    )
+
+
 def _minimal_shelves(tmp: Path, *, commerce_on_probation: bool) -> None:
     cfg = tmp / "configs" / "personas"
     cfg.mkdir(parents=True, exist_ok=True)
@@ -202,16 +211,7 @@ def test_pipeline_env_suppresses_auto_promote(
         yaml.dump(data, sort_keys=False, allow_unicode=True),
         encoding="utf-8",
     )
-    wf_path = tmp_path / "configs" / "workflows" / "agent_evaluator_on.yaml"
-    wtxt = wf_path.read_text(encoding="utf-8")
-    if "auto_promote_probation:" not in wtxt:
-        wf_path.write_text(
-            wtxt.replace(
-                "  persona_id: commerce\n",
-                "  persona_id: commerce\n  auto_promote_probation: true\n",
-            ),
-            encoding="utf-8",
-        )
+    _enable_agent_evaluator_auto_promote(tmp_path)
     monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
     monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE", "0")
 
@@ -259,16 +259,7 @@ def test_pipeline_maybe_emit_promotes_commerce_on_probation(
         yaml.dump(data, sort_keys=False, allow_unicode=True),
         encoding="utf-8",
     )
-    wf_path = tmp_path / "configs" / "workflows" / "agent_evaluator_on.yaml"
-    wtxt = wf_path.read_text(encoding="utf-8")
-    if "auto_promote_probation:" not in wtxt:
-        wf_path.write_text(
-            wtxt.replace(
-                "  persona_id: commerce\n",
-                "  persona_id: commerce\n  auto_promote_probation: true\n",
-            ),
-            encoding="utf-8",
-        )
+    _enable_agent_evaluator_auto_promote(tmp_path)
     monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
     monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE", raising=False)
 

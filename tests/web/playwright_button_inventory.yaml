@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 182
+  total_buttons: 186
   clicked: 41
   visible_only: 13
-  unwired: 128
-  click_ratio: 0.2253
+  unwired: 132
+  click_ratio: 0.2204
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -1093,6 +1093,12 @@ buttons:
   label: Save deploy labels
   clicked_in: []
   visible_only_in: []
+- test_id: maker-settings-enforcement-profile-save
+  app: maker
+  source: packages/maker_web/static/js/tabs/settings_shell_html.js
+  label: Save strictness profile
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-settings-industry-critic-save
   app: maker
   source: packages/maker_web/static/js/tabs/settings_shell_html.js
@@ -1159,6 +1165,24 @@ buttons:
   app: maker
   source: packages/maker_web/static/js/tabs/settings_shell_html.js
   label: Load candidates
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-standards-profile-save
+  app: maker
+  source: packages/maker_web/static/js/standards-ribbon.js
+  label: Save profile
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-standards-run
+  app: maker
+  source: packages/maker_web/static/js/standards-ribbon.js
+  label: Run now
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-standards-save
+  app: maker
+  source: packages/maker_web/static/js/standards-ribbon.js
+  label: Apply to run
   clicked_in: []
   visible_only_in: []
 - test_id: maker-surface-launch-summary

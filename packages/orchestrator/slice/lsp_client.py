@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import json
 import logging
 import os
@@ -7,6 +8,8 @@ import shlex
 import shutil
 import subprocess
 import sys
+import threading
+import time
 from collections.abc import Sequence
 from contextlib import suppress
 from pathlib import Path
@@ -43,10 +46,12 @@ def _encode_message(payload: dict[str, Any]) -> bytes:
     return header + body
 
 
-def _read_content_length(stream: Any) -> int:
+def _read_content_length(stream: Any, *, deadline: float | None = None) -> int:
     length = 0
     while True:
-        line = stream.readline()
+        line = _readline_deadline(stream, deadline)
+        if line is None:
+            return 0
         if not line:
             return 0
         if line in (b"\r\n", b"\n"):
@@ -56,12 +61,77 @@ def _read_content_length(stream: Any) -> int:
     return length
 
 
-def read_lsp_message(stream: Any) -> dict[str, Any] | None:
+def _readline_deadline(stream: Any, deadline: float | None) -> bytes | None:
+    """Read one line; return None if deadline (perf_counter) expires."""
+    import time
+
+    if deadline is None:
+        return stream.readline()
+    remaining = deadline - time.perf_counter()
+    if remaining <= 0:
+        return None
+    try:
+        stream.fileno()
+    except (AttributeError, io.UnsupportedOperation, OSError):
+        return stream.readline()
+
+    box: list[bytes | None] = []
+    err: list[BaseException] = []
+
+    def _worker() -> None:
+        try:
+            box.append(stream.readline())
+        except BaseException as exc:  # noqa: BLE001 - surface to caller
+            err.append(exc)
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    thread.join(timeout=remaining)
+    if thread.is_alive():
+        return None
+    if err:
+        raise err[0]
+    return box[0] if box else None
+
+
+def _read_exact_deadline(stream: Any, n: int, *, deadline: float | None) -> bytes | None:
+    import time
+
+    if deadline is None:
+        return stream.read(n)
+    remaining = deadline - time.perf_counter()
+    if remaining <= 0:
+        return None
+    try:
+        stream.fileno()
+    except (AttributeError, io.UnsupportedOperation, OSError):
+        return stream.read(n)
+
+    box: list[bytes | None] = []
+    err: list[BaseException] = []
+
+    def _worker() -> None:
+        try:
+            box.append(stream.read(n))
+        except BaseException as exc:  # noqa: BLE001
+            err.append(exc)
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    thread.join(timeout=remaining)
+    if thread.is_alive():
+        return None
+    if err:
+        raise err[0]
+    return box[0] if box else None
+
+
+def read_lsp_message(stream: Any, *, deadline: float | None = None) -> dict[str, Any] | None:
     """Read one LSP JSON-RPC message from a byte stream (for tests and client)."""
-    n = _read_content_length(stream)
+    n = _read_content_length(stream, deadline=deadline)
     if n <= 0:
         return None
-    raw = stream.read(n)
+    raw = _read_exact_deadline(stream, n, deadline=deadline)
     if not raw:
         return None
     data = json.loads(raw.decode("utf-8"))
@@ -87,14 +157,14 @@ def resolve_lsp_command_argv() -> list[str] | None:
         return shlex.split(override, posix=os.name != "nt")
     for candidate in _venv_langserver_candidates():
         if candidate.is_file():
-            return [str(candidate)]
+            return [str(candidate), "--stdio"]
     for name in ("pyright-langserver", "pyright-langserver.cmd"):
         found = shutil.which(name)
         if found:
-            return [found]
+            return [found, "--stdio"]
     npx = shutil.which("npx")
     if npx:
-        return [npx, "pyright-langserver"]
+        return [npx, "--yes", "pyright-langserver", "--stdio"]
     return None
 
 
@@ -146,16 +216,13 @@ def _request(
     if params is not None:
         payload["params"] = params
     write_lsp_message(proc.stdin, payload)
-    deadline = timeout_sec
-    import time
-
-    t0 = time.perf_counter()
-    while time.perf_counter() - t0 < deadline:
+    deadline = time.perf_counter() + timeout_sec
+    while time.perf_counter() < deadline:
         if proc.stdout is None:
             return None
-        msg = read_lsp_message(proc.stdout)
+        msg = read_lsp_message(proc.stdout, deadline=deadline)
         if msg is None:
-            continue
+            return None
         if msg.get("id") == msg_id:
             return msg
     return None

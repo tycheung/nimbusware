@@ -83,7 +83,7 @@ def test_resolve_lsp_command_prefers_venv_scripts(monkeypatch, tmp_path: Path) -
     monkeypatch.setattr("orchestrator.slice.lsp_client.shutil.which", lambda _name: None)
     monkeypatch.setattr(sys, "executable", str(python))
     argv = resolve_lsp_command_argv()
-    assert argv == [str(langserver)]
+    assert argv == [str(langserver), "--stdio"]
 
 
 def test_symbol_sketch_fallback_appends_import_graph(tmp_path: Path) -> None:

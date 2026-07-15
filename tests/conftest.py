@@ -17,14 +17,16 @@ def _unit_tests_use_file_config(
 ) -> None:
     """Unit tests use on-disk ``configs/`` or ``tmp_path`` trees.
 
-      ``NIMBUSWARE_DATABASE_URL`` from ``.env`` applies only to ``@pytest.mark.integration``
-    tests (and tests that ``setenv`` Postgres explicitly mid-test).
+    Strip ``NIMBUSWARE_DATABASE_URL`` from ``.env`` for non-integration tests
+    (and tests that ``setenv`` Postgres explicitly mid-test).
     """
     if request.node.get_closest_marker("integration") is not None:
         return
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
     # GitHub unit job has no NIMBUSWARE_USE_LLM; local .env often sets 0 for stub runs.
     monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
+    # Avoid spawning pyright-langserver during ordinary unit runs (slow / flaky).
+    monkeypatch.setenv("NIMBUSWARE_SLICE_LSP_ENABLED", "0")
 
 
 @pytest.fixture(autouse=True)

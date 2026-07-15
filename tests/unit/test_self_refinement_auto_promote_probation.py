@@ -104,17 +104,10 @@ def test_pipeline_env_suppresses_sr_auto_promote(
         encoding="utf-8",
     )
     wf_path = tmp_path / "configs" / "workflows" / "self_refinement_on.yaml"
-    wtxt = wf_path.read_text(encoding="utf-8")
-    wtxt = wtxt.replace(
-        "auto_promote_probation: false",
-        "auto_promote_probation: true",
+    wf_path.write_text(
+        "extends: fragments/self_refinement\nself_refinement:\n  auto_promote_probation: true\n",
+        encoding="utf-8",
     )
-    if "auto_promote_probation:" not in wtxt:
-        wtxt = wtxt.replace(
-            "  enabled: true\n",
-            "  enabled: true\n  auto_promote_probation: true\n",
-        )
-    wf_path.write_text(wtxt, encoding="utf-8")
     monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", raising=False)
     monkeypatch.setenv("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE", "0")
 
@@ -165,17 +158,10 @@ def test_pipeline_maybe_emit_sr_promotes_commerce_on_probation(
         encoding="utf-8",
     )
     wf_path = tmp_path / "configs" / "workflows" / "self_refinement_on.yaml"
-    wtxt = wf_path.read_text(encoding="utf-8")
-    wtxt = wtxt.replace(
-        "auto_promote_probation: false",
-        "auto_promote_probation: true",
+    wf_path.write_text(
+        "extends: fragments/self_refinement\nself_refinement:\n  auto_promote_probation: true\n",
+        encoding="utf-8",
     )
-    if "auto_promote_probation:" not in wtxt:
-        wtxt = wtxt.replace(
-            "  enabled: true\n",
-            "  enabled: true\n  auto_promote_probation: true\n",
-        )
-    wf_path.write_text(wtxt, encoding="utf-8")
     monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", raising=False)
     monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE", raising=False)
 

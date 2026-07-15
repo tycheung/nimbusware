@@ -68,6 +68,22 @@ def test_expand_target_paths_multi_hop_import_chain(tmp_path: Path) -> None:
     assert "pkg/c.py" in two_hop
 
 
+def test_expand_target_paths_skips_venv_tree(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (pkg / "b.py").write_text("from pkg import a\n", encoding="utf-8")
+    venv = tmp_path / ".venv" / "lib" / "site-packages" / "spam"
+    venv.mkdir(parents=True)
+    for i in range(300):
+        (venv / f"mod_{i}.py").write_text("from pkg import a\n", encoding="utf-8")
+    expanded = expand_target_paths(tmp_path, ["pkg/a.py"], max_neighbors=2)
+    assert "pkg/a.py" in expanded
+    assert "pkg/b.py" in expanded
+    assert all(".venv" not in p for p in expanded)
+
+
 def test_repo_map_respects_char_cap(tmp_path: Path) -> None:
     for i in range(20):
         (tmp_path / f"file_{i}.py").write_text(f"x{i} = {i}\n", encoding="utf-8")

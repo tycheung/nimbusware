@@ -3,6 +3,22 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from orchestrator.slice.repo_map import _should_skip_dir
+
+
+def _iter_named_files(workspace: Path, filename: str) -> list[Path]:
+    """Find ``filename`` under workspace, pruning venv/cache/hidden dirs."""
+    root = workspace.resolve()
+    root_s = str(root)
+    found: list[Path] = []
+    import os
+
+    for dirpath, dirnames, filenames in os.walk(root_s, topdown=True, followlinks=False):
+        dirnames[:] = [d for d in dirnames if not _should_skip_dir(d)]
+        if filename in filenames:
+            found.append(Path(dirpath, filename))
+    return sorted(found)
+
 
 def discover_entrypoint_modules(workspace: Path) -> list[str]:
     ws = workspace.resolve()
@@ -19,9 +35,7 @@ def discover_entrypoint_modules(workspace: Path) -> list[str]:
         if (ws / rel).is_file():
             _add(rel)
 
-    for py in sorted(ws.rglob("__main__.py")):
-        if any(part.startswith(".") for part in py.parts):
-            continue
+    for py in _iter_named_files(ws, "__main__.py"):
         _add(str(py.relative_to(ws)).replace("\\", "/"))
 
     pyproject = ws / "pyproject.toml"
@@ -47,9 +61,7 @@ def discover_entrypoint_modules(workspace: Path) -> list[str]:
                             _add(candidate)
                             break
 
-    for py in sorted(ws.rglob("app.py")):
-        if any(part.startswith(".") for part in py.parts):
-            continue
+    for py in _iter_named_files(ws, "app.py"):
         rel = str(py.relative_to(ws)).replace("\\", "/")
         if "api" in rel or rel.endswith("app.py"):
             _add(rel)
@@ -60,9 +72,7 @@ def discover_entrypoint_modules(workspace: Path) -> list[str]:
 def discover_test_seed_modules(workspace: Path) -> set[str]:
     seeds: set[str] = set()
     ws = workspace.resolve()
-    for conftest in sorted(ws.rglob("conftest.py")):
-        if any(part.startswith(".") for part in conftest.parts):
-            continue
+    for conftest in _iter_named_files(ws, "conftest.py"):
         seeds.add(str(conftest.relative_to(ws)).replace("\\", "/"))
         for py in conftest.parent.glob("test_*.py"):
             seeds.add(str(py.relative_to(ws)).replace("\\", "/"))

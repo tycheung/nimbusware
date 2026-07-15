@@ -14,6 +14,10 @@ from orchestrator.run_worker import run_worker_loop
 def _dispatch_memory(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "memory")
     monkeypatch.setenv("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
+    monkeypatch.setenv("NIMBUSWARE_STANDARDS_PLATFORM", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_LSP_ENABLED", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_P3_EVIDENCE", "0")
 
 
 def test_run_worker_processes_campaign_tick() -> None:
