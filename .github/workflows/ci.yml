@@ -16,6 +16,12 @@ on:
 # live in .github/workflows/bundle_faiss_index.yml (fo128 / PLAN_GAP §14 #12).
 # Optional fast pre-check bundle: poetry run python scripts/ci/fast_gates.py
 
+# Cancel superseded push/PR runs so a hung unit pytest cannot burn hours after the
+# next commit already invalidated the branch tip.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   streams:
     timeout-minutes: 45
@@ -68,8 +74,11 @@ jobs:
         run: poetry run python scripts/ci/aggregate_stream_results.py stream-results/*.json
 
   unit:
+    # Healthy unit+coverage is ~15–25m after stream-aggregate. Cap below the old
+    # .venv-walk hang mode (3h+) so a stuck pytest fails fast with timed_out.
     needs: [stream-aggregate]
     runs-on: ubuntu-latest
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -110,16 +119,20 @@ jobs:
       - name: Pip audit
         run: poetry run pip-audit
       - name: Pytest unit
+        # faulthandler dump after 90s stall helps diagnose future hangs vs full job timeout.
+        timeout-minutes: 40
         run: |
           poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e and not e2e_journey and not e2e_stack and not slice_e2e" \
             --cov=packages \
             --cov-report=term-missing:skip-covered \
             --cov-report=json:.ci_coverage.json \
-            --cov-fail-under=75
+            --cov-fail-under=75 \
+            -o faulthandler_timeout=90
           poetry run python scripts/ci/coverage_package_floors.py --report .ci_coverage.json
           rm -f .ci_coverage.json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          PYTHONUNBUFFERED: "1"
       - name: slice.e2e CI gate
         run: poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
         env:
