@@ -98,7 +98,20 @@ streams:
     checks:
       - id: pytest.unit
         default_verdict: hard_gate
-        command: ["poetry", "run", "pytest", "tests", "-q", "-m", "not integration and not slow and not benchmark and not e2e_stack"]
+        # Unit/API/web only. Exclude e2e/journey markers (owned by dedicated e2e jobs).
+        # Local ci_check and GHA omit this stream and run pytest once via the unit job
+        # (NIMBUSWARE_CI_STREAMS_SKIP_TEST / matrix exclusion) to avoid a multi-hour
+        # duplicate of ~3700 tests.
+        command:
+          [
+            "poetry",
+            "run",
+            "pytest",
+            "tests",
+            "-q",
+            "-m",
+            "not integration and not slow and not benchmark and not e2e and not e2e_journey and not e2e_stack and not slice_e2e",
+          ]
   product:
     label: Nimbusware product contract
     checks:

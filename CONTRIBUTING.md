@@ -62,7 +62,7 @@ See [tests/README.md](tests/README.md) for test layout and markers.
 
 **Composite contract tests:** multi-case API/helper contracts belong in `tests/unit/composite_contracts/*_matrix.py` with parametrized runners (`matrix_runner.py`); keep per-file tests under ~200 lines (size gate allowlist is empty — all composite contract tests migrated Jul 2026).
 
-**Local CI dedup:** `ci_check.ps1` / `ci_check.sh` set `NIMBUSWARE_CI_STREAMS_SKIP_TEST=1` before `run_all_streams.py` so the monorepo profile does not re-run the full pytest suite (GitHub Actions stream matrix jobs are unchanged).
+**Pytest dedup:** `ci_check.ps1` / `ci_check.sh` set `NIMBUSWARE_CI_STREAMS_SKIP_TEST=1` before `run_all_streams.py`, and GitHub Actions omits the `test` stream from the `streams` matrix. The single full `pytest.unit` run is the `unit` job / coverage step (do not re-add `test` to the matrix — it duplicates ~3700 tests for hours).
 
 **Browser verify (`slice.e2e`)** is **on by default** in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml). Install Playwright locally or set `NIMBUSWARE_SLICE_E2E_COMMAND`; the stage **SKIP**s when no runner is available. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a command that asserts `index.html` exists in the fixture workspace; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
 

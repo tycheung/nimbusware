@@ -36,7 +36,7 @@ mapfile -t _mypy_targets < <(poetry run python scripts/ci/mypy_ci_targets.py)
 poetry run mypy "${_mypy_targets[@]}"
 poetry run bandit -c pyproject.toml -r packages -lll -q
 poetry run pip-audit
-poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e_stack" \
+poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e and not e2e_journey and not e2e_stack and not slice_e2e" \
   --cov=packages \
   --cov-report=term-missing:skip-covered \
   --cov-report="json:${COV_JSON}" \

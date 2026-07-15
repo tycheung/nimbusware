@@ -43,6 +43,11 @@ def test_ci_yml_stream_jobs_includes_streams() -> None:
     for step in _STREAM_CI_YML:
         assert step in text, f"missing in ci.yml streams jobs: {step}"
     assert "hygiene" in text and "performance" in text
+    streams_block = text[text.index("  streams:") : text.index("  stream-aggregate:")]
+    # pytest.unit lives in the unit job; duplicating it here hangs GHA for hours.
+    assert "- test\n" not in streams_block
+    assert "NIMBUSWARE_CI_STREAMS_SKIP_TEST" in _PS1.read_text(encoding="utf-8")
+    assert "NIMBUSWARE_CI_STREAMS_SKIP_TEST" in _SH.read_text(encoding="utf-8")
 
 
 def test_ci_yml_unit_job_includes_critical_steps() -> None:
