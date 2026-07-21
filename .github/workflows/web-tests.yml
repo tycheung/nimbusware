@@ -26,7 +26,7 @@ jobs:
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_DATABASE_URL: ""
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "20"
       - name: Vitest maker_web
