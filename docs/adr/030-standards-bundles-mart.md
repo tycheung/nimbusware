@@ -81,7 +81,7 @@ Operator configures per-connector verdict in Maker **Settings → Standards** al
 - Depends on ADR 029 stream runner and API routes.
 - `workspace_ci_runner.run_enforcement_bundle` delegates paradigm checks to `standards.runner`.
 - Community bundles require explicit operator opt-in; fleet can block `origin: community`.
-- Documentation: `PLAN_GAP.md` (local backlog) and §20.41 of the normative plan track remaining depth; this ADR is the normative contract for forks.
+- Documentation: this ADR is the normative contract for forks.
 
 ## Alternatives considered
 

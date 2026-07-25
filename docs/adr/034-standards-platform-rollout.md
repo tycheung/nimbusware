@@ -8,7 +8,7 @@ Accepted (2026-07).
 
 ADR 029 and ADR 030 defined CI streams, bundles, facades, and mart protocol. Through Jul 2026 the platform shipped incrementally: merge-blocking architecture/complexity gates first, then full parallel stream CI, runtime gate wiring, Maker/Admin UI, and env-gated external connectors.
 
-Planning ledgers (`standards.md`, `efficiency.md`) were merged into `PLAN_GAP.md` and §20.41 of the normative local plan.
+Planning ledgers (`standards.md`, `efficiency.md`) were consolidated; see ADRs 029–030.
 
 ## Decision
 
@@ -35,4 +35,4 @@ Planning ledgers (`standards.md`, `efficiency.md`) were merged into `PLAN_GAP.md
 
 - Merge CI credibility improved: architecture/complexity and all named streams block before unit tests.
 - Attached workspaces inherit rigor via facades without vendoring `packages/standards` into customer repos.
-- Further consolidation tracked in `PLAN_GAP.md` Track B/C; normative contract remains ADR 029/030.
+- Normative contract remains ADR 029/030.

@@ -7,6 +7,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Package catalog: 
 | Document | Audience |
 |----------|----------|
 | [getting-started.md](getting-started.md) | Everyone — install, bootstrap, run, Docker |
+| [product/overview.md](product/overview.md) | Friendly product intro (individuals, enterprise, personas) |
 | [product/maker.md](product/maker.md) | Makers — Chat, Progress, Review, Model Hub |
 | [product/journeys/README.md](product/journeys/README.md) | Per-archetype “first full-stack app” walkthroughs (A1/A2/A3) |
 | [product/admin.md](product/admin.md) | Operators — Admin Console, fleet, metrics |
@@ -115,11 +116,3 @@ All ADRs: [architecture.md](architecture.md) → [adr/](adr/).
 
 Catalogs: `configs/launch_eval/catalog.yaml`, `configs/factory/flows/`.
 
-## Local planning (gitignored)
-
-Two-file model (consolidated Jun 2026 — `v1.1features.md` and `alllms.md` merged, deleted):
-
-| File | Role |
-|------|------|
-| `nimbusware-orchestrator-local-plan.md` | Normative contract §1–§20.32 (architecture, gates, epics, product intent) |
-| `PLAN_GAP.md` | Maturity rating, open backlog, shipped ledger, audit archive |

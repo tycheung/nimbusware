@@ -38,4 +38,4 @@ trace = apply_operator_preset("offline")
 
 - Implementation: `packages/env/operator_presets.py`
 - Unified config trace: `packages/config/resolved_config.py` (`resolve_run_config`)
-- Backlog: retire legacy env alias duplication — `PLAN_GAP.md` Phase 2 item 5
+- Optional: retire legacy env alias duplication when operators tidy presets

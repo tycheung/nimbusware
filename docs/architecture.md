@@ -44,7 +44,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [029-standards-ci-streams.md](adr/029-standards-ci-streams.md) | Named CI streams, verdict modes, stream runner |
 | [030-standards-bundles-mart.md](adr/030-standards-bundles-mart.md) | Standards bundles, facades, mart tiers |
 
-Tier 3 context-efficiency (EFF track **complete** Jul 2026): ADRs 006, 007, 031–033; operator reference [reference/context-efficiency.md](reference/context-efficiency.md). **Standards platform v1** (Jul 2026): parallel CI stream matrix + aggregate, `slice.standards` gate, Maker/Admin UI, MCP/fleet (ADRs 029–030, 034). Backlog: local `PLAN_GAP.md`.
+Tier 3 context-efficiency (EFF track **complete** Jul 2026): ADRs 006, 007, 031–033; operator reference [reference/context-efficiency.md](reference/context-efficiency.md). **Standards platform v1** (Jul 2026): parallel CI stream matrix + aggregate, `slice.standards` gate, Maker/Admin UI, MCP/fleet (ADRs 029–030, 034). 
 
 ## v1.2 operator docs
 

@@ -138,7 +138,7 @@ secrets.json
 packages/admin_ui/src/api/openapi.json
 packages/admin_ui/src/api/schema.d.ts
 
-# Nimbusware planning docs (local only — normative plan + backlog + efficiency)
+# Local-only files
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
@@ -161,7 +161,7 @@ docs/learnings/
 # Nimbusware agent local run artifacts (integration adapter workspaces, etc.)
 .nimbusware/
 
-# Cursor workspace (loops, plans, artifacts — local only)
+# Cursor workspace
 .cursor/
 .cursorignore
 
