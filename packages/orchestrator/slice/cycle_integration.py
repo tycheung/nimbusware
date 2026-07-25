@@ -231,6 +231,10 @@ def handle_gate_failure_learning(
         packet=packet,
         fingerprint=result.fingerprint,
     )
+    from orchestrator.improvement.evolution_loop import after_diagnose_learn
+
+    rows = store.list_run_events(str(run_id))
+    after_diagnose_learn(store, run_id, workspace, rows)
     return packet
 
 

@@ -16,6 +16,11 @@ class ImprovementTrack(str, Enum):
     REFACTOR_COHESION = "refactor_cohesion"
     VARIANT_EXPERIMENT = "variant_experiment"
     RESEARCH_TRANSPLANT = "research_transplant"
+    SECURITY_HARDEN = "security_harden"
+    PERFORMANCE_TUNE = "performance_tune"
+    ARCHITECTURE_REVISE = "architecture_revise"
+    DOCUMENT_CONTRACTS = "document_contracts"
+    DISTILL_ARTIFACTS = "distill_artifacts"
 
 
 @dataclass
@@ -83,7 +88,11 @@ def run_improvement_council(workspace: Path) -> ImprovementCouncilResult:
     from research.bundle_promotion import list_pending_stitch_catalog_candidates
     from research.pattern_index import pattern_index_path
 
-    pending = list_pending_stitch_catalog_candidates(ws, limit=5)
+    pending: list[Any] = []
+    try:
+        pending = list_pending_stitch_catalog_candidates(ws, limit=5)
+    except (OSError, RuntimeError, ValueError):
+        pending = []
     if gap_matrix.has_implement_gap and health >= 60:
         votes.append(
             CouncilVote(
@@ -108,23 +117,95 @@ def run_improvement_council(workspace: Path) -> ImprovementCouncilResult:
                 f"{len(pending)} pending stitch catalog candidate(s) (health={health})",
             ),
         )
-    pattern_path = pattern_index_path(ws)
-    if pattern_path.is_file() and health >= 60 and inventory.orphan_count <= 3:
-        try:
-            import json
+    pattern_count = 0
+    import json
 
+    try:
+        pattern_path = pattern_index_path(ws)
+        if pattern_path.is_file():
             loaded = json.loads(pattern_path.read_text(encoding="utf-8"))
             pattern_count = len(loaded) if isinstance(loaded, list) else 0
-        except (OSError, json.JSONDecodeError):
-            pattern_count = 0
-        if pattern_count > 0 and not pending:
-            votes.append(
-                CouncilVote(
-                    ImprovementTrack.RESEARCH_TRANSPLANT,
-                    min(0.82, 0.52 + pattern_count * 0.04),
-                    f"{pattern_count} indexed research pattern(s) (health={health})",
-                ),
-            )
+    except (OSError, RuntimeError, ValueError, json.JSONDecodeError):
+        pattern_count = 0
+    if pattern_count > 0 and not pending and health >= 60 and inventory.orphan_count <= 3:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.RESEARCH_TRANSPLANT,
+                min(0.82, 0.52 + pattern_count * 0.04),
+                f"{pattern_count} indexed research pattern(s) (health={health})",
+            ),
+        )
+
+    # Coverage / discover / variant (previously dead allowlists)
+    py_count, test_count = _test_ratio(ws)
+    if py_count > 0 and test_count / max(py_count, 1) < 0.25:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.IMPROVE_COVERAGE,
+                min(0.88, 0.55 + debt_boost + (0.25 - test_count / max(py_count, 1))),
+                f"low test ratio {test_count}/{py_count} (health={health})",
+            ),
+        )
+    if health >= 55 and not gap_matrix.has_implement_gap and inventory.orphan_count <= 2:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.DISCOVER_FEATURES,
+                min(0.7, 0.4 + (health - 50.0) / 100.0),
+                f"healthy enough to discover features (health={health})",
+            ),
+        )
+    if health >= 70 and inventory.orphan_count == 0 and inventory.duplicate_clusters == 0:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.VARIANT_EXPERIMENT,
+                min(0.65, 0.35 + (health - 70.0) / 80.0),
+                f"greenfield-ready variant experiment (health={health})",
+            ),
+        )
+
+    # New tracks
+    if "ism_surfaces" in gap_matrix.gaps or "breadth_lag" in gap_matrix.gaps:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.DOCUMENT_CONTRACTS,
+                min(0.86, 0.6 + debt_boost),
+                f"contract/ISM gap: {', '.join(gap_matrix.gaps)}",
+            ),
+        )
+    if health >= 65 and inventory.orphan_count <= 3:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.ARCHITECTURE_REVISE,
+                min(0.72, 0.4 + (health - 60.0) / 80.0),
+                f"architecture revise candidate (health={health})",
+            ),
+        )
+    if debt_boost > 0.1 or inventory.orphan_count > 3:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.SECURITY_HARDEN,
+                min(0.9, 0.5 + debt_boost + inventory.orphan_count * 0.03),
+                f"security harden under debt (health={health})",
+            ),
+        )
+    if health >= 60 and inventory.orphan_count <= 4:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.PERFORMANCE_TUNE,
+                min(0.68, 0.38 + (health - 55.0) / 100.0),
+                f"performance tune opportunity (health={health})",
+            ),
+        )
+    learnings = ws / "docs" / "learnings"
+    if learnings.is_dir() and any(learnings.glob("*.md")):
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.DISTILL_ARTIFACTS,
+                min(0.75, 0.45 + 0.05 * sum(1 for _ in learnings.glob("*.md"))),
+                "learnings present — distill overlays/skills",
+            ),
+        )
+
     if not votes:
         votes.append(
             CouncilVote(ImprovementTrack.IMPLEMENT_PLANNED, 0.5, "default backlog track"),
@@ -142,3 +223,13 @@ def run_improvement_council(workspace: Path) -> ImprovementCouncilResult:
         selected=selected,
         feature_gap_matrix=gap_matrix.to_dict(),
     )
+
+
+def _test_ratio(workspace: Path) -> tuple[int, int]:
+    py_files = [p for p in workspace.rglob("*.py") if ".venv" not in p.parts]
+    tests = [
+        p
+        for p in py_files
+        if p.name.startswith("test_") or p.name.endswith("_test.py") or "tests" in p.parts
+    ]
+    return len(py_files), len(tests)

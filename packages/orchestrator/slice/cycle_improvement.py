@@ -253,8 +253,42 @@ def execute_improvement_track(
         emit_repo_explore(store, run_id, explore)
         from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
 
-        if track == ImprovementTrack.SIMPLIFY:
-            queue_council_backlog_slice(store, run_id, workspace, track)
+        queue_council_backlog_slice(store, run_id, workspace, track)
+        if track == ImprovementTrack.DISCOVER_FEATURES:
+            rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+            store.append(
+                StagePassedEvent(
+                    event_type=EventType.STAGE_PASSED,
+                    event_id=uuid4(),
+                    run_id=rid,
+                    occurred_at=datetime.now(timezone.utc),
+                    metadata={
+                        "discover_features": {
+                            "queued": True,
+                            "findings": len(getattr(explore, "findings", []) or []),
+                        },
+                    },
+                    payload=StagePassedPayload(stage_name="discover.features", duration_ms=0),
+                ),
+            )
+        return
+    if track == ImprovementTrack.IMPROVE_COVERAGE:
+        from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
+
+        queued = queue_council_backlog_slice(store, run_id, workspace, track)
+        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={
+                    "improve_coverage": {"queued": queued, "skill_ids_used": ["test-writer-guide"]},
+                },
+                payload=StagePassedPayload(stage_name="improve.coverage", duration_ms=0),
+            ),
+        )
         return
     if track == ImprovementTrack.IMPLEMENT_PLANNED:
         from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
@@ -276,14 +310,35 @@ def execute_improvement_track(
         )
         return
     if track == ImprovementTrack.VARIANT_EXPERIMENT:
+        from orchestrator.improvement.evolution_ledger import (
+            EvolutionLayer,
+            EvolutionPhase,
+            emit_evolution_event,
+        )
+        from orchestrator.improvement.evolution_loop import l1_l2_evals_blocking
         from orchestrator.variant_arena import (
             promote_variant_to_workspace,
             run_variant_arena,
             select_promotion_candidate,
+            variant_touches_forbidden_paths,
         )
 
+        rows = store.list_run_events(str(run_id))
+        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+        if l1_l2_evals_blocking(rows):
+            store.append(
+                StagePassedEvent(
+                    event_type=EventType.STAGE_PASSED,
+                    event_id=uuid4(),
+                    run_id=rid,
+                    occurred_at=datetime.now(timezone.utc),
+                    metadata={"variant_arena": {"skipped": True, "reason": "l1_l2_pending"}},
+                    payload=StagePassedPayload(stage_name="variant.arena.skipped", duration_ms=0),
+                ),
+            )
+            return
         tmp = workspace.resolve() / ".nimbusware" / "variants"
-        profile = autopilot_profile_from_rows(store.list_run_events(str(run_id)))
+        profile = autopilot_profile_from_rows(rows)
         max_candidates = 4 if profile.level >= 6 else 1
         arena = run_variant_arena(workspace, tmp, max_candidates=max_candidates)
         promotion, crossover_merged, crossover_paths = select_promotion_candidate(
@@ -294,9 +349,30 @@ def execute_improvement_track(
         winner = promotion or arena.winner
         tests_passed = winner is not None and winner.fitness >= 0.9
         promoted = False
+        deny_reason: str | None = None
         if winner and tests_passed and profile.level >= 6:
-            promoted = promote_variant_to_workspace(winner, workspace)
-        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+            forbidden = variant_touches_forbidden_paths(winner, workspace)
+            if forbidden:
+                deny_reason = f"forbidden_paths:{','.join(forbidden[:5])}"
+                emit_evolution_event(
+                    store,
+                    run_id,
+                    phase=EvolutionPhase.REJECTED,
+                    layer=EvolutionLayer.VARIANT,
+                    artifact_id=winner.variant_id,
+                    detail={"reason": deny_reason},
+                )
+            else:
+                promoted = promote_variant_to_workspace(winner, workspace)
+                if promoted:
+                    emit_evolution_event(
+                        store,
+                        run_id,
+                        phase=EvolutionPhase.PROMOTED,
+                        layer=EvolutionLayer.VARIANT,
+                        artifact_id=winner.variant_id,
+                        detail={"fitness": winner.fitness},
+                    )
         meta = arena.to_dict()
         if winner:
             meta["winner"] = {
@@ -309,6 +385,8 @@ def execute_improvement_track(
             meta["crossover_paths"] = crossover_paths
         if promoted:
             meta["promoted_to_workspace"] = True
+        if deny_reason:
+            meta["denied"] = deny_reason
         store.append(
             StagePassedEvent(
                 event_type=EventType.STAGE_PASSED,
@@ -317,6 +395,71 @@ def execute_improvement_track(
                 occurred_at=datetime.now(timezone.utc),
                 metadata={"variant_arena": meta},
                 payload=StagePassedPayload(stage_name="variant.arena", duration_ms=0),
+            ),
+        )
+        return
+    if track in {
+        ImprovementTrack.SECURITY_HARDEN,
+        ImprovementTrack.PERFORMANCE_TUNE,
+        ImprovementTrack.DOCUMENT_CONTRACTS,
+    }:
+        from orchestrator.improvement.improvement_council_backlog import queue_council_backlog_slice
+
+        queued = queue_council_backlog_slice(store, run_id, workspace, track)
+        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+        skill_map = {
+            ImprovementTrack.SECURITY_HARDEN: ["security-rubric"],
+            ImprovementTrack.PERFORMANCE_TUNE: [],
+            ImprovementTrack.DOCUMENT_CONTRACTS: ["plan-quality"],
+        }
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={
+                    track.value: {
+                        "queued": queued,
+                        "skill_ids_used": skill_map.get(track, []),
+                    },
+                },
+                payload=StagePassedPayload(stage_name=f"council.{track.value}", duration_ms=0),
+            ),
+        )
+        return
+    if track == ImprovementTrack.ARCHITECTURE_REVISE:
+        from orchestrator.maintenance_architecture import run_maintenance_architecture
+
+        class _ArchHost:
+            def __init__(self, s: Any) -> None:
+                self._store = s
+
+        rows = store.list_run_events(str(run_id))
+        completed = max(
+            1,
+            sum(1 for r in rows if r.get("event_type") == EventType.STAGE_PASSED.value),
+        )
+        run_maintenance_architecture(
+            _ArchHost(store),
+            UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
+            slices_completed=completed,
+            can_revise_backlog=True,
+        )
+        return
+    if track == ImprovementTrack.DISTILL_ARTIFACTS:
+        from orchestrator.improvement.evolution_loop import run_distill_artifacts
+
+        result = run_distill_artifacts(store, run_id, workspace)
+        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={"distill_artifacts": result},
+                payload=StagePassedPayload(stage_name="distill.artifacts", duration_ms=0),
             ),
         )
         return

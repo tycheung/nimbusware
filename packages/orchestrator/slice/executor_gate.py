@@ -293,6 +293,16 @@ def finish_micro_slice_gate_chain(
     )
     if not gate.passed:
         handle_gate_failure_learning(orch._store, run_id, ws, active_plan, gate)
+        from orchestrator.improvement.evolution_loop import after_slice_gate
+
+        after_slice_gate(
+            orch._store,
+            run_id,
+            ws,
+            metadata={},
+            gate_passed=False,
+            gate_pass_delta=-1.0,
+        )
     gate = apply_operator_pause(
         gate,
         profile,
@@ -300,6 +310,7 @@ def finish_micro_slice_gate_chain(
         ui_regression_failed=pre_regression.ui_passed is False,
     )
     if gate.passed:
+        from orchestrator.improvement.evolution_loop import after_slice_gate
         from orchestrator.patch_context import (
             patch_auto_apply_allowed,
             patch_effective_from_run_rows,
@@ -307,6 +318,14 @@ def finish_micro_slice_gate_chain(
         )
         from orchestrator.slice.git_commit import maybe_commit_slice
 
+        after_slice_gate(
+            orch._store,
+            run_id,
+            ws,
+            metadata={},
+            gate_passed=True,
+            gate_pass_delta=0.0,
+        )
         patch_eff = patch_effective_from_run_rows(rows)
         wt = work_type_from_run_rows(rows)
         if patch_eff and patch_eff.get("enabled") and (wt == "patch" or patch_eff):

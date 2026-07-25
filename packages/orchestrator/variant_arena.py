@@ -205,8 +205,45 @@ def select_promotion_candidate(
     return top, False, []
 
 
+def variant_touches_forbidden_paths(
+    winner: VariantCandidate,
+    base_workspace: Path,
+    *,
+    forbidden_prefixes: tuple[str, ...] = (
+        "packages/",
+        ".cursor/",
+        "charts/",
+        "docs/deploy/",
+    ),
+) -> list[str]:
+    """Return relative paths under forbidden prefixes that differ from base."""
+    hits: list[str] = []
+    if not winner.workspace.is_dir():
+        return hits
+    for path in winner.workspace.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(winner.workspace)
+        if ".nimbusware" in rel.parts or "node_modules" in rel.parts:
+            continue
+        rel_s = rel.as_posix()
+        if not any(rel_s == p.rstrip("/") or rel_s.startswith(p) for p in forbidden_prefixes):
+            continue
+        base_path = base_workspace / rel
+        try:
+            new_bytes = path.read_bytes()
+        except OSError:
+            continue
+        old_bytes = base_path.read_bytes() if base_path.is_file() else None
+        if new_bytes != old_bytes:
+            hits.append(rel_s)
+    return hits
+
+
 def promote_variant_to_workspace(winner: VariantCandidate, target_workspace: Path) -> bool:
     if not winner.workspace.is_dir() or not target_workspace.is_dir():
+        return False
+    if variant_touches_forbidden_paths(winner, target_workspace):
         return False
     for path in winner.workspace.rglob("*"):
         if not path.is_file():
