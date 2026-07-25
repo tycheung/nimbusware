@@ -65,7 +65,22 @@ def _export_openapi() -> dict | None:
         from api.app import app
     except ImportError:
         return None
-    return app.openapi()
+    try:
+        return app.openapi()
+    except Exception as exc:  # noqa: BLE001 — sak492-c: fall back to checked-in openapi.json
+        sys.stderr.write(
+            f"app.openapi() failed ({type(exc).__name__}); using checked-in openapi.json if present\n"
+        )
+        return None
+
+
+def _load_checked_in_openapi() -> dict | None:
+    if not OPENAPI_JSON.is_file():
+        return None
+    try:
+        return json.loads(OPENAPI_JSON.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
 
 
 def _npx_executable() -> str | None:
@@ -124,10 +139,12 @@ def _try_openapi_typescript(openapi_path: Path) -> bool:
 
 def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    schema = _export_openapi()
+    exported = _export_openapi()
+    schema = exported if exported is not None else _load_checked_in_openapi()
     source = "manual"
     if schema is not None:
-        OPENAPI_JSON.write_text(json.dumps(schema, indent=2), encoding="utf-8")
+        if exported is not None:
+            OPENAPI_JSON.write_text(json.dumps(schema, indent=2) + "\n", encoding="utf-8")
         if _try_openapi_typescript(OPENAPI_JSON) or _is_full_openapi_schema():
             source = "openapi-typescript"
         else:

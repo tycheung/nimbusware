@@ -280,19 +280,19 @@ IMPORT_REPLACEMENTS: tuple[tuple[str, str], ...] = (
     ),
     (
         "from memory.store import InMemoryMemoryChunkStore",
-        "from memory.store.memory import InMemoryMemoryChunkStore",
+        "from memory.peel_store.memory import InMemoryMemoryChunkStore",
     ),
     (
         "from memory.store import PostgresMemoryChunkStore",
-        "from memory.store.postgres import PostgresMemoryChunkStore",
+        "from memory.peel_store.postgres import PostgresMemoryChunkStore",
     ),
     (
         "from memory.store import MemoryChunkStore",
-        "from memory.store.protocol import MemoryChunkStore",
+        "from memory.peel_store.protocol import MemoryChunkStore",
     ),
     (
         "from memory.store import IndexGenerationRow",
-        "from memory.store.protocol import IndexGenerationRow",
+        "from memory.peel_store.protocol import IndexGenerationRow",
     ),
     ("from console.operator_chat import", "from console.operator_chat_core import"),
 )
@@ -478,10 +478,10 @@ def main() -> int:
     mem_init = ROOT / "packages" / "memory" / "__init__.py"
     if mem_init.is_file():
         text = mem_init.read_text(encoding="utf-8")
-        text = text.replace("from memory.store import", "from memory.store.protocol import")
+        text = text.replace("from memory.store import", "from memory.peel_store.protocol import")
         text = text.replace(
-            "from memory.store.memory import",
-            "from memory.store.memory import",
+            "from memory.peel_store.memory import",
+            "from memory.peel_store.memory import",
         )
         mem_init.write_text(text, encoding="utf-8")
 
