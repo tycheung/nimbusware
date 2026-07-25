@@ -88,13 +88,20 @@ def resolve_memory_index_version(
     *,
     repo_root: Path,
 ) -> str | None:
-    """Pinned generation id at run start (manifest or store)."""
-    if memory_store is not None:
-        gen = pinned_generation_id(memory_store, repo_root=repo_root)
-        if gen is not None:
-            return str(gen)
-    gen_disk = latest_generation_id(default_memory_index_dir(repo_root))
-    return str(gen_disk) if gen_disk else None
+    """Pinned generation id at run start (manifest or store).
+
+    After sak413, local peel_index helpers raise; treat that as no pin so
+    create_run can proceed when memory is broker-backed or disabled.
+    """
+    try:
+        if memory_store is not None:
+            gen = pinned_generation_id(memory_store, repo_root=repo_root)
+            if gen is not None:
+                return str(gen)
+        gen_disk = latest_generation_id(default_memory_index_dir(repo_root))
+        return str(gen_disk) if gen_disk else None
+    except RuntimeError:
+        return None
 
 
 def run_memory_retrieval_enabled(metadata: object) -> bool:

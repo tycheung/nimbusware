@@ -25,6 +25,20 @@ def test_rpc_headers_includes_session_when_set() -> None:
     headers = rpc_headers("tok", "sess-1")
     assert headers["Authorization"] == "Bearer tok"
     assert headers[SESSION_HEADER] == "sess-1"
+    assert headers["Accept"] == "application/json, text/event-stream"
+
+
+def test_body_from_response_parses_sse() -> None:
+    from broker_client.mcp_rpc import body_from_response
+
+    response = MagicMock(spec=httpx.Response)
+    response.headers = {"content-type": "text/event-stream"}
+    response.text = 'data: {"jsonrpc":"2.0","id":1,"result":{"ok":true}}\n\n'
+    assert body_from_response(response) == {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {"ok": True},
+    }
 
 
 @pytest.mark.parametrize(

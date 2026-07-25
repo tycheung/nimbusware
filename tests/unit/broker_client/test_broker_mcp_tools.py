@@ -21,6 +21,7 @@ def test_call_tool_initialize_then_tools_call(mock_post_sequence) -> None:
         mock_client,
         [
             {"jsonrpc": "2.0", "id": 1, "result": {}},
+            {},
             {
                 "jsonrpc": "2.0",
                 "id": 2,
@@ -29,13 +30,16 @@ def test_call_tool_initialize_then_tools_call(mock_post_sequence) -> None:
         ],
     )
     posts[0].headers = {"mcp-session-id": "sess-1"}
+    posts[1].status_code = 202
+    posts[1].text = ""
 
     client = BrokerMcpClient("http://127.0.0.1:8080/mcp", token="tok", client=mock_client)
     out = client.call_tool("ping")
 
-    assert mock_client.post.call_count == 2
-    init_call, tool_call = mock_client.post.call_args_list
+    assert mock_client.post.call_count == 3
+    init_call, notif_call, tool_call = mock_client.post.call_args_list
     assert init_call.kwargs["json"]["method"] == "initialize"
+    assert notif_call.kwargs["json"]["method"] == "notifications/initialized"
     assert tool_call.kwargs["json"]["method"] == "tools/call"
     assert tool_call.kwargs["json"]["params"] == {"name": "ping", "arguments": {}}
     assert tool_call.kwargs["headers"]["Authorization"] == "Bearer tok"
@@ -59,13 +63,14 @@ def test_bind_llm_chat_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_llm_chat_via_broker_uses_mcp(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_LLM", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {"text": "hello"}
+    mock_mcp.call_offer_tool.return_value = {"text": "hello"}
 
     out = llm_chat_via_broker([{"role": "user", "content": "hi"}], client=mock_mcp)
 
-    mock_mcp.call_tool.assert_called_once_with(
+    mock_mcp.call_offer_tool.assert_called_once_with(
         "llm_chat",
-        {"messages": [{"role": "user", "content": "hi"}]},
+        "llm.chat",
+        {"messages": [{"role": "user", "content": "hi"}], "model": "echo"},
     )
     assert out == {"text": "hello"}
 
@@ -92,12 +97,13 @@ def test_bind_sandbox_exec_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_sandbox_exec_via_broker_uses_mcp(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_SANDBOX", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {"exit_code": 0, "stdout": "ok"}
+    mock_mcp.call_offer_tool.return_value = {"exit_code": 0, "stdout": "ok"}
 
     out = sandbox_exec_via_broker(["echo", "hi"], cwd="/tmp", client=mock_mcp)
 
-    mock_mcp.call_tool.assert_called_once_with(
+    mock_mcp.call_offer_tool.assert_called_once_with(
         "sandbox_exec",
+        "sandbox.exec",
         {"argv": ["echo", "hi"], "cwd": "/tmp"},
     )
     assert out == {"exit_code": 0, "stdout": "ok"}
@@ -113,7 +119,7 @@ def test_sandbox_exec_via_broker_raises_on_miss(monkeypatch: pytest.MonkeyPatch)
     """sak498-g: MCP sandbox_exec peel miss raises via assert_sandbox_ok."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_SANDBOX", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {
+    mock_mcp.call_offer_tool.return_value = {
         "via": "broker_miss",
         "status": "degraded",
         "feature": "sandbox_exec",
@@ -128,7 +134,7 @@ def test_llm_chat_via_broker_raises_on_miss(monkeypatch: pytest.MonkeyPatch) -> 
     """sak498-g: MCP llm_chat peel miss raises via assert_llm_ok."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_LLM", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {
+    mock_mcp.call_offer_tool.return_value = {
         "via": "broker_miss",
         "status": "degraded",
         "feature": "llm_chat",

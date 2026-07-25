@@ -146,7 +146,45 @@ def assert_memory_ok(
 
 
 def normalize_domain_tool_result(result: Any) -> dict[str, Any]:
-    return result if isinstance(result, dict) else {"result": result}
+    """Unwrap MCP ``tools/call`` content JSON / InvokeResp into a flat dict."""
+    import json
+
+    if not isinstance(result, dict):
+        return {"result": result}
+    content = result.get("content")
+    if not isinstance(content, list) or not content:
+        return result
+    texts: list[str] = []
+    for block in content:
+        if isinstance(block, dict) and block.get("type") == "text":
+            texts.append(str(block.get("text") or ""))
+    if not texts:
+        return result
+    joined = "".join(texts)
+    if result.get("isError"):
+        return {"error": joined or "tool error", "via": "broker_miss", **result}
+    try:
+        parsed: Any = json.loads(joined)
+    except json.JSONDecodeError:
+        return {**result, "text": joined}
+    if not isinstance(parsed, dict):
+        return {**result, "result": parsed}
+    # InvokeResp: hoist ``result`` fields for domain asserts (hits, text, …).
+    inner = parsed.get("result")
+    if isinstance(inner, dict):
+        out = dict(inner)
+        for key in ("status", "invoke_id", "error", "code", "message"):
+            if key in parsed and key not in out:
+                out[key] = parsed[key]
+        if out.get("status") == "error" and out.get("error") is None:
+            out["error"] = out.get("message") or out.get("code") or "invoke error"
+        return out
+    if parsed.get("status") == "error" and "error" not in parsed:
+        parsed = {
+            **parsed,
+            "error": parsed.get("message") or parsed.get("code") or "invoke error",
+        }
+    return parsed
 
 
 def normalize_tool_result(result: Any) -> dict[str, Any]:

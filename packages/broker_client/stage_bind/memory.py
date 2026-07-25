@@ -32,10 +32,10 @@ def memory_search_via_broker(
     mcp = client or BrokerMcpClient()
     arguments: dict[str, Any] = {"query": query}
     if limit is not None:
-        arguments["limit"] = limit
+        arguments["k"] = limit
     from broker_client.peel_assert import assert_memory_ok, normalize_tool_result
 
-    result = mcp.call_tool("memory_search", arguments)
+    result = mcp.call_offer_tool("memory_search", "memory.search", arguments)
     return assert_memory_ok(  # sak495-g / sak498-g
         normalize_tool_result(result),
         feature="memory_search",

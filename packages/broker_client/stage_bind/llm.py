@@ -30,15 +30,16 @@ def llm_chat_via_broker(
     model: str | None = None,
 ) -> dict[str, Any]:
     """Invoke ``llm_chat`` via MCP when the LLM dual-run flag is on."""
+    import os
+
     if not broker_llm_enabled():
         raise BrokerDisabled("Set NIMBUSWARE_BROKER_LLM=1 to route LLM through the broker")
     mcp = client or BrokerMcpClient()
-    arguments: dict[str, Any] = {"messages": messages}
-    if model is not None:
-        arguments["model"] = model
+    resolved_model = (model or os.environ.get("NIMBUSWARE_BROKER_LLM_MODEL") or "").strip() or "echo"
+    arguments: dict[str, Any] = {"messages": messages, "model": resolved_model}
     from broker_client.peel_assert import assert_llm_ok, normalize_tool_result
 
-    result = mcp.call_tool("llm_chat", arguments)
+    result = mcp.call_offer_tool("llm_chat", "llm.chat", arguments)
     return assert_llm_ok(  # sak498-g
         normalize_tool_result(result),
         feature="llm_chat",

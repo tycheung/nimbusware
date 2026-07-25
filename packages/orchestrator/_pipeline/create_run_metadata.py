@@ -186,9 +186,15 @@ def build_run_created_metadata(
         risk_caps = patch_block.risk_caps
     elif patch_block.enabled:
         risk_caps = PATCH_DEFAULT_CAPS
+    jail_policy = default_jail_policy()
+    jail_enabled = (
+        bool(jail_policy.get("enabled"))
+        if isinstance(jail_policy, dict)
+        else bool(getattr(jail_policy, "enabled", False))
+    )
     agent_tools_effective = {
         "sandbox_backend": resolve_sandbox_backend(),
-        "filesystem_jail": default_jail_policy().enabled,
+        "filesystem_jail": jail_enabled,
         "risk_caps": risk_caps.to_metadata(),
     }
     slice_budget = resolve_slice_budget_preset(operator_settings=operator_settings_meta)

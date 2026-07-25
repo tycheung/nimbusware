@@ -13,6 +13,17 @@ class AgentRiskCaps:
     allow_network: bool = False
     extra: dict[str, Any] = field(default_factory=dict)
 
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "max_steps": self.max_steps,
+            "max_shells": self.max_shells,
+            "max_writes": self.max_writes,
+            "allow_network": self.allow_network,
+            **self.extra,
+            "mode": "broker",
+            "removed": "sak412",
+        }
+
 
 PATCH_DEFAULT_CAPS = AgentRiskCaps()
 

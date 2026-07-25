@@ -28,13 +28,14 @@ def test_bind_memory_search_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_memory_search_via_broker_uses_mcp(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_MEMORY", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {"hits": [{"id": "m1"}]}
+    mock_mcp.call_offer_tool.return_value = {"hits": [{"id": "m1"}]}
 
     out = memory_search_via_broker("widget auth", client=mock_mcp, limit=5)
 
-    mock_mcp.call_tool.assert_called_once_with(
+    mock_mcp.call_offer_tool.assert_called_once_with(
         "memory_search",
-        {"query": "widget auth", "limit": 5},
+        "memory.search",
+        {"query": "widget auth", "k": 5},
     )
     assert out == {"hits": [{"id": "m1"}]}
 
@@ -49,7 +50,7 @@ def test_memory_search_via_broker_raises_on_miss(monkeypatch: pytest.MonkeyPatch
     """sak495-g: MCP memory_search peel miss raises via assert_memory_ok."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_MEMORY", "1")
     mock_mcp = MagicMock()
-    mock_mcp.call_tool.return_value = {
+    mock_mcp.call_offer_tool.return_value = {
         "via": "broker_miss",
         "status": "degraded",
         "feature": "memory_search",

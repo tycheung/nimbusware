@@ -32,7 +32,7 @@ def sandbox_exec_via_broker(
     from broker_client.peel_assert import assert_sandbox_ok, normalize_tool_result
 
     mcp = client or BrokerMcpClient()
-    result = mcp.call_tool("sandbox_exec", {"argv": argv, "cwd": cwd})
+    result = mcp.call_offer_tool("sandbox_exec", "sandbox.exec", {"argv": argv, "cwd": cwd})
     return assert_sandbox_ok(  # sak498-g
         normalize_tool_result(result),
         feature="sandbox_exec",
