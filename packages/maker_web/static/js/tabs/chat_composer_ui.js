@@ -21,6 +21,7 @@ const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
 const RESUME_KEY = "maker_chat_resume_session";
 
 function workflowProfileForStart(workType) {
+  if (workType === "self_evolve") return "campaign_self_evolve";
   const stored = defaultWorkflowProfileId();
   if (!stored) return undefined;
   if (workType === "campaign") {
@@ -28,6 +29,23 @@ function workflowProfileForStart(workType) {
     if (stored === "micro_slice") return undefined;
   }
   return stored;
+}
+
+function domainKeywordsFromRoot(root) {
+  const raw = root.querySelector("#chat-domain-keywords")?.value?.trim() || "";
+  if (!raw) return [];
+  return raw
+    .split(/[,;\n]+/)
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
+export function syncSelfEvolvePanel(root, workType) {
+  const panel = root.querySelector("#chat-self-evolve-panel");
+  if (!panel) return;
+  const wt = workType || root.querySelector("#chat-work-type")?.value || "auto";
+  panel.hidden = wt !== "self_evolve";
 }
 
 function chatResumeEnabled() {
@@ -106,8 +124,8 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
 
   card.appendChild(chips);
   mount.appendChild(card);
+  syncSelfEvolvePanel(root, wt);
 }
-
 async function startRunFromSession(
   sessionId,
   workType,
@@ -136,7 +154,12 @@ async function startRunFromSession(
   const workflowProfileId = workflowProfileForStart(workType);
   if (workflowProfileId) startPayload.workflow_profile = workflowProfileId;
   if (message) {
-    startPayload.requirements = scopeRequirementsPayload(root, message);
+    const requirements = scopeRequirementsPayload(root, message);
+    if (workType === "self_evolve") {
+      const kws = domainKeywordsFromRoot(root);
+      if (kws.length) requirements.domain_keywords = kws;
+    }
+    startPayload.requirements = requirements;
   }
   if (workType === "patch" && Object.keys(patchContext).length) {
     startPayload.patch_context = patchContext;
@@ -194,7 +217,7 @@ function mountAutopilotLadderHint(root) {
   const p = document.createElement("p");
   p.innerHTML =
     `<strong>Operator ladder</strong> — ` +
-    `Trust ~${trustLevel} (autonomy): Fix a bug (patch) → Build a feature (slice) → Build an app (factory). ` +
+    `Trust ~${trustLevel} (autonomy): Fix a bug (patch) → Build a feature (slice) → Build an app (factory) → Self-evolve. ` +
     `Enforcement ~${enforceLevel} (CI depth): light checks for fixes (~4), full slice gates (~5), ship parity (~7+). ` +
     "Adjust both sliders in the ribbon when a run is active.";
   hint.appendChild(p);
@@ -215,8 +238,10 @@ export {
   attachmentFields,
   attachmentPayload,
   chatResumeEnabled,
+  domainKeywordsFromRoot,
   mountAutopilotLadderHint,
   renderClassifierCard,
   startRunFromSession,
   mountScopeDiscoveryIfNeeded,
+  syncSelfEvolvePanel,
 };

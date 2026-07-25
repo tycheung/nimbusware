@@ -43,6 +43,24 @@ export function chatLayoutHtml() {
                 .join("")}
             </select>
           </label>
+          <fieldset
+            id="chat-self-evolve-panel"
+            class="chat-self-evolve-panel"
+            data-testid="maker-chat-self-evolve-panel"
+            hidden
+          >
+            <legend>Self-evolve domain (optional)</legend>
+            <p class="muted">Keywords for domain-specific study (e.g. accounting software, healthcare EHR).</p>
+            <label>Domain keywords
+              <input
+                name="domain_keywords"
+                id="chat-domain-keywords"
+                type="text"
+                data-testid="maker-chat-domain-keywords"
+                placeholder="accounting software, bookkeeping"
+              />
+            </label>
+          </fieldset>
           <div
             id="chat-solo-hat-chips"
             class="actions chat-action-chips chat-solo-hat-chips"

@@ -224,7 +224,15 @@ const TURN_ROLE_LABELS = {
 
 export function workTypeLabel(value) {
   if (!value || value === "auto") return "Auto";
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  const labels = {
+    patch: "Patch",
+    slice: "Slice",
+    campaign: "Campaign",
+    factory: "Factory",
+    quick: "Quick",
+    self_evolve: "Self-evolve",
+  };
+  return labels[value] || value.charAt(0).toUpperCase() + value.slice(1).replace(/_/g, " ");
 }
 
 function turnRoleLabel(turn) {

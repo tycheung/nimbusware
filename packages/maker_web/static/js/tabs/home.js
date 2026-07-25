@@ -46,6 +46,12 @@ const INTENT_CARDS = [
     detail: "Full-stack autonomous delivery from your prompt",
     testId: "maker-intent-campaign",
   },
+  {
+    id: "self_evolve",
+    title: "Self-evolve",
+    detail: "Study harnesses, diverse repos, and optional domain keywords",
+    testId: "maker-intent-self-evolve",
+  },
 ];
 
 function openChatIntent(intent, extra = {}) {

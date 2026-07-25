@@ -1,5 +1,7 @@
 import { apiJson, toast } from "../api-client.js";
 import { toastIfMiss } from "../broker_miss.js";
+import { applyChatIntentPlaceholder } from "../../../../ui_shared/js/chat-intent-hints.js";
+import { syncSelfEvolvePanel } from "./chat_composer_ui.js";
 import { renderMessagesFromSession, workTypeLabel } from "./chat_session_ui.js";
 
 async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq } = {}) {
@@ -21,6 +23,8 @@ async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq
   }
   const select = root.querySelector("#chat-work-type");
   if (select) select.value = workType;
+  syncSelfEvolvePanel(root, workType);
+  applyChatIntentPlaceholder(root.querySelector("#chat-message"), workType);
   renderMessagesFromSession(root, updated);
   if (replayFromSeq != null) {
     toast(`Mode: ${workTypeLabel(workType)} (replay seq ${replayFromSeq} on next start)`, "success");

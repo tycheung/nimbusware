@@ -20,6 +20,7 @@ import {
   renderClassifierCard,
   startRunFromSession,
   mountScopeDiscoveryIfNeeded,
+  syncSelfEvolvePanel,
 } from "./chat_composer_ui.js";
 import {
   bindChatTheaterForRun,
@@ -77,7 +78,15 @@ export async function mountChat(root) {
   if (intent && CHAT_WORK_TYPES.includes(intent) && workSel) {
     workSel.value = intent;
     applyChatIntentPlaceholder(msgEl, intent);
+    syncSelfEvolvePanel(root, intent);
+  } else {
+    syncSelfEvolvePanel(root, workSel?.value);
   }
+  workSel?.addEventListener("change", () => {
+    const wt = workSel.value;
+    applyChatIntentPlaceholder(msgEl, wt);
+    syncSelfEvolvePanel(root, wt);
+  });
   if (msgEl && deepPrompt && !msgEl.value.trim()) {
     msgEl.value = deepPrompt;
   }
@@ -234,6 +243,8 @@ export async function mountChat(root) {
         onOverride: (wt) => {
           const select = root.querySelector("#chat-work-type");
           if (select) select.value = wt;
+          applyChatIntentPlaceholder(msgEl, wt);
+          syncSelfEvolvePanel(root, wt);
           runStart(wt);
         },
       });

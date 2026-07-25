@@ -116,7 +116,7 @@ export function settingsShellHtml() {
     </section>
     <section id="settings-trust-panel" class="panel" data-testid="maker-settings-trust-panel">
       <h3>Trust / Autopilot defaults</h3>
-      <p class="muted">Patch runs default to Nimble (8); factory runs default to Continuous improve (10). Saved profile overrides at Chat start.</p>
+      <p class="muted">Patch runs default to Nimble (8); factory and self-evolve default to Continuous improve (10). Saved profile overrides at Chat start.</p>
       <label>
         Default saved profile
         <select id="settings-default-autopilot-profile" data-testid="maker-settings-default-autopilot-profile">

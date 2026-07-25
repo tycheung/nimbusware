@@ -5,6 +5,7 @@ import { deployStateFromTimeline } from "../deploy_cockpit.js";
 import { appendTheaterLine } from "../theater-renderer.js";
 import { loadRunCardAgents } from "./chat_agents_ui.js";
 import { workTypeLabel } from "./chat_session_ui.js";
+import { mountEvolutionPanel } from "./chat_evolution_ui.js";
 
 const SESSION_KEY = "maker_chat_session_id";
 
@@ -232,6 +233,9 @@ export function ensureRunCard(root, runId, { workType = "", status = "running" }
   thread.appendChild(card);
   loadRunCardOperatorProfile(root, runId);
   void refreshChatRunPreview(card, runId);
+  if (!workType || String(workType || "").toLowerCase() === "self_evolve") {
+    void mountEvolutionPanel(card, runId);
+  }
   return card;
 }
 
