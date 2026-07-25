@@ -1,5 +1,14 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  formatWriteCatchMessage,
+  isDomainPeelMiss,
+  writeMissMessage,
+} from "../api/client"; // sak499-d
+
+type PeelWriteBody = { via?: string; error?: string; status?: string };
 import { BacklogTreePanel } from "../components/BacklogTreePanel";
 import { CampaignProgressPanel } from "../components/CampaignProgressPanel";
 import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
@@ -58,23 +67,68 @@ export function RunDetailPage({ id }: { id?: string }) {
   useEffect(() => {
     if (!id) return;
     apiJson<RunDetail>(`/runs/${id}`).then(setRun);
-    apiJson<Record<string, unknown>>(`/runs/${id}/timeline`).then(setTimeline).catch(() => setTimeline(null));
-    apiJson<{ rows: Record<string, string>[] }>(`/admin/ui/runs/${id}/findings-table`)
-      .then((b) => setFindings(b.rows || []))
-      .catch(() => setFindings([]));
-    apiJson<{ rows: Record<string, string>[] }>(`/admin/ui/runs/${id}/critic-matrix-table`)
-      .then((b) => setCritics(b.rows || []))
-      .catch(() => setCritics([]));
+    apiJson<Record<string, unknown> & { via?: string; error?: string }>(`/runs/${id}/timeline`)
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setTimeline(null);
+          setActionMsg(formatPeelMissMessage(body, "timeline unavailable"));
+          return;
+        }
+        setTimeline(body);
+      })
+      .catch((e) => {
+        setTimeline(null);
+        setActionMsg(formatReadCatchMessage(e, "timeline unavailable"));
+      });
+    apiJson<{ rows: Record<string, string>[]; via?: string; error?: string }>(
+      `/admin/ui/runs/${id}/findings-table`,
+    )
+      .then((b) => {
+        if (isDomainPeelMiss(b)) {
+          setFindings([]);
+          setActionMsg(formatPeelMissMessage(b, "findings unavailable"));
+          return;
+        }
+        setFindings(b.rows || []);
+      })
+      .catch((e) => {
+        setFindings([]);
+        setActionMsg(formatReadCatchMessage(e, "findings unavailable"));
+      });
+    apiJson<{ rows: Record<string, string>[]; via?: string; error?: string }>(
+      `/admin/ui/runs/${id}/critic-matrix-table`,
+    )
+      .then((b) => {
+        if (isDomainPeelMiss(b)) {
+          setCritics([]);
+          setActionMsg(formatPeelMissMessage(b, "critic matrix unavailable"));
+          return;
+        }
+        setCritics(b.rows || []);
+      })
+      .catch((e) => {
+        setCritics([]);
+        setActionMsg(formatReadCatchMessage(e, "critic matrix unavailable"));
+      });
   }, [id]);
 
   async function lifecycle(path: string) {
     if (!id) return;
+    const fallback = `lifecycle ${path} unavailable`;
     try {
-      const res = await apiJson<Record<string, string>>(`/runs/${id}/lifecycle/${path}`, { method: "POST" });
+      const res = await apiJson<PeelWriteBody & Record<string, string>>(
+        `/runs/${id}/lifecycle/${path}`,
+        { method: "POST" },
+      );
+      const miss = writeMissMessage(res, fallback);
+      if (miss) {
+        setActionMsg(miss);
+        return;
+      }
       setActionMsg(res.status || "ok");
       setRun(await apiJson(`/runs/${id}`));
     } catch (e) {
-      setActionMsg(String((e as Error).message || e));
+      setActionMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
@@ -82,16 +136,25 @@ export function RunDetailPage({ id }: { id?: string }) {
     if (!id) return;
     const roleId = executeRoleId.trim();
     if (!roleId) return;
+    const fallback = "role execute unavailable";
     try {
-      const res = await apiJson<Record<string, string>>(`/roles/${encodeURIComponent(roleId)}/execute`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ run_id: id }),
-      });
+      const res = await apiJson<PeelWriteBody & Record<string, string>>(
+        `/roles/${encodeURIComponent(roleId)}/execute`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ run_id: id }),
+        },
+      );
+      const miss = writeMissMessage(res, fallback);
+      if (miss) {
+        setActionMsg(miss);
+        return;
+      }
       setActionMsg(`${res.status || "ok"}: ${res.stage_name || res.taxonomy_key || roleId}`);
       setRun(await apiJson(`/runs/${id}`));
     } catch (e) {
-      setActionMsg(String((e as Error).message || e));
+      setActionMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
@@ -106,11 +169,14 @@ export function RunDetailPage({ id }: { id?: string }) {
       setReplayMsg("Enter a valid store sequence (0 or higher).");
       return;
     }
+    const fallback = "replay unavailable";
     try {
-      const body = await apiJson<{
-        replay_started?: boolean;
-        campaign_tick_enqueued?: boolean;
-      }>(`/runs/${id}/replay-from`, {
+      const body = await apiJson<
+        PeelWriteBody & {
+          replay_started?: boolean;
+          campaign_tick_enqueued?: boolean;
+        }
+      >(`/runs/${id}/replay-from`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -120,6 +186,11 @@ export function RunDetailPage({ id }: { id?: string }) {
           reason: "admin replay wizard",
         }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setReplayMsg(miss);
+        return;
+      }
       setReplayMsg(
         body.replay_started
           ? `Replay started from seq ${seq}` +
@@ -128,7 +199,7 @@ export function RunDetailPage({ id }: { id?: string }) {
       );
       await refreshTimeline();
     } catch (e) {
-      setReplayMsg(String((e as Error).message || e));
+      setReplayMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
@@ -179,15 +250,24 @@ export function RunDetailPage({ id }: { id?: string }) {
 
   async function action(path: string, body: Record<string, string>) {
     if (!id) return;
+    const fallback = `run action ${path} unavailable`;
     try {
-      const res = await apiJson<Record<string, string>>(`/runs/${id}/actions/${path}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const res = await apiJson<PeelWriteBody & Record<string, string>>(
+        `/runs/${id}/actions/${path}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
+      const miss = writeMissMessage(res, fallback);
+      if (miss) {
+        setActionMsg(miss);
+        return;
+      }
       setActionMsg(res.status || "ok");
     } catch (e) {
-      setActionMsg(String((e as Error).message || e));
+      setActionMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 

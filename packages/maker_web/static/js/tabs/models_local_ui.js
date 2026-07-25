@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { gpuGroupLabel, MODEL_PRESETS } from "./models_hub_nav.js";
 import { refreshOllamaPanel, startOllamaPull } from "./models_ollama_ui.js";
 
@@ -84,6 +85,10 @@ export function wireLocalModelsPanel(root) {
     if (gpuOnly) params.set("gpu_only", "true");
     if (gpuGroupIndex > 0) params.set("gpu_group_index", String(gpuGroupIndex));
     const rankedBody = await apiJson(`/platform/models/ranked?${params.toString()}`);
+    if (toastIfMiss(rankedBody, toast, "Model ranking unavailable")) {
+      tbody.innerHTML = `<tr><td colspan="4">Broker capacity miss — models unavailable</td></tr>`;
+      return;
+    }
     for (const row of rankedBody.models || []) {
       const tr = document.createElement("tr");
       const modelId = row.model_id || row.model || row.name || "?";
@@ -131,6 +136,9 @@ export function wireLocalModelsPanel(root) {
           target: "model-routing",
         }),
       });
+      if (toastIfMiss(body, toast, "Apply preset unavailable")) {
+        return;
+      }
       const hint = body.materialize_hint || "Preset applied";
       toast(hint, "success");
       if (body.preset_applied) {
@@ -159,22 +167,46 @@ export function wireLocalModelsPanel(root) {
   return {
     async init() {
       try {
-        const info = await apiJson("/platform/models/catalog-info");
+        const info = await apiJson("/platform/models/catalog-info").catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "models_catalog",
+        }));
         const el = root.querySelector("#models-catalog-info");
         if (el) {
-          el.textContent = `Catalog: ${info.model_count} models (v${info.version}), updated ${info.updated_at || "unknown"}`;
+          if (isDomainPeelMiss(info)) {
+            el.textContent =
+              formatDomainMissMessage(info, "Catalog unavailable") || "Catalog unavailable";
+            toastIfMiss(info, toast, "Catalog unavailable");
+          } else {
+            el.textContent = `Catalog: ${info.model_count} models (v${info.version}), updated ${info.updated_at || "unknown"}`;
+          }
         }
-      } catch {
-        /* optional */
+      } catch (e) {
+        toast(String(e.message || e), "error");
       }
 
       try {
-        const hw = await apiJson("/platform/hardware");
-        const profile = hw.profile || {};
-        renderHardwareStrip(profile);
-        setupGpuPoolSelect(profile.gpu_groups);
-      } catch {
-        /* optional */
+        const hw = await apiJson("/platform/hardware").catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "hardware_profile",
+        }));
+        if (isDomainPeelMiss(hw)) {
+          toastIfMiss(hw, toast, "Hardware profile unavailable");
+          const strip = root.querySelector("#models-hardware-strip");
+          if (strip) {
+            strip.textContent =
+              formatDomainMissMessage(hw, "Hardware profile unavailable") ||
+              "Hardware profile unavailable";
+          }
+        } else {
+          const profile = hw.profile || {};
+          renderHardwareStrip(profile);
+          setupGpuPoolSelect(profile.gpu_groups);
+        }
+      } catch (e) {
+        toast(String(e.message || e), "error");
       }
 
       await Promise.all([refreshOllama(), loadRanked()]);

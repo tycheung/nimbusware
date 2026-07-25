@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { formatDomainMissMessage, toastIfMiss } from "./broker_miss.js"; // sak500-a
 import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export async function loadEnforcementUserProfiles() {
@@ -33,8 +34,17 @@ export async function wireEnforcementRibbon(root, runId) {
       const preset = await apiJson(
         `/enforcement/presets/${encodeURIComponent(slider.value)}`,
       );
+      if (toastIfMiss(preset, toast, "Enforcement preset unavailable")) {
+        if (summary) {
+          summary.textContent =
+            formatDomainMissMessage(preset, "Enforcement preset unavailable") ||
+            `Level ${slider.value}`;
+        }
+        return;
+      }
       if (summary) summary.textContent = preset.name || `Level ${slider.value}`;
-    } catch {
+    } catch (e) {
+      toast(String(e.message || e), "error");
       if (summary) summary.textContent = `Level ${slider.value}`;
     }
   });
@@ -94,13 +104,21 @@ export async function wireEnforcementRibbon(root, runId) {
 
   try {
     const ep = await apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`);
+    if (toastIfMiss(ep, toast, "Enforcement profile unavailable")) {
+      if (summary) {
+        summary.textContent =
+          formatDomainMissMessage(ep, "Enforcement profile unavailable") || "";
+      }
+      return;
+    }
     if (slider) slider.value = String(ep.level ?? 5);
     if (label) label.textContent = String(ep.level ?? 5);
     if (summary) summary.textContent = ep.name || `Level ${ep.level ?? 5}`;
     root.dispatchEvent(
       new CustomEvent("enforcement-loaded", { detail: { level: ep.level, name: ep.name } }),
     );
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     if (summary) summary.textContent = "";
   }
 }

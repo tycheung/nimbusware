@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../../broker_miss.js"; // sak499-b
 
 let stitchCatalogVersion = 1;
 
@@ -7,7 +8,18 @@ export async function renderIntegratorRibbon(runId) {
   const bodyEl = document.getElementById("integrator-ribbon-body");
   if (!panel || !bodyEl || !runId) return;
   try {
-    const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=1`);
+    const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=1`).catch(
+      (e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "run_timeline",
+      }),
+    );
+    if (isDomainPeelMiss(timeline)) {
+      toastIfMiss(timeline, toast, "Integrator timeline unavailable");
+      bodyEl.textContent = "Integrator summary unavailable.";
+      return;
+    }
     const ig = timeline.integrator_gate;
     const delta = timeline.integrator_gate_delta;
     const parts = [];
@@ -18,14 +30,23 @@ export async function renderIntegratorRibbon(runId) {
       return;
     }
     bodyEl.textContent = parts.join(" · ");
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     bodyEl.textContent = "Integrator summary unavailable.";
   }
 }
 
 export async function refreshStitchFromProgress() {
   try {
-    const catalogBody = await apiJson("/bundles/catalog").catch(() => ({ document_version: 1 }));
+    const catalogBody = await apiJson("/bundles/catalog").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "bundles_catalog",
+    }));
+    if (isDomainPeelMiss(catalogBody)) {
+      toastIfMiss(catalogBody, toast, "Bundles catalog unavailable");
+      return;
+    }
     stitchCatalogVersion = catalogBody.document_version ?? 1;
     const candBody = await apiJson("/bundles/catalog-candidates?limit=20");
     const pending = (candBody.candidates || []).filter((c) => (c.status || "pending") === "pending");

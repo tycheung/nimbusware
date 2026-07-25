@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, isDomainPeelMiss } from "../api/client"; // sak500-d
 
 type Agent = { id: string; display_name: string; system_prompt: string; description?: string };
 
@@ -8,9 +8,19 @@ export function CustomAgentsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiJson<{ agents: Agent[] }>("/custom-agents")
-      .then((b) => setAgents(b.agents || []))
-      .catch((e) => setError(String((e as Error).message || e)));
+    apiJson<{ agents: Agent[]; via?: string; error?: string; status?: string }>("/custom-agents")
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setAgents([]);
+          setError(formatPeelMissMessage(body, "custom agents unavailable"));
+          return;
+        }
+        setAgents(body.agents || []);
+      })
+      .catch((e) => {
+        setAgents([]);
+        setError(formatReadCatchMessage(e, "custom agents unavailable"));
+      });
   }, []);
 
   return (

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 import { wireCollabSessionUi } from "./chat_collab_wiring.js";
 import { refreshChatLibrary } from "./chat_library_ui.js";
@@ -32,7 +33,14 @@ export function createChatSessionApi(root, { chatResumeEnabled }) {
     setSessionId(sid);
     const existing = await apiJson(
       `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-    );
+    ).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "session_load",
+    }));
+    if (toastIfMiss(existing, toast, "Session load unavailable")) {
+      throw new Error(formatDomainMissMessage(existing, "Session load unavailable") || "Session load unavailable");
+    }
     await wireCollabSessionUi(root, sessionId, existing);
     await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
     const projectId = String(root.querySelector("#chat-project-select")?.value || "");
@@ -42,21 +50,28 @@ export function createChatSessionApi(root, { chatResumeEnabled }) {
   async function ensureSession(projectId) {
     if (!chatResumeEnabled()) setSessionId("");
     if (sessionId) {
-      try {
-        const existing = await apiJson(
-          `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+      const existing = await apiJson(
+        `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "session_resume",
+      }));
+      if (isDomainPeelMiss(existing)) {
+        toastIfMiss(existing, toast, "Session resume unavailable");
+        throw new Error(
+          formatDomainMissMessage(existing, "Session resume unavailable") || "Session resume unavailable",
         );
-        if (existing.project_id === projectId) {
-          await wireCollabSessionUi(root, sessionId, existing);
-          await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
-          await refreshSessionSidebar(root, projectId, sessionId, loadSession);
-          await refreshComputeNodes(root, sessionId);
-          await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-          return sessionId;
-        }
-      } catch {
-        setSessionId("");
       }
+      if (existing.project_id === projectId) {
+        await wireCollabSessionUi(root, sessionId, existing);
+        await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
+        await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+        await refreshComputeNodes(root, sessionId);
+        await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
+        return sessionId;
+      }
+      setSessionId("");
     }
     const session = await apiJson("/chat/sessions", {
       method: "POST",

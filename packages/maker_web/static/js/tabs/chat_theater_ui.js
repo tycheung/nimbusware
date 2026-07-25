@@ -1,3 +1,5 @@
+import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { wireAutopilotRibbon } from "../autopilot-ribbon.js";
 import { wireEnforcementRibbon } from "../enforcement-ribbon.js";
 import { wireInterjectionRibbon } from "../interjection-ribbon.js";
@@ -48,11 +50,27 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   }
   let escalationQueued = false;
 
-  const onGateBlock = () => {
+  const onGateBlock = async () => {
     if (escalationQueued) return;
     escalationQueued = true;
-    maybeOfferPatchEscalation(root, runId, sessionId).catch(() => {});
-    maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun).catch(() => {});
+    try {
+      const timeline = await apiJson(
+        `/runs/${encodeURIComponent(runId)}/timeline?limit=80`,
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "run_timeline",
+        events: [],
+      }));
+      if (isDomainPeelMiss(timeline)) {
+        toastIfMiss(timeline, toast, "Run escalation unavailable");
+        return;
+      }
+      await maybeOfferPatchEscalation(root, runId, sessionId);
+      await maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun);
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   };
 
   const handleTheaterPayload = (data) => {
@@ -66,6 +84,9 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   const stream = openSseStream(
     `/runs/${encodeURIComponent(runId)}/theater/stream?profile=chat&cap=${theaterCap()}`,
     {
+      brokerBacked: true,
+      feature: "theater_stream",
+      terminalFailureMessage: "Theater stream unavailable",
       onEvent: {
         theater: (ev) => {
           const data = parseSseJson(ev);

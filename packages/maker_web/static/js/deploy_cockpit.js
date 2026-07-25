@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { toastIfMiss } from "./broker_miss.js";
 
 const CI_STAGE_PREFIXES = ["ci.", "deploy.", "terraform."];
 
@@ -224,18 +225,24 @@ export async function refreshDeployCockpit(runId, { scope = "progress", pollCi =
   try {
     if (pollCi) {
       try {
-        await apiJson("/platform/deploy/ci-poll", {
+        const poll = await apiJson("/platform/deploy/ci-poll", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ run_id: runId }),
         });
-      } catch {
-        /* optional when gh or credentials unavailable */
+        toastIfMiss(poll, toast, "Deploy CI poll unavailable");
+      } catch (e) {
+        toast(String(e.message || e), "error");
       }
     }
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=150`);
+    if (toastIfMiss(timeline, toast, "Deploy timeline unavailable")) {
+      renderDeployCockpit({ ciStatus: "unavailable", ciDetail: "Timeline unavailable" }, { scope });
+      return;
+    }
     renderDeployCockpit(deployStateFromTimeline(timeline.events || []), { scope });
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     renderDeployCockpit({ ciStatus: "unavailable", ciDetail: "Timeline unavailable" }, { scope });
   }
 }
@@ -248,29 +255,35 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
   let githubRepo = "";
   try {
     const catalog = await apiJson("/platform/deploy/environments");
-    if (catalog?.default) defaultEnv = String(catalog.default);
-  } catch {
-    /* optional */
+    if (!toastIfMiss(catalog, toast, "Deploy environments unavailable") && catalog?.default) {
+      defaultEnv = String(catalog.default);
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   try {
     const creds = await apiJson("/platform/deploy/credentials");
-    if (creds?.deploy_environment) defaultEnv = String(creds.deploy_environment);
-    if (creds?.github_repo) githubRepo = String(creds.github_repo);
-  } catch {
-    /* optional unsigned */
+    if (!toastIfMiss(creds, toast, "Deploy credentials unavailable")) {
+      if (creds?.deploy_environment) defaultEnv = String(creds.deploy_environment);
+      if (creds?.github_repo) githubRepo = String(creds.github_repo);
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   if (!ws && runId) {
     try {
       const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=20`);
-      for (const ev of timeline.events || []) {
-        const project = ev.metadata?.project;
-        if (project?.workspace_path) {
-          ws = String(project.workspace_path);
-          break;
+      if (!toastIfMiss(timeline, toast, "Deploy workspace timeline unavailable")) {
+        for (const ev of timeline.events || []) {
+          const project = ev.metadata?.project;
+          if (project?.workspace_path) {
+            ws = String(project.workspace_path);
+            break;
+          }
         }
       }
-    } catch {
-      /* optional */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
   }
   const refresh = () => refreshDeployCockpit(runId, { scope, pollCi: Boolean(githubRepo) });
@@ -291,6 +304,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (toastIfMiss(result, toast, "Terraform validate unavailable")) return;
       toast(`Terraform: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
@@ -303,11 +317,12 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
       return;
     }
     try {
-      await apiJson("/platform/deploy/approve", {
+      const result = await apiJson("/platform/deploy/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ run_id: runId }),
       });
+      if (toastIfMiss(result, toast, "Deploy approval unavailable")) return;
       toast("Deploy approval recorded on run timeline", "success");
       await refresh();
     } catch (e) {
@@ -329,6 +344,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ run_id: runId, workspace_path: ws, deploy_environment: selectedEnv() }),
       });
+      if (toastIfMiss(result, toast, "Deploy apply unavailable")) return;
       toast(`Deploy apply: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
@@ -346,6 +362,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ run_id: runId }),
       });
+      if (toastIfMiss(result, toast, "Deploy smoke unavailable")) return;
       toast(`Deploy smoke: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {
@@ -372,6 +389,7 @@ export async function wireDeployCockpit(runId, { scope = "progress", workspacePa
           deploy_environment: selectedEnv(),
         }),
       });
+      if (toastIfMiss(result, toast, "Deploy rollback unavailable")) return;
       toast(`Deploy rollback: ${result.status} — ${result.detail || ""}`, result.status === "passed" ? "success" : "info");
       await refresh();
     } catch (e) {

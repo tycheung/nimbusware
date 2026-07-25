@@ -1,5 +1,7 @@
 import { useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatWriteCatchMessage, writeMissMessage } from "../api/client";
+
+type PeelWriteBody = { via?: string; error?: string; status?: string };
 import { useApiGet } from "../hooks/useApiGet";
 import { briefReviewStatus } from "./researchStatus";
 import { PanelFrame } from "./PanelFrame";
@@ -22,16 +24,25 @@ export function ResearchPanel({ runId }: { runId: string }) {
   );
 
   async function review(briefId: string, action: "approve" | "reject") {
+    const fallback = `research ${action} unavailable`;
     try {
-      await apiJson(`/runs/${runId}/research/${encodeURIComponent(briefId)}/${action}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: "" }),
-      });
+      const body = await apiJson<PeelWriteBody>(
+        `/runs/${runId}/research/${encodeURIComponent(briefId)}/${action}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes: "" }),
+        },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setActionMsg(miss);
+        return;
+      }
       setActionMsg("");
       reload();
     } catch (e) {
-      setActionMsg(String((e as Error).message || e));
+      setActionMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { formatBytes } from "./models_hub_nav.js";
 
 export async function startOllamaPull(root, model) {
@@ -9,6 +10,7 @@ export async function startOllamaPull(root, model) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model }),
     });
+    if (toastIfMiss(accepted, toast, "Ollama pull unavailable")) return false;
     const jobId = accepted.job_id;
     if (!jobId) {
       toast("Pull accepted", "success");
@@ -16,6 +18,7 @@ export async function startOllamaPull(root, model) {
     }
     for (let i = 0; i < 120; i += 1) {
       const job = await apiJson(`/platform/ollama/pull/${encodeURIComponent(jobId)}`);
+      if (toastIfMiss(job, toast, "Ollama pull status unavailable")) return false;
       if (status) status.textContent = `Pull ${model}: ${job.status || "…"}`;
       if (job.status === "completed" || job.status === "failed") {
         if (job.status === "failed") toast(job.error || "Pull failed", "error");
@@ -41,7 +44,21 @@ export async function refreshOllamaPanel(root, { onPullComplete } = {}) {
     else await refreshOllamaPanel(root, { onPullComplete });
   };
   try {
-    const body = await apiJson("/platform/ollama/models");
+    const body = await apiJson("/platform/ollama/models").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "ollama_models",
+      reachable: false,
+      models: [],
+    }));
+    if (isDomainPeelMiss(body)) {
+      statusEl.textContent =
+        formatDomainMissMessage(body, "Ollama models unavailable") || "Ollama models unavailable";
+      toastIfMiss(body, toast, "Ollama models unavailable");
+      actionsEl.replaceChildren();
+      listEl.replaceChildren();
+      return;
+    }
     const dot = body.reachable ? "●" : "○";
     statusEl.textContent = `Ollama: ${dot} ${body.reachable ? "Running" : "Not reachable"} at ${body.base_url}`;
     actionsEl.replaceChildren();
@@ -58,6 +75,7 @@ export async function refreshOllamaPanel(root, { onPullComplete } = {}) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({}),
           });
+          if (toastIfMiss(res, toast, "Ollama bootstrap unavailable")) return;
           toast(res.message || (res.ok ? "Ollama ready" : "Install failed"), res.ok ? "success" : "error");
           await refreshOllamaPanel(root, { onPullComplete });
         } catch (e) {
@@ -87,7 +105,10 @@ export async function refreshOllamaPanel(root, { onPullComplete } = {}) {
         delBtn.textContent = "Delete";
         delBtn.onclick = async () => {
           try {
-            await apiJson(`/platform/ollama/models/${encodeURIComponent(name)}`, { method: "DELETE" });
+            const res = await apiJson(`/platform/ollama/models/${encodeURIComponent(name)}`, {
+              method: "DELETE",
+            });
+            if (toastIfMiss(res, toast, "Ollama delete unavailable")) return;
             toast(`Deleted ${name}`, "success");
             await refreshOllamaPanel(root, { onPullComplete });
           } catch (e) {

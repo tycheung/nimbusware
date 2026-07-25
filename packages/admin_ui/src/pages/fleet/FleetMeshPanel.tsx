@@ -1,8 +1,13 @@
+import { formatPeelMissMessage, isDomainPeelMiss } from "../../api/client"; // sak500-c
 import type { MeshNodeRow } from "./types";
 
 type FleetMeshPanelProps = {
   meshSessionId: string;
   meshNodes: MeshNodeRow[];
+  meshError?: string;
+  meshQueueDepth?: number | null;
+  meshVia?: string;
+  meshStatus?: string;
   onMeshSessionIdChange: (id: string) => void;
   onLoadNodes: () => void;
 };
@@ -10,13 +15,55 @@ type FleetMeshPanelProps = {
 export function FleetMeshPanel({
   meshSessionId,
   meshNodes,
+  meshError,
+  meshQueueDepth,
+  meshVia,
+  meshStatus,
   onMeshSessionIdChange,
   onLoadNodes,
 }: FleetMeshPanelProps) {
+  const meshMiss = isDomainPeelMiss({
+    via: meshVia,
+    status: meshStatus,
+    error: meshError,
+  });
   return (
     <>
       <h3>Session compute mesh</h3>
       <p class="muted">Nodes registered for a collaborative chat session (share policy + delegate).</p>
+      {meshMiss ? (
+        <p class="error" data-testid="admin-fleet-mesh-peel-miss" role="alert">
+          {formatPeelMissMessage(
+            {
+              via: meshVia,
+              status: meshStatus,
+              error: meshError,
+              feature: "session_compute",
+            },
+            "broker_miss: compute nodes unavailable",
+          )}
+          {" (feature=session_compute · status=degraded)"}
+        </p>
+      ) : meshError ? (
+        <p class="error" data-testid="admin-fleet-mesh-error" role="alert">
+          {formatPeelMissMessage(
+            { via: meshVia, status: meshStatus, error: meshError, feature: "session_compute" },
+            meshError,
+          )}
+        </p>
+      ) : null}
+      {!meshError && meshVia && !meshMiss && meshNodes.length === 0 ? (
+        <p class="muted" data-testid="admin-fleet-mesh-empty">
+          No nodes for this session (broker ok, empty list — not a peel miss).
+        </p>
+      ) : null}
+      {meshVia || meshQueueDepth != null ? (
+        <p class="muted" data-testid="admin-fleet-mesh-status">
+          via={meshVia || "—"}
+          {meshQueueDepth != null ? ` · queue_depth=${meshQueueDepth}` : ""}
+          {meshMiss ? " · status=degraded" : ""}
+        </p>
+      ) : null}
       <label>
         Session ID{" "}
         <input

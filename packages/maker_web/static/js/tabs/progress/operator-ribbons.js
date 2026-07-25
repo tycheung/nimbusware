@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../../api-client.js";
+import { toastIfMiss } from "../../broker_miss.js";
 import { wireAutopilotRibbon } from "../../autopilot-ribbon.js";
 import { wireEnforcementRibbon } from "../../enforcement-ribbon.js";
 import { wireInterjectionRibbon } from "../../interjection-ribbon.js";
@@ -13,7 +14,8 @@ import {
 export function wireOperatorRibbons(runId) {
   document.getElementById("dev-env-start-btn")?.addEventListener("click", async () => {
     try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/start`, { method: "POST" });
+      const res = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/start`, { method: "POST" });
+      if (toastIfMiss(res, toast, "Dev env start unavailable")) return;
       toast("Dev env started", "success");
       await refreshDevEnvStatus(runId);
     } catch (e) {
@@ -22,7 +24,8 @@ export function wireOperatorRibbons(runId) {
   });
   document.getElementById("dev-env-stop-btn")?.addEventListener("click", async () => {
     try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/stop`, { method: "POST" });
+      const res = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/stop`, { method: "POST" });
+      if (toastIfMiss(res, toast, "Dev env stop unavailable")) return;
       toast("Dev env stopped", "success");
       await refreshDevEnvStatus(runId);
     } catch (e) {
@@ -32,6 +35,7 @@ export function wireOperatorRibbons(runId) {
   document.getElementById("dev-env-regression-btn")?.addEventListener("click", async () => {
     try {
       const res = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/regression`, { method: "POST" });
+      if (toastIfMiss(res, toast, "Dev env regression unavailable")) return;
       toast(res.passed ? "Regression passed" : `Regression failed: ${res.detail}`, res.passed ? "success" : "error");
       await refreshDevEnvStatus(runId);
     } catch (e) {

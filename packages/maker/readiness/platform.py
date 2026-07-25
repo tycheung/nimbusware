@@ -196,7 +196,23 @@ def _check_memory() -> dict[str, Any]:
         profile = get_cached_profile()
         avail = profile.ram_available_gb
         tier = profile.tier
+    except RuntimeError:
+        # sak436-g / sak490-c: under CAPACITY peel, propagate broker miss (no silent weak tier).
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise
+        avail = _available_memory_gb()
+        tier = "medium" if (avail or 0) >= 8 else "weak"
     except ImportError:
+        # sak490-c: weak-tier fallback only when CAPACITY peel is off.
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise RuntimeError(
+                "broker_miss: platform readiness memory import unavailable under "
+                "NIMBUSWARE_BROKER_CAPACITY=1|2"
+            ) from None
         avail = _available_memory_gb()
         tier = "medium" if (avail or 0) >= 8 else "weak"
     if avail is None:
@@ -249,7 +265,7 @@ def _check_disk(repo_root: Path) -> dict[str, Any]:
 
 
 def _check_model_bindings(repo_root: Path) -> dict[str, Any]:
-    from orchestrator.routing.preflight import (
+    from orchestrator.model_routing.preflight import (
         build_binding_preflight_report,
         cloud_only_roles_satisfied,
     )

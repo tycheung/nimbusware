@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 
 let _activeFolderId = "";
 let _activeTag = "";
@@ -11,7 +12,26 @@ export async function refreshChatLibrary(
   const panel = root.querySelector("[data-testid='maker-chat-library']");
   if (!panel || !projectId) return;
   try {
-    const body = await apiJson(`/chat/folders?project_id=${encodeURIComponent(projectId)}`);
+    const body = await apiJson(`/chat/folders?project_id=${encodeURIComponent(projectId)}`).catch(
+      (e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "chat_folders",
+        folders: [],
+      }),
+    );
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Chat library unavailable");
+      panel.replaceChildren();
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-library-miss";
+      miss.textContent =
+        formatDomainMissMessage(body, "Chat library unavailable") || "Chat library unavailable";
+      panel.appendChild(miss);
+      panel.classList.remove("hidden");
+      return;
+    }
     const folders = body.folders || [];
     panel.replaceChildren();
     const title = document.createElement("h4");
@@ -59,9 +79,27 @@ export async function refreshChatLibrary(
     list.className = "chat-library-session-list";
     list.dataset.testid = "maker-chat-library-sessions";
     panel.appendChild(list);
-    const sessions = await apiJson(`/chat/sessions?project_id=${encodeURIComponent(projectId)}`);
+    const sessionsBody = await apiJson(
+      `/chat/sessions?project_id=${encodeURIComponent(projectId)}`,
+    ).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "chat_sessions",
+    }));
+    if (isDomainPeelMiss(sessionsBody)) {
+      toastIfMiss(sessionsBody, toast, "Chat sessions unavailable");
+      const missLi = document.createElement("li");
+      missLi.className = "muted";
+      missLi.dataset.testid = "maker-chat-library-sessions-miss";
+      missLi.textContent =
+        formatDomainMissMessage(sessionsBody, "Chat sessions unavailable") ||
+        "Chat sessions unavailable";
+      list.appendChild(missLi);
+      panel.classList.remove("hidden");
+      return;
+    }
     const tagNeedle = _activeTag.toLowerCase();
-    for (const session of sessions || []) {
+    for (const session of Array.isArray(sessionsBody) ? sessionsBody : []) {
       if (_activeFolderId && session.folder_id !== _activeFolderId) continue;
       const tags = session.tags || session.metadata?.tags || [];
       if (tagNeedle && !tags.some((t) => String(t).toLowerCase().includes(tagNeedle))) continue;
@@ -79,7 +117,14 @@ export async function refreshChatLibrary(
       list.appendChild(li);
     }
     panel.classList.remove("hidden");
-  } catch {
-    panel.classList.add("hidden");
+  } catch (e) {
+    toast(String(e.message || e), "error");
+    panel.replaceChildren();
+    const miss = document.createElement("p");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-library-miss";
+    miss.textContent = `Chat library unavailable: ${String(e.message || e)}`;
+    panel.appendChild(miss);
+    panel.classList.remove("hidden");
   }
 }

@@ -1,3 +1,5 @@
+import { apiJson, toast } from "../../api-client.js";
+import { toastIfMiss } from "../../broker_miss.js";
 import { formatGateSummary } from "../../gate-summary.js";
 import { formatPlainGateSummary } from "../../plain-language.js";
 
@@ -148,6 +150,10 @@ export async function renderGateFailSteps(apiJson, runId) {
   if (!mount || !runId) return;
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
+    if (toastIfMiss(timeline, toast, "Gate fail steps unavailable")) {
+      mount.hidden = true;
+      return;
+    }
     const failed = [];
     for (const ev of timeline.events || []) {
       const stage = String(ev.payload?.stage_name || "");
@@ -188,7 +194,8 @@ export async function renderGateFailSteps(apiJson, runId) {
       ul.appendChild(li);
     }
     mount.appendChild(ul);
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     mount.hidden = true;
   }
 }

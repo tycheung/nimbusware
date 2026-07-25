@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "./broker_miss.js"; // sak499-b
 import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export async function loadStandardsRegistry() {
@@ -28,9 +29,14 @@ export async function wireStandardsRibbon(root, runId) {
 
   let registry = { facades: {}, bundles: {} };
   try {
-    registry = await loadStandardsRegistry();
-  } catch {
-    /* registry optional when platform disabled */
+    const loaded = await loadStandardsRegistry();
+    if (isDomainPeelMiss(loaded)) {
+      toastIfMiss(loaded, toast, "Standards registry unavailable");
+    } else {
+      registry = loaded;
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 
   if (facadeSelect) {
@@ -139,8 +145,16 @@ export async function wireStandardsRibbon(root, runId) {
 
   try {
     const current = await apiJson(`/runs/${encodeURIComponent(runId)}/standards`);
+    if (toastIfMiss(current, toast, "Standards profile unavailable")) {
+      if (summary) {
+        summary.textContent =
+          formatDomainMissMessage(current, "Standards profile unavailable") || "";
+      }
+      return;
+    }
     applyStandardsProfileToControls(root, current.standards_effective || {});
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     if (summary) summary.textContent = "";
   }
 }

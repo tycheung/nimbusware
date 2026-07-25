@@ -1,11 +1,27 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak500-b
 
 export async function mountEnterpriseGovernancePanel(root) {
   const panel = root.querySelector("#enterprise-home-panel");
   const mount = root.querySelector("#enterprise-governance-mount");
   if (!panel || !mount) return;
   try {
-    const gov = await apiJson("/platform/fleet-governance");
+    const gov = await apiJson("/platform/fleet-governance").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "fleet_governance",
+    }));
+    if (isDomainPeelMiss(gov)) {
+      mount.replaceChildren();
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-home-fleet-governance-miss";
+      miss.textContent =
+        formatDomainMissMessage(gov, "Fleet governance unavailable") || "Fleet governance unavailable";
+      mount.appendChild(miss);
+      toastIfMiss(gov, toast, "Fleet governance unavailable");
+      return;
+    }
     mount.replaceChildren();
     const card = document.createElement("article");
     card.className = "panel";
@@ -55,7 +71,22 @@ export async function mountEnterpriseGovernancePanel(root) {
     mount.appendChild(card);
 
     try {
-      const summary = await apiJson("/enterprise/compliance/summary");
+      const summary = await apiJson("/enterprise/compliance/summary").catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "compliance_summary",
+      }));
+      if (isDomainPeelMiss(summary)) {
+        toastIfMiss(summary, toast, "Compliance summary unavailable");
+        const miss = document.createElement("p");
+        miss.className = "muted";
+        miss.dataset.testid = "maker-home-compliance-miss";
+        miss.textContent =
+          formatDomainMissMessage(summary, "Compliance summary unavailable") ||
+          "Compliance summary unavailable";
+        mount.appendChild(miss);
+        return;
+      }
       const comp = document.createElement("article");
       comp.className = "panel";
       comp.dataset.testid = "maker-home-compliance-summary";
@@ -81,10 +112,11 @@ export async function mountEnterpriseGovernancePanel(root) {
       compBody.textContent = compLines.join(" · ") || "No compliance metrics yet.";
       comp.appendChild(compBody);
       mount.appendChild(comp);
-    } catch {
-      /* compliance API optional when IAM disabled */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
-  } catch {
+  } catch (e) {
     mount.replaceChildren();
+    toast(String(e.message || e), "error");
   }
 }

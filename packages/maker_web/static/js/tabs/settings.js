@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak498-f
 import {
   AUTOPILOT_PROFILE_STORAGE_KEY,
   ENFORCEMENT_PROFILE_STORAGE_KEY,
@@ -34,8 +35,16 @@ function labelForKey(catalog, key) {
 export async function mountSettings(root) {
   const [me, catalog] = await Promise.all([
     apiJson("/settings/me"),
-    apiJson("/settings/catalog").catch(() => null),
+    apiJson("/settings/catalog").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "settings_catalog",
+    })),
   ]);
+  if (isDomainPeelMiss(catalog)) {
+    toastIfMiss(catalog, toast, "Settings catalog unavailable");
+  }
+  const catalogSafe = isDomainPeelMiss(catalog) ? null : catalog;
   const stored = me.stored || me.values || me.settings || me;
 
   root.innerHTML = settingsShellHtml() + deploySettingsSectionHtml() + soloDisciplineSectionHtml() + agentOverlaySectionHtml();
@@ -51,18 +60,27 @@ export async function mountSettings(root) {
   if (collabSection && window.__NIMBUSWARE__?.setup_bundle === "default") {
     collabSection.hidden = false;
     try {
-      const collab = await apiJson("/platform/collab-settings");
-      if (collabToggle) collabToggle.checked = !!collab.collab_enabled;
-    } catch {
-      /* optional */
+      const collab = await apiJson("/platform/collab-settings").catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "collab_settings",
+      }));
+      if (toastIfMiss(collab, toast, "Collab settings unavailable")) {
+        /* leave toggle default */
+      } else if (collabToggle) {
+        collabToggle.checked = !!collab.collab_enabled;
+      }
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
     collabToggle?.addEventListener("change", async () => {
       try {
-        await apiJson("/platform/collab-settings", {
+        const res = await apiJson("/platform/collab-settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ collab_enabled: !!collabToggle.checked }),
         });
+        if (toastIfMiss(res, toast, "Collab settings save unavailable")) return;
         toast("Collaborative chat setting saved", "success");
       } catch (e) {
         toast(String(e.message || e), "error");
@@ -115,11 +133,15 @@ export async function mountSettings(root) {
       const name = profileNameInput?.value?.trim() || profileId;
       const level = Number(levelInput?.value || 5);
       try {
-        await apiJson(`/platform/enforcement/user-profiles/${encodeURIComponent(profileId)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, level }),
-        });
+        const res = await apiJson(
+          `/platform/enforcement/user-profiles/${encodeURIComponent(profileId)}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, level }),
+          },
+        );
+        if (toastIfMiss(res, toast, "Enforcement profile save unavailable")) return;
         toast(`Saved strictness profile ${profileId}`, "success");
         const refreshed = await loadPlatformUserProfiles(apiJson, "/platform/enforcement/user-profiles");
         populateProfileSelect(enforcementSelect, refreshed);
@@ -153,7 +175,7 @@ export async function mountSettings(root) {
   );
   for (const [key, val] of entries) {
     const label = document.createElement("label");
-    label.textContent = labelForKey(catalog, key);
+    label.textContent = labelForKey(catalogSafe, key);
     const input = document.createElement("input");
     input.name = key;
     input.value = String(val);
@@ -170,12 +192,17 @@ export async function mountSettings(root) {
     ev.preventDefault();
     const fd = new FormData(form);
     const patch = Object.fromEntries(fd.entries());
-    await apiJson("/settings/me", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ values: patch }),
-    });
-    toast("Settings saved", "success");
+    try {
+      const res = await apiJson("/settings/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ values: patch }),
+      });
+      if (toastIfMiss(res, toast, "Settings save unavailable")) return;
+      toast("Settings saved", "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 
   let presetRunId = resolveRunId();
@@ -196,6 +223,7 @@ export async function mountSettings(root) {
       const scorecard = await apiJson(`/runs/${encodeURIComponent(id)}/maker/launch-eval`, {
         method: "POST",
       });
+      if (toastIfMiss(scorecard, toast, "Launch eval unavailable")) return;
       renderLaunchScorecard(body, scorecard, { testIdPrefix: "maker-settings" });
       toast("Launch check complete", "success");
     } catch (e) {

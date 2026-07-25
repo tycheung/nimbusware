@@ -3,10 +3,21 @@ import {
   apiJson,
   apiJsonEnterprise,
   enterpriseApiKey,
+  formatCapacityMissMessage,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  formatWriteCatchMessage,
+  getFleetMeshStatus,
+  getSessionComputeStatus,
+  getWorkUnitQueueDepth,
+  isCapacityMiss,
+  isDomainPeelMiss,
+  peelMissFromFetchError,
   resolveEnterpriseApiKeyForTenant,
   selectedEnterpriseTenantSlug,
   setEnterpriseTenantSlug,
-} from "../api/client";
+  writeMissMessage,
+} from "../api/client"; // sak499-d
 import { FleetAutopilotPanel } from "./fleet/FleetAutopilotPanel";
 import { FleetComparePanel } from "./fleet/FleetComparePanel";
 import { FleetCompliancePanel } from "./fleet/FleetCompliancePanel";
@@ -23,6 +34,10 @@ import type {
   TenantOption,
   TenantRow,
 } from "./fleet/types";
+
+function peelUnavailable(caption: string): boolean {
+  return /unavailable|broker_miss/i.test(caption);
+}
 
 export function FleetPage() {
   const [dashboard, setDashboard] = useState<FleetDashboard | null>(null);
@@ -44,8 +59,13 @@ export function FleetPage() {
   const [enforcementCaption, setEnforcementCaption] = useState("");
   const [meshSessionId, setMeshSessionId] = useState("");
   const [meshNodes, setMeshNodes] = useState<MeshNodeRow[]>([]);
+  const [meshError, setMeshError] = useState("");
+  const [meshQueueDepth, setMeshQueueDepth] = useState<number | null>(null);
+  const [meshVia, setMeshVia] = useState("");
   const [error, setError] = useState("");
   const [compliance, setCompliance] = useState<Record<string, unknown> | null>(null);
+  const [complianceMiss, setComplianceMiss] = useState("");
+  const [compareMiss, setCompareMiss] = useState(false);
   const [legalHold, setLegalHold] = useState(false);
   const [auditPolicyBusy, setAuditPolicyBusy] = useState(false);
   const [auditPolicyCaption, setAuditPolicyCaption] = useState("");
@@ -61,6 +81,8 @@ export function FleetPage() {
   const [fleetSearch, setFleetSearch] = useState<FleetCombinedSearch | null>(null);
   const [fleetSearchBusy, setFleetSearchBusy] = useState(false);
   const [fleetSearchError, setFleetSearchError] = useState("");
+  const [capacityPeelMiss, setCapacityPeelMiss] = useState("");
+  const [memoryPeelMiss, setMemoryPeelMiss] = useState("");
 
   const loadDashboard = useCallback(() => {
     if (!enterpriseApiKey()) {
@@ -78,13 +100,51 @@ export function FleetPage() {
       .then((body) => {
         setDashboard(body);
         setError("");
+        const rows = body.hardware_rows || [];
+        const rowMiss = rows.some((r) => isCapacityMiss(r));
+        const dashMiss = isCapacityMiss(body);
+        if (dashMiss || rowMiss) {
+          setCapacityPeelMiss(
+            formatCapacityMissMessage(
+              dashMiss
+                ? body
+                : {
+                    error: "fleet hardware peel miss",
+                    feature: "fleet_dashboard",
+                  },
+            ),
+          );
+        } else {
+          setCapacityPeelMiss("");
+        }
+        // sak494-h: surface fleet_memory status peel miss on dashboard load
+        const memBody = body.fleet_memory;
+        if (isDomainPeelMiss(memBody)) {
+          setMemoryPeelMiss(formatPeelMissMessage(memBody, "fleet memory unavailable"));
+        } else {
+          setMemoryPeelMiss("");
+        }
       })
-      .catch((e) => setError(String((e as Error).message || e)));
+      .catch((e) => {
+        const miss = peelMissFromFetchError(e);
+        if (miss && isCapacityMiss(miss)) {
+          setCapacityPeelMiss(formatCapacityMissMessage(miss));
+          setError("");
+          return;
+        }
+        if (miss && isDomainPeelMiss(miss)) {
+          setMemoryPeelMiss(formatPeelMissMessage(miss, "fleet memory unavailable"));
+          setError("");
+          return;
+        }
+        setError(formatReadCatchMessage(e, "fleet dashboard unavailable"));
+      });
   }, [tenantId, tenants]);
 
   const loadCompliance = useCallback(() => {
     if (!enterpriseApiKey()) {
       setCompliance(null);
+      setComplianceMiss("");
       return;
     }
     const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || null;
@@ -92,17 +152,40 @@ export function FleetPage() {
     apiJsonEnterprise<Record<string, unknown>>("/enterprise/compliance/summary", {
       headers: { "X-Nimbusware-Api-Key": key },
     })
-      .then((body) => setCompliance(body))
-      .catch(() => setCompliance(null));
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setCompliance(null);
+          setComplianceMiss(formatPeelMissMessage(body, "compliance summary unavailable"));
+          return;
+        }
+        setComplianceMiss("");
+        setCompliance(body);
+      })
+      .catch((e) => {
+        setCompliance(null);
+        setComplianceMiss(formatReadCatchMessage(e, "compliance summary unavailable"));
+      });
   }, [tenantId, tenants]);
 
   useEffect(() => {
     if (!enterpriseApiKey()) {
       return;
     }
-    apiJsonEnterprise<{ tenants?: TenantRow[] }>("/enterprise/tenants")
-      .then((body) => setTenants(tenantOptions(body.tenants || [])))
-      .catch(() => setTenants([]));
+    apiJsonEnterprise<{ tenants?: TenantRow[]; via?: string; error?: string }>(
+      "/enterprise/tenants",
+    )
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setTenants([]);
+          setError(formatPeelMissMessage(body, "tenants unavailable"));
+          return;
+        }
+        setTenants(tenantOptions(body.tenants || []));
+      })
+      .catch((e) => {
+        setTenants([]);
+        setError(formatReadCatchMessage(e, "tenants unavailable"));
+      });
   }, []);
 
   useEffect(() => {
@@ -120,15 +203,21 @@ export function FleetPage() {
     }
     const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || "default";
     const key = resolveEnterpriseApiKeyForTenant(slug);
-    apiJsonEnterprise<{ legal_hold?: boolean }>(
+    apiJsonEnterprise<{ legal_hold?: boolean; via?: string; error?: string }>(
       `/enterprise/audit-policy?tenant_slug=${encodeURIComponent(slug)}`,
       { headers: { "X-Nimbusware-Api-Key": key } },
     )
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setAuditPolicyCaption(formatPeelMissMessage(body, "audit policy unavailable"));
+          return;
+        }
         setLegalHold(Boolean(body.legal_hold));
         setAuditPolicyCaption(`Audit policy for ${slug}`);
       })
-      .catch(() => setAuditPolicyCaption(""));
+      .catch((e) =>
+        setAuditPolicyCaption(formatReadCatchMessage(e, "audit policy unavailable")),
+      );
   }, [tenantId, tenants]);
 
   useEffect(() => {
@@ -138,9 +227,10 @@ export function FleetPage() {
   const saveLegalHold = async (enabled: boolean) => {
     const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || "default";
     const key = resolveEnterpriseApiKeyForTenant(slug);
+    const fallback = "audit policy save unavailable";
     setAuditPolicyBusy(true);
     try {
-      await apiJsonEnterprise(
+      const body = await apiJsonEnterprise<{ via?: string; error?: string; status?: string }>(
         `/enterprise/audit-policy?tenant_slug=${encodeURIComponent(slug)}`,
         {
           method: "PUT",
@@ -151,6 +241,11 @@ export function FleetPage() {
           body: JSON.stringify({ legal_hold: enabled, redaction_patterns: [] }),
         },
       );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setAuditPolicyCaption(miss);
+        return;
+      }
       setLegalHold(enabled);
       setAuditPolicyCaption(
         enabled
@@ -159,7 +254,7 @@ export function FleetPage() {
       );
       loadCompliance();
     } catch (e) {
-      setError(String((e as Error).message || e));
+      setAuditPolicyCaption(formatWriteCatchMessage(e, fallback));
     } finally {
       setAuditPolicyBusy(false);
     }
@@ -173,16 +268,27 @@ export function FleetPage() {
       return;
     }
     const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
-    apiJsonEnterprise<{ allow_external_collaborators?: boolean; max_session_participants?: number }>(
+    apiJsonEnterprise<{
+      allow_external_collaborators?: boolean;
+      max_session_participants?: number;
+      via?: string;
+      error?: string;
+    }>(
       `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/collab-policy`,
       { headers: { "X-Nimbusware-Api-Key": key } },
     )
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setCollabPolicyCaption(formatPeelMissMessage(body, "collab policy unavailable"));
+          return;
+        }
         setAllowExternalCollab(Boolean(body.allow_external_collaborators));
         setMaxParticipants(body.max_session_participants ?? 20);
         setCollabPolicyCaption(`Collab guest policy for ${tenantSlug}`);
       })
-      .catch(() => setCollabPolicyCaption(""));
+      .catch((e) =>
+        setCollabPolicyCaption(formatReadCatchMessage(e, "collab policy unavailable")),
+      );
   }, [tenantId, tenantSlug]);
 
   useEffect(() => {
@@ -191,29 +297,38 @@ export function FleetPage() {
 
   const saveCollabPolicy = async () => {
     const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    const fallback = "collab policy save unavailable";
     setCollabPolicyBusy(true);
     try {
-      await apiJsonEnterprise(`/enterprise/tenants/${encodeURIComponent(tenantSlug)}/collab-policy`, {
-        method: "PUT",
-        headers: {
-          "X-Nimbusware-Api-Key": key,
-          "Content-Type": "application/json",
+      const body = await apiJsonEnterprise<{ via?: string; error?: string; status?: string }>(
+        `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/collab-policy`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Nimbusware-Api-Key": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            allow_external_collaborators: allowExternalCollab,
+            max_session_participants: maxParticipants,
+            host_transfer_consent_hours: 24,
+            default_invite_role: "session_read",
+            write_may_start_runs: false,
+          }),
         },
-        body: JSON.stringify({
-          allow_external_collaborators: allowExternalCollab,
-          max_session_participants: maxParticipants,
-          host_transfer_consent_hours: 24,
-          default_invite_role: "session_read",
-          write_may_start_runs: false,
-        }),
-      });
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setCollabPolicyCaption(miss);
+        return;
+      }
       setCollabPolicyCaption(
         allowExternalCollab
           ? `External link joins allowed for ${tenantSlug}`
           : `Directory-only guests for ${tenantSlug}`,
       );
     } catch (e) {
-      setError(String((e as Error).message || e));
+      setCollabPolicyCaption(formatWriteCatchMessage(e, fallback));
     } finally {
       setCollabPolicyBusy(false);
     }
@@ -225,17 +340,23 @@ export function FleetPage() {
       return;
     }
     const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
-    apiJsonEnterprise<{ allowed_stacks?: Record<string, string> }>(
+    apiJsonEnterprise<{ allowed_stacks?: Record<string, string>; via?: string; error?: string }>(
       `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/stack-policy`,
       { headers: { "X-Nimbusware-Api-Key": key } },
     )
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setStackPolicyCaption(formatPeelMissMessage(body, "stack policy unavailable"));
+          return;
+        }
         const stacks = body.allowed_stacks || {};
         setAllowedApiStack(stacks.api || "");
         setAllowedWebStack(stacks.web || "");
         setStackPolicyCaption(`Regulated stack policy for ${tenantSlug}`);
       })
-      .catch(() => setStackPolicyCaption(""));
+      .catch((e) =>
+        setStackPolicyCaption(formatReadCatchMessage(e, "stack policy unavailable")),
+      );
   }, [tenantId, tenantSlug]);
 
   useEffect(() => {
@@ -244,22 +365,31 @@ export function FleetPage() {
 
   const saveStackPolicy = async () => {
     const key = resolveEnterpriseApiKeyForTenant(tenantSlug);
+    const fallback = "stack policy save unavailable";
     setStackPolicyBusy(true);
     try {
       const allowed_stacks: Record<string, string> = {};
       if (allowedApiStack.trim()) allowed_stacks.api = allowedApiStack.trim();
       if (allowedWebStack.trim()) allowed_stacks.web = allowedWebStack.trim();
-      await apiJsonEnterprise(`/enterprise/tenants/${encodeURIComponent(tenantSlug)}/stack-policy`, {
-        method: "PUT",
-        headers: {
-          "X-Nimbusware-Api-Key": key,
-          "Content-Type": "application/json",
+      const body = await apiJsonEnterprise<{ via?: string; error?: string; status?: string }>(
+        `/enterprise/tenants/${encodeURIComponent(tenantSlug)}/stack-policy`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Nimbusware-Api-Key": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ allowed_stacks }),
         },
-        body: JSON.stringify({ allowed_stacks }),
-      });
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setStackPolicyCaption(miss);
+        return;
+      }
       setStackPolicyCaption(`Saved stack allowlist for ${tenantSlug}`);
     } catch (e) {
-      setError(String((e as Error).message || e));
+      setStackPolicyCaption(formatWriteCatchMessage(e, fallback));
     } finally {
       setStackPolicyBusy(false);
     }
@@ -278,16 +408,24 @@ export function FleetPage() {
       required_checkpoints?: string[];
       checkpoint_catalog?: string[];
       tenant_slug?: string;
+      via?: string;
+      error?: string;
     }>(`/admin/ui/enterprise/fleet-autopilot-policy${q}`, {
       headers: { "X-Nimbusware-Api-Key": key },
     })
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setPolicyCaption(formatPeelMissMessage(body, "autopilot policy unavailable"));
+          return;
+        }
         setPolicyLevel(body.max_autopilot_level ?? 10);
         setPolicyCheckpoints((body.required_checkpoints || []).join(", "));
         setPolicyCatalog(body.checkpoint_catalog || []);
         setPolicyCaption(`Tenant policy: ${body.tenant_slug || slug}`);
       })
-      .catch(() => setPolicyCaption(""));
+      .catch((e) =>
+        setPolicyCaption(formatReadCatchMessage(e, "autopilot policy unavailable")),
+      );
   }, [tenantId, tenants]);
 
   useEffect(() => {
@@ -306,15 +444,23 @@ export function FleetPage() {
       min_enforcement_level?: number;
       max_enforcement_level?: number;
       tenant_slug?: string;
+      via?: string;
+      error?: string;
     }>(`/admin/ui/enterprise/fleet-enforcement-policy${q}`, {
       headers: { "X-Nimbusware-Api-Key": key },
     })
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setEnforcementCaption(formatPeelMissMessage(body, "enforcement policy unavailable"));
+          return;
+        }
         setEnforcementMin(body.min_enforcement_level ?? 0);
         setEnforcementMax(body.max_enforcement_level ?? 10);
         setEnforcementCaption(`Enforcement policy: ${body.tenant_slug || slug}`);
       })
-      .catch(() => setEnforcementCaption(""));
+      .catch((e) =>
+        setEnforcementCaption(formatReadCatchMessage(e, "enforcement policy unavailable")),
+      );
   }, [tenantId, tenants]);
 
   useEffect(() => {
@@ -325,14 +471,69 @@ export function FleetPage() {
     const sid = meshSessionId.trim();
     if (!sid) {
       setMeshNodes([]);
+      setMeshError("");
+      setMeshQueueDepth(null);
+      setMeshVia("");
       return;
     }
-    apiJson<{ nodes?: typeof meshNodes }>(`/compute/nodes?session_id=${encodeURIComponent(sid)}`)
-      .then((body) => setMeshNodes(body.nodes || []))
-      .catch(() => setMeshNodes([]));
+    // sak437-g: enterprise → fleet-mesh; else session compute status (+ queue depth).
+    const key = enterpriseApiKey();
+    const load = key
+      ? getFleetMeshStatus(sid)
+      : getSessionComputeStatus(sid).then(async (status) => {
+          try {
+            const q = await getWorkUnitQueueDepth(sid);
+            return {
+              ...status,
+              queue_depth:
+                typeof q.queued === "number" ? q.queued : status.queue_depth,
+              via: isDomainPeelMiss(q) ? "broker_miss" : status.via,
+              error: q.error || status.error,
+              status:
+                isDomainPeelMiss(q) || status.status === "degraded"
+                  ? "degraded"
+                  : status.status,
+            };
+          } catch (e) {
+            return {
+              ...status,
+              via: "broker_miss",
+              error: String((e as Error).message || e),
+              status: "degraded",
+              feature: "work_unit_queue_depth",
+            };
+          }
+        });
+
+    load
+      .then((body) => {
+        setMeshNodes((body.nodes || []) as typeof meshNodes);
+        const via = body.via || "";
+        setMeshVia(via);
+        setMeshQueueDepth(
+          typeof body.queue_depth === "number" ? body.queue_depth : null,
+        );
+        if (isDomainPeelMiss(body)) {
+          setMeshError(String(body.error || "broker_miss: compute nodes unavailable"));
+        } else {
+          setMeshError("");
+        }
+      })
+      .catch((e) => {
+        const miss = peelMissFromFetchError(e);
+        setMeshNodes([]);
+        setMeshQueueDepth(null);
+        if (miss && isDomainPeelMiss(miss)) {
+          setMeshVia(String(miss.via || "broker_miss"));
+          setMeshError(String(miss.error || "broker_miss: compute nodes unavailable"));
+          return;
+        }
+        setMeshVia("broker_miss");
+        setMeshError(formatReadCatchMessage(e, "broker_miss: compute nodes unavailable"));
+      });
   }, [meshSessionId]);
 
-  const saveAutopilotPolicy = () => {
+  const saveAutopilotPolicy = async () => {
     if (!enterpriseApiKey() || !tenantId) return;
     const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
     const key = resolveEnterpriseApiKeyForTenant(slug);
@@ -341,39 +542,63 @@ export function FleetPage() {
       .split(",")
       .map((c) => c.trim())
       .filter(Boolean);
-    apiJson(`/admin/ui/enterprise/fleet-autopilot-policy${q}`, {
-      method: "PUT",
-      headers: {
-        "X-Nimbusware-Api-Key": key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        max_autopilot_level: policyLevel,
-        required_checkpoints: checkpoints,
-      }),
-    })
-      .then(() => loadAutopilotPolicy())
-      .catch((e) => setError(String((e as Error).message || e)));
+    const fallback = "autopilot policy save unavailable";
+    try {
+      const body = await apiJson<{ via?: string; error?: string; status?: string }>(
+        `/admin/ui/enterprise/fleet-autopilot-policy${q}`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Nimbusware-Api-Key": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            max_autopilot_level: policyLevel,
+            required_checkpoints: checkpoints,
+          }),
+        },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setPolicyCaption(miss);
+        return;
+      }
+      loadAutopilotPolicy();
+    } catch (e) {
+      setPolicyCaption(formatWriteCatchMessage(e, fallback));
+    }
   };
 
-  const saveEnforcementPolicy = () => {
+  const saveEnforcementPolicy = async () => {
     if (!enterpriseApiKey() || !tenantId) return;
     const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
     const key = resolveEnterpriseApiKeyForTenant(slug);
     const q = `?tenant_id=${encodeURIComponent(tenantId)}`;
-    apiJson(`/admin/ui/enterprise/fleet-enforcement-policy${q}`, {
-      method: "PUT",
-      headers: {
-        "X-Nimbusware-Api-Key": key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        min_enforcement_level: enforcementMin,
-        max_enforcement_level: enforcementMax,
-      }),
-    })
-      .then(() => loadEnforcementPolicy())
-      .catch((e) => setError(String((e as Error).message || e)));
+    const fallback = "enforcement policy save unavailable";
+    try {
+      const body = await apiJson<{ via?: string; error?: string; status?: string }>(
+        `/admin/ui/enterprise/fleet-enforcement-policy${q}`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Nimbusware-Api-Key": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            min_enforcement_level: enforcementMin,
+            max_enforcement_level: enforcementMax,
+          }),
+        },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setEnforcementCaption(miss);
+        return;
+      }
+      loadEnforcementPolicy();
+    } catch (e) {
+      setEnforcementCaption(formatWriteCatchMessage(e, fallback));
+    }
   };
 
   const onTenantChange = (id: string) => {
@@ -399,11 +624,37 @@ export function FleetPage() {
           `/enterprise/fleet-learnings/search?q=${enc}&k=10`,
           { headers },
         ),
-        apiJsonEnterprise<{ hits?: FleetCombinedSearch["memory_hits"]; embedding_mode?: string }>(
-          `/enterprise/fleet-memory/search?q=${enc}&k=10`,
-          { headers },
-        ).catch(() => ({ hits: [], embedding_mode: "none" })),
+        apiJsonEnterprise<{
+          hits?: FleetCombinedSearch["memory_hits"];
+          embedding_mode?: string;
+          via?: string;
+          error?: string;
+          feature?: string;
+        }>(`/enterprise/fleet-memory/search?q=${enc}&k=10`, { headers }).catch(
+          (e) =>
+            peelMissFromFetchError(e) ?? {
+              via: "broker_miss" as const,
+              error: String((e as Error).message || e),
+              feature: "fleet_memory_search",
+              hits: undefined,
+              embedding_mode: undefined,
+            },
+        ),
       ]);
+      if (isDomainPeelMiss(learnings)) {
+        setFleetSearchError(
+          formatPeelMissMessage(learnings, "fleet learnings search unavailable"),
+        );
+        setFleetSearch(null);
+        return;
+      }
+      if (isDomainPeelMiss(memory)) {
+        setFleetSearchError(
+          formatPeelMissMessage(memory, "broker_miss: fleet memory search unavailable"),
+        );
+        setFleetSearch(null);
+        return;
+      }
       const learningsHits = learnings.hits || [];
       const memoryHits = memory.hits || [];
       setFleetSearch({
@@ -415,7 +666,7 @@ export function FleetPage() {
       });
     } catch (e) {
       setFleetSearch(null);
-      setFleetSearchError(String((e as Error).message || e));
+      setFleetSearchError(formatReadCatchMessage(e, "fleet search unavailable"));
     } finally {
       setFleetSearchBusy(false);
     }
@@ -429,16 +680,32 @@ export function FleetPage() {
       tenants.find((t) => t.id === tenantA)?.slug || tenantA,
     );
     const q = `?tenant_a=${encodeURIComponent(tenantA)}&tenant_b=${encodeURIComponent(tenantB)}`;
-    apiJson<{ rows?: typeof compareRows; caption?: string; csv?: string }>(
-      `/admin/ui/enterprise/fleet-compare${q}`,
-      { headers: { "X-Nimbusware-Api-Key": key } },
-    )
+    apiJson<{
+      rows?: typeof compareRows;
+      caption?: string;
+      csv?: string;
+      via?: string;
+      error?: string;
+    }>(`/admin/ui/enterprise/fleet-compare${q}`, { headers: { "X-Nimbusware-Api-Key": key } })
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setCompareRows([]);
+          setCompareMiss(true);
+          setCompareCaption(formatPeelMissMessage(body, "fleet compare unavailable"));
+          setCompareCsv("");
+          return;
+        }
+        setCompareMiss(false);
         setCompareRows(body.rows || []);
         setCompareCaption(body.caption || "");
         setCompareCsv(body.csv || "");
       })
-      .catch((e) => setError(String((e as Error).message || e)));
+      .catch((e) => {
+        setCompareRows([]);
+        setCompareMiss(true);
+        setCompareCaption(formatReadCatchMessage(e, "fleet compare unavailable"));
+        setCompareCsv("");
+      });
   }, [tenantA, tenantB, tenants]);
 
   const downloadExport = () => {
@@ -455,18 +722,30 @@ export function FleetPage() {
 
   const rescanFleetHardware = async () => {
     if (!enterpriseApiKey()) return;
+    const fallback = "fleet hardware rescan unavailable";
     setRescanBusy(true);
     try {
       const key = resolveEnterpriseApiKeyForTenant(
         tenants.find((t) => t.id === tenantId)?.slug || tenantId || null,
       );
-      const body = await apiJson<{ hosts?: Record<string, unknown>[] }>(
-        "/platform/hardware/fleet/rescan",
-        {
-          method: "POST",
-          headers: { "X-Nimbusware-Api-Key": key },
-        },
-      );
+      const body = await apiJson<{
+        hosts?: Record<string, unknown>[];
+        capacity_source?: string;
+        fit_via?: string;
+        via?: string;
+        status?: string;
+        error?: string;
+        feature?: string;
+      }>("/platform/hardware/fleet/rescan", {
+        method: "POST",
+        headers: { "X-Nimbusware-Api-Key": key },
+      });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setCapacityPeelMiss(miss);
+      } else {
+        setCapacityPeelMiss("");
+      }
       setDashboard((prev) =>
         prev
           ? {
@@ -477,7 +756,11 @@ export function FleetPage() {
       );
       setError("");
     } catch (e) {
-      setError(String((e as Error).message || e));
+      const msg = formatWriteCatchMessage(e, fallback);
+      setError(msg);
+      if (msg.toLowerCase().includes("capacity") || msg.toLowerCase().includes("broker")) {
+        setCapacityPeelMiss(msg);
+      }
     } finally {
       setRescanBusy(false);
     }
@@ -503,30 +786,35 @@ export function FleetPage() {
         Refresh
       </button>
       {error ? <p class="error">{error}</p> : null}
-      {compliance ? (
+      {compliance || complianceMiss ? (
         <>
-          <FleetCompliancePanel compliance={compliance} />
-          <FleetTenantPoliciesPanel
-            tenantId={tenantId}
-            legalHold={legalHold}
-            auditPolicyBusy={auditPolicyBusy}
-            auditPolicyCaption={auditPolicyCaption}
-            allowExternalCollab={allowExternalCollab}
-            maxParticipants={maxParticipants}
-            collabPolicyCaption={collabPolicyCaption}
-            collabPolicyBusy={collabPolicyBusy}
-            allowedApiStack={allowedApiStack}
-            allowedWebStack={allowedWebStack}
-            stackPolicyCaption={stackPolicyCaption}
-            stackPolicyBusy={stackPolicyBusy}
-            onLegalHoldChange={(enabled) => void saveLegalHold(enabled)}
-            onAllowExternalCollabChange={setAllowExternalCollab}
-            onMaxParticipantsChange={setMaxParticipants}
-            onSaveCollabPolicy={() => void saveCollabPolicy()}
-            onAllowedApiStackChange={setAllowedApiStack}
-            onAllowedWebStackChange={setAllowedWebStack}
-            onSaveStackPolicy={() => void saveStackPolicy()}
-          />
+          <FleetCompliancePanel compliance={compliance} miss={complianceMiss} />
+          {compliance ? (
+            <FleetTenantPoliciesPanel
+              tenantId={tenantId}
+              legalHold={legalHold}
+              auditPolicyBusy={auditPolicyBusy}
+              auditPolicyCaption={auditPolicyCaption}
+              auditPolicyMiss={peelUnavailable(auditPolicyCaption)}
+              allowExternalCollab={allowExternalCollab}
+              maxParticipants={maxParticipants}
+              collabPolicyCaption={collabPolicyCaption}
+              collabPolicyMiss={peelUnavailable(collabPolicyCaption)}
+              collabPolicyBusy={collabPolicyBusy}
+              allowedApiStack={allowedApiStack}
+              allowedWebStack={allowedWebStack}
+              stackPolicyCaption={stackPolicyCaption}
+              stackPolicyMiss={peelUnavailable(stackPolicyCaption)}
+              stackPolicyBusy={stackPolicyBusy}
+              onLegalHoldChange={(enabled) => void saveLegalHold(enabled)}
+              onAllowExternalCollabChange={setAllowExternalCollab}
+              onMaxParticipantsChange={setMaxParticipants}
+              onSaveCollabPolicy={() => void saveCollabPolicy()}
+              onAllowedApiStackChange={setAllowedApiStack}
+              onAllowedWebStackChange={setAllowedWebStack}
+              onSaveStackPolicy={() => void saveStackPolicy()}
+            />
+          ) : null}
         </>
       ) : null}
       {dashboard ? (
@@ -538,6 +826,8 @@ export function FleetPage() {
             fleetSearchBusy={fleetSearchBusy}
             fleetSearchError={fleetSearchError}
             rescanBusy={rescanBusy}
+            capacityPeelMiss={capacityPeelMiss}
+            memoryPeelMiss={memoryPeelMiss}
             onFleetQuery={setFleetQuery}
             onFleetSearch={() => void runFleetSearch()}
             onRescanHardware={rescanFleetHardware}
@@ -563,6 +853,10 @@ export function FleetPage() {
           <FleetMeshPanel
             meshSessionId={meshSessionId}
             meshNodes={meshNodes}
+            meshError={meshError}
+            meshQueueDepth={meshQueueDepth}
+            meshVia={meshVia}
+            meshStatus={meshVia === "broker_miss" ? "degraded" : undefined}
             onMeshSessionIdChange={setMeshSessionId}
             onLoadNodes={loadSessionMeshNodes}
           />
@@ -572,6 +866,7 @@ export function FleetPage() {
             tenantB={tenantB}
             compareRows={compareRows}
             compareCaption={compareCaption}
+            compareMiss={compareMiss}
             compareCsv={compareCsv}
             onTenantA={setTenantA}
             onTenantB={setTenantB}

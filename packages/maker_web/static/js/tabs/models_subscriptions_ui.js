@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 
 export async function wireSubscriptionConnectionsPanel(root) {
   let subscriptionPresets = [];
@@ -90,12 +91,29 @@ export async function wireSubscriptionConnectionsPanel(root) {
       const [presetsBody, connBody, oauthBody] = await Promise.all([
         apiJson("/platform/provider-presets"),
         apiJson("/platform/provider-connections"),
-        apiJson("/platform/provider-subscriptions/oauth/status").catch(() => ({ providers: [] })),
+        apiJson("/platform/provider-subscriptions/oauth/status").catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "subscription_oauth_status",
+          providers: [],
+        })),
       ]);
+      if (toastIfMiss(presetsBody, toast, "Provider presets unavailable")) {
+        return;
+      }
+      if (toastIfMiss(connBody, toast, "Provider connections unavailable")) {
+        return;
+      }
+      if (isDomainPeelMiss(oauthBody)) {
+        toastIfMiss(oauthBody, toast, "Subscription OAuth status unavailable");
+      }
       subscriptionPresets = presetsBody.subscription_providers || [];
-      savedConnections = connBody.connections || [];
+      savedConnections = isDomainPeelMiss(connBody) ? [] : connBody.connections || [];
       oauthStatusByProvider = new Map(
-        (oauthBody.providers || []).map((row) => [row.provider_id, row]),
+        (isDomainPeelMiss(oauthBody) ? [] : oauthBody.providers || []).map((row) => [
+          row.provider_id,
+          row,
+        ]),
       );
       renderCards();
     } catch (e) {

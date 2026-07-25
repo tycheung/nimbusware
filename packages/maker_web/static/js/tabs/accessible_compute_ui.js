@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { nodeHeadroom } from "./chat_agents_ui.js";
 
 function canOpenDrawer(collabRole) {
@@ -55,11 +56,27 @@ export async function openAccessibleComputeDrawer(root, sessionId) {
   drawer.querySelector('[data-action="close"]')?.addEventListener("click", () => drawer.remove());
   root.appendChild(drawer);
   try {
-    const body = await apiJson(`/compute/nodes?session_id=${encodeURIComponent(sessionId)}`);
+    const body = await apiJson(`/compute/nodes?session_id=${encodeURIComponent(sessionId)}`).catch(
+      (e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "compute_nodes",
+      }),
+    );
+    list.replaceChildren();
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Compute nodes unavailable");
+      const miss = document.createElement("li");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-accessible-compute-miss";
+      miss.textContent =
+        formatDomainMissMessage(body, "Compute nodes unavailable") || "Compute nodes unavailable";
+      list.appendChild(miss);
+      return drawer;
+    }
     const nodes = (body.nodes || []).filter(
       (n) => n.allow_host_resource_management || (n.share_policy && n.share_policy !== "off"),
     );
-    list.replaceChildren();
     if (!nodes.length) {
       const empty = document.createElement("li");
       empty.className = "muted";
@@ -68,11 +85,19 @@ export async function openAccessibleComputeDrawer(root, sessionId) {
     } else {
       for (const node of nodes) list.appendChild(renderNodeRow(node));
     }
-  } catch {
+  } catch (e) {
+    const missBody = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "compute_nodes",
+    };
+    toastIfMiss(missBody, toast, "Compute nodes unavailable");
     list.replaceChildren();
     const err = document.createElement("li");
     err.className = "muted";
-    err.textContent = "Could not load compute nodes.";
+    err.dataset.testid = "maker-accessible-compute-miss";
+    err.textContent =
+      formatDomainMissMessage(missBody, "Compute nodes unavailable") || "Could not load compute nodes.";
     list.appendChild(err);
   }
   return drawer;

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-i
 import {
   applyDefaultProfilesToPayload,
 } from "../operator-default-profiles.js";
@@ -35,13 +36,28 @@ export async function mountBuild(root) {
     }
   }
 
-  const listing = await apiJson("/projects");
+  const listing = await apiJson("/projects").catch((e) => ({
+    via: "broker_miss",
+    error: String(e.message || e),
+    feature: "projects",
+    projects: [],
+  }));
   const sel = root.querySelector("#build-project-select");
-  for (const p of listing.projects || []) {
+  if (isDomainPeelMiss(listing)) {
+    toastIfMiss(listing, toast, "Projects unavailable");
     const opt = document.createElement("option");
-    opt.value = p.project_id;
-    opt.textContent = p.name || p.project_id;
+    opt.value = "";
+    opt.textContent =
+      formatDomainMissMessage(listing, "Projects unavailable") || "Projects unavailable";
+    opt.disabled = true;
     sel?.appendChild(opt);
+  } else {
+    for (const p of listing.projects || []) {
+      const opt = document.createElement("option");
+      opt.value = p.project_id;
+      opt.textContent = p.name || p.project_id;
+      sel?.appendChild(opt);
+    }
   }
   const saved = sessionStorage.getItem("maker_active_project_id");
   if (saved && sel) sel.value = saved;
@@ -70,19 +86,32 @@ export async function mountBuild(root) {
     if (!quickMode) {
       payload.workflow_profile = "campaign_fullstack";
     }
-    const body = await apiJson(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const runId = body.run_id || body.campaign_id || body.id;
-    const projectId = String(fd.get("project_id") || "");
-    if (projectId) {
-      setActiveProjectId(projectId);
-      setActiveRun(projectId, runId);
+    try {
+      const body = await apiJson(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (
+        toastIfMiss(
+          body,
+          toast,
+          quickMode ? "Run start unavailable" : "Campaign start unavailable",
+        )
+      ) {
+        return;
+      }
+      const runId = body.run_id || body.campaign_id || body.id;
+      const projectId = String(fd.get("project_id") || "");
+      if (projectId) {
+        setActiveProjectId(projectId);
+        setActiveRun(projectId, runId);
+      }
+      syncRunIdToShell(runId);
+      toast(quickMode ? "Run started" : "Campaign started", "success");
+      window.location.hash = `/progress?run_id=${encodeURIComponent(runId)}`;
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
-    syncRunIdToShell(runId);
-    toast(quickMode ? "Run started" : "Campaign started", "success");
-    window.location.hash = `/progress?run_id=${encodeURIComponent(runId)}`;
   });
 }

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak498-f
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { formatGateSummary } from "../gate-summary.js";
 import { renderPendingCards } from "./review_cards_ui.js";
@@ -89,29 +90,48 @@ export async function mountReview(root) {
   async function loadPending() {
     const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
-    const body = await apiJson(`/runs/${id}/maker/pending`);
+    const body = await apiJson(`/runs/${id}/maker/pending`).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "maker_pending",
+    }));
+    if (toastIfMiss(body, toast, "Approval queue unavailable")) {
+      // sak496-j
+      root.querySelector("#rev-summary")?.replaceChildren();
+      return;
+    }
     renderPendingCards(body, root.querySelector("#rev-summary"));
     try {
-      const progress = await apiJson(`/runs/${encodeURIComponent(id)}/maker-progress?simple=true`);
-      const gateText = formatGateSummary(progress.gate_summary);
-      if (gateText) {
-        const statusCard = root.querySelector('[data-testid="maker-review-status-card"]');
-        if (statusCard && !statusCard.querySelector('[data-testid="maker-review-gate-summary"]')) {
-          const gateLine = document.createElement("p");
-          gateLine.className = "gate-summary-banner";
-          gateLine.dataset.testid = "maker-review-gate-summary";
-          gateLine.textContent = gateText;
-          statusCard.appendChild(gateLine);
-          const link = document.createElement("a");
-          link.href = `#/progress?run_id=${encodeURIComponent(id)}`;
-          link.className = "linkish";
-          link.textContent = "Recover on Progress";
-          link.dataset.testid = "maker-review-gate-recover-link";
-          statusCard.appendChild(link);
+      const progress = await apiJson(
+        `/runs/${encodeURIComponent(id)}/maker-progress?simple=true`,
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "maker_progress",
+      }));
+      if (isDomainPeelMiss(progress)) {
+        toastIfMiss(progress, toast, "Maker progress unavailable");
+      } else {
+        const gateText = formatGateSummary(progress.gate_summary);
+        if (gateText) {
+          const statusCard = root.querySelector('[data-testid="maker-review-status-card"]');
+          if (statusCard && !statusCard.querySelector('[data-testid="maker-review-gate-summary"]')) {
+            const gateLine = document.createElement("p");
+            gateLine.className = "gate-summary-banner";
+            gateLine.dataset.testid = "maker-review-gate-summary";
+            gateLine.textContent = gateText;
+            statusCard.appendChild(gateLine);
+            const link = document.createElement("a");
+            link.href = `#/progress?run_id=${encodeURIComponent(id)}`;
+            link.className = "linkish";
+            link.textContent = "Recover on Progress";
+            link.dataset.testid = "maker-review-gate-recover-link";
+            statusCard.appendChild(link);
+          }
         }
       }
-    } catch {
-      /* optional */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
     const actions = root.querySelector("#rev-actions");
     actions.replaceChildren();
@@ -119,7 +139,15 @@ export async function mountReview(root) {
       const b = document.createElement("button");
       b.textContent = "Approve plan";
       b.dataset.testid = "maker-review-approve-plan";
-      b.onclick = () => apiJson(`/runs/${id}/maker/plan/approve`, { method: "POST" }).then(loadPending);
+      b.onclick = async () => {
+        try {
+          const res = await apiJson(`/runs/${id}/maker/plan/approve`, { method: "POST" });
+          if (toastIfMiss(res, toast, "Plan approve unavailable")) return; // sak496-j
+          await loadPending();
+        } catch (e) {
+          toast(String(e.message || e), "error");
+        }
+      };
       actions.appendChild(b);
     }
     if (body.awaiting_approval && body.pending) {
@@ -131,12 +159,21 @@ export async function mountReview(root) {
         const b = document.createElement("button");
         b.textContent = label;
         b.dataset.testid = path === "apply" ? "maker-review-apply-slice" : `maker-review-${path}-slice`;
-        b.onclick = () =>
-          apiJson(`/runs/${id}/maker/slices/${path}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }).then(loadPending);
+        b.onclick = async () => {
+          try {
+            const res = await apiJson(`/runs/${id}/maker/slices/${path}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const fallback =
+              path === "apply" ? "Slice apply unavailable" : "Slice skip unavailable";
+            if (toastIfMiss(res, toast, fallback)) return; // sak496-j
+            await loadPending();
+          } catch (e) {
+            toast(String(e.message || e), "error");
+          }
+        };
         actions.appendChild(b);
       }
     }
@@ -149,6 +186,6 @@ export async function mountReview(root) {
   const initialId = await currentRunId();
   if (initialId) {
     wireDeployCockpit(initialId, { scope: "review" });
-    loadPending().catch(() => {});
+    loadPending().catch((e) => toast(String(e.message || e), "error"));
   }
 }

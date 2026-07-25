@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { deployStateFromTimeline } from "../deploy_cockpit.js";
 import { mountReviewCommitPolicyPanel } from "./review_commit_ui.js";
 
@@ -25,11 +26,27 @@ export function mountReviewDeployAuditPanel(root, { currentRunId }) {
     try {
       const body = await apiJson(
         `/platform/deploy/audit?run_id=${encodeURIComponent(id)}&limit=40`,
-      );
-      const events = body.events || [];
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "deploy_audit",
+        events: [],
+      }));
       const list = host.querySelector("[data-testid='maker-review-deploy-audit-list']");
       if (!list) return;
       list.replaceChildren();
+      if (isDomainPeelMiss(body)) {
+        toastIfMiss(body, toast, "Deploy audit unavailable");
+        const miss = document.createElement("p");
+        miss.className = "muted";
+        miss.dataset.testid = "maker-review-deploy-audit-miss";
+        miss.textContent =
+          formatDomainMissMessage(body, "Deploy audit unavailable") || "Deploy audit unavailable";
+        list.appendChild(miss);
+        host.hidden = false;
+        return;
+      }
+      const events = body.events || [];
       if (!events.length) {
         const empty = document.createElement("p");
         empty.className = "muted";
@@ -50,8 +67,15 @@ export function mountReviewDeployAuditPanel(root, { currentRunId }) {
       }
       list.appendChild(ul);
       host.hidden = false;
-    } catch {
-      host.hidden = true;
+    } catch (e) {
+      host.hidden = false;
+      const list = host.querySelector("[data-testid='maker-review-deploy-audit-list']");
+      list?.replaceChildren();
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.textContent = String(e.message || e);
+      list?.appendChild(miss);
+      toast(String(e.message || e), "error");
     }
   }
 
@@ -68,15 +92,23 @@ export function wireReviewGitPanel(root, { currentRunId }) {
     if (commitPolicyMounted) return;
     try {
       const readiness = await apiJson("/platform/readiness");
+      if (isDomainPeelMiss(readiness)) return;
       if (readiness.setup_bundle !== "enterprise") return;
-      const policy = await apiJson("/enterprise/tenants/default/commit-policy").catch(() => ({}));
+      const policy = await apiJson("/enterprise/tenants/default/commit-policy").catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "fleet_commit_policy",
+      }));
+      if (toastIfMiss(policy, toast, "Commit policy unavailable")) {
+        return;
+      }
       mountReviewCommitPolicyPanel(root, {
         setupBundle: readiness.setup_bundle,
         messageRegex: policy.message_regex || "",
       });
       commitPolicyMounted = true;
-    } catch {
-      /* optional enterprise panel */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
   }
   async function loadGitStatus() {
@@ -92,7 +124,8 @@ export function wireReviewGitPanel(root, { currentRunId }) {
     try {
       const readiness = await apiJson("/platform/readiness");
       if (fleetAudit) {
-        fleetAudit.hidden = readiness.setup_bundle !== "enterprise";
+        fleetAudit.hidden =
+          isDomainPeelMiss(readiness) || readiness.setup_bundle !== "enterprise";
       }
     } catch {
       if (fleetAudit) fleetAudit.hidden = true;
@@ -102,10 +135,30 @@ export function wireReviewGitPanel(root, { currentRunId }) {
     if (actions) actions.replaceChildren();
     try {
       const [body, timeline] = await Promise.all([
-        apiJson(`/runs/${id}/maker/git-status`),
-        apiJson(`/runs/${id}/timeline?limit=120`).catch(() => ({ events: [] })),
+        apiJson(`/runs/${id}/maker/git-status`).catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "git_status",
+        })),
+        apiJson(`/runs/${id}/timeline?limit=120`).catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "run_timeline",
+          events: [],
+        })),
       ]);
-      const deploy = deployStateFromTimeline(timeline.events || []);
+      if (isDomainPeelMiss(body)) {
+        toastIfMiss(body, toast, "Git status unavailable");
+        el.textContent =
+          formatDomainMissMessage(body, "Git status unavailable") || "Git status unavailable";
+        return;
+      }
+      if (isDomainPeelMiss(timeline)) {
+        toastIfMiss(timeline, toast, "Run timeline unavailable");
+      }
+      const deploy = deployStateFromTimeline(
+        isDomainPeelMiss(timeline) ? [] : timeline.events || [],
+      );
       const gc = body.git_commit;
       const outputs = body.git_outputs || {};
       const branch = outputs.branch || gc?.branch || "";
@@ -150,6 +203,7 @@ export function wireReviewGitPanel(root, { currentRunId }) {
         prBtn.onclick = async () => {
           try {
             const res = await apiJson(`/runs/${id}/maker/open-pr`, { method: "POST" });
+            if (toastIfMiss(res, toast, "Open pull request unavailable")) return;
             const url = res?.pr?.pr_url;
             if (url) window.open(url, "_blank", "noopener");
             toast(url ? "Pull request opened" : "PR step completed", "success");
@@ -170,8 +224,9 @@ export function wireReviewGitPanel(root, { currentRunId }) {
         open.className = "primary";
         actions.appendChild(open);
       }
-    } catch {
-      el.textContent = "";
+    } catch (e) {
+      el.textContent = String(e.message || e);
+      toast(String(e.message || e), "error");
     }
   }
 

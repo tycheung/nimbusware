@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { contractGateFromTimeline, contractGateCardHtml } from "../contract_gate_ui.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
@@ -147,12 +148,46 @@ function stopPlanRefresh() {
 async function loadBacklog(root, runId) {
   try {
     const [tree, timeline, progress] = await Promise.all([
-      apiJson(`/campaigns/${encodeURIComponent(runId)}/backlog`),
-      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=120`).catch(() => ({ events: [] })),
-      apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch(() => null),
+      apiJson(`/campaigns/${encodeURIComponent(runId)}/backlog`).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "campaign_backlog",
+        epics: [],
+      })),
+      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=120`).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "run_timeline",
+        events: [],
+      })),
+      apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "maker_progress",
+      })),
     ]);
-    const contractGate = contractGateFromTimeline(timeline.events || []);
-    renderTree(root, tree, contractGate, progress?.campaign_progress || null);
+    if (isDomainPeelMiss(tree)) {
+      toastIfMiss(tree, toast, "Campaign backlog unavailable");
+      root.innerHTML = `<p class='muted' data-testid='maker-plan-miss'>${
+        formatDomainMissMessage(tree, "Campaign backlog unavailable") || "Campaign backlog unavailable"
+      }</p>`;
+      return false;
+    }
+    if (isDomainPeelMiss(timeline)) {
+      toastIfMiss(timeline, toast, "Run timeline unavailable");
+    }
+    if (isDomainPeelMiss(progress)) {
+      toastIfMiss(progress, toast, "Maker progress unavailable");
+    }
+    const contractGate = contractGateFromTimeline(
+      isDomainPeelMiss(timeline) ? [] : timeline.events || [],
+    );
+    renderTree(
+      root,
+      tree,
+      contractGate,
+      isDomainPeelMiss(progress) ? null : progress?.campaign_progress || null,
+    );
     return true;
   } catch (err) {
     root.innerHTML = `<p class='muted' data-testid='maker-plan-pending'>Backlog not available yet (${err.message || "pending"}).</p>`;
@@ -175,11 +210,16 @@ export async function mountPlan(root) {
   await loadBacklog(root, runId);
 
   const onRefresh = () => {
-    loadBacklog(root, runId).catch(() => {});
+    loadBacklog(root, runId).catch((e) => {
+      if (String(e?.message || e) !== "broker_miss") toast(String(e.message || e), "error");
+    });
   };
   window.addEventListener("maker-plan-refresh", onRefresh);
 
   planStreamHandle = openSseStream(`/runs/${encodeURIComponent(runId)}/maker-progress/stream?simple=true`, {
+    brokerBacked: true,
+    feature: "maker_progress_stream",
+    terminalFailureMessage: "Maker progress stream unavailable",
     onMessage: (ev) => {
       const data = parseSseJson(ev);
       if (data?.campaign_progress || data?.run_status) onRefresh();

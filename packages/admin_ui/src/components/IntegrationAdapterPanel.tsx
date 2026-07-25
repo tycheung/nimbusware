@@ -24,6 +24,7 @@ export function IntegrationAdapterPanel({ runId }: { runId: string }) {
       };
     },
     { present: false, caption: "", rows: [] },
+    "integration adapter writer unavailable",
   );
 
   if (!data.present) {

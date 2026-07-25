@@ -25,13 +25,20 @@ class ChatState:
     suggested_profile: str = ""
     last_intent_text: str = ""
     last_classification: dict[str, Any] | None = None
+    last_peel_miss: dict[str, Any] | None = None
 
 
 def process_user_message(text: str, state: ChatState) -> str:
     reply = _handle_command(text, state)
     if reply is not None:
         return reply
-    classification = _classify_intent(text)
+    classification, peel_miss = _classify_intent(text)
+    if peel_miss:
+        state.last_peel_miss = peel_miss
+        state.last_classification = None
+        err = str(peel_miss.get("error") or "broker miss")
+        return f"Intent classification unavailable (broker miss): {err}"
+    state.last_peel_miss = None
     if classification:
         work_type = str(classification.get("work_type") or "slice")
         profile = WORK_TYPE_PROFILES.get(work_type, "micro_slice")
@@ -51,16 +58,20 @@ def process_user_message(text: str, state: ChatState) -> str:
     )
 
 
-def _classify_intent(text: str) -> dict[str, Any] | None:
+def _classify_intent(text: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
     try:
         resp = chat_svc.classify_intent(text.strip())
+        body = resp.json() if resp.content else {}
+        if not isinstance(body, dict):
+            return None, None
+        if body.get("via") == "broker_miss":
+            return None, body
         if resp.status_code >= 400:
-            return None
-        body = resp.json()
-        data = body.get("classification") if isinstance(body, dict) else None
-        return data if isinstance(data, dict) else None
+            return None, None
+        data = body.get("classification")
+        return (data if isinstance(data, dict) else None), None
     except HTTPError:
-        return None
+        return None, None
 
 
 def _handle_command(text: str, state: ChatState) -> str | None:

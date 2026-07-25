@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { renderLaunchScorecard, fetchScorecardForRun } from "../launch-scorecard.js";
 
 export function wireReviewAdvancedPanel(root, { currentRunId }) {
@@ -7,6 +8,15 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
     const body = await apiJson(`/runs/${id}/research`);
     const ul = root.querySelector("#rev-research");
     ul.replaceChildren();
+    if (isDomainPeelMiss(body)) {
+      const li = document.createElement("li");
+      li.dataset.testid = "maker-review-research-miss";
+      li.textContent =
+        formatDomainMissMessage(body, "Research briefs unavailable") || "Research briefs unavailable";
+      ul.appendChild(li);
+      toastIfMiss(body, toast, "Research briefs unavailable");
+      return;
+    }
     for (const brief of body.briefs || []) {
       const li = document.createElement("li");
       const bid = brief.brief_id || brief.artifact_id;
@@ -19,7 +29,7 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ notes: "" }),
-          });
+          }).then((r) => toastIfMiss(r, toast, "Research approve unavailable"));
         const reject = document.createElement("button");
         reject.textContent = "Reject";
         reject.onclick = () =>
@@ -27,7 +37,7 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ notes: "" }),
-          });
+          }).then((r) => toastIfMiss(r, toast, "Research reject unavailable"));
         li.append(approve, reject);
       }
       ul.appendChild(li);
@@ -40,6 +50,11 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
     const body = await apiJson(`/runs/${id}/stitch-summary`);
     const panel = root.querySelector("#rev-stitch");
     panel?.classList.remove("hidden");
+    if (toastIfMiss(body, toast, "Stitch summary unavailable")) {
+      root.querySelector("#rev-stitch-body").textContent =
+        formatDomainMissMessage(body, "Stitch summary unavailable") || "Stitch summary unavailable";
+      return;
+    }
     const lines = (body.events || []).map(
       (ev) => `#${ev.store_seq} ${ev.event_type}: ${ev.summary || ""}`,
     );
@@ -53,14 +68,17 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
   root.querySelector("#rev-load-diff")?.addEventListener("click", async () => {
     const id = await currentRunId();
     const pending = await apiJson(`/runs/${id}/maker/pending`);
+    if (toastIfMiss(pending, toast, "Pending slice unavailable")) return;
     const idx = pending?.pending?.slice_index ?? 0;
     const diff = await apiJson(`/runs/${id}/slices/${idx}/diff`);
+    if (toastIfMiss(diff, toast, "Slice diff unavailable")) return;
     root.querySelector("#rev-diff").textContent = diff.patch || diff.diff || JSON.stringify(diff, null, 2);
   });
 
   root.querySelector("#rev-revert")?.addEventListener("click", async () => {
     const id = await currentRunId();
-    await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
+    const result = await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
+    if (toastIfMiss(result, toast, "Workspace revert unavailable")) return;
     toast("Workspace reverted", "success");
   });
 
@@ -72,6 +90,13 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
     if (!scorecard) {
       body.replaceChildren();
       body.textContent = "No launch_eval.completed event on this run yet.";
+      return;
+    }
+    if (isDomainPeelMiss(scorecard)) {
+      body.replaceChildren();
+      body.textContent =
+        formatDomainMissMessage(scorecard, "Launch eval unavailable") || "Launch eval unavailable";
+      toastIfMiss(scorecard, toast, "Launch eval unavailable");
       return;
     }
     renderLaunchScorecard(body, scorecard, { testIdPrefix: "maker-review" });
@@ -91,7 +116,8 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
     const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
     try {
-      await apiJson(`/runs/${id}/maker/launch-eval`, { method: "POST" });
+      const result = await apiJson(`/runs/${id}/maker/launch-eval`, { method: "POST" });
+      if (toastIfMiss(result, toast, "Launch eval unavailable")) return;
       await showLaunchScorecard(id);
       toast("Launch check complete", "success");
     } catch (e) {
@@ -110,6 +136,15 @@ export function wireReviewAdvancedPanel(root, { currentRunId }) {
     const zipLink = root.querySelector("#rev-factory-evidence-zip");
     try {
       const body = await apiJson(`/runs/${id}/factory-evidence`);
+      if (isDomainPeelMiss(body)) {
+        table.hidden = true;
+        if (links) links.hidden = true;
+        empty.hidden = false;
+        empty.textContent =
+          formatDomainMissMessage(body, "Factory evidence unavailable") || "Factory evidence unavailable";
+        toastIfMiss(body, toast, "Factory evidence unavailable");
+        return;
+      }
       const rows = body.scorecard_rows || [];
       if (!rows.length) {
         table.hidden = true;

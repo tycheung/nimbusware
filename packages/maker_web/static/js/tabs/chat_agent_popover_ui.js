@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 
 export function nodeHeadroom(node) {
   const caps = node.capabilities || {};
@@ -40,11 +41,12 @@ export function showAgentBatteryPopover(anchor, detail) {
   });
   pop.querySelector('[data-action="pull"]')?.addEventListener("click", async () => {
     try {
-      await apiJson("/platform/ollama/pull", {
+      const body = await apiJson("/platform/ollama/pull", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: detail.modelId }),
       });
+      if (toastIfMiss(body, toast, "Ollama pull unavailable")) return;
       toast(`Pull queued: ${detail.modelId}`, "success");
     } catch (e) {
       toast(String(e.message || e), "error");

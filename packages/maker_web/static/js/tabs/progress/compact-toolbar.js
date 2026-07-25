@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../../api-client.js";
+import { toastIfMiss } from "../../broker_miss.js";
 import { resolveRunId } from "../../session-hub.js";
 import { maybeRegisterPushSubscription } from "../../app-shell.js";
 import { renderCompactionPreview } from "./render-chips.js";
@@ -7,11 +8,12 @@ async function compactRun(body) {
   const rid = resolveRunId();
   if (!rid) return;
   try {
-    await apiJson(`/runs/${encodeURIComponent(rid)}/compact`, {
+    const res = await apiJson(`/runs/${encodeURIComponent(rid)}/compact`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (toastIfMiss(res, toast, "Context compaction unavailable")) return;
     toast("Context compacted", "success");
   } catch (e) {
     toast(String(e.message || e), "error");
@@ -66,6 +68,7 @@ export function wireCompactToolbar() {
     if (!rid) return;
     try {
       const budget = await apiJson(`/runs/${encodeURIComponent(rid)}/maker-progress`);
+      if (toastIfMiss(budget, toast, "Compaction context unavailable")) return;
       const last = budget?.context_budget?.last_compaction;
       const cid = last?.compaction_id;
       if (!cid) {
@@ -85,9 +88,11 @@ export function wireCompactToolbar() {
         .filter(Boolean)
         .join(" · ");
       if (!window.confirm(msg)) return;
-      await apiJson(`/runs/${encodeURIComponent(rid)}/compactions/${encodeURIComponent(cid)}/revert`, {
-        method: "POST",
-      });
+      const reverted = await apiJson(
+        `/runs/${encodeURIComponent(rid)}/compactions/${encodeURIComponent(cid)}/revert`,
+        { method: "POST" },
+      );
+      if (toastIfMiss(reverted, toast, "Compaction revert unavailable")) return;
       toast("Compaction reverted", "success");
       renderCompactionPreview(null);
     } catch (e) {
@@ -103,6 +108,7 @@ export function wireCompactToolbar() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
+      if (toastIfMiss(out, toast, "Compaction artifact save unavailable")) return;
       toast(`Saved artifact ${out.title || out.artifact_id}`, "success");
       const timeline = await apiJson(`/runs/${encodeURIComponent(rid)}/timeline?limit=1`);
       const created = (timeline.events || []).find((e) => e.event_type === "run.created");

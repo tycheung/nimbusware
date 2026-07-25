@@ -1,5 +1,17 @@
+import { toast } from "./api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "./broker_miss.js"; // sak499-b
+
 export function renderCriticReliabilityPanel(container, body, { testIdPrefix = "maker-critic" } = {}) {
   container.replaceChildren();
+  if (isDomainPeelMiss(body)) {
+    const caption = document.createElement("p");
+    caption.className = "muted";
+    caption.dataset.testid = `${testIdPrefix}-miss`;
+    caption.textContent =
+      formatDomainMissMessage(body, "Critic reliability unavailable") || "Critic reliability unavailable";
+    container.appendChild(caption);
+    return;
+  }
   const caption = document.createElement("p");
   caption.className = "muted";
   caption.dataset.testid = `${testIdPrefix}-caption`;
@@ -27,12 +39,30 @@ export function renderCriticReliabilityPanel(container, body, { testIdPrefix = "
 }
 
 export async function loadRunCriticReliability(apiJson, runId) {
-  return apiJson(`/runs/${encodeURIComponent(runId)}/critic-reliability`);
+  try {
+    return await apiJson(`/runs/${encodeURIComponent(runId)}/critic-reliability`);
+  } catch (e) {
+    return {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "critic_reliability",
+    };
+  }
 }
 
 export async function loadFleetCriticReliability(apiJson) {
   try {
     const body = await apiJson("/platform/analytics/competitive-summary?limit_runs=200");
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Fleet critic reliability unavailable");
+      return {
+        via: "broker_miss",
+        error: body.error,
+        feature: body.feature || "critic_reliability",
+        caption: formatDomainMissMessage(body, "Fleet critic reliability unavailable"),
+        rows: [],
+      };
+    }
     const snap = body?.metrics?.critic_reliability;
     if (!snap || typeof snap !== "object") {
       return { caption: "No fleet critic snapshot.", rows: [] };
@@ -55,15 +85,30 @@ export async function loadFleetCriticReliability(apiJson) {
       caption: snap.note || "Fleet critic reliability snapshot.",
       rows,
     };
-  } catch {
-    return { caption: "Critic reliability unavailable.", rows: [] };
+  } catch (e) {
+    const missBody = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "critic_reliability",
+    };
+    toastIfMiss(missBody, toast, "Critic reliability unavailable");
+    return {
+      ...missBody,
+      caption: "Critic reliability unavailable.",
+      rows: [],
+    };
   }
 }
 
 export async function loadRunOrFleetCriticReliability(apiJson, runId) {
   const runBody = await loadRunCriticReliability(apiJson, runId);
+  if (isDomainPeelMiss(runBody)) {
+    toastIfMiss(runBody, toast, "Critic reliability unavailable");
+    return runBody;
+  }
   if ((runBody.rows || []).length) return runBody;
   const fleet = await loadFleetCriticReliability(apiJson);
+  if (isDomainPeelMiss(fleet)) return fleet;
   if (!(fleet.rows || []).length) return runBody;
   return {
     ...fleet,

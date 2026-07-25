@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, formatWriteCatchMessage, isDomainPeelMiss, writeMissMessage } from "../api/client"; // sak499-d
+
+type PeelWriteBody = { via?: string; error?: string; status?: string };
 
 type BundleEntry = { id: string; title?: string | null; tags?: string[] };
 type CatalogBody = {
@@ -62,38 +64,73 @@ export function ConfigPage() {
         setEditTitles(titles);
         setEditTags(tags);
       })
-      .catch((e) => setMsg(String((e as Error).message || e)));
+      .catch((e) => setMsg(formatReadCatchMessage(e, "catalog unavailable")));
     apiJson<CatalogSource>("/bundles/catalog/source")
       .then(setSource)
-      .catch(() => setSource(null));
-    apiJson<{ candidates?: Candidate[] }>("/bundles/catalog-candidates")
-      .then((body) => setCandidates(body.candidates || []))
-      .catch(() => setCandidates([]));
+      .catch((e) => {
+        setSource(null);
+        setMsg(formatReadCatchMessage(e, "catalog source unavailable"));
+      });
+    apiJson<{ candidates?: Candidate[]; via?: string; error?: string }>(
+      "/bundles/catalog-candidates",
+    )
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setCandidates([]);
+          setMsg(formatPeelMissMessage(body, "catalog candidates unavailable"));
+          return;
+        }
+        setCandidates(body.candidates || []);
+      })
+      .catch((e) => {
+        setCandidates([]);
+        setMsg(formatReadCatchMessage(e, "catalog candidates unavailable"));
+      });
   }, []);
 
   useEffect(() => {
     if (tab === "ollama") {
       apiJson<{ models?: { name?: string }[] }>("/platform/ollama/models")
         .then((b) => setOllamaModels((b.models || []).map((m) => m.name || "").filter(Boolean)))
-        .catch(() => setOllamaModels([]));
+        .catch((e) => {
+          setOllamaModels([]);
+          setMsg(formatReadCatchMessage(e, "ollama models unavailable"));
+        });
     }
     if (tab === "bundles" || tab === "blast") {
       loadCatalog();
     }
     if (tab === "settings") {
-      apiJson<{ values?: Record<string, string> }>("/settings/system")
-        .then((b) => setSettings(b.values || {}))
-        .catch(() => setSettings({}));
+      apiJson<{ values?: Record<string, string>; via?: string; error?: string }>("/settings/system")
+        .then((b) => {
+          if (isDomainPeelMiss(b)) {
+            setSettings({});
+            setMsg(formatPeelMissMessage(b, "system settings unavailable"));
+            return;
+          }
+          setSettings(b.values || {});
+        })
+        .catch((e) => {
+          setSettings({});
+          setMsg(formatReadCatchMessage(e, "system settings unavailable"));
+        });
     }
     if (tab === "personas") {
-      apiJson<{ rows?: typeof overlapRows; warning?: string }>("/admin/ui/personas/overlap-report")
+      apiJson<{ rows?: typeof overlapRows; warning?: string; via?: string; error?: string }>(
+        "/admin/ui/personas/overlap-report",
+      )
         .then((b) => {
+          if (isDomainPeelMiss(b)) {
+            setOverlapRows([]);
+            setOverlapWarning(formatPeelMissMessage(b, "overlap report unavailable"));
+            return;
+          }
           setOverlapRows(b.rows || []);
           setOverlapWarning(b.warning || "");
         })
-        .catch(() => {
+        .catch((e) => {
           setOverlapRows([]);
-          setOverlapWarning("");
+          setOverlapWarning(formatReadCatchMessage(e, "overlap report unavailable"));
         });
     }
     if (tab === "critics") {
@@ -105,7 +142,7 @@ export function ConfigPage() {
             setSelectedPackId(ids[0]);
           }
         })
-        .catch((e) => setMsg(String((e as Error).message || e)));
+        .catch((e) => setMsg(formatReadCatchMessage(e, "critic packs unavailable")));
     }
   }, [tab, loadCatalog, selectedPackId]);
 
@@ -115,14 +152,15 @@ export function ConfigPage() {
       `/config/critic-packs/${encodeURIComponent(selectedPackId)}`,
     )
       .then((b) => setPackEditor(JSON.stringify(b.content || {}, null, 2)))
-      .catch((e) => setMsg(String((e as Error).message || e)));
+      .catch((e) => setMsg(formatReadCatchMessage(e, "critic pack load unavailable")));
   }, [tab, selectedPackId]);
 
   const docVersion = catalog?.document_version ?? 1;
 
   async function patchBundle(bundleId: string) {
+    const fallback = "bundle save unavailable";
     try {
-      await apiJson("/bundles/catalog/bundles/" + encodeURIComponent(bundleId), {
+      const body = await apiJson<PeelWriteBody>("/bundles/catalog/bundles/" + encodeURIComponent(bundleId), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -134,18 +172,24 @@ export function ConfigPage() {
             .filter(Boolean),
         }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Saved ${bundleId}`);
       loadCatalog();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
   async function createBundle() {
     const id = newId.trim();
     if (!id) return;
+    const fallback = "bundle create unavailable";
     try {
-      await apiJson("/bundles/catalog/bundles", {
+      const body = await apiJson<PeelWriteBody>("/bundles/catalog/bundles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -160,26 +204,37 @@ export function ConfigPage() {
           },
         }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setNewId("");
       setNewTitle("");
       setNewTags("");
       setMsg(`Created ${id}`);
       loadCatalog();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
   async function deleteBundle(bundleId: string) {
+    const fallback = "bundle delete unavailable";
     try {
-      await apiJson(
+      const body = await apiJson<PeelWriteBody>(
         `/bundles/catalog/bundles/${encodeURIComponent(bundleId)}?expected_version=${docVersion}`,
         { method: "DELETE" },
       );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Deleted ${bundleId}`);
       loadCatalog();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
@@ -188,8 +243,9 @@ export function ConfigPage() {
     const bundleId = mapBundleId.trim();
     if (!profile || !bundleId) return;
     const nextMap = { ...(catalog?.workflow_bundle_map || {}), [profile]: bundleId };
+    const fallback = "workflow map save unavailable";
     try {
-      await apiJson("/bundles/catalog", {
+      const body = await apiJson<PeelWriteBody>("/bundles/catalog", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -199,82 +255,76 @@ export function ConfigPage() {
           workflow_bundle_map: nextMap,
         }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Mapped ${profile} → ${bundleId}`);
       loadCatalog();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
   async function promoteCandidate(runId: string, candidateId: string) {
+    const fallback = "candidate promote unavailable";
     try {
-      await apiJson(
+      const body = await apiJson<PeelWriteBody>(
         `/bundles/catalog-candidates/${encodeURIComponent(runId)}/${encodeURIComponent(candidateId)}/promote?expected_version=${docVersion}`,
         { method: "POST" },
       );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Promoted ${candidateId}`);
       loadCatalog();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
   async function pullOllama() {
     const model = pullModel.trim();
     if (!model) return;
+    const fallback = "ollama pull unavailable";
     try {
-      await apiJson("/admin/ollama/pull", {
+      const body = await apiJson<PeelWriteBody>("/admin/ollama/pull", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Pulled ${model}`);
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
   async function saveCriticPack() {
     if (!selectedPackId) return;
+    const fallback = "critic pack save unavailable";
     try {
       const content = JSON.parse(packEditor) as Record<string, unknown>;
-      await apiJson(`/config/critic-packs/${encodeURIComponent(selectedPackId)}`, {
+      const body = await apiJson<PeelWriteBody>(`/config/critic-packs/${encodeURIComponent(selectedPackId)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(content),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg(`Saved critic pack ${selectedPackId}.`);
     } catch (e) {
-      setMsg(String((e as Error).message || e));
-    }
-  }
-
-  async function loadProbationReliability() {
-    const shelf = probShelf.trim();
-    const personaId = probPersonaId.trim();
-    if (!shelf || !personaId) {
-      setMsg("Enter shelf and persona id.");
-      return;
-    }
-    try {
-      const body = await apiJson<{
-        decision?: string;
-        metrics?: Record<string, unknown>;
-        caption?: string;
-      }>(`/personas/${encodeURIComponent(shelf)}/${encodeURIComponent(personaId)}/probation-reliability`);
-      setProbCaption(body.caption || body.decision || "");
-      const metrics = body.metrics || {};
-      setProbRows(
-        Object.entries(metrics).map(([metric, value]) => ({
-          metric,
-          value: String(value),
-        })),
-      );
-      setMsg("");
-    } catch (e) {
-      setProbCaption("");
-      setProbRows([]);
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 
@@ -316,7 +366,7 @@ export function ConfigPage() {
     } catch (e) {
       setProbCaption("");
       setProbRows([]);
-      setMsg(String((e as Error).message || e));
+      setMsg(formatReadCatchMessage(e, "probation reliability unavailable"));
     }
   }
 
@@ -352,20 +402,26 @@ export function ConfigPage() {
     } catch (e) {
       setBlastCaption("");
       setBlastRows([]);
-      setMsg(String((e as Error).message || e));
+      setMsg(formatReadCatchMessage(e, "blast radius preview unavailable"));
     }
   }
 
   async function saveSettings() {
+    const fallback = "system settings save unavailable";
     try {
-      await apiJson("/settings/system", {
+      const body = await apiJson<PeelWriteBody>("/settings/system", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ values: settings }),
       });
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg("System settings saved");
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 

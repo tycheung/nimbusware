@@ -1,5 +1,12 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  formatWriteCatchMessage,
+  isDomainPeelMiss,
+  writeMissMessage,
+} from "../api/client"; // sak500-c
 
 type RegistryEntry = Record<string, { path?: string; origin?: string; badge?: string }>;
 
@@ -17,25 +24,44 @@ export function StandardsMartPage() {
   const [installMsg, setInstallMsg] = useState("");
 
   useEffect(() => {
-    apiJson<Registry>("/standards/registry")
-      .then(setRegistry)
-      .catch((e) => setError(String((e as Error).message || e)));
+    apiJson<Registry & { via?: string; error?: string; status?: string }>("/standards/registry")
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setRegistry(null);
+          setError(formatPeelMissMessage(body, "standards registry unavailable"));
+          return;
+        }
+        setRegistry(body);
+      })
+      .catch((e) => {
+        setRegistry(null);
+        setError(formatReadCatchMessage(e, "standards registry unavailable"));
+      });
   }, []);
 
   async function installBundle(bundleId: string) {
+    const fallback = "standards profile update unavailable";
     setInstallMsg("");
     try {
-      await apiJson("/users/me/standards-profile/mart-default", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Mart default",
-          bundles: [bundleId],
-        }),
-      });
+      const body = await apiJson<{ via?: string; error?: string; status?: string }>(
+        "/users/me/standards-profile/mart-default",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: "Mart default",
+            bundles: [bundleId],
+          }),
+        },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setInstallMsg(miss);
+        return;
+      }
       setInstallMsg(`Installed ${bundleId} on your standards profile.`);
     } catch (e) {
-      setInstallMsg(String((e as Error).message || e));
+      setInstallMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 

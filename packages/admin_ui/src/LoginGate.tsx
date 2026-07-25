@@ -4,8 +4,11 @@ import {
   ENTERPRISE_API_KEY_KEY,
   apiBase,
   enterpriseApiKey,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  isDomainPeelMiss,
   setEnterpriseApiKey,
-} from "./api/client";
+} from "./api/client"; // sak500-d
 
 const TOKEN_KEY = "nimbusware_admin_token";
 
@@ -21,17 +24,33 @@ export function LoginGate({
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
   const [apiKey, setApiKey] = useState(() => sessionStorage.getItem(ENTERPRISE_API_KEY_KEY) || "");
   const [oidcOk, setOidcOk] = useState(false);
+  const [oidcMiss, setOidcMiss] = useState("");
   const [consoleRole, setConsoleRole] = useState("admin");
 
   useEffect(() => {
     if (!oidcLoginReady) return;
     fetch(`${apiBase()}/admin/oauth/session`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : { authenticated: false }))
-      .then((b: { authenticated?: boolean; console_role?: string }) => {
+      .then(async (r) => {
+        const b = (await r.json()) as {
+          authenticated?: boolean;
+          console_role?: string;
+          via?: string;
+          error?: string;
+          status?: string;
+        };
+        if (isDomainPeelMiss(b)) {
+          setOidcOk(false);
+          setOidcMiss(formatPeelMissMessage(b, "SSO session unavailable"));
+          return;
+        }
+        setOidcMiss("");
         setOidcOk(Boolean(b.authenticated));
         setConsoleRole(String(b.console_role || "admin"));
       })
-      .catch(() => setOidcOk(false));
+      .catch((e) => {
+        setOidcOk(false);
+        setOidcMiss(formatReadCatchMessage(e, "SSO session unavailable"));
+      });
   }, [oidcLoginReady]);
 
   const unlocked = Boolean(token.trim()) || oidcOk;
@@ -62,6 +81,7 @@ export function LoginGate({
             />
           </>
         ) : null}
+        {oidcMiss ? <p class="hint">{oidcMiss}</p> : null}
         {oidcLoginReady ? (
           <p>
             <a class="button-link" href={`${apiBase()}/admin/oauth/login`}>
@@ -89,6 +109,7 @@ export function LoginGate({
     <>
       {enterpriseEdition ? (
         <div class="enterprise-key-bar">
+          {oidcMiss ? <span class="hint">{oidcMiss}</span> : null}
           {oidcOk ? (
             <span class="muted">
               SSO session active ({consoleRole === "admin" ? "admin" : "read-only"}).

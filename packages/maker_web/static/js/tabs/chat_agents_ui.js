@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { resolveCurrentUserId } from "./chat_collab_wiring.js";
 import {
   nodeHeadroom,
@@ -9,23 +10,29 @@ import {
 export { nodeHeadroom } from "./chat_agent_popover_ui.js";
 
 async function fetchActiveClaims(runId) {
-  try {
-    const body = await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/audit`);
-    const claims = {};
-    for (const ev of body.events || []) {
-      const p = ev.payload || {};
-      const role = p.agent_role;
-      if (!role) continue;
-      if (ev.event_type === "workload.role_claimed") {
-        claims[role] = p;
-      } else if (ev.event_type === "workload.role_released") {
-        delete claims[role];
-      }
-    }
-    return claims;
-  } catch {
-    return {};
+  const body = await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/audit`).catch(
+    (e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "model_bindings_audit",
+      events: [],
+    }),
+  );
+  if (isDomainPeelMiss(body)) {
+    return { claims: {}, missBody: body };
   }
+  const claims = {};
+  for (const ev of body.events || []) {
+    const p = ev.payload || {};
+    const role = p.agent_role;
+    if (!role) continue;
+    if (ev.event_type === "workload.role_claimed") {
+      claims[role] = p;
+    } else if (ev.event_type === "workload.role_released") {
+      delete claims[role];
+    }
+  }
+  return { claims, missBody: null };
 }
 
 async function postRoleClaim({ runId, sessionId, agentRole, binding }) {
@@ -36,47 +43,62 @@ async function postRoleClaim({ runId, sessionId, agentRole, binding }) {
     model_id: binding.model_id || "default",
   };
   if (sessionId) {
-    await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/role-claims`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } else {
-    await apiJson(`/runs/${encodeURIComponent(runId)}/role-claims`, {
+    return apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/role-claims`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
   }
+  return apiJson(`/runs/${encodeURIComponent(runId)}/role-claims`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }
 
 async function deleteRoleClaim({ runId, sessionId, agentRole }) {
   if (sessionId) {
-    await apiJson(
+    return apiJson(
       `/chat/sessions/${encodeURIComponent(sessionId)}/role-claims/${encodeURIComponent(agentRole)}?run_id=${encodeURIComponent(runId)}`,
       { method: "DELETE" },
     );
-  } else {
-    await apiJson(
-      `/runs/${encodeURIComponent(runId)}/role-claims/${encodeURIComponent(agentRole)}`,
-      { method: "DELETE" },
-    );
   }
+  return apiJson(
+    `/runs/${encodeURIComponent(runId)}/role-claims/${encodeURIComponent(agentRole)}`,
+    { method: "DELETE" },
+  );
 }
 
 export async function loadRunCardAgents(card, runId, { sessionId = null, computeNodes = [] } = {}) {
   const strip = card?.querySelector(".chat-run-card__agents");
   if (!strip) return;
   try {
-    const [defaults, claims, currentUserId] = await Promise.all([
+    const [defaults, claimsResult, currentUserId] = await Promise.all([
       apiJson("/platform/model-bindings/defaults"),
       fetchActiveClaims(runId),
       resolveCurrentUserId(),
     ]);
+    if (isDomainPeelMiss(defaults)) {
+      strip.replaceChildren();
+      const miss = document.createElement("span");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-agents-miss";
+      miss.textContent =
+        formatDomainMissMessage(defaults, "Agent bindings unavailable") || "Agent bindings unavailable";
+      strip.appendChild(miss);
+      toastIfMiss(defaults, toast, "Agent bindings unavailable");
+      return;
+    }
+    const { claims, missBody: claimsMiss } = claimsResult;
+    if (claimsMiss) {
+      toastIfMiss(claimsMiss, toast, "Role claims audit unavailable");
+    }
     const roles = (defaults.roles || []).slice(0, 6);
     strip.replaceChildren();
     const label = document.createElement("span");
-    label.textContent = "Agents: ";
+    label.textContent = claimsMiss
+      ? "Agents (claims unavailable): "
+      : "Agents: ";
     strip.appendChild(label);
     for (const row of roles) {
       const binding = row.binding || {};
@@ -106,7 +128,7 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
         });
         if (!swap) return;
         try {
-          await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/swap`, {
+          const res = await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/swap`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -116,6 +138,7 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
               model_id: swap.modelId,
             }),
           });
+          if (toastIfMiss(res, toast, "Model swap unavailable")) return;
           toast(`Swapped ${agentRole} to ${swap.modelId}`, "success");
           await loadRunCardAgents(card, runId, { sessionId, computeNodes });
         } catch (e) {
@@ -137,14 +160,16 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
         if (claimedByOther) return;
         try {
           if (claimedByMe) {
-            await deleteRoleClaim({ runId, sessionId, agentRole });
+            const res = await deleteRoleClaim({ runId, sessionId, agentRole });
+            if (toastIfMiss(res, toast, "Role claim release unavailable")) return;
             toast(`Released ${agentRole}`, "success");
           } else {
             const hr = computeNodes.find((n) => nodeHeadroom(n).low);
             if (hr) {
               toast(`Low headroom on ${hr.display_name || hr.host_label || "a node"} — claim allowed`, "warn");
             }
-            await postRoleClaim({ runId, sessionId, agentRole, binding });
+            const res = await postRoleClaim({ runId, sessionId, agentRole, binding });
+            if (toastIfMiss(res, toast, "Role claim unavailable")) return;
             toast(`Claimed ${agentRole}`, "success");
           }
           await loadRunCardAgents(card, runId, { sessionId, computeNodes });
@@ -181,7 +206,15 @@ export async function loadRunCardAgents(card, runId, { sessionId = null, compute
       wrap.append(badge, claimBtn, info);
       strip.appendChild(wrap);
     }
-  } catch {
-    strip.textContent = "Agents: —";
+  } catch (e) {
+    strip.replaceChildren();
+    const miss = document.createElement("span");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-agents-miss";
+    miss.textContent =
+      formatDomainMissMessage({ via: "broker_miss", error: String(e.message || e) }, "Agents unavailable") ||
+      "Agents unavailable";
+    strip.appendChild(miss);
+    toast(String(e.message || e), "error");
   }
 }

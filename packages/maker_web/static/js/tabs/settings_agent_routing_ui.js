@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 
 export async function wireRoutingPresetsPanel(root) {
   async function refreshRoutingPresets() {
@@ -8,6 +9,10 @@ export async function wireRoutingPresetsPanel(root) {
     if (!select) return;
     try {
       const body = await apiJson("/platform/routing-presets");
+      if (toastIfMiss(body, toast, "Routing presets unavailable")) {
+        if (activeEl) activeEl.textContent = formatDomainMissMessage(body, "Routing presets unavailable");
+        return;
+      }
       const presets = body.presets || [];
       const active = String(body.active_preset_id || "local_only");
       select.replaceChildren();
@@ -45,6 +50,9 @@ export async function wireRoutingPresetsPanel(root) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ preset_id: presetId }),
       });
+      if (toastIfMiss(applied, toast, "Routing preset apply unavailable")) {
+        return;
+      }
       toast(`Applied routing preset: ${applied.preset_id || presetId}`, "success");
       await refreshRoutingPresets();
     } catch (e) {
@@ -62,6 +70,13 @@ export async function wireAgentModelsPanel(root) {
     if (!host) return;
     try {
       const body = await apiJson("/platform/model-bindings/defaults");
+      if (isDomainPeelMiss(body)) {
+        host.textContent =
+          formatDomainMissMessage(body, "Agent model bindings unavailable") ||
+          "Agent model bindings unavailable";
+        toastIfMiss(body, toast, "Agent model bindings unavailable");
+        return;
+      }
       agentBindingsState = body.defaults || { version: 1, roles: {} };
       agentProviders = body.providers || [];
       const rows = body.roles || [];
@@ -125,11 +140,14 @@ export async function wireAgentModelsPanel(root) {
       roles[role] = block;
     });
     try {
-      await apiJson("/platform/model-bindings/defaults", {
+      const saved = await apiJson("/platform/model-bindings/defaults", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ version: 1, roles }),
       });
+      if (toastIfMiss(saved, toast, "Agent model bindings save unavailable")) {
+        return;
+      }
       toast("Agent model bindings saved", "success");
       await refreshAgentModels();
     } catch (e) {

@@ -1,4 +1,11 @@
 import { apiJson, toast } from "../api-client.js";
+import {
+  formatCapacityMissMessage,
+  formatDomainMissMessage,
+  isCapacityMiss,
+  isDomainPeelMiss,
+  toastIfMiss,
+} from "../broker_miss.js"; // sak499-i / sak501-d
 
 export function readinessAction(check) {
   const action = check?.action;
@@ -38,7 +45,6 @@ export function readinessAction(check) {
 
 export function renderReadiness(mount, readiness) {
   if (!mount) return;
-  const status = readiness.status || "unknown";
   mount.replaceChildren();
   const head = document.createElement("section");
   head.className = "panel readiness-panel";
@@ -46,6 +52,18 @@ export function renderReadiness(mount, readiness) {
   const title = document.createElement("h3");
   title.textContent = "System readiness";
   head.appendChild(title);
+  if (isDomainPeelMiss(readiness)) {
+    const miss = document.createElement("p");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-home-readiness-miss";
+    miss.textContent =
+      formatDomainMissMessage(readiness, "Platform readiness unavailable") ||
+      "Platform readiness unavailable";
+    head.appendChild(miss);
+    mount.appendChild(head);
+    return;
+  }
+  const status = readiness.status || "unknown";
   const summary = document.createElement("p");
   summary.dataset.testid = "maker-home-readiness-status";
   summary.textContent = `Overall: ${status}`;
@@ -109,11 +127,6 @@ export async function renderModelsFirstStrip(mount) {
       apiJson("/platform/hardware"),
       apiJson("/platform/models/ranked?limit=5"),
     ]);
-    const top = (ranked.models || [])[0];
-    const tier = hardware.tier || ranked.profile_tier || "unknown";
-    const ram =
-      hardware.ram_available_gb != null ? `${hardware.ram_available_gb} GB free` : "RAM n/a";
-    const gpuCount = Array.isArray(hardware.gpus) ? hardware.gpus.length : 0;
     mount.replaceChildren();
     const panel = document.createElement("section");
     panel.className = "panel models-first-strip";
@@ -121,6 +134,23 @@ export async function renderModelsFirstStrip(mount) {
     const title = document.createElement("h3");
     title.textContent = "Your machine";
     panel.appendChild(title);
+    if (isCapacityMiss(hardware) || isCapacityMiss(ranked)) {
+      const missBody = isCapacityMiss(hardware) ? hardware : ranked;
+      toastIfMiss(missBody, toast, "Capacity peel miss");
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-home-capacity-miss";
+      miss.textContent =
+        formatCapacityMissMessage(missBody, "Capacity peel miss") || "Capacity peel miss";
+      panel.appendChild(miss);
+      mount.appendChild(panel);
+      return;
+    }
+    const top = (ranked.models || [])[0];
+    const tier = hardware.tier || ranked.profile_tier || "unknown";
+    const ram =
+      hardware.ram_available_gb != null ? `${hardware.ram_available_gb} GB free` : "RAM n/a";
+    const gpuCount = Array.isArray(hardware.gpus) ? hardware.gpus.length : 0;
     const summary = document.createElement("p");
     summary.className = "muted";
     summary.textContent = `Hardware tier ${tier} · ${ram} · ${gpuCount} GPU(s) detected`;
@@ -144,7 +174,17 @@ export async function renderModelsFirstStrip(mount) {
       panel.appendChild(actions);
     }
     mount.appendChild(panel);
-  } catch {
+  } catch (e) {
     mount.replaceChildren();
+    const panel = document.createElement("section");
+    panel.className = "panel models-first-strip";
+    panel.dataset.testid = "maker-home-models-first";
+    const miss = document.createElement("p");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-home-capacity-miss";
+    miss.textContent = String(e.message || e);
+    panel.appendChild(miss);
+    mount.appendChild(panel);
+    toast(String(e.message || e), "error");
   }
 }

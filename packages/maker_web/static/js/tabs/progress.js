@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak498-f
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard, fetchScorecardForRun, renderSurfaceLaunchSummary } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
@@ -42,13 +43,18 @@ async function maybeAutoLaunchCheck(runId, body) {
     const scorecard = await apiJson(`/runs/${encodeURIComponent(runId)}/maker/launch-eval`, {
       method: "POST",
     });
+    if (toastIfMiss(scorecard, toast, "Launch eval unavailable")) {
+      autoLaunchCheckDone = false;
+      return;
+    }
     if (scoreMount) {
       renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
       renderSurfaceLaunchSummary(scoreMount, scorecard);
     }
     document.getElementById("completion-cockpit")?.removeAttribute("hidden");
-  } catch {
+  } catch (e) {
     autoLaunchCheckDone = false;
+    toast(String(e.message || e), "error");
   }
 }
 
@@ -105,7 +111,32 @@ export async function mountProgress(root) {
   wireDeployCockpit(id, { scope: "progress" });
   wireOperatorRibbons(id);
 
+  function renderProgressMiss(body, fallback = "Maker progress unavailable") {
+    const summary = document.getElementById("slice-summary");
+    const list = document.getElementById("slice-list");
+    const text = formatDomainMissMessage(body, fallback) || fallback;
+    if (summary) {
+      summary.textContent = text;
+      summary.dataset.testid = "maker-progress-miss";
+    }
+    if (list) list.replaceChildren();
+  }
+
+  function handleEnrichFailure(body, err, fallback = "Maker progress unavailable") {
+    if (body && isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, fallback);
+      renderProgressMiss(body, fallback);
+      return;
+    }
+    toast(String(err?.message || err), "error");
+  }
+
   async function enrichAndRenderProgress(body) {
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Maker progress unavailable");
+      renderProgressMiss(body);
+      return;
+    }
     if (body?.campaign_progress) {
       body._completion_eval = await loadCompletionEval(id);
     }
@@ -119,7 +150,9 @@ export async function mountProgress(root) {
       const scoreMount = document.getElementById("completion-launch-scorecard");
       if (scoreMount && !scoreMount.querySelector("table")) {
         const scorecard = await fetchScorecardForRun(apiJson, id);
-        if (scorecard) {
+        if (isDomainPeelMiss(scorecard)) {
+          toastIfMiss(scorecard, toast, "Launch scorecard unavailable");
+        } else if (scorecard) {
           renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
           renderSurfaceLaunchSummary(scoreMount, scorecard);
         }
@@ -129,6 +162,9 @@ export async function mountProgress(root) {
   }
 
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
+    brokerBacked: true,
+    feature: "theater_stream",
+    terminalFailureMessage: "Theater stream unavailable",
     onEvent: {
       theater: (ev) => {
         const data = parseSseJson(ev);
@@ -144,26 +180,35 @@ export async function mountProgress(root) {
   let lastProgressSnapshot = null;
 
   progressHandle = openSseStream(`/runs/${id}/maker-progress/stream?simple=true`, {
+    brokerBacked: true,
+    feature: "maker_progress_stream",
+    terminalFailureMessage: "Maker progress stream unavailable",
     onEvent: {
       progress_delta: (ev) => {
         const data = parseSseJson(ev);
         if (!data || !lastProgressSnapshot) return;
         Object.assign(lastProgressSnapshot, data);
-        enrichAndRenderProgress(lastProgressSnapshot).catch(() =>
-          renderProgressBody(lastProgressSnapshot),
-        );
+        enrichAndRenderProgress(lastProgressSnapshot).catch((e) => {
+          handleEnrichFailure(lastProgressSnapshot, e);
+        });
       },
     },
     onMessage: (ev) => {
       const data = parseSseJson(ev);
       if (!data) return;
       lastProgressSnapshot = data;
-      enrichAndRenderProgress(data).catch(() => renderProgressBody(data));
+      enrichAndRenderProgress(data).catch((e) => {
+        handleEnrichFailure(data, e);
+      });
     },
   });
 
   try {
     const snap = await apiJson(`/runs/${id}/maker-progress?simple=true`);
+    if (toastIfMiss(snap, toast, "Maker progress unavailable")) {
+      renderProgressMiss(snap);
+      return;
+    }
     await enrichAndRenderProgress(snap);
   } catch (e) {
     toast(String(e.message || e), "error");
@@ -179,6 +224,7 @@ export async function mountProgress(root) {
       const scorecard = await apiJson(`/runs/${encodeURIComponent(rid)}/maker/launch-eval`, {
         method: "POST",
       });
+      if (toastIfMiss(scorecard, toast, "Launch eval unavailable")) return;
       const scoreMount = document.getElementById("completion-launch-scorecard");
       if (scoreMount) renderLaunchScorecard(scoreMount, scorecard, { testIdPrefix: "maker-completion" });
       document.getElementById("completion-cockpit")?.removeAttribute("hidden");
@@ -192,22 +238,41 @@ export async function mountProgress(root) {
     const criticBody = await loadRunOrFleetCriticReliability(apiJson, id);
     const criticPanel = document.getElementById("critic-reliability-panel");
     const criticMount = document.getElementById("critic-reliability-mount");
-    if (criticPanel && criticMount && (criticBody.rows || []).length) {
+    if (isDomainPeelMiss(criticBody)) {
+      if (criticPanel && criticMount) {
+        criticPanel.hidden = false;
+        criticMount.replaceChildren();
+        const p = document.createElement("p");
+        p.className = "muted";
+        p.dataset.testid = "maker-progress-critic-miss";
+        p.textContent =
+          formatDomainMissMessage(criticBody, "Critic reliability unavailable") ||
+          "Critic reliability unavailable";
+        criticMount.appendChild(p);
+      }
+      toastIfMiss(criticBody, toast, "Critic reliability unavailable");
+    } else if (criticPanel && criticMount && (criticBody.rows || []).length) {
       criticPanel.hidden = false;
       renderCriticReliabilityPanel(criticMount, criticBody, { testIdPrefix: "maker-progress-critic" });
     }
-  } catch {
-    /* optional */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 
   try {
     const findingsBody = await apiJson(`/runs/${id}/findings`);
-    lastFindings = findingsBody.findings || [];
-    renderFindings(lastFindings);
-    await renderGateFailSteps(apiJson, id);
-  } catch {
+    if (toastIfMiss(findingsBody, toast, "Findings unavailable")) {
+      lastFindings = [];
+      renderFindings([]);
+    } else {
+      lastFindings = findingsBody.findings || [];
+      renderFindings(lastFindings);
+      await renderGateFailSteps(apiJson, id);
+    }
+  } catch (e) {
     lastFindings = [];
     renderFindings([]);
+    toast(String(e.message || e), "error");
   }
 
   document.getElementById("findings-show-all")?.addEventListener("change", () => {
@@ -216,11 +281,13 @@ export async function mountProgress(root) {
 
   try {
     const timeline = await apiJson(`/runs/${id}/timeline?limit=1`);
-    const created = (timeline.events || []).find((e) => e.event_type === "run.created");
-    const projectId = created?.metadata?.project?.id;
-    if (projectId) await renderContextArtifacts(projectId);
-  } catch {
-    /* ignore */
+    if (!toastIfMiss(timeline, toast, "Context timeline unavailable")) {
+      const created = (timeline.events || []).find((e) => e.event_type === "run.created");
+      const projectId = created?.metadata?.project?.id;
+      if (projectId) await renderContextArtifacts(projectId);
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 
   await renderMemoryInfluence(id);

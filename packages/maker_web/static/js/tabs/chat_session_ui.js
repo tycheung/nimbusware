@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 
 let collabMyRole = null;
 
@@ -82,6 +83,18 @@ export async function refreshComputeNodes(root, sessionId) {
     const body = await apiJson(
       `/compute/nodes?session_id=${encodeURIComponent(sessionId)}`,
     );
+    if (isDomainPeelMiss(body)) {
+      panel.hidden = false;
+      list.replaceChildren();
+      const miss = document.createElement("li");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-compute-miss";
+      miss.textContent =
+        formatDomainMissMessage(body, "Compute nodes unavailable") || "Compute nodes unavailable";
+      list.appendChild(miss);
+      toastIfMiss(body, toast, "Compute nodes unavailable");
+      return;
+    }
     const nodes = body.nodes || [];
     panel.hidden = false;
     list.replaceChildren();
@@ -118,6 +131,11 @@ export async function refreshComputeNodes(root, sessionId) {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ allow_host_resource_management: enabled }),
+            }).then((body) => {
+              if (toastIfMiss(body, toast, "Delegate control unavailable")) {
+                throw new Error("broker_miss");
+              }
+              return body;
             });
           } catch {
             ev.target.checked = !enabled;
@@ -130,8 +148,15 @@ export async function refreshComputeNodes(root, sessionId) {
     } else {
       delegateRow?.remove();
     }
-  } catch {
-    panel.hidden = true;
+  } catch (e) {
+    panel.hidden = false;
+    list.replaceChildren();
+    const miss = document.createElement("li");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-compute-miss";
+    miss.textContent = `Compute nodes unavailable: ${String(e.message || e)}`;
+    list.appendChild(miss);
+    toast(String(e.message || e), "error");
   }
 }
 
@@ -139,9 +164,25 @@ export async function refreshSessionSidebar(root, projectId, activeSessionId, on
   const list = root.querySelector("#chat-session-list");
   if (!list || !projectId) return;
   try {
-    const sessions = await apiJson(`/chat/sessions?project_id=${encodeURIComponent(projectId)}`);
+    const body = await apiJson(`/chat/sessions?project_id=${encodeURIComponent(projectId)}`).catch(
+      (e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "chat_sessions",
+      }),
+    );
     list.replaceChildren();
-    const sorted = [...(sessions || [])].sort(
+    if (isDomainPeelMiss(body)) {
+      const err = document.createElement("li");
+      err.className = "muted";
+      err.dataset.testid = "maker-chat-sessions-miss";
+      err.textContent =
+        formatDomainMissMessage(body, "Sessions unavailable") || "Sessions unavailable";
+      list.appendChild(err);
+      toastIfMiss(body, toast, "Sessions unavailable");
+      return;
+    }
+    const sorted = [...(Array.isArray(body) ? body : [])].sort(
       (a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")),
     );
     for (const session of sorted) {
@@ -160,12 +201,14 @@ export async function refreshSessionSidebar(root, projectId, activeSessionId, on
       li.appendChild(btn);
       list.appendChild(li);
     }
-  } catch {
+  } catch (e) {
     list.replaceChildren();
     const err = document.createElement("li");
     err.className = "muted";
-    err.textContent = "Sessions unavailable";
+    err.dataset.testid = "maker-chat-sessions-miss";
+    err.textContent = `Sessions unavailable: ${String(e.message || e)}`;
     list.appendChild(err);
+    toast(String(e.message || e), "error");
   }
 }
 
@@ -383,8 +426,25 @@ export async function refreshBranchPanel(root, sessionId, { onSessionUpdated } =
   const panel = root.querySelector("#chat-branch-panel");
   if (!panel || !sessionId) return;
   try {
-    const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`);
+    const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`).catch(
+      (e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "session_graph",
+      }),
+    );
     panel.replaceChildren();
+    if (isDomainPeelMiss(graph)) {
+      panel.classList.remove("hidden");
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-branch-miss";
+      miss.textContent =
+        formatDomainMissMessage(graph, "Branch graph unavailable") || "Branch graph unavailable";
+      panel.appendChild(miss);
+      toastIfMiss(graph, toast, "Branch graph unavailable");
+      return;
+    }
     if (!graph.nodes?.length) {
       applySiblingBadges(root, graph);
       panel.classList.add("hidden");
@@ -408,7 +468,14 @@ export async function refreshBranchPanel(root, sessionId, { onSessionUpdated } =
     }
     panel.appendChild(list);
     applySiblingBadges(root, graph);
-  } catch {
-    panel.classList.add("hidden");
+  } catch (e) {
+    panel.replaceChildren();
+    panel.classList.remove("hidden");
+    const miss = document.createElement("p");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-branch-miss";
+    miss.textContent = `Branch graph unavailable: ${String(e.message || e)}`;
+    panel.appendChild(miss);
+    toast(String(e.message || e), "error");
   }
 }

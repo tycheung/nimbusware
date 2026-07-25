@@ -1,5 +1,5 @@
 import { useCallback, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatWriteCatchMessage, writeMissMessage } from "../api/client";
 import { LaunchScorecardBody, scorecardFromTimeline } from "./launchScorecard";
 
 export function LaunchScorecardPanel({
@@ -16,14 +16,23 @@ export function LaunchScorecardPanel({
   const scorecard = scorecardFromTimeline(timeline);
 
   const runLaunchCheck = useCallback(async () => {
+    const fallback = "launch check unavailable";
     setBusy(true);
     setMsg("");
     try {
-      await apiJson(`/runs/${runId}/maker/launch-eval`, { method: "POST" });
+      const body = await apiJson<{ via?: string; error?: string; status?: string }>(
+        `/runs/${runId}/maker/launch-eval`,
+        { method: "POST" },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       await onTimelineRefresh();
       setMsg("Launch check complete.");
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     } finally {
       setBusy(false);
     }

@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 
 export const DEFAULT_INVITE_TEMPLATES = [
   {
@@ -49,8 +50,10 @@ async function createInviteLink(sessionId, role, recommendedDiscipline) {
 async function searchEnterpriseUsers(query) {
   try {
     const body = await apiJson(`/enterprise/users?q=${encodeURIComponent(query)}`);
+    if (toastIfMiss(body, toast, "Enterprise directory unavailable")) return [];
     return body.users || [];
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return [];
   }
 }
@@ -58,8 +61,10 @@ async function searchEnterpriseUsers(query) {
 async function listGroups() {
   try {
     const body = await apiJson("/chat/groups");
+    if (toastIfMiss(body, toast, "Chat groups unavailable")) return [];
     return body.groups || [];
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return [];
   }
 }
@@ -67,9 +72,13 @@ async function listGroups() {
 async function loadInviteTemplates() {
   try {
     const body = await apiJson("/platform/invite-templates");
+    if (toastIfMiss(body, toast, "Invite templates unavailable")) {
+      return DEFAULT_INVITE_TEMPLATES;
+    }
     const rows = Array.isArray(body?.templates) ? body.templates : [];
     return rows.length ? rows : DEFAULT_INVITE_TEMPLATES;
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return DEFAULT_INVITE_TEMPLATES;
   }
 }

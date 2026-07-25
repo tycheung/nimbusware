@@ -3,13 +3,16 @@ type FleetTenantPoliciesPanelProps = {
   legalHold: boolean;
   auditPolicyBusy: boolean;
   auditPolicyCaption: string;
+  auditPolicyMiss?: boolean;
   allowExternalCollab: boolean;
   maxParticipants: number;
   collabPolicyCaption: string;
+  collabPolicyMiss?: boolean;
   collabPolicyBusy: boolean;
   allowedApiStack: string;
   allowedWebStack: string;
   stackPolicyCaption: string;
+  stackPolicyMiss?: boolean;
   stackPolicyBusy: boolean;
   onLegalHoldChange: (enabled: boolean) => void;
   onAllowExternalCollabChange: (enabled: boolean) => void;
@@ -25,13 +28,16 @@ export function FleetTenantPoliciesPanel({
   legalHold,
   auditPolicyBusy,
   auditPolicyCaption,
+  auditPolicyMiss,
   allowExternalCollab,
   maxParticipants,
   collabPolicyCaption,
+  collabPolicyMiss,
   collabPolicyBusy,
   allowedApiStack,
   allowedWebStack,
   stackPolicyCaption,
+  stackPolicyMiss,
   stackPolicyBusy,
   onLegalHoldChange,
   onAllowExternalCollabChange,
@@ -45,7 +51,15 @@ export function FleetTenantPoliciesPanel({
     <>
       <section class="panel" data-testid="admin-fleet-audit-policy">
         <h4>Audit retention policy</h4>
-        {auditPolicyCaption ? <p class="muted">{auditPolicyCaption}</p> : null}
+        {auditPolicyCaption ? (
+          <p
+            class={auditPolicyMiss ? "error" : "muted"}
+            data-testid={auditPolicyMiss ? "admin-fleet-audit-policy-miss" : undefined}
+            role={auditPolicyMiss ? "alert" : undefined}
+          >
+            {auditPolicyCaption}
+          </p>
+        ) : null}
         <label data-testid="admin-fleet-legal-hold-toggle">
           <input
             type="checkbox"
@@ -62,7 +76,15 @@ export function FleetTenantPoliciesPanel({
       </section>
       <section class="panel" data-testid="admin-fleet-collab-policy">
         <h4>Collab guest policy</h4>
-        {collabPolicyCaption ? <p class="muted">{collabPolicyCaption}</p> : null}
+        {collabPolicyCaption ? (
+          <p
+            class={collabPolicyMiss ? "error" : "muted"}
+            data-testid={collabPolicyMiss ? "admin-fleet-collab-policy-miss" : undefined}
+            role={collabPolicyMiss ? "alert" : undefined}
+          >
+            {collabPolicyCaption}
+          </p>
+        ) : null}
         <label data-testid="admin-fleet-allow-external-toggle">
           <input
             type="checkbox"
@@ -102,7 +124,15 @@ export function FleetTenantPoliciesPanel({
       </section>
       <section class="panel" data-testid="admin-fleet-stack-policy">
         <h4>Regulated stack allowlist</h4>
-        {stackPolicyCaption ? <p class="muted">{stackPolicyCaption}</p> : null}
+        {stackPolicyCaption ? (
+          <p
+            class={stackPolicyMiss ? "error" : "muted"}
+            data-testid={stackPolicyMiss ? "admin-fleet-stack-policy-miss" : undefined}
+            role={stackPolicyMiss ? "alert" : undefined}
+          >
+            {stackPolicyCaption}
+          </p>
+        ) : null}
         <label>
           API stack{" "}
           <input

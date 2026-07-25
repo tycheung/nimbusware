@@ -1,3 +1,6 @@
+import { toast } from "./api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "./broker_miss.js"; // sak499-a
+
 const ACTIVE_RUN_PREFIX = "maker_active_run_id:";
 const ACTIVE_PROJECT_KEY = "maker_active_project_id";
 
@@ -70,7 +73,16 @@ export async function fetchActiveRunForProject(projectId, apiJson) {
   if (stored) return stored;
 
   try {
-    const body = await apiJson("/runs?status=running&include_summary=1&limit=50");
+    const body = await apiJson("/runs?status=running&include_summary=1&limit=50").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "active_runs",
+      run_ids: [],
+    }));
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Active run lookup unavailable");
+      return null;
+    }
     const matches = [];
     for (const rid of body.run_ids || []) {
       const summary = body.summaries?.[rid];
@@ -80,8 +92,8 @@ export async function fetchActiveRunForProject(projectId, apiJson) {
     }
     if (matches.length) return matches[0];
     if ((body.run_ids || []).length === 1) return body.run_ids[0];
-  } catch {
-    /* optional when store is empty */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   return null;
 }

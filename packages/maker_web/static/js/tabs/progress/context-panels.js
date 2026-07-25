@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../../broker_miss.js"; // sak499-b
 import { resolveRunId } from "../../session-hub.js";
 
 export async function renderContextArtifacts(projectId) {
@@ -8,6 +9,16 @@ export async function renderContextArtifacts(projectId) {
   try {
     const body = await apiJson(`/projects/${encodeURIComponent(projectId)}/context-artifacts`);
     list.replaceChildren();
+    if (isDomainPeelMiss(body)) {
+      const li = document.createElement("li");
+      li.className = "context-artifact-miss";
+      li.dataset.testid = "maker-context-artifact-miss";
+      li.textContent =
+        formatDomainMissMessage(body, "Context artifacts unavailable") || "Context artifacts unavailable";
+      list.appendChild(li);
+      toastIfMiss(body, toast, "Context artifacts unavailable");
+      return;
+    }
     const artifacts = body.artifacts || [];
     if (!artifacts.length) {
       const li = document.createElement("li");
@@ -31,10 +42,11 @@ export async function renderContextArtifacts(projectId) {
         insertBtn.dataset.testid = "maker-context-artifact-insert";
         insertBtn.addEventListener("click", async () => {
           try {
-            await apiJson(
+            const result = await apiJson(
               `/runs/${encodeURIComponent(rid)}/context-artifacts/${encodeURIComponent(art.artifact_id)}/insert`,
               { method: "POST" },
             );
+            if (toastIfMiss(result, toast, "Artifact insert unavailable")) return;
             toast("Artifact inserted into run context", "success");
           } catch (e) {
             toast(String(e.message || e), "error");
@@ -44,8 +56,16 @@ export async function renderContextArtifacts(projectId) {
       }
       list.appendChild(li);
     }
-  } catch {
+  } catch (e) {
     list.replaceChildren();
+    const missBody = { via: "broker_miss", error: String(e.message || e), feature: "context_artifacts" };
+    const li = document.createElement("li");
+    li.className = "context-artifact-miss";
+    li.dataset.testid = "maker-context-artifact-miss";
+    li.textContent =
+      formatDomainMissMessage(missBody, "Context artifacts unavailable") || "Context artifacts unavailable";
+    list.appendChild(li);
+    toastIfMiss(missBody, toast, "Context artifacts unavailable");
   }
 }
 
@@ -53,16 +73,27 @@ export async function renderMemoryInfluence(runId) {
   try {
     const mem = await apiJson(`/runs/${runId}/memory-influence`);
     const tbody = document.querySelector("#memory-influence-table tbody");
-    if (tbody) {
-      tbody.replaceChildren();
-      for (const row of mem.rows || []) {
-        const tr = document.createElement("tr");
-        tr.dataset.testid = "maker-memory-influence-row";
-        tr.innerHTML = `<td>${row.stage || ""}</td><td>${row.hits || ""}</td><td>${row.query_digest || ""}</td>`;
-        tbody.appendChild(tr);
-      }
+    if (!tbody) return;
+    tbody.replaceChildren();
+    if (isDomainPeelMiss(mem)) {
+      const tr = document.createElement("tr");
+      tr.dataset.testid = "maker-memory-influence-miss";
+      const td = document.createElement("td");
+      td.colSpan = 3;
+      td.textContent =
+        formatDomainMissMessage(mem, "Memory influence unavailable") || "Memory influence unavailable";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      toastIfMiss(mem, toast, "Memory influence unavailable");
+      return;
     }
-  } catch {
-    /* ignore */
+    for (const row of mem.rows || []) {
+      const tr = document.createElement("tr");
+      tr.dataset.testid = "maker-memory-influence-row";
+      tr.innerHTML = `<td>${row.stage || ""}</td><td>${row.hits || ""}</td><td>${row.query_digest || ""}</td>`;
+      tbody.appendChild(tr);
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 }

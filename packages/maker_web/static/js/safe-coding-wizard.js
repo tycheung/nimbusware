@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { formatDomainMissMessage, toastIfMiss } from "./broker_miss.js"; // sak500-b
 import { isSafeCodingUx } from "./safe-coding-ux.js";
 
 const WIZARD_DISMISSED_KEY = "maker_safe_coding_wizard_done";
@@ -15,7 +16,17 @@ function workspacePathFromProjects(projects) {
 
 async function pollPlaywrightBootstrap(statusEl) {
   for (let i = 0; i < 120; i += 1) {
-    const body = await apiJson("/platform/playwright-bootstrap");
+    const body = await apiJson("/platform/playwright-bootstrap").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "playwright_bootstrap",
+    }));
+    if (toastIfMiss(body, toast, "Playwright bootstrap unavailable")) {
+      throw new Error(
+        formatDomainMissMessage(body, "Playwright bootstrap unavailable") ||
+          "Playwright bootstrap unavailable",
+      );
+    }
     const status = String(body.status || "");
     if (body.plain_summary) statusEl.textContent = body.plain_summary;
     if (status === "ready") return body;
@@ -34,8 +45,8 @@ export async function mountSafeCodingWizard(root) {
   try {
     const listing = await apiJson("/projects");
     workspacePath = workspacePathFromProjects(listing);
-  } catch {
-    /* optional */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   if (!workspacePath) {
     workspacePath = window.__NIMBUSWARE__?.workspace_path || "";
@@ -71,13 +82,31 @@ export async function mountSafeCodingWizard(root) {
     try {
       const body = await apiJson(
         `/platform/workspace-readiness?workspace_path=${encodeURIComponent(workspacePath)}`,
-      );
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "workspace_readiness",
+      }));
+      if (toastIfMiss(body, toast, "Workspace readiness unavailable")) {
+        statusEl.textContent =
+          formatDomainMissMessage(body, "Workspace readiness unavailable") ||
+          "Workspace readiness unavailable";
+        return;
+      }
       statusEl.textContent = body.plain_summary || (body.ready ? "Ready to start." : "Needs preparation.");
       const needsWork = (body.warnings || []).length > 0 || !body.checks?.e2e_dir;
       prepareBtn.hidden = !needsWork;
       if (campaignLink) campaignLink.hidden = needsWork;
     } catch (e) {
-      statusEl.textContent = String(e.message || e);
+      const missBody = {
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "workspace_readiness",
+      };
+      toastIfMiss(missBody, toast, "Workspace readiness unavailable");
+      statusEl.textContent =
+        formatDomainMissMessage(missBody, "Workspace readiness unavailable") ||
+        "Workspace readiness unavailable";
     }
   }
 
@@ -87,17 +116,20 @@ export async function mountSafeCodingWizard(root) {
     skipBtn.disabled = true;
     statusEl.textContent = "Preparing workspace…";
     try {
-      await apiJson("/platform/workspace-scaffold", {
+      const scaffold = await apiJson("/platform/workspace-scaffold", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspace_path: workspacePath }),
       });
-      await apiJson("/platform/workspace-precommit", {
+      if (toastIfMiss(scaffold, toast, "Workspace scaffold unavailable")) return;
+      const precommit = await apiJson("/platform/workspace-precommit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspace_path: workspacePath }),
       });
-      await apiJson("/platform/playwright-bootstrap", { method: "POST" });
+      if (toastIfMiss(precommit, toast, "Workspace precommit unavailable")) return;
+      const bootStart = await apiJson("/platform/playwright-bootstrap", { method: "POST" });
+      if (toastIfMiss(bootStart, toast, "Playwright bootstrap unavailable")) return;
       const boot = await pollPlaywrightBootstrap(statusEl);
       statusEl.textContent = boot.plain_summary || "Workspace prepared.";
       localStorage.setItem(WIZARD_DISMISSED_KEY, "1");
@@ -129,14 +161,30 @@ export async function mountSafeCodingReadinessRibbon(root) {
   try {
     const listing = await apiJson("/projects");
     workspacePath = workspacePathFromProjects(listing);
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return;
   }
   if (!workspacePath) return;
   try {
     const body = await apiJson(
       `/platform/workspace-readiness?workspace_path=${encodeURIComponent(workspacePath)}`,
-    );
+    ).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "workspace_readiness",
+    }));
+    if (toastIfMiss(body, toast, "Workspace readiness unavailable")) {
+      host.replaceChildren();
+      const chip = document.createElement("p");
+      chip.className = "safe-coding-ribbon muted";
+      chip.dataset.testid = "maker-safe-coding-readiness-ribbon";
+      chip.textContent =
+        formatDomainMissMessage(body, "Workspace readiness unavailable") ||
+        "Workspace readiness unavailable";
+      host.appendChild(chip);
+      return;
+    }
     host.replaceChildren();
     const chip = document.createElement("p");
     chip.className = "safe-coding-ribbon muted";
@@ -156,7 +204,13 @@ export async function mountSafeCodingReadinessRibbon(root) {
       chip.appendChild(link);
     }
     host.appendChild(chip);
-  } catch {
+  } catch (e) {
     host.replaceChildren();
+    const chip = document.createElement("p");
+    chip.className = "safe-coding-ribbon muted";
+    chip.dataset.testid = "maker-safe-coding-readiness-ribbon";
+    chip.textContent = String(e.message || e);
+    host.appendChild(chip);
+    toast(String(e.message || e), "error");
   }
 }

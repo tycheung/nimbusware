@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 import { renderMessagesFromSession, workTypeLabel } from "./chat_session_ui.js";
 
 async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq } = {}) {
@@ -15,6 +16,9 @@ async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq
       body: JSON.stringify(payload),
     },
   );
+  if (toastIfMiss(updated, toast, "Work type switch unavailable")) {
+    return null;
+  }
   const select = root.querySelector("#chat-work-type");
   if (select) select.value = workType;
   renderMessagesFromSession(root, updated);

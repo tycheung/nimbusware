@@ -319,7 +319,7 @@ def _classify_intent_llm(
     model_id: str,
     timeout_seconds: float = 60.0,
 ) -> ClassificationResult | None:
-    from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+    from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
 
     schema = (
         '{"work_type":"patch|slice|campaign|factory|quick",'
@@ -420,19 +420,33 @@ def classify_intent(
         return rules_result
 
     from env.settings_resolve import resolve_str
-    from orchestrator.routing.manage import ollama_base_url
+    from orchestrator.model_routing.manage import ollama_base_url
+
+    from broker_client.dual_run_route import try_or_refuse
+    from broker_client.flags import broker_llm_enabled, broker_llm_only
 
     model_id = resolve_str("NIMBUSWARE_INTENT_CLASSIFIER_MODEL", default="").strip()
     base_url = ollama_base_url()
-    try:
-        llm_result = _classify_intent_llm(
+    # sak491-h: under LLM peel, propagate broker/LLM miss — no silent rules fallback.
+    llm_result = try_or_refuse(
+        lambda: _classify_intent_llm(
             text,
             base_url=base_url,
             model_id=model_id,
+        ),
+        enabled=broker_llm_enabled,
+        broker_only=broker_llm_only,
+        msg=(
+            "broker_miss: intent_classifier: LLM classification unavailable under "
+            "NIMBUSWARE_BROKER_LLM=1|2"
+        ),
+    )
+    if llm_result is not None:
+        llm_result.attachments_extracted = dict(extracted)
+        return _merge_llm_with_rules(llm_result, rules_result)
+    if broker_llm_enabled():
+        raise RuntimeError(
+            "broker_miss: intent_classifier: LLM returned no classification under "
+            "NIMBUSWARE_BROKER_LLM=1|2"
         )
-        if llm_result is not None:
-            llm_result.attachments_extracted = dict(extracted)
-            return _merge_llm_with_rules(llm_result, rules_result)
-    except Exception:
-        pass
     return rules_result

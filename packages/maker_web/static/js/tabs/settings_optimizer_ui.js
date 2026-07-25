@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js"; // sak499-b
 
 const OPTIMIZER_KEYS = ["headroom", "model_fit", "latency", "cost"];
 
@@ -21,13 +22,16 @@ export async function wireOptimizerWeightsPanel(root) {
   }
   try {
     const body = await apiJson("/platform/optimizer-weights");
+    if (toastIfMiss(body, toast, "Optimizer weights unavailable")) {
+      return;
+    }
     const weights = body.weights || {};
     for (const input of optimizerFields.querySelectorAll("input[data-optimizer-key]")) {
       const k = input.dataset.optimizerKey;
       if (k && weights[k] != null) input.value = String(weights[k]);
     }
-  } catch {
-    /* defaults in UI */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   root.querySelector("#settings-optimizer-save")?.addEventListener("click", async () => {
     const weights = {};
@@ -35,11 +39,14 @@ export async function wireOptimizerWeightsPanel(root) {
       weights[input.dataset.optimizerKey] = Number(input.value) || 0;
     }
     try {
-      await apiJson("/platform/optimizer-weights", {
+      const saved = await apiJson("/platform/optimizer-weights", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ weights }),
       });
+      if (toastIfMiss(saved, toast, "Optimizer weights save unavailable")) {
+        return;
+      }
       toast("Optimizer weights saved", "success");
     } catch (e) {
       toast(String(e.message || e), "error");

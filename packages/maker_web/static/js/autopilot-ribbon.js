@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { toastIfMiss } from "./broker_miss.js"; // sak500-a
 import { plainCheckpointLabel } from "./plain-language.js";
 import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
@@ -131,6 +132,11 @@ export async function wireAutopilotRibbon(root, runId) {
 
   try {
     const ap = await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`);
+    if (toastIfMiss(ap, toast, "Autopilot profile unavailable")) {
+      renderAutopilotCheckpoints(checkpointsMount, []);
+      syncCheckpointVisibility();
+      return;
+    }
     if (slider) slider.value = String(ap.level ?? 5);
     if (label) label.textContent = String(ap.level ?? 5);
     renderAutopilotCheckpoints(checkpointsMount, ap.checkpoints || []);
@@ -138,7 +144,8 @@ export async function wireAutopilotRibbon(root, runId) {
     root.dispatchEvent(
       new CustomEvent("autopilot-loaded", { detail: { level: ap.level, name: ap.name } }),
     );
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     renderAutopilotCheckpoints(checkpointsMount, []);
     syncCheckpointVisibility();
   }

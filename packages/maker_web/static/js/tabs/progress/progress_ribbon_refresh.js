@@ -1,4 +1,5 @@
-import { apiJson } from "../../api-client.js";
+import { apiJson, toast } from "../../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss, toastIfMisses } from "../../broker_miss.js"; // sak499-b
 import { isSafeCodingUx } from "../../safe-coding-ux.js";
 
 export function devEnvRegressionFromTimeline(events) {
@@ -41,26 +42,38 @@ export async function refreshDevEnvStatus(runId) {
   if (!body) return;
   try {
     const st = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`);
+    if (toastIfMiss(st, toast, "Dev env status unavailable")) {
+      body.textContent =
+        formatDomainMissMessage(st, "Dev env status unavailable") || "Dev env status unavailable";
+      if (detail) detail.textContent = "";
+      return;
+    }
     const active = st.active ? "active" : "inactive";
     body.textContent = `Session ${active}${st.session?.base_url ? ` · ${st.session.base_url}` : ""}`;
     if (detail) {
       const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`);
-      const reg = devEnvRegressionFromTimeline(timeline.events || []);
-      const bits = [];
-      if (reg.http !== null) {
-        bits.push(`HTTP regression: ${reg.http ? "passed" : "failed"}${reg.httpDetail ? ` (${reg.httpDetail.slice(0, 80)})` : ""}`);
+      if (isDomainPeelMiss(timeline)) {
+        toastIfMiss(timeline, toast, "Timeline unavailable");
+        detail.textContent = "";
+      } else {
+        const reg = devEnvRegressionFromTimeline(timeline.events || []);
+        const bits = [];
+        if (reg.http !== null) {
+          bits.push(`HTTP regression: ${reg.http ? "passed" : "failed"}${reg.httpDetail ? ` (${reg.httpDetail.slice(0, 80)})` : ""}`);
+        }
+        if (reg.ui !== null) {
+          let uiLine = `UI regression: ${reg.ui ? "passed" : "failed"}`;
+          if (reg.uiFlowId) uiLine += ` [${reg.uiFlowId}]`;
+          if (!reg.ui && reg.uiFailedStep != null) uiLine += ` step ${reg.uiFailedStep}`;
+          if (!reg.ui && reg.uiFailedLocator) uiLine += ` ${reg.uiFailedLocator}`;
+          if (reg.uiDetail) uiLine += ` (${reg.uiDetail.slice(0, 80)})`;
+          bits.push(uiLine);
+        }
+        detail.textContent = bits.length ? bits.join(" · ") : "No regression runs yet";
       }
-      if (reg.ui !== null) {
-        let uiLine = `UI regression: ${reg.ui ? "passed" : "failed"}`;
-        if (reg.uiFlowId) uiLine += ` [${reg.uiFlowId}]`;
-        if (!reg.ui && reg.uiFailedStep != null) uiLine += ` step ${reg.uiFailedStep}`;
-        if (!reg.ui && reg.uiFailedLocator) uiLine += ` ${reg.uiFailedLocator}`;
-        if (reg.uiDetail) uiLine += ` (${reg.uiDetail.slice(0, 80)})`;
-        bits.push(uiLine);
-      }
-      detail.textContent = bits.length ? bits.join(" · ") : "No regression runs yet";
     }
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     body.textContent = "Dev env status unavailable";
     if (detail) detail.textContent = "";
   }
@@ -73,9 +86,25 @@ export async function refreshVariantRibbon(runId) {
   if (list) list.innerHTML = "";
   try {
     const [timeline, progress] = await Promise.all([
-      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`),
-      apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch(() => null),
+      apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "run_timeline",
+      })),
+      apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "maker_progress",
+      })),
     ]);
+    // sak496-j: aggregate partial multi-fetch misses on variant ribbon.
+    toastIfMisses([timeline, progress], toast, "Variant arena unavailable");
+    if (isDomainPeelMiss(timeline)) {
+      body.textContent =
+        formatDomainMissMessage(timeline, "Variant arena unavailable") || "Variant arena unavailable";
+      return;
+    }
+    const progressBody = isDomainPeelMiss(progress) ? null : progress;
     for (const ev of [...(timeline.events || [])].reverse()) {
       const arena = ev.metadata?.variant_arena;
       if (!arena) continue;
@@ -87,7 +116,7 @@ export async function refreshVariantRibbon(runId) {
       if (arena.crossover_merged) bits.push("crossover merged");
       const crossoverPaths = Array.isArray(arena.crossover_paths) ? arena.crossover_paths : [];
       if (crossoverPaths.length) bits.push(`crossover: ${crossoverPaths.join(", ")}`);
-      let explore = progress?.repo_explore;
+      let explore = progressBody?.repo_explore;
       if (!explore) {
         for (const row of timeline.events || []) {
           if (row.metadata?.repo_explore) {
@@ -114,7 +143,8 @@ export async function refreshVariantRibbon(runId) {
       return;
     }
     body.textContent = "No variant experiments yet";
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     body.textContent = "Variant arena unavailable";
   }
 }
@@ -130,6 +160,12 @@ export async function refreshCouncilRibbon(runId) {
   }
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=50`);
+    if (toastIfMiss(timeline, toast, "Council ribbon unavailable")) {
+      panel.hidden = true;
+      body.textContent =
+        formatDomainMissMessage(timeline, "Council ribbon unavailable") || "";
+      return;
+    }
     const events = timeline.events || [];
     const parts = [];
     for (const ev of [...events].reverse()) {
@@ -155,7 +191,8 @@ export async function refreshCouncilRibbon(runId) {
     }
     panel.hidden = false;
     body.textContent = parts.join(" · ");
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     panel.hidden = true;
   }
 }
@@ -166,6 +203,19 @@ export async function refreshLearningsPanel(runId) {
   if (!list) return;
   try {
     const body = await apiJson(`/runs/${encodeURIComponent(runId)}/learnings`);
+    if (toastIfMiss(body, toast, "Learnings unavailable")) {
+      list.replaceChildren();
+      const err = document.createElement("li");
+      err.className = "muted";
+      err.textContent =
+        formatDomainMissMessage(body, "Learnings unavailable") || "Learnings unavailable";
+      list.appendChild(err);
+      if (stitchBanner) {
+        stitchBanner.hidden = true;
+        stitchBanner.textContent = "";
+      }
+      return;
+    }
     const items = body.learnings || [];
     if (stitchBanner) {
       const sug = body.stitch_suggestion;
@@ -192,7 +242,8 @@ export async function refreshLearningsPanel(runId) {
       if (item.excerpt) li.title = item.excerpt;
       list.appendChild(li);
     });
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     list.replaceChildren();
     const err = document.createElement("li");
     err.className = "muted";

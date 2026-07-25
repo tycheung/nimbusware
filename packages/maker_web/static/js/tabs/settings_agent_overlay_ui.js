@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 
 export function agentOverlaySectionHtml() {
   return `
@@ -83,6 +84,7 @@ export async function wireAgentOverlayPanel(root) {
   async function refresh() {
     try {
       const body = await apiJson("/users/me/agent-overlays");
+      if (toastIfMiss(body, toast, "Agent overlays unavailable")) return;
       overlays = body.overlays || {};
       const disciplines = body.disciplines || [];
       const current = select.value;

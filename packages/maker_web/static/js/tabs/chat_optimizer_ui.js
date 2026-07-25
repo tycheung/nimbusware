@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 
 const OPTIMIZER_KEYS = ["headroom", "model_fit", "latency", "cost"];
 
@@ -69,7 +70,25 @@ export async function refreshSessionOptimizerPanel(root, sessionId, { workloadMo
   if (!show) return;
   const list = panel.querySelector(".chat-optimizer-list");
   try {
-    const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/optimizer-weights`);
+    const body = await apiJson(
+      `/chat/sessions/${encodeURIComponent(sessionId)}/optimizer-weights`,
+    ).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "session_optimizer",
+      priority: [],
+    }));
+    if (toastIfMiss(body, toast, "Optimizer priority unavailable")) {
+      list.replaceChildren();
+      const miss = document.createElement("li");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-optimizer-miss";
+      miss.textContent =
+        formatDomainMissMessage(body, "Optimizer priority unavailable") ||
+        "Optimizer priority unavailable";
+      list.appendChild(miss);
+      return;
+    }
     const priority = (body.priority || OPTIMIZER_KEYS).filter((k) => OPTIMIZER_KEYS.includes(k));
     wireDragList(list, priority.length ? priority : [...OPTIMIZER_KEYS]);
     const saveBtn = panel.querySelector("[data-testid='maker-chat-optimizer-save']");
@@ -80,18 +99,28 @@ export async function refreshSessionOptimizerPanel(root, sessionId, { workloadMo
           (el) => el.dataset.optimizerKey,
         );
         try {
-          await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/optimizer-weights`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ priority: order }),
-          });
+          const saved = await apiJson(
+            `/chat/sessions/${encodeURIComponent(sessionId)}/optimizer-weights`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ priority: order }),
+            },
+          );
+          if (toastIfMiss(saved, toast, "Optimizer priority save unavailable")) return;
           toast("Optimizer priority saved", "success");
         } catch (e) {
           toast(String(e.message || e), "error");
         }
       });
     }
-  } catch {
-    wireDragList(list, [...OPTIMIZER_KEYS]);
+  } catch (e) {
+    list.replaceChildren();
+    const miss = document.createElement("li");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-optimizer-miss";
+    miss.textContent = `Optimizer priority unavailable: ${String(e.message || e)}`;
+    list.appendChild(miss);
+    toast(String(e.message || e), "error");
   }
 }

@@ -1,4 +1,10 @@
 import { apiJson, toast } from "../api-client.js";
+import {
+  formatDomainMissMessage,
+  isDomainPeelMiss,
+  toastIfMiss,
+  toastIfMisses,
+} from "../broker_miss.js"; // sak498-f
 import { getCollabMyRole } from "./chat_session_ui.js";
 
 function canEditBindings(collabRole) {
@@ -31,18 +37,77 @@ export function mountCollabModelDrawerTrigger(root, sessionId) {
 }
 
 async function loadDrawerData(sessionId) {
-  const [defaults, sessionBindings, rolesBody, connections] = await Promise.all([
-    apiJson("/platform/model-bindings/defaults").catch(() => ({ roles: [], defaults: { roles: {} } })),
-    apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`),
-    apiJson("/platform/model-bindings/roles").catch(() => ({ roles: [] })),
-    apiJson("/platform/provider-connections").catch(() => ({ connections: [] })),
-  ]);
-  const catalog = rolesBody.roles?.length ? rolesBody.roles : defaults.roles || [];
+  // sak496-j: partial multi-fetch misses aggregate to one toast + combined banner.
+  let defaults;
+  let sessionBindings;
+  let rolesBody;
+  let connections;
+  try {
+    defaults = await apiJson("/platform/model-bindings/defaults");
+  } catch (e) {
+    defaults = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "platform_model_bindings_defaults",
+    };
+  }
+  try {
+    sessionBindings = await apiJson(
+      `/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`,
+    );
+  } catch (e) {
+    sessionBindings = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "participant_bindings",
+    };
+  }
+  try {
+    rolesBody = await apiJson("/platform/model-bindings/roles");
+  } catch (e) {
+    rolesBody = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "platform_model_bindings_roles",
+      roles: [],
+    };
+  }
+  try {
+    connections = await apiJson("/platform/provider-connections");
+  } catch (e) {
+    connections = {
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "provider_connections",
+      connections: [],
+    };
+  }
+  const misses = [defaults, sessionBindings, rolesBody, connections].filter((body) =>
+    isDomainPeelMiss(body),
+  );
+  toastIfMisses(misses, toast, "Session models unavailable");
+  const missBanner =
+    misses
+      .map((body) => formatDomainMissMessage(body, "Session models unavailable"))
+      .find(Boolean) || null;
   return {
-    catalog,
-    sessionRoles: sessionBindings.roles || {},
-    providers: defaults.providers || [],
-    connections: connections.connections || connections.items || [],
+    catalog: isDomainPeelMiss(defaults)
+      ? []
+      : !isDomainPeelMiss(rolesBody) && rolesBody.roles?.length
+        ? rolesBody.roles
+        : defaults.roles || [],
+    sessionRoles: isDomainPeelMiss(sessionBindings) ? {} : sessionBindings.roles || {},
+    providers: isDomainPeelMiss(defaults) ? [] : defaults.providers || [],
+    connections: isDomainPeelMiss(connections)
+      ? []
+      : connections.connections || connections.items || [],
+    missBanner:
+      missBanner ||
+      (isDomainPeelMiss(defaults) &&
+        formatDomainMissMessage(defaults, "Model bindings unavailable")) ||
+      (isDomainPeelMiss(sessionBindings) &&
+        formatDomainMissMessage(sessionBindings, "Participant bindings unavailable")) ||
+      null,
   };
 }
 
@@ -63,7 +128,16 @@ export async function openCollabModelDrawer(root, sessionId) {
 
   const host = drawer.querySelector("[data-testid='maker-chat-model-drawer-table']");
   try {
-    const { catalog, sessionRoles, providers, connections } = await loadDrawerData(sessionId);
+    const { catalog, sessionRoles, providers, connections, missBanner } =
+      await loadDrawerData(sessionId);
+    if (missBanner) {
+      const banner = document.createElement("p");
+      banner.className = "muted";
+      banner.dataset.testid = "maker-chat-model-drawer-miss";
+      banner.textContent = missBanner;
+      host.replaceChildren(banner);
+      return drawer;
+    }
     const table = document.createElement("table");
     table.className = "data-table";
     table.innerHTML =
@@ -108,17 +182,21 @@ export async function openCollabModelDrawer(root, sessionId) {
         try {
           const providerId = providerSelect.value;
           const connId = connectionSelect.value.trim();
-          await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              agent_role: role,
-              provider_kind: providerKindFor(providers, providerId),
-              provider_id: providerId,
-              model_id: modelInput.value.trim(),
-              connection_id: connId || null,
-            }),
-          });
+          const res = await apiJson(
+            `/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                agent_role: role,
+                provider_kind: providerKindFor(providers, providerId),
+                provider_id: providerId,
+                model_id: modelInput.value.trim(),
+                connection_id: connId || null,
+              }),
+            },
+          );
+          if (toastIfMiss(res, toast, "Participant binding save unavailable")) return; // sak496-j
           toast(`Saved ${role}`, "success");
         } catch (e) {
           toast(String(e.message || e), "error");

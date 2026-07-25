@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 import {
   mountCommentaryComposer,
@@ -65,7 +66,12 @@ export async function wireCollabSessionUi(root, sessionId, session) {
     onReload: async () => {
       const existing = await apiJson(
         `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-      );
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "session_turns",
+      }));
+      if (toastIfMiss(existing, toast, "Session reload unavailable")) return;
       renderMessagesFromSession(root, existing);
     },
   });
@@ -88,10 +94,15 @@ export async function wireCollabSessionUi(root, sessionId, session) {
         try {
           const existing = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-          );
+          ).catch((e) => ({
+            via: "broker_miss",
+            error: String(e.message || e),
+            feature: "session_turns",
+          }));
+          if (toastIfMiss(existing, toast, "Session turns unavailable")) return;
           renderMessagesFromSession(root, existing);
-        } catch {
-          /* ignore */
+        } catch (e) {
+          toast(String(e.message || e), "error");
         }
       }
     },

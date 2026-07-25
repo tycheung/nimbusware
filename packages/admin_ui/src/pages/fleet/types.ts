@@ -9,6 +9,11 @@ export type FleetDashboard = {
   critic_reliability_caption?: string | null;
   critic_reliability_rows?: { metric: string; value: string }[];
   archetype_fit_rows?: { archetype: string; fit_score: string; meets_target: string }[];
+  capacity_source?: string;
+  fleet_memory?: Record<string, unknown>;
+  via?: string;
+  status?: string;
+  error?: string;
 };
 
 export type FleetCombinedSearch = {

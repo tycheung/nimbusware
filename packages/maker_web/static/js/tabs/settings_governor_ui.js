@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 
 const GOVERNOR_KEYS = new Set([
   "NIMBUSWARE_MAX_SYSTEM_RAM_PCT",
@@ -51,8 +52,14 @@ export function wireGovernorPanel(root, stored) {
   async function refreshHardwarePreview() {
     try {
       const hw = await apiJson("/platform/hardware");
-      const profile = hw.profile || {};
       const summary = root.querySelector("#governor-hardware-summary");
+      if (isDomainPeelMiss(hw)) {
+        if (summary) {
+          summary.textContent = `Hardware unavailable (broker miss${hw.feature ? `: ${hw.feature}` : ""})`;
+        }
+        return;
+      }
+      const profile = hw.profile || {};
       if (summary) {
         const tier = profile.tier || "unknown";
         const total = profile.ram_total_gb != null ? `${profile.ram_total_gb} GB total` : "RAM n/a";
@@ -60,8 +67,8 @@ export function wireGovernorPanel(root, stored) {
         summary.textContent = `Hardware tier: ${tier} · ${total}${avail ? ` · ${avail}` : ""}`;
       }
       renderGovernorPreview(hw.resource_governor);
-    } catch {
-      /* optional */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
   }
 
@@ -72,13 +79,18 @@ export function wireGovernorPanel(root, stored) {
       NIMBUSWARE_MAX_VRAM_PCT: String(vramInput?.value || "85"),
       NIMBUSWARE_HW_AUTO_ADJUST: autoInput?.checked ? "1" : "0",
     };
-    await apiJson("/settings/me", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ values: patch }),
-    });
-    toast("Governor settings saved", "success");
-    await refreshHardwarePreview();
+    try {
+      const res = await apiJson("/settings/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ values: patch }),
+      });
+      if (toastIfMiss(res, toast, "Governor settings save unavailable")) return;
+      toast("Governor settings saved", "success");
+      await refreshHardwarePreview();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 
   return refreshHardwarePreview();

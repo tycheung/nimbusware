@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, isDomainPeelMiss } from "../api/client"; // sak499-d
 
 const SECTIONS: { key: string; label: string; timelineField?: string }[] = [
   { key: "events", label: "Events" },
@@ -33,12 +33,22 @@ export function TimelineAccordion({
     setOpen(section);
     if (!explain[section]) {
       try {
-        const body = await apiJson<{ markdown?: string }>(
+        const body = await apiJson<{ markdown?: string; via?: string; error?: string; status?: string }>(
           `/runs/${runId}/timeline/${encodeURIComponent(section)}/explain`,
         );
+        if (isDomainPeelMiss(body)) {
+          setExplain((e) => ({
+            ...e,
+            [section]: formatPeelMissMessage(body, "timeline explain unavailable"),
+          }));
+          return;
+        }
         setExplain((e) => ({ ...e, [section]: body.markdown || "" }));
-      } catch {
-        setExplain((e) => ({ ...e, [section]: "_Explain unavailable._" }));
+      } catch (e) {
+        setExplain((prev) => ({
+          ...prev,
+          [section]: formatReadCatchMessage(e, "timeline explain unavailable"),
+        }));
       }
     }
   }

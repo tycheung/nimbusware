@@ -7,6 +7,8 @@ type FleetDashboardPanelProps = {
   fleetSearchBusy: boolean;
   fleetSearchError: string;
   rescanBusy: boolean;
+  capacityPeelMiss?: string;
+  memoryPeelMiss?: string;
   onFleetQuery: (q: string) => void;
   onFleetSearch: () => void;
   onRescanHardware: () => void;
@@ -20,6 +22,8 @@ export function FleetDashboardPanel({
   fleetSearchBusy,
   fleetSearchError,
   rescanBusy,
+  capacityPeelMiss,
+  memoryPeelMiss,
   onFleetQuery,
   onFleetSearch,
   onRescanHardware,
@@ -27,6 +31,16 @@ export function FleetDashboardPanel({
 }: FleetDashboardPanelProps) {
   return (
     <>
+      {capacityPeelMiss ? (
+        <p class="error" data-testid="admin-fleet-capacity-peel-miss" role="alert">
+          Capacity peel miss: {capacityPeelMiss}
+        </p>
+      ) : null}
+      {memoryPeelMiss ? (
+        <p class="error" data-testid="admin-fleet-memory-peel-miss" role="alert">
+          Memory peel miss: {memoryPeelMiss}
+        </p>
+      ) : null}
       {dashboard.sli_caption ? <p>{dashboard.sli_caption}</p> : null}
       {dashboard.worker_caption ? <p>{dashboard.worker_caption}</p> : null}
       <h3 data-testid="admin-fleet-mesh-panel">Fleet mesh</h3>
@@ -191,6 +205,13 @@ export function FleetDashboardPanel({
           ))}
         </tbody>
       </table>
+      {(dashboard.hardware_rows || []).length === 0 ? (
+        <p class="muted" data-testid="admin-fleet-hardware-empty">
+          {capacityPeelMiss
+            ? "No fleet hardware rows (peel miss — not a silent empty success)."
+            : "No fleet hardware rows — under CAPACITY peel, probe misses surface as empty (no silent weak-tier fill)."}
+        </p>
+      ) : null}
       {dashboard.critic_reliability_rows && dashboard.critic_reliability_rows.length > 0 ? (
         <>
           <h3>Critic reliability</h3>

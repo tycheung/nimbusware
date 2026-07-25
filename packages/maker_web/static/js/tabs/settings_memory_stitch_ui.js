@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { getActiveProjectId, hydrateActiveRun, resolveRunId } from "../session-hub.js";
 
 export async function wireMemoryLibraryPanel(root) {
@@ -12,7 +13,23 @@ export async function wireMemoryLibraryPanel(root) {
       return;
     }
     try {
-      const body = await apiJson(`/memory/chunks?project_id=${encodeURIComponent(projectId)}&limit=50`);
+      const body = await apiJson(
+        `/memory/chunks?project_id=${encodeURIComponent(projectId)}&limit=50`,
+      ).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "memory_chunks",
+        chunks: [],
+      }));
+      if (isDomainPeelMiss(body)) {
+        toastIfMiss(body, toast, "Memory chunks unavailable");
+        if (caption) {
+          caption.textContent =
+            formatDomainMissMessage(body, "Memory chunks unavailable") || "Memory chunks unavailable";
+        }
+        list?.replaceChildren();
+        return;
+      }
       if (caption) caption.textContent = body.caption || `${body.total || 0} chunks`;
       list?.replaceChildren();
       for (const ch of body.chunks || []) {
@@ -31,10 +48,11 @@ export async function wireMemoryLibraryPanel(root) {
           if (!runId) runId = await hydrateActiveRun(apiJson);
           if (!runId) return toast("No active run — open Progress or start a build", "error");
           try {
-            await apiJson(
+            const res = await apiJson(
               `/runs/${encodeURIComponent(runId)}/memory-chunks/${encodeURIComponent(ch.chunk_id)}/insert`,
               { method: "POST" },
             );
+            if (toastIfMiss(res, toast, "Memory chunk insert unavailable")) return;
             toast("Memory chunk inserted into run context", "success");
           } catch (e) {
             toast(String(e.message || e), "error");
@@ -50,6 +68,7 @@ export async function wireMemoryLibraryPanel(root) {
         list?.appendChild(li);
       }
     } catch (e) {
+      toast(String(e.message || e), "error");
       if (caption) caption.textContent = String(e.message || e);
     }
   }
@@ -66,9 +85,31 @@ export async function wireStitchCatalogPanel(root) {
     ul?.replaceChildren();
     try {
       const [candBody, catalogBody] = await Promise.all([
-        apiJson("/bundles/catalog-candidates?limit=50"),
-        apiJson("/bundles/catalog").catch(() => ({ document_version: 1 })),
+        apiJson("/bundles/catalog-candidates?limit=50").catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "catalog_candidates",
+          candidates: [],
+        })),
+        apiJson("/bundles/catalog").catch((e) => ({
+          via: "broker_miss",
+          error: String(e.message || e),
+          feature: "bundles_catalog",
+        })),
       ]);
+      if (toastIfMiss(candBody, toast, "Catalog candidates unavailable")) {
+        const li = document.createElement("li");
+        li.className = "muted";
+        li.dataset.testid = "maker-settings-stitch-candidates-miss";
+        li.textContent =
+          formatDomainMissMessage(candBody, "Catalog candidates unavailable") ||
+          "Catalog candidates unavailable";
+        ul?.appendChild(li);
+        return;
+      }
+      if (toastIfMiss(catalogBody, toast, "Bundles catalog unavailable")) {
+        return;
+      }
       catalogVersion = catalogBody.document_version ?? 1;
       for (const c of candBody.candidates || []) {
         const li = document.createElement("li");
@@ -81,10 +122,11 @@ export async function wireStitchCatalogPanel(root) {
         btn.dataset.testid = "maker-settings-stitch-promote-one";
         btn.addEventListener("click", async () => {
           try {
-            await apiJson(
+            const res = await apiJson(
               `/bundles/catalog-candidates/${encodeURIComponent(c.run_id)}/${encodeURIComponent(c.candidate_id)}/promote?expected_version=${catalogVersion}`,
               { method: "POST" },
             );
+            if (toastIfMiss(res, toast, "Catalog candidate promote unavailable")) return;
             toast("Candidate promoted", "success");
             await loadStitchCandidates();
           } catch (e) {
@@ -112,10 +154,11 @@ export async function wireStitchCatalogPanel(root) {
   });
   root.querySelector("#settings-stitch-batch")?.addEventListener("click", async () => {
     try {
-      await apiJson(
+      const res = await apiJson(
         `/bundles/catalog-candidates/promote-stitch-pending?expected_version=${catalogVersion}`,
         { method: "POST" },
       );
+      if (toastIfMiss(res, toast, "Batch catalog promote unavailable")) return;
       toast("Batch promote complete", "success");
       await loadStitchCandidates();
     } catch (e) {

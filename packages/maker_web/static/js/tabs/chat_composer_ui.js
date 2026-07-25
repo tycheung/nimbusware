@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 import {
   defaultAutopilotProfileId,
   defaultEnforcementProfileId,
@@ -150,6 +151,9 @@ async function startRunFromSession(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(startPayload),
   });
+  if (toastIfMiss(body, toast, "Run start unavailable")) {
+    throw new Error("broker_miss");
+  }
 
   const runId = body.run_id || body.campaign_id || body.id;
   if (!runId) throw new Error("Start response missing run_id");

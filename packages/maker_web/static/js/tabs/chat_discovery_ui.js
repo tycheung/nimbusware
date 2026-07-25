@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { readSoloDiscipline } from "./settings_solo_discipline_ui.js";
 
 const ANSWER_CHIPS = {
@@ -59,7 +60,14 @@ async function confirmScopeState(state) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ state }),
-  });
+  }).catch((e) => ({
+    via: "broker_miss",
+    error: String(e.message || e),
+    feature: "scope_confirm",
+  }));
+  if (toastIfMiss(body, toast, "Scope confirm unavailable")) {
+    throw new Error("broker_miss");
+  }
   return body.scope;
 }
 
@@ -160,7 +168,14 @@ async function gatherScope(state, answers, { recommendForMe = false } = {}) {
       answers,
       recommend_for_me: recommendForMe,
     }),
-  });
+  }).catch((e) => ({
+    via: "broker_miss",
+    error: String(e.message || e),
+    feature: "scope_gather",
+  }));
+  if (toastIfMiss(body, toast, "Scope gather unavailable")) {
+    throw new Error("broker_miss");
+  }
   return body.scope;
 }
 
@@ -179,7 +194,22 @@ export async function mountScopeDiscoveryIfNeeded(root, classification, message,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ business_prompt: message }),
-    });
+    }).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "scope_discover",
+    }));
+    if (isDomainPeelMiss(resp)) {
+      toastIfMiss(resp, toast, "Scope discovery unavailable");
+      mount.replaceChildren();
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-discovery-miss";
+      miss.textContent =
+        formatDomainMissMessage(resp, "Scope discovery unavailable") || "Scope discovery unavailable";
+      mount.appendChild(miss);
+      return false;
+    }
     state = resp.scope;
   } catch (e) {
     toast(String(e.message || e), "error");

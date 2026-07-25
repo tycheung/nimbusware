@@ -18,6 +18,7 @@ export function CriticReliabilityPanel({ runId }: { runId: string }) {
       };
     },
     { caption: "", rows: [] },
+    "critic reliability unavailable",
   );
 
   return (

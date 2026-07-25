@@ -326,7 +326,7 @@ def enrich_scope_surface_bindings(scope: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(manifest, dict):
         return scope
     from env import find_repo_root
-    from orchestrator.routing.preflight import surface_binding_rows
+    from orchestrator.model_routing.preflight import surface_binding_rows
 
     enriched = dict(scope)
     enriched["surface_bindings"] = surface_binding_rows(find_repo_root(), manifest)

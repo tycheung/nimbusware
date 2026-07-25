@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, isDomainPeelMiss } from "../api/client"; // sak500-d
 import { BundleOutcomePanel } from "../components/BundleOutcomePanel";
 
 type Summary = {
@@ -32,12 +32,36 @@ export function MetricsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiJson<Summary>("/platform/analytics/competitive-summary?limit_runs=500")
-      .then(setBody)
-      .catch((e) => setError(String((e as Error).message || e)));
-    apiJson<ChatTurnSummary>("/platform/analytics/chat-turns?limit_sessions=500")
-      .then(setChatTurns)
-      .catch(() => setChatTurns(null));
+    apiJson<Summary & { via?: string; error?: string }>(
+      "/platform/analytics/competitive-summary?limit_runs=500",
+    )
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setBody(null);
+          setError(formatPeelMissMessage(body, "competitive metrics unavailable"));
+          return;
+        }
+        setBody(body);
+      })
+      .catch((e) => {
+        setBody(null);
+        setError(formatReadCatchMessage(e, "competitive metrics unavailable"));
+      });
+    apiJson<ChatTurnSummary & { via?: string; error?: string }>(
+      "/platform/analytics/chat-turns?limit_sessions=500",
+    )
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setChatTurns(null);
+          setError(formatPeelMissMessage(body, "chat-turns analytics unavailable"));
+          return;
+        }
+        setChatTurns(body);
+      })
+      .catch((e) => {
+        setChatTurns(null);
+        setError(formatReadCatchMessage(e, "chat-turns analytics unavailable"));
+      });
   }, []);
 
   const m = body?.metrics || {};

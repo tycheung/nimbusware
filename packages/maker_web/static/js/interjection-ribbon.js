@@ -1,4 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
+import { formatDomainMissMessage, toastIfMiss } from "./broker_miss.js"; // sak500-a
 
 export async function queueInterjection(runId, message, priority) {
   await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
@@ -12,11 +13,17 @@ export async function refreshInterjectionQueue(runId, queueBody) {
   if (!queueBody) return;
   try {
     const q = await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`);
+    if (toastIfMiss(q, toast, "Interjection queue unavailable")) {
+      queueBody.textContent =
+        formatDomainMissMessage(q, "Interjection queue unavailable") || "";
+      return;
+    }
     const items = q.queue?.items || [];
     queueBody.textContent = items.length
       ? items.map((i) => `[${i.priority}] ${i.message}`).join(" · ")
       : "Queue empty";
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     queueBody.textContent = "";
   }
 }

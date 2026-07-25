@@ -1,5 +1,11 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatWriteCatchMessage,
+  isDomainPeelMiss,
+  writeMissMessage,
+} from "../api/client"; // sak500-c
 
 type Msg = { role: string; content: string };
 type Classification = {
@@ -35,6 +41,13 @@ function workTypeLabel(workType: string): string {
   }
 }
 
+/** Read/classify/status paths may surface domain peel misses (`sak491-i` / `sak497-f`). */
+function isOperatorChatReadPath(text: string): boolean {
+  const cmd = text.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  if (!cmd.startsWith("/")) return true;
+  return cmd === "/status" || cmd === "/timeline" || cmd === "/help";
+}
+
 export function OperatorChatPage() {
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: "Operator chat — try /help or describe a change" },
@@ -51,10 +64,14 @@ export function OperatorChatPage() {
     if (!text) return;
     if (!textOverride) setInput("");
     setMessages((m) => [...m, { role: "user", content: text }]);
+    const fallback = "operator chat unavailable";
     try {
       const res = await apiJson<{
         reply: string;
         classification?: Classification | null;
+        via?: string;
+        error?: string;
+        status?: string;
       }>("/admin/ui/operator-chat/message", {
         method: "POST",
         headers: {
@@ -63,10 +80,30 @@ export function OperatorChatPage() {
         },
         body: JSON.stringify({ text }),
       });
+      if (isOperatorChatReadPath(text)) {
+        if (isDomainPeelMiss(res)) {
+          setClassification(null);
+          setMessages((m) => [
+            ...m,
+            { role: "assistant", content: formatPeelMissMessage(res, fallback) },
+          ]);
+          return;
+        }
+      } else {
+        const miss = writeMissMessage(res, fallback);
+        if (miss) {
+          setClassification(null);
+          setMessages((m) => [...m, { role: "assistant", content: miss }]);
+          return;
+        }
+      }
       setClassification(res.classification ?? null);
       setMessages((m) => [...m, { role: "assistant", content: res.reply }]);
     } catch (e) {
-      setMessages((m) => [...m, { role: "assistant", content: String((e as Error).message || e) }]);
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: formatWriteCatchMessage(e, fallback) },
+      ]);
     }
   }
 

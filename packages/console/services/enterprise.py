@@ -83,6 +83,41 @@ def fetch_platform_hardware_fleet(*, timeout: float = 30.0) -> dict[str, Any]:
     return get_json("/platform/hardware/fleet", timeout=timeout)
 
 
+def is_fetch_peel_miss(body: Mapping[str, Any] | None) -> bool:
+    if not isinstance(body, Mapping):
+        return False
+    if body.get("via") == "broker_miss" or body.get("status") == "degraded":
+        return True
+    if body.get("capacity_source") == "broker_miss":
+        return True
+    feat = body.get("feature")
+    if isinstance(feat, str) and "memory" in feat.lower():
+        if body.get("via") == "broker_miss" or body.get("error"):
+            return True
+    return False
+
+
+def peel_fields_from_fetch(body: Mapping[str, Any] | None) -> dict[str, Any]:
+    if not is_fetch_peel_miss(body):
+        return {}
+    out: dict[str, Any] = {}
+    for key in ("via", "error", "feature", "status", "capacity_source"):
+        val = body.get(key)
+        if val is not None:
+            out[key] = val
+    out.setdefault("via", "broker_miss")
+    out.setdefault("status", "degraded")
+    return out
+
+
+def first_peel_from_fetches(*bodies: Mapping[str, Any] | None) -> dict[str, Any]:
+    for body in bodies:
+        fields = peel_fields_from_fetch(body)
+        if fields:
+            return fields
+    return {}
+
+
 def fetch_fleet_analytics_compare(
     *,
     api_key: str,

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { downloadBlob } from "../../../../ui_shared/js/download.js";
 import { getCollabMyRole } from "./chat_session_ui.js";
 
@@ -22,7 +23,26 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
     }
   }
   try {
-    const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer`);
+    const body = await apiJson(
+      `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer`,
+    ).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "host_transfer",
+      transfers: [],
+    }));
+    if (isDomainPeelMiss(body)) {
+      panel.hidden = false;
+      panel.replaceChildren();
+      const miss = document.createElement("p");
+      miss.className = "muted";
+      miss.dataset.testid = "maker-chat-host-transfer-miss";
+      miss.textContent =
+        formatDomainMissMessage(body, "Host transfer unavailable") || "Host transfer unavailable";
+      panel.appendChild(miss);
+      toastIfMiss(body, toast, "Host transfer unavailable");
+      return;
+    }
     const transfers = body.transfers || [];
     const pending = transfers.find((t) => t.status === "pending");
     const frozen = transfers.find((t) => t.status === "frozen");
@@ -59,11 +79,12 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
         const uid = input.value.trim();
         if (!uid) return;
         try {
-          await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer`, {
+          const res = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ to_user_id: uid }),
           });
+          if (toastIfMiss(res, toast, "Host transfer request unavailable")) return;
           toast("Transfer requested", "success");
           await refreshHostTransferPanel(root, sessionId, { currentUserId, onReload });
           onReload?.();
@@ -80,10 +101,11 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
       accept.dataset.testid = "maker-chat-host-transfer-accept";
       accept.addEventListener("click", async () => {
         try {
-          await apiJson(
+          const res = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer/${pending.transfer_id}/accept`,
             { method: "POST" },
           );
+          if (toastIfMiss(res, toast, "Host transfer accept unavailable")) return;
           toast("Session frozen for cutover", "success");
           await refreshHostTransferPanel(root, sessionId, { currentUserId, onReload });
           onReload?.();
@@ -97,10 +119,11 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
       decline.textContent = "Decline";
       decline.addEventListener("click", async () => {
         try {
-          await apiJson(
+          const res = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer/${pending.transfer_id}/decline`,
             { method: "POST" },
           );
+          if (toastIfMiss(res, toast, "Host transfer decline unavailable")) return;
           toast("Transfer declined", "info");
           await refreshHostTransferPanel(root, sessionId, { currentUserId, onReload });
         } catch (e) {
@@ -118,6 +141,11 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
           const body = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer/${frozen.transfer_id}/bundle`,
           );
+          if (toastIfMiss(body, toast, "Host transfer bundle unavailable")) return;
+          if (!body.manifest) {
+            toast("Host transfer bundle empty", "error");
+            return;
+          }
           downloadBlob(
             JSON.stringify(body.manifest, null, 2),
             `host-transfer-${frozen.transfer_id}.json`,
@@ -140,7 +168,7 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
         try {
           const text = await file.text();
           const manifest = JSON.parse(text);
-          await apiJson(
+          const res = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/host-transfer/${frozen.transfer_id}/import`,
             {
               method: "POST",
@@ -148,6 +176,7 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
               body: JSON.stringify({ manifest }),
             },
           );
+          if (toastIfMiss(res, toast, "Host transfer import unavailable")) return;
           toast("Transfer completed", "success");
           await refreshHostTransferPanel(root, sessionId, { currentUserId, onReload });
           onReload?.();
@@ -158,7 +187,14 @@ export async function refreshHostTransferPanel(root, sessionId, { currentUserId,
       actions.append(bundleBtn, importBtn, importInput);
     }
     if (actions.childNodes.length) panel.appendChild(actions);
-  } catch {
-    panel.hidden = true;
+  } catch (e) {
+    panel.hidden = false;
+    panel.replaceChildren();
+    const miss = document.createElement("p");
+    miss.className = "muted";
+    miss.dataset.testid = "maker-chat-host-transfer-miss";
+    miss.textContent = `Host transfer unavailable: ${String(e.message || e)}`;
+    panel.appendChild(miss);
+    toast(String(e.message || e), "error");
   }
 }

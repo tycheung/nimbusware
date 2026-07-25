@@ -6,6 +6,7 @@ type FleetComparePanelProps = {
   tenantB: string;
   compareRows: FleetCompareRow[];
   compareCaption: string;
+  compareMiss?: boolean;
   compareCsv: string;
   onTenantA: (id: string) => void;
   onTenantB: (id: string) => void;
@@ -18,6 +19,7 @@ export function FleetComparePanel({
   tenantB,
   compareRows,
   compareCaption,
+  compareMiss,
   compareCsv,
   onTenantA,
   onTenantB,
@@ -77,7 +79,15 @@ export function FleetComparePanel({
           >
             Download CSV
           </button>
-          {compareCaption ? <p>{compareCaption}</p> : null}
+          {compareCaption ? (
+            <p
+              class={compareMiss ? "error" : undefined}
+              data-testid={compareMiss ? "admin-fleet-compare-miss" : undefined}
+              role={compareMiss ? "alert" : undefined}
+            >
+              {compareCaption}
+            </p>
+          ) : null}
           {compareRows.length ? (
             <table class="data-table">
               <thead>

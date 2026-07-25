@@ -1,11 +1,18 @@
 type FleetCompliancePanelProps = {
-  compliance: Record<string, unknown>;
+  compliance: Record<string, unknown> | null;
+  miss?: string;
 };
 
-export function FleetCompliancePanel({ compliance }: FleetCompliancePanelProps) {
+export function FleetCompliancePanel({ compliance, miss }: FleetCompliancePanelProps) {
   return (
     <section class="panel" data-testid="admin-fleet-compliance">
       <h3>Compliance summary</h3>
+      {miss ? (
+        <p class="error" data-testid="admin-fleet-compliance-miss" role="alert">
+          {miss}
+        </p>
+      ) : null}
+      {compliance ? (
       <table class="data-table">
         <tbody>
           <tr>
@@ -58,6 +65,9 @@ export function FleetCompliancePanel({ compliance }: FleetCompliancePanelProps) 
           </tr>
         </tbody>
       </table>
+      ) : miss ? (
+        <p class="muted">Compliance metrics unavailable until peel recovers.</p>
+      ) : null}
     </section>
   );
 }

@@ -1,4 +1,5 @@
-import { apiJson } from "./api-client.js";
+import { apiJson, toast } from "./api-client.js";
+import { toastIfMiss } from "./broker_miss.js";
 import {
   ARCHETYPE_PRESETS,
   plainCheckpointLabel,
@@ -18,13 +19,18 @@ export function archetypeSubchoice() {
 async function enableCollabFromPreset(preset) {
   if (!preset?.collab_hint) return;
   try {
-    await apiJson("/platform/collab-settings", {
+    const body = await apiJson("/platform/collab-settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ collab_enabled: true }),
-    });
-  } catch {
-    /* ignore */
+    }).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "collab_settings",
+    }));
+    toastIfMiss(body, toast, "Collab settings unavailable");
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 }
 

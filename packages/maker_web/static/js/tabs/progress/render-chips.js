@@ -1,4 +1,5 @@
 import { toast, apiJson } from "../../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../../broker_miss.js"; // sak499-b
 import { plainSurfaceLabel } from "../../plain-language.js";
 import { formatGateSummary } from "../../gate-summary.js";
 import { ARCHETYPE_SUBCHOICE_STORAGE_KEY } from "../../operator-default-profiles.js";
@@ -269,10 +270,19 @@ export function renderCompletion(completionPayload, cp, body = {}) {
 
 export async function loadCompletionEval(runId) {
   try {
-    const body = await apiJson(`/campaigns/${encodeURIComponent(runId)}/progress`);
+    const body = await apiJson(`/campaigns/${encodeURIComponent(runId)}/progress`).catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "campaign_progress",
+    }));
+    if (isDomainPeelMiss(body)) {
+      toastIfMiss(body, toast, "Campaign progress unavailable");
+      return null;
+    }
     const evals = body.completion_evaluations || [];
     return evals.length ? evals[evals.length - 1] : null;
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return null;
   }
 }

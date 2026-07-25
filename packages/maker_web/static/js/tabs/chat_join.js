@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 
 function joinTokenFromHash() {
   const path = (window.location.hash.replace(/^#/, "").split("?")[0] || "").trim();
@@ -22,8 +23,10 @@ async function ensureSignedIn(username, password, displayName, mode) {
 async function loadDisciplineOptions() {
   try {
     const body = await apiJson("/platform/collab-disciplines");
+    if (toastIfMiss(body, toast, "Discipline options unavailable")) return [];
     return body.disciplines || [];
-  } catch {
+  } catch (e) {
+    toast(String(e.message || e), "error");
     return [];
   }
 }
@@ -74,6 +77,7 @@ export async function mountChatJoin(root) {
 
     try {
     const preview = await apiJson(`/chat/join-preview?token=${encodeURIComponent(token)}`);
+    if (toastIfMiss(preview, toast, "Invite preview unavailable")) return;
     const hint = root.querySelector("#chat-join-invite-hint");
     if (hint) {
       const role = String(preview.role || "session_read").replace("session_", "");
@@ -88,8 +92,8 @@ export async function mountChatJoin(root) {
       hint.textContent = parts.join(" · ");
       hint.hidden = false;
     }
-  } catch {
-    /* preview optional */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 
   root.querySelector("#chat-join-form")?.addEventListener("submit", async (ev) => {

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 
 const STORAGE_KEY = "maker_deploy_connections";
 
@@ -65,9 +66,11 @@ export async function wireDeploySettingsPanel(root) {
   let stored = readStored();
   try {
     const remote = await apiJson("/platform/deploy/credentials");
-    stored = { ...stored, ...remote };
-  } catch {
-    /* offline or unsigned */
+    if (!toastIfMiss(remote, toast, "Deploy credentials unavailable")) {
+      stored = { ...stored, ...remote };
+    }
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
   if (aws && stored.aws_profile) aws.value = stored.aws_profile;
   else if (aws && stored.aws) aws.value = stored.aws;
@@ -90,7 +93,7 @@ export async function wireDeploySettingsPanel(root) {
     };
     writeStored(payload);
     try {
-      await apiJson("/platform/deploy/credentials", {
+      const remote = await apiJson("/platform/deploy/credentials", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -100,8 +103,14 @@ export async function wireDeploySettingsPanel(root) {
           deploy_environment: payload.deploy_environment,
         }),
       });
-    } catch {
-      /* local-only fallback */
+      if (toastIfMiss(remote, toast, "Deploy credentials save unavailable")) {
+        if (hint) hint.textContent = "Saved locally — broker credentials unavailable.";
+        return;
+      }
+    } catch (e) {
+      toast(String(e.message || e), "error");
+      if (hint) hint.textContent = "Saved locally — remote credentials unreachable.";
+      return;
     }
     if (hint) hint.textContent = "Deploy connection labels saved.";
     toast("Deploy labels saved", "success");

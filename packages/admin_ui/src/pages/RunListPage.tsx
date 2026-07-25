@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, isDomainPeelMiss } from "../api/client"; // sak499-d
 import {
   buildRunsQuery,
   filtersFromSearch,
@@ -19,6 +19,9 @@ type RunListResponse = {
   summaries?: Record<string, RunSummary>;
   has_more?: boolean;
   next_cursor?: string;
+  via?: string;
+  error?: string;
+  status?: string;
 };
 
 function exportCsv(runIds: string[], summaries: Record<string, RunSummary>) {
@@ -47,9 +50,15 @@ export function RunListPage() {
     setError("");
     try {
       const body = await apiJson<RunListResponse>(`/runs?${buildRunsQuery(filters)}`);
+      if (isDomainPeelMiss(body)) {
+        setData(null);
+        setError(formatPeelMissMessage(body, "runs list unavailable"));
+        return;
+      }
       setData(body);
     } catch (e) {
-      setError(String((e as Error).message || e));
+      setData(null);
+      setError(formatReadCatchMessage(e, "runs list unavailable"));
     }
   }, [filters]);
 

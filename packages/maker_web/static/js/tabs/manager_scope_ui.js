@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 import { plainManifestApprovalText } from "./chat_discovery_ui.js";
 
 function sessionIdFromUrl() {
@@ -70,6 +71,7 @@ export async function mountManagerScope(root) {
     }
     try {
       const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/scope/pending`);
+      if (toastIfMiss(body, toast, "Scope pending unavailable")) return;
       if (body.scope_approved) {
         renderPending(body.scope_approved);
         if (status) status.textContent = "Manifest already approved.";
@@ -95,6 +97,10 @@ export async function mountManagerScope(root) {
       const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/scope/approve`, {
         method: "POST",
       });
+      if (toastIfMiss(body, toast, "Scope approval unavailable")) {
+        approveBtn.disabled = false;
+        return;
+      }
       renderPending(body.scope_approved || pendingState);
       if (status) status.textContent = "Manifest approved — team can start the run.";
       toast("Manifest approved", "success");

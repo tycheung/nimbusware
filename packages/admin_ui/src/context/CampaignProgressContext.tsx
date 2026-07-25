@@ -1,6 +1,11 @@
 import { createContext, type ComponentChildren } from "preact";
 import { useCallback, useContext, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  isDomainPeelMiss,
+} from "../api/client"; // sak500-d
 
 export type CampaignProgress = {
   state?: string;
@@ -61,14 +66,21 @@ export function CampaignProgressProvider({
   const [error, setError] = useState("");
 
   const reload = useCallback(() => {
-    apiJson<CampaignProgressBody>(`/campaigns/${campaignId}/progress`)
+    apiJson<CampaignProgressBody & { via?: string; error?: string; status?: string }>(
+      `/campaigns/${campaignId}/progress`,
+    )
       .then((raw) => {
+        if (isDomainPeelMiss(raw)) {
+          setBody(null);
+          setError(formatPeelMissMessage(raw, "campaign progress unavailable"));
+          return;
+        }
         setBody(raw);
         setError("");
       })
       .catch((e) => {
         setBody(null);
-        setError(String((e as Error).message || e));
+        setError(formatReadCatchMessage(e, "campaign progress unavailable"));
       });
   }, [campaignId]);
 

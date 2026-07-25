@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-b
 import { maskSecret } from "./models_hub_nav.js";
 
 export async function wireApiConnectionsPanel(root) {
@@ -29,6 +30,7 @@ export async function wireApiConnectionsPanel(root) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (toastIfMiss(res, toast, "Connection save unavailable")) return;
     toast("Connection saved", "success");
     if (res.connection?.connection_id) {
       form.dataset.connectionId = res.connection.connection_id;
@@ -40,6 +42,7 @@ export async function wireApiConnectionsPanel(root) {
     const res = await apiJson(`/platform/provider-connections/${encodeURIComponent(connectionId)}/probe`, {
       method: "POST",
     });
+    if (toastIfMiss(res, toast, "Connection probe unavailable")) return;
     const ok = res.probe?.ok;
     toast(res.probe?.message || (ok ? "Probe OK" : "Probe failed"), ok ? "success" : "error");
     await loadApiConnections();
@@ -99,6 +102,16 @@ export async function wireApiConnectionsPanel(root) {
         apiJson("/platform/provider-presets"),
         apiJson("/platform/provider-connections"),
       ]);
+      if (toastIfMiss(presetsBody, toast, "Provider presets unavailable")) {
+        return;
+      }
+      if (isDomainPeelMiss(connBody)) {
+        toastIfMiss(connBody, toast, "Provider connections unavailable");
+        savedConnections = [];
+        providerPresets = [];
+        renderApiCards();
+        return;
+      }
       providerPresets = (presetsBody.providers || []).filter(
         (p) => p.connection_kind !== "subscription",
       );

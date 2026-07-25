@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-i
 import { setActiveProjectId } from "../session-hub.js";
 
 const GUIDED_STEPS = [
@@ -12,7 +13,18 @@ const GUIDED_STEPS = [
 ];
 
 export async function mountWizard(root) {
-  const state = await apiJson("/platform/onboarding");
+  const state = await apiJson("/platform/onboarding").catch((e) => ({
+    via: "broker_miss",
+    error: String(e.message || e),
+    feature: "onboarding",
+  }));
+  if (isDomainPeelMiss(state)) {
+    root.innerHTML = `<p class="muted" data-testid="maker-wizard-miss">${
+      formatDomainMissMessage(state, "Onboarding unavailable") || "Onboarding unavailable"
+    }</p>`;
+    toastIfMiss(state, toast, "Onboarding unavailable");
+    return;
+  }
   if (state.onboarded) {
     root.innerHTML = "<p>Setup complete. Use Home to manage projects.</p>";
     return;
@@ -63,8 +75,17 @@ export async function mountWizard(root) {
     window.location.hash = "/build";
   });
   root.querySelector("#wizard-done")?.addEventListener("click", async () => {
-    await apiJson("/platform/onboarding", { method: "POST" });
-    toast("Onboarding complete", "success");
-    window.location.hash = "/home";
+    try {
+      const res = await apiJson("/platform/onboarding", { method: "POST" }).catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "onboarding",
+      }));
+      if (toastIfMiss(res, toast, "Onboarding save unavailable")) return;
+      toast("Onboarding complete", "success");
+      window.location.hash = "/home";
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 }

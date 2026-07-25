@@ -1,5 +1,12 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  formatWriteCatchMessage,
+  isDomainPeelMiss,
+  writeMissMessage,
+} from "../api/client"; // sak499-d
 
 type Project = {
   project_id: string;
@@ -13,22 +20,44 @@ export function ProjectsPage() {
   const [msg, setMsg] = useState("");
 
   async function reload() {
-    const body = await apiJson<{ projects: Project[] }>("/projects");
-    setProjects(body.projects || []);
+    try {
+      const body = await apiJson<{ projects: Project[]; via?: string; error?: string; status?: string }>(
+        "/projects",
+      );
+      if (isDomainPeelMiss(body)) {
+        setProjects([]);
+        setMsg(formatPeelMissMessage(body, "projects list unavailable"));
+        return;
+      }
+      setProjects(body.projects || []);
+      setMsg("");
+    } catch (e) {
+      setProjects([]);
+      setMsg(formatReadCatchMessage(e, "projects list unavailable"));
+    }
   }
 
   useEffect(() => {
-    reload().catch((e) => setMsg(String((e as Error).message || e)));
+    void reload();
   }, []);
 
   async function remove(projectId: string) {
+    const fallback = "project delete unavailable";
     if (!confirm(`Delete project ${projectId}?`)) return;
     try {
-      await apiJson(`/projects/${projectId}`, { method: "DELETE" });
+      const body = await apiJson<{ ok?: boolean; via?: string; error?: string; feature?: string }>(
+        `/projects/${projectId}`,
+        { method: "DELETE" },
+      );
+      const miss = writeMissMessage(body, fallback);
+      if (miss) {
+        setMsg(miss);
+        return;
+      }
       setMsg("Deleted");
       await reload();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setMsg(formatWriteCatchMessage(e, fallback));
     }
   }
 

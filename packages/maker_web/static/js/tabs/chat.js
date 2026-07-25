@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { closeInviteModal, unbindSessionStream } from "./chat_collab_ui.js";
 import { CHAT_WORK_TYPES, chatLayoutHtml } from "./chat_shell_html.js";
 import { createChatSessionApi } from "./chat_session_lifecycle.js";
@@ -38,13 +39,28 @@ export async function mountChat(root) {
   mountSoloHatChips(root);
   mountSoloHatCoachHint(root);
 
-  const listing = await apiJson("/projects");
+  const listing = await apiJson("/projects").catch((e) => ({
+    via: "broker_miss",
+    error: String(e.message || e),
+    feature: "projects",
+    projects: [],
+  }));
   const sel = root.querySelector("#chat-project-select");
-  for (const p of listing.projects || []) {
+  if (isDomainPeelMiss(listing)) {
+    toastIfMiss(listing, toast, "Projects unavailable");
     const opt = document.createElement("option");
-    opt.value = p.project_id;
-    opt.textContent = p.name || p.project_id;
+    opt.value = "";
+    opt.textContent =
+      formatDomainMissMessage(listing, "Projects unavailable") || "Projects unavailable";
+    opt.disabled = true;
     sel?.appendChild(opt);
+  } else {
+    for (const p of listing.projects || []) {
+      const opt = document.createElement("option");
+      opt.value = p.project_id;
+      opt.textContent = p.name || p.project_id;
+      sel?.appendChild(opt);
+    }
   }
   const saved = sessionStorage.getItem("maker_active_project_id");
   if (saved && sel) sel.value = saved;
@@ -237,15 +253,16 @@ export async function mountChat(root) {
   if (saved && chatResumeEnabled()) {
     try {
       await sessionApi.ensureSession(saved);
-    } catch {
-      /* fresh session on send */
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
   }
 
   if (hashSessionId) {
     try {
       await sessionApi.loadSession(hashSessionId);
-    } catch {
+    } catch (e) {
+      toast(String(e.message || e), "error");
       sessionApi.setSessionId("");
     }
   }

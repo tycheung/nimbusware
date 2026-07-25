@@ -9738,6 +9738,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     get_factory_evidence_v1_runs__run_id__factory_evidence_get: {
@@ -11456,6 +11486,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     get_context_budget_v1_runs__run_id__context_budget_get: {
@@ -12300,6 +12360,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -13495,6 +13585,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     post_research_approve_v1_runs__run_id__research__brief_id__approve_post: {
@@ -13608,6 +13728,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     post_research_reject_v1_runs__run_id__research__brief_id__reject_post: {
@@ -13718,6 +13868,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -14479,6 +14659,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     get_campaign_backlog_v1_campaigns__campaign_id__backlog_get: {
@@ -14587,6 +14797,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     pause_campaign_v1_campaigns__campaign_id__pause_post: {
@@ -14671,6 +14911,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     resume_campaign_v1_campaigns__campaign_id__resume_post: {
@@ -14748,6 +15018,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -14835,6 +15135,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     get_campaign_progress_v1_campaigns__campaign_id__progress_get: {
@@ -14912,6 +15242,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -16261,6 +16621,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (sak495-d) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     delete_bundle_catalog_entry_v1_bundles_catalog_bundles__bundle_id__delete: {
@@ -17148,6 +17536,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (sak495-d) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29199,6 +29615,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     get_invite_templates_v1_platform_invite_templates_get: {
@@ -29516,6 +29962,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -29918,6 +30394,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_playwright_bootstrap_v1_platform_playwright_bootstrap_get: {
@@ -29996,6 +30500,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_playwright_bootstrap_v1_platform_playwright_bootstrap_post: {
@@ -30048,6 +30580,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31202,6 +31762,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (sak495-d) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     subscription_oauth_authorize_v1_platform_provider_subscriptions__provider_id__oauth_authorize_get: {
@@ -31279,6 +31867,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -31444,6 +32062,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -32553,6 +33201,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_platform_competitive_summary_v1_platform_analytics_competitive_summary_get: {
@@ -32607,6 +33283,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32713,6 +33417,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_platform_chat_turn_analytics_v1_platform_analytics_chat_turns_get: {
@@ -32793,6 +33525,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_platform_bundle_outcomes_v1_platform_analytics_bundle_outcomes_get: {
@@ -32845,6 +33605,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34308,6 +35096,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     iam_me_v1_enterprise_iam_me_get: {
@@ -34386,6 +35202,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     list_tenants_v1_enterprise_tenants_get: {
@@ -34438,6 +35282,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34546,6 +35418,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     create_api_key_v1_enterprise_tenants__tenant_id__api_keys_post: {
@@ -34604,6 +35504,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34764,6 +35692,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak494-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34955,6 +35911,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak494-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     fleet_learnings_search_v1_enterprise_fleet_learnings_search_get: {
@@ -35010,6 +35994,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -35114,6 +36126,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     scraper_artifact_storage_status_v1_enterprise_scraper_artifacts_storage_get: {
@@ -35166,6 +36206,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -35670,6 +36738,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     fleet_analytics_tenant_v1_enterprise_fleet_analytics_tenant__tenant_id__get: {
@@ -35726,6 +36822,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak495-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37339,6 +38463,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     enterprise_audit_export_v1_enterprise_audit_export_get: {
@@ -37392,6 +38544,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37634,6 +38814,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38388,6 +39596,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak496-e`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     enterprise_research_index_v1_enterprise_research_index_get: {
@@ -38442,6 +39678,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak494-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38546,6 +39810,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (`sak494-c`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_maker_app_bootstrap_v1_maker_app_bootstrap_json_get: {
@@ -38598,6 +39890,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (`sak494-c`) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38785,6 +40105,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     findings_table_v1_admin_ui_runs__run_id__findings_table_get: {
@@ -38892,6 +40240,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -39005,6 +40383,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     integration_adapter_writer_run_v1_admin_ui_runs__run_id__integration_adapter_writer_get: {
@@ -39112,6 +40520,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -39225,6 +40663,36 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                };
+            };
         };
     };
     enterprise_fleet_dashboard_v1_admin_ui_enterprise_fleet_dashboard_get: {
@@ -39283,6 +40751,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39814,6 +41310,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     admin_ui_timeline_panels_v1_admin_ui_runs__run_id__timeline_panels_get: {
@@ -39893,6 +41417,36 @@ export interface operations {
                         details?: {
                             [key: string]: unknown;
                         } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /**
+                         * Details
+                         * @default null
+                         */
+                        details: Record<string, never> | null;
                     };
                 };
             };
@@ -40208,6 +41762,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Broker-only peel miss (sak495-d) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     admin_oauth_logout_v1_admin_oauth_logout_post: {
@@ -40258,6 +41840,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Broker-only peel miss (sak495-d) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

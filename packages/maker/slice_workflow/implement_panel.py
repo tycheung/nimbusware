@@ -147,7 +147,7 @@ def complete_slice_after_implement(
         test_output=test_out[:4000],
         test_detail=test_out[:500],
     )
-    orch.maybe_rebuild_memory_index(run_id)
+    orch.maybe_rebuild_memory_index(run_id)  # sak495-a: gated in CreateRunMixin
     return gate
 
 
@@ -188,7 +188,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
         patch_stub_touched = apply_patch_stub_hotfix(ws, plan, rows)
 
     if mode == "agent":
-        from agent_tools.runtime import execute_slice_implement_agent
+        from agent_tools.runtime_facade import execute_slice_implement_agent
 
         impl_result = execute_slice_implement_agent(
             ws,

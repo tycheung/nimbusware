@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatCapacityMissMessage,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  formatWriteCatchMessage,
+  isCapacityMiss,
+  isDomainPeelMiss,
+  peelMissFromFetchError,
+} from "../api/client"; // sak501-a
 
 type HardwareBody = {
   profile?: Record<string, unknown>;
   resource_governor?: Record<string, unknown>;
   models_ranked?: Array<Record<string, unknown>>;
+  capacity_source?: string;
+  fit_via?: string;
+  binding_id?: string;
 };
 
 type PressureEntry = {
@@ -20,6 +32,10 @@ type CatalogInfo = {
   model_count?: number;
   updated_at?: string;
   source?: string;
+  via?: string;
+  capacity_source?: string;
+  error?: string;
+  feature?: string;
 };
 
 export function HardwarePage() {
@@ -38,10 +54,23 @@ export function HardwarePage() {
     ])
       .then(([body, hist, cat]) => {
         setHw(body);
-        setHistory(hist.entries || []);
+        if (isDomainPeelMiss(hist) && !isCapacityMiss(hist)) {
+          setHistory([]);
+          setError(formatPeelMissMessage(hist, "pressure history unavailable"));
+        } else {
+          setHistory(hist.entries || []);
+        }
         setCatalog(cat);
       })
-      .catch((e) => setError(String((e as Error).message || e)));
+      .catch((e) => {
+        const miss = peelMissFromFetchError(e);
+        if (miss && (isCapacityMiss(miss) || isDomainPeelMiss(miss))) {
+          setHw(miss as HardwareBody);
+          setError("");
+          return;
+        }
+        setError(formatReadCatchMessage(e, "hardware unavailable"));
+      });
   }, []);
 
   useEffect(() => {
@@ -49,7 +78,9 @@ export function HardwarePage() {
   }, [load]);
 
   async function rescan() {
+    const fallback = "hardware rescan unavailable";
     setBusy(true);
+    setError("");
     try {
       const body = await apiJson<HardwareBody>("/platform/hardware/rescan", {
         method: "POST",
@@ -64,7 +95,7 @@ export function HardwarePage() {
       const cat = await apiJson<CatalogInfo>("/platform/models/catalog-info");
       setCatalog(cat);
     } catch (e) {
-      setError(String((e as Error).message || e));
+      setError(formatWriteCatchMessage(e, fallback));
     } finally {
       setBusy(false);
     }
@@ -72,6 +103,8 @@ export function HardwarePage() {
 
   const profile = hw?.profile || {};
   const gov = hw?.resource_governor || {};
+  const peelMiss = isCapacityMiss(hw) || isDomainPeelMiss(hw);
+  const catalogMiss = isCapacityMiss(catalog) || isDomainPeelMiss(catalog);
 
   return (
     <section>
@@ -80,7 +113,23 @@ export function HardwarePage() {
         Cached hardware profile, resource governor limits, and recent pressure events from the
         event store.
       </p>
-      {error ? <p class="error">{error}</p> : null}
+      {error ? (
+        <p class="error" data-testid="admin-hw-error" role="alert">
+          {error.includes("CAPACITY") || error.toLowerCase().includes("broker")
+            ? `Capacity peel miss: ${error}`
+            : error}
+        </p>
+      ) : null}
+      {peelMiss ? (
+        <p class="error" data-testid="admin-hw-peel-miss" role="alert">
+          {isCapacityMiss(hw) ? formatCapacityMissMessage(hw) : formatPeelMissMessage(hw)}
+        </p>
+      ) : null}
+      {catalogMiss ? (
+        <p class="error" data-testid="admin-hw-catalog-miss" role="alert">
+          Catalog peel miss: {formatPeelMissMessage(catalog, "broker_miss")}
+        </p>
+      ) : null}
       <p>
         <button type="button" onClick={rescan} disabled={busy}>
           {busy ? "Rescanning…" : "Rescan hardware"}
@@ -117,6 +166,16 @@ export function HardwarePage() {
             <tr>
               <td>Ranked models</td>
               <td>{String(hw.models_ranked?.length ?? 0)}</td>
+            </tr>
+            <tr>
+              <td>Capacity source</td>
+              <td data-testid="admin-hw-capacity-source">
+                {String(hw.capacity_source ?? "—")}
+              </td>
+            </tr>
+            <tr>
+              <td>Fit via</td>
+              <td data-testid="admin-hw-fit-via">{String(hw.fit_via ?? "—")}</td>
             </tr>
           </tbody>
         </table>

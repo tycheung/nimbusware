@@ -1,4 +1,5 @@
-import { apiJson } from "../api-client.js";
+import { apiJson, toast } from "../api-client.js";
+import { toastIfMiss } from "../broker_miss.js";
 import { mountCollabModelDrawerTrigger } from "./chat_model_drawer_ui.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
 import { closeInviteModal, openInviteModal } from "./chat_invite_modal_ui.js";
@@ -66,10 +67,11 @@ export function mountCommentaryComposer(root, sessionId, onTurn) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
+      if (toastIfMiss(body, toast, "Commentary unavailable")) return;
       input.value = "";
       onTurn?.(body.turn);
     } catch (e) {
-      console.error(e);
+      toast(String(e.message || e), "error");
     }
   };
 }
@@ -79,6 +81,9 @@ export function bindSessionStream(root, sessionId, { onSession } = {}) {
   sessionStreamHandle = null;
   if (!sessionId) return null;
   sessionStreamHandle = openSseStream(`/chat/sessions/${encodeURIComponent(sessionId)}/stream`, {
+    brokerBacked: true,
+    feature: "chat_session_stream",
+    terminalFailureMessage: "Chat session stream unavailable",
     onEvent: {
       session: (ev) => {
         const data = parseSseJson(ev);

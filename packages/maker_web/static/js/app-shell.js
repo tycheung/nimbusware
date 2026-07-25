@@ -1,4 +1,5 @@
-import { apiJson, getBootstrap } from "./api-client.js";
+import { apiJson, getBootstrap, toast } from "./api-client.js";
+import { toastIfMiss } from "./broker_miss.js";
 import {
   getActiveProjectId,
   hydrateActiveRun,
@@ -6,10 +7,10 @@ import {
   setActiveRun,
   syncRunIdToShell,
 } from "./session-hub.js";
-import { loadRoute } from "./tab-loader.js";
+import { loadRoute, handleRouteLoadError } from "./tab-loader.js";
 
 function loadRouteOnInit() {
-  loadRoute(parseRoute()).catch(console.error);
+  loadRoute(parseRoute()).catch(handleRouteLoadError);
 }
 
 const ALL_TABS = [
@@ -115,11 +116,12 @@ export async function maybeRegisterPushSubscription() {
       "";
     const payload = subscription.toJSON();
     if (runId) payload.run_id = runId;
-    await apiJson("/maker/push-subscriptions", {
+    const body = await apiJson("/maker/push-subscriptions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (toastIfMiss(body, toast, "Push subscription unavailable")) return false;
     return true;
   } catch {
     return false;
@@ -169,7 +171,9 @@ function makerShellFactory() {
       applyQueryToRunId();
       persistRunIdFromUrl();
       wireRunIdSync();
-      hydrateActiveRun(apiJson).catch(() => {});
+      hydrateActiveRun(apiJson).catch((e) => {
+        toast(String(e.message || e), "error");
+      });
       const b = getBootstrap();
       this.quickModeActive = Boolean(b.quick_mode);
       this.quickBannerDismissed =

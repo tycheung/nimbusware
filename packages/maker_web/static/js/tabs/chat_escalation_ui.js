@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak499-a
 import { queueInterjection } from "../interjection-ribbon.js";
 import { renderTurnLine } from "./chat_session_ui.js";
 import { switchWorkType } from "./chat_work_type.js";
@@ -12,6 +13,10 @@ async function maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartR
   if (!runId) return;
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
+    if (isDomainPeelMiss(timeline)) {
+      toastIfMiss(timeline, toast, "Run escalation unavailable");
+      return;
+    }
     const events = timeline.events || [];
     let sliceRun = false;
     let gateFail = false;
@@ -54,13 +59,19 @@ async function maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartR
     });
     li.appendChild(btn);
     thread.appendChild(li);
-  } catch {}
+  } catch (e) {
+    toast(String(e.message || e), "error");
+  }
 }
 
 async function maybeOfferPatchEscalation(root, runId, sessionId) {
   if (!runId) return;
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
+    if (isDomainPeelMiss(timeline)) {
+      toastIfMiss(timeline, toast, "Run escalation unavailable");
+      return;
+    }
     const events = timeline.events || [];
     let patchRun = false;
     let patchFailed = false;
@@ -95,7 +106,9 @@ async function maybeOfferPatchEscalation(root, runId, sessionId) {
     });
     li.appendChild(btn);
     thread.appendChild(li);
-  } catch {}
+  } catch (e) {
+    toast(String(e.message || e), "error");
+  }
 }
 
 async function steerActiveRun(root, runId, message) {

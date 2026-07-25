@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { formatDomainMissMessage, isDomainPeelMiss, toastIfMiss } from "../broker_miss.js"; // sak498-f
 import { setActiveProjectId } from "../session-hub.js";
 import { mountSafeCodingReadinessRibbon, mountSafeCodingWizard } from "../safe-coding-wizard.js";
 import { isSafeCodingUx } from "../safe-coding-ux.js";
@@ -113,20 +114,23 @@ export async function mountHome(root) {
 
   try {
     const readiness = await apiJson("/platform/readiness");
+    toastIfMiss(readiness, toast, "Platform readiness unavailable");
     renderReadiness(root.querySelector("#readiness-mount"), readiness);
-    const safePanel = root.querySelector("#safe-coding-panel");
-    const enterprisePanel = root.querySelector("#enterprise-home-panel");
-    const factorySection = root.querySelector("#factory-hero-section");
-    if (readiness.setup_bundle === "enterprise") {
-      if (enterprisePanel) enterprisePanel.hidden = false;
-      void mountEnterpriseGovernancePanel(root);
-      if (factorySection) factorySection.hidden = true;
-      if (safePanel) safePanel.hidden = true;
-    } else if (safePanel && readiness.setup_bundle === "default") {
-      safePanel.hidden = false;
-      if (isSafeCodingUx()) {
-        await mountSafeCodingWizard(root);
-        await mountSafeCodingReadinessRibbon(root);
+    if (!isDomainPeelMiss(readiness)) {
+      const safePanel = root.querySelector("#safe-coding-panel");
+      const enterprisePanel = root.querySelector("#enterprise-home-panel");
+      const factorySection = root.querySelector("#factory-hero-section");
+      if (readiness.setup_bundle === "enterprise") {
+        if (enterprisePanel) enterprisePanel.hidden = false;
+        void mountEnterpriseGovernancePanel(root);
+        if (factorySection) factorySection.hidden = true;
+        if (safePanel) safePanel.hidden = true;
+      } else if (safePanel && readiness.setup_bundle === "default") {
+        safePanel.hidden = false;
+        if (isSafeCodingUx()) {
+          await mountSafeCodingWizard(root);
+          await mountSafeCodingReadinessRibbon(root);
+        }
       }
     }
   } catch (e) {
@@ -134,10 +138,25 @@ export async function mountHome(root) {
   }
 
   async function refresh() {
-    const listing = await apiJson("/projects");
     const list = root.querySelector("#project-list");
     if (!list) return;
     list.replaceChildren();
+    const listing = await apiJson("/projects").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "projects",
+      projects: [],
+    }));
+    if (isDomainPeelMiss(listing)) {
+      toastIfMiss(listing, toast, "Projects unavailable");
+      const li = document.createElement("li");
+      li.className = "muted";
+      li.dataset.testid = "maker-home-projects-miss";
+      li.textContent =
+        formatDomainMissMessage(listing, "Projects unavailable") || "Projects unavailable";
+      list.appendChild(li);
+      return;
+    }
     for (const p of listing.projects || []) {
       const li = document.createElement("li");
       li.textContent = `${p.name || p.project_id} — ${p.workspace_path || ""}`;
@@ -156,31 +175,52 @@ export async function mountHome(root) {
   root.querySelector("#project-form")?.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const fd = new FormData(ev.target);
-    await apiJson("/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: fd.get("name"),
-        workspace_path: fd.get("workspace_path"),
-      }),
-    });
-    toast("Project created", "success");
-    await refresh();
+    try {
+      const res = await apiJson("/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fd.get("name"),
+          workspace_path: fd.get("workspace_path"),
+        }),
+      });
+      if (toastIfMiss(res, toast, "Project create unavailable")) return;
+      toast("Project created", "success");
+      await refresh();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 
   const factoryCards = root.querySelector("#factory-demo-cards");
   let factoryWeekly = null;
   try {
-    const summary = await apiJson("/platform/analytics/competitive-summary");
-    factoryWeekly = summary?.metrics?.factory_weekly || summary?.factory_weekly || null;
-    const caption = root.querySelector("#factory-hero-caption");
-    if (caption && factoryWeekly?.pass_rate != null) {
-      const pct = Math.round(Number(factoryWeekly.pass_rate) * 100);
-      const when = factoryWeekly.published_at ? ` (${String(factoryWeekly.published_at).slice(0, 10)})` : "";
-      caption.textContent = `Weekly factory soak: ${pct}% pass rate${when}. Pick a catalog demo or start a custom prompt.`;
+    const summary = await apiJson("/platform/analytics/competitive-summary").catch((e) => ({
+      via: "broker_miss",
+      error: String(e.message || e),
+      feature: "factory_analytics",
+    }));
+    if (isDomainPeelMiss(summary)) {
+      toastIfMiss(summary, toast, "Factory analytics unavailable");
+      const caption = root.querySelector("#factory-hero-caption");
+      if (caption) {
+        caption.textContent =
+          formatDomainMissMessage(summary, "Factory analytics unavailable") ||
+          "Factory analytics unavailable";
+      }
+    } else {
+      factoryWeekly = summary?.metrics?.factory_weekly || summary?.factory_weekly || null;
+      const caption = root.querySelector("#factory-hero-caption");
+      if (caption && factoryWeekly?.pass_rate != null) {
+        const pct = Math.round(Number(factoryWeekly.pass_rate) * 100);
+        const when = factoryWeekly.published_at
+          ? ` (${String(factoryWeekly.published_at).slice(0, 10)})`
+          : "";
+        caption.textContent = `Weekly factory soak: ${pct}% pass rate${when}. Pick a catalog demo or start a custom prompt.`;
+      }
     }
-  } catch {
-    /* metrics optional when store empty */
+  } catch (e) {
+    toast(String(e.message || e), "error");
   }
 
   const catalogIds = new Set(

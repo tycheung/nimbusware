@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { apiJson, formatPeelMissMessage, formatReadCatchMessage, isDomainPeelMiss } from "../api/client"; // sak499-d
 
 type Entry = { run_id: string; preflight?: Record<string, unknown> | null };
 
@@ -8,9 +8,21 @@ export function PreflightPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiJson<{ entries?: Entry[] }>("/preflight-history?limit=20")
-      .then((b) => setEntries(b.entries || []))
-      .catch((e) => setError(String((e as Error).message || e)));
+    apiJson<{ entries?: Entry[]; via?: string; error?: string; status?: string }>(
+      "/preflight-history?limit=20",
+    )
+      .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setEntries([]);
+          setError(formatPeelMissMessage(body, "preflight history unavailable"));
+          return;
+        }
+        setEntries(body.entries || []);
+      })
+      .catch((e) => {
+        setEntries([]);
+        setError(formatReadCatchMessage(e, "preflight history unavailable"));
+      });
   }, []);
 
   return (

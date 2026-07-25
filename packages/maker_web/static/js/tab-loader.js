@@ -8,7 +8,8 @@ import { mountProgress, unmountProgress } from "./tabs/progress.js";
 import { mountModels } from "./tabs/models.js";
 import { mountSettings } from "./tabs/settings.js";
 import { mountWizard } from "./tabs/wizard.js";
-import { apiJson } from "./api-client.js";
+import { apiJson, toast } from "./api-client.js";
+import { isDomainPeelMiss, toastIfMiss } from "./broker_miss.js"; // sak499-b
 
 import { mountManagerScope } from "./tabs/manager_scope_ui.js";
 
@@ -27,6 +28,11 @@ const MOUNTERS = {
 
 let lastRoute = "";
 
+export function handleRouteLoadError(e) {
+  if (String(e?.message || e) === "broker_miss") return;
+  toast(String(e?.message || e), "error");
+}
+
 export async function loadRoute(route) {
   if (lastRoute === "/progress" && route !== "/progress") {
     unmountProgress();
@@ -41,8 +47,14 @@ export async function loadRoute(route) {
 
   if (route === "/home") {
     try {
-      const ob = await apiJson("/platform/onboarding");
-      if (!ob.onboarded) {
+      const ob = await apiJson("/platform/onboarding").catch((e) => ({
+        via: "broker_miss",
+        error: String(e.message || e),
+        feature: "onboarding",
+      }));
+      if (isDomainPeelMiss(ob)) {
+        toastIfMiss(ob, toast, "Onboarding unavailable");
+      } else if (!ob.onboarded) {
         const w = document.getElementById("home-mount");
         if (w) await mountWizard(w);
         return;
@@ -60,5 +72,5 @@ export async function loadRoute(route) {
 }
 
 window.addEventListener("maker-route", (ev) => {
-  loadRoute(ev.detail?.route || "/chat").catch(console.error);
+  loadRoute(ev.detail?.route || "/chat").catch(handleRouteLoadError);
 });

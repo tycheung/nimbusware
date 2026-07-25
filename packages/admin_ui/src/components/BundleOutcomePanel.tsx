@@ -1,5 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import {
+  apiJson,
+  formatPeelMissMessage,
+  formatReadCatchMessage,
+  isDomainPeelMiss,
+} from "../api/client"; // sak500-d
 
 type OutcomeRow = {
   bundle_id: string;
@@ -21,14 +26,29 @@ export function BundleOutcomePanel() {
       available?: boolean;
       caption?: string;
       rows?: OutcomeRow[];
+      via?: string;
+      error?: string;
+      status?: string;
     }>("/platform/analytics/bundle-outcomes")
       .then((body) => {
+        if (isDomainPeelMiss(body)) {
+          setAvailable(false);
+          setCaption("");
+          setRows([]);
+          setError(formatPeelMissMessage(body, "bundle outcomes unavailable"));
+          return;
+        }
         setAvailable(Boolean(body.available));
         setCaption(body.caption || "");
         setRows(body.rows || []);
         setError("");
       })
-      .catch((e) => setError(String((e as Error).message || e)));
+      .catch((e) => {
+        setAvailable(false);
+        setCaption("");
+        setRows([]);
+        setError(formatReadCatchMessage(e, "bundle outcomes unavailable"));
+      });
   }, []);
 
   if (error) return <p class="error">{error}</p>;
