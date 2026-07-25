@@ -87,7 +87,25 @@ def _ready_slices(
                             slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
                         ),
                     )
-    return ready
+    if ready:
+        return ready
+
+    # No pending work: retry failed slices whose deps are already passed so the
+    # campaign can re-enter implement/verify instead of stalling the chain.
+    retries: list[SelectedSlice] = []
+    for epic in backlog.epics:
+        for feature in epic.features:
+            for sl in feature.slices:
+                if sl.status != SliceStatus.FAILED:
+                    continue
+                deps = graph.get(sl.slice_id, ())
+                if all(dep in passed for dep in deps):
+                    retries.append(
+                        SelectedSlice(
+                            slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
+                        ),
+                    )
+    return retries
 
 
 def _pick_round_robin_batch(

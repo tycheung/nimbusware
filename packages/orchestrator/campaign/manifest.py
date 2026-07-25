@@ -35,12 +35,29 @@ def validate_manifest_backlog(
 
 
 def manifest_template_id(requirements: dict[str, Any] | None) -> str | None:
+    """Pick a heuristic template from stack surfaces, preferring prompt domain keywords.
+
+    api+web used to always map to ``fullstack_todo``, which ignored CRM/contact prompts
+    once ``recommend_for_me`` froze a fullstack stack_manifest.
+    """
+    from orchestrator.campaign.heuristic_templates import match_template_id
+
     manifest = manifest_from_requirements(requirements)
     if manifest is None:
         return None
     surfaces = list(manifest.surfaces)
+    prompt = ""
+    if isinstance(requirements, dict):
+        prompt = str(
+            requirements.get("business_prompt") or requirements.get("prompt") or ""
+        ).strip()
+    domain = match_template_id(prompt) if prompt else "generic"
     if "web" in surfaces and "api" in surfaces:
+        if domain in {"crm", "contacts_api"}:
+            return "fullstack_crm"
         return "fullstack_todo"
     if surfaces == ["api"] or surfaces == ("api",):
+        if domain in {"crm", "contacts_api", "todo_api", "auth_app"}:
+            return domain
         return "todo_api"
     return None

@@ -49,3 +49,55 @@ def test_campaign_driver_tick_generates_backlog() -> None:
     assert has_backlog_event(rows) is True
     assert "slice.queued" in [r.get("event_type") for r in rows]
     assert result.slices_completed >= 0
+
+
+def test_select_next_slice_retries_failed_head_when_chain_blocked() -> None:
+    from agent_core.models.backlog import (
+        BacklogEpic,
+        BacklogFeature,
+        BacklogMetadata,
+        BacklogSlice,
+        DeliveryBacklog,
+        EpicStatus,
+        SliceStatus,
+        sync_backlog_metadata,
+    )
+
+    backlog = sync_backlog_metadata(
+        DeliveryBacklog(
+            campaign_id="00000000-0000-4000-8000-000000000099",
+            metadata=BacklogMetadata(total_slices_planned=2, slices_completed=0),
+            epics=(
+                BacklogEpic(
+                    epic_id="epic-1",
+                    title="Demo",
+                    status=EpicStatus.IN_PROGRESS,
+                    features=(
+                        BacklogFeature(
+                            feature_id="feat-1",
+                            title="Demo feature",
+                            acceptance_criteria=("ok",),
+                            slices=(
+                                BacklogSlice(
+                                    slice_id="slice-failed",
+                                    status=SliceStatus.FAILED,
+                                    rationale="head failed",
+                                    target_paths=("app.py",),
+                                ),
+                                BacklogSlice(
+                                    slice_id="slice-pending",
+                                    status=SliceStatus.PENDING,
+                                    rationale="blocked",
+                                    target_paths=("app.py",),
+                                    depends_on=("slice-failed",),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
+    )
+    selected = select_next_slice(backlog)
+    assert selected is not None
+    assert selected.slice.slice_id == "slice-failed"

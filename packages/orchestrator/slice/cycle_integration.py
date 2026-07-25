@@ -116,7 +116,10 @@ def maybe_run_repo_explore_slice_stage(
         return False
     explore = run_repo_explore(workspace)
     emit_repo_explore(store, run_id, explore)
-    if not explore.findings:
+    # Greenfield / empty workspaces always report sparse_graph; do not inject a
+    # failing explore-* slice that deadlocks the campaign dependency chain.
+    actionable = [f for f in explore.findings if f.kind != "sparse_graph"]
+    if not actionable:
         return True
     from agent_core.models.backlog import BacklogSlice
     from orchestrator.campaign.generator import backlog_from_events, emit_backlog_revised
@@ -125,7 +128,7 @@ def maybe_run_repo_explore_slice_stage(
     backlog = backlog_from_events(rows)
     if backlog is None:
         return True
-    finding = explore.findings[0]
+    finding = actionable[0]
     target = (finding.path,) if finding.path else ("packages/",)
     fix = BacklogSlice(
         slice_id=f"explore-{slice_index}",

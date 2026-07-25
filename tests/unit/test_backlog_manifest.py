@@ -22,6 +22,29 @@ def test_manifest_template_id_fullstack() -> None:
     assert manifest_template_id(_fullstack_requirements()) == "fullstack_todo"
 
 
+def test_manifest_template_id_fullstack_crm_from_prompt() -> None:
+    req = {
+        "business_prompt": (
+            "Build a basic CRM that tracks users birthday dates and "
+            "sends birthday emails"
+        ),
+        "stack_manifest": {
+            "surfaces": ["api", "web"],
+            "stacks": {"api": "fastapi_python", "web": "react_vite"},
+            "confirmed": True,
+        },
+    }
+    assert manifest_template_id(req) == "fullstack_crm"
+    backlog = generate_heuristic_backlog("run-crm", requirements=req, max_slices=20)
+    titles = [
+        feature.title
+        for epic in backlog.epics
+        for feature in epic.features
+    ]
+    assert any("CRM" in t or "birthday" in t.lower() for t in titles)
+    assert not any("todo" in t.lower() for t in titles)
+
+
 def test_generate_heuristic_backlog_uses_fullstack_template() -> None:
     backlog = generate_heuristic_backlog(
         "run-fs", requirements=_fullstack_requirements(), max_slices=20
