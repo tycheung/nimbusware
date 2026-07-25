@@ -26,7 +26,7 @@ def path_in_plan(rel: str, allowed: set[str]) -> bool:
 
 
 def resolve_workspace_file(workspace: Path, rel: str) -> Path:
-    from agent_tools.filesystem_jail import assert_rel_allowed
+    from agent_tools.jail_facade import assert_rel_allowed
 
     assert_rel_allowed(rel)
     ws = workspace.resolve()
