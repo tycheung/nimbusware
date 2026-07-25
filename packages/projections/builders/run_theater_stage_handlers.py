@@ -280,6 +280,23 @@ def append_stage_passed_messages(
                 "data_testid": "theater-improvement-council",
             },
         )
+    elif sn.startswith("evolution."):
+        block = row_meta.get("evolution") if isinstance(row_meta.get("evolution"), dict) else {}
+        layer = str(block.get("layer") or "")
+        aid = str(block.get("artifact_id") or "")
+        phase = sn.rsplit(".", 1)[-1]
+        severity = "pass" if phase == "promoted" else ("warn" if phase == "rejected" else "info")
+        messages.append(
+            {
+                **base,
+                "actor_display": "Evolution",
+                "message_kind": "system",
+                "severity": severity,
+                "headline": f"Evolution {phase}" + (f" ({layer})" if layer else ""),
+                "body_md": aid or None,
+                "data_testid": f"theater-evolution-{phase}",
+            },
+        )
     elif sn in SLICE_STAGE_NAMES:
         slice_id = str(row_meta.get("slice_id") or "")
         messages.append(

@@ -14,6 +14,7 @@ from api.routes.runs.create import router as create_router
 from api.routes.runs.detail import router as detail_router
 from api.routes.runs.dev_env import router as dev_env_router
 from api.routes.runs.enforcement import router as enforcement_router
+from api.routes.runs.evolution import router as evolution_router
 from api.routes.runs.factory_evidence import router as factory_evidence_router
 from api.routes.runs.interjection import router as interjection_router
 from api.routes.runs.learnings import router as learnings_router
@@ -56,6 +57,7 @@ RUNS_SUB_ROUTER_NAMES: tuple[str, ...] = (
     "autopilot_router",
     "enforcement_router",
     "learnings_router",
+    "evolution_router",
     "context_budget_router",
     "compact_router",
     "compactions_router",
