@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Field, ValidationError
 
 from agent_core.models import EventType
 from agent_core.models.backlog import DeliveryBacklog, sync_backlog_metadata
@@ -20,6 +23,83 @@ from agent_core.read.campaign import (
     has_backlog_event,
 )
 from orchestrator.campaign.heuristic import generate_heuristic_backlog
+from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+
+_BACKLOG_BROKER_MISS = (
+    "broker_miss: backlog_generator: LLM unavailable under NIMBUSWARE_BROKER_LLM=1|2"
+)
+
+
+class _LlmBacklogResponse(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    backlog: dict[str, Any] = Field(default_factory=dict)
+
+
+def _build_llm_backlog_prompt(
+    *,
+    requirements: dict[str, Any] | None,
+    max_slices: int,
+    repo_context: str,
+) -> str:
+    prompt_text = ""
+    if isinstance(requirements, dict):
+        prompt_text = str(requirements.get("business_prompt") or "")
+    parts = [
+        f"Business requirements:\n{prompt_text or '(none)'}",
+        f"Max slices: {max_slices}",
+        'Return JSON: {"backlog": { ... DeliveryBacklog shape ... }}',
+    ]
+    if repo_context.strip():
+        parts.append(f"Repo map:\n{repo_context[:4000]}")
+    return "\n\n".join(parts)
+
+
+def _generate_llm_backlog_via_chat(
+    *,
+    campaign_id: str,
+    requirements: dict[str, Any] | None,
+    base_url: str,
+    model_id: str,
+    max_slices: int,
+    repo_context: str = "",
+    timeout_seconds: float = 120.0,
+) -> DeliveryBacklog | None:
+    try:
+        raw = ollama_chat_json_via_plan_patch(
+            base_url=base_url,
+            model=model_id,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You produce a JSON delivery backlog with epics, features, and "
+                        "micro-slices. Each slice must have slice_id, target_paths, depends_on, "
+                        "estimated_loc, rationale. Keep slices small (<=3 files, <=120 LOC)."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": _build_llm_backlog_prompt(
+                        requirements=requirements,
+                        max_slices=max_slices,
+                        repo_context=repo_context,
+                    ),
+                },
+            ],
+            timeout_seconds=timeout_seconds,
+            agent_role="planner",
+            peel_strict=True,  # sak497-c
+        )
+        parsed = _LlmBacklogResponse.model_validate(raw)
+        body = dict(parsed.backlog)
+        body["campaign_id"] = campaign_id
+        return DeliveryBacklog.model_validate(body)
+    except RuntimeError:
+        raise
+    except (ValidationError, TypeError, ValueError, json.JSONDecodeError, OSError):
+        return None
+
 
 __all__ = [
     "apply_slice_outcomes",
@@ -134,7 +214,7 @@ def _generate_backlog_for_run(
             model = resolve_str("NIMBUSWARE_BACKLOG_GENERATOR_MODEL", default="")
             base_url = nimbusware_ollama_base_url()
             if model.strip():
-                from orchestrator.llm.backlog_generator import generate_llm_backlog
+                from broker_client.flags import broker_llm_enabled
 
                 repo_context = ""
                 if repo_root is not None:
@@ -148,22 +228,28 @@ def _generate_backlog_for_run(
                         )
                     except (ImportError, OSError, TypeError, ValueError):
                         repo_context = ""
-                llm_backlog = generate_llm_backlog(
-                    campaign_id=str(run_id),
-                    requirements=requirements,
-                    base_url=base_url,
-                    model_id=model.strip(),
-                    max_slices=max_slices,
-                    repo_context=repo_context,
-                )
-                if llm_backlog is not None:
-                    errors = validate_backlog(
-                        llm_backlog,
-                        max_slices=max_slices,
+                try:
+                    llm_backlog = _generate_llm_backlog_via_chat(
+                        campaign_id=str(run_id),
                         requirements=requirements,
+                        base_url=base_url,
+                        model_id=model.strip(),
+                        max_slices=max_slices,
+                        repo_context=repo_context,
                     )
-                    if not errors:
-                        return sync_backlog_metadata(llm_backlog)
+                    if llm_backlog is not None:
+                        errors = validate_backlog(
+                            llm_backlog,
+                            max_slices=max_slices,
+                            requirements=requirements,
+                        )
+                        if not errors:
+                            return sync_backlog_metadata(llm_backlog)
+                    if broker_llm_enabled():  # sak497-c: no heuristic fallback under peel
+                        raise RuntimeError(_BACKLOG_BROKER_MISS)
+                except RuntimeError:
+                    if broker_llm_enabled():  # sak497-c
+                        raise
     return generate_heuristic_backlog(
         str(run_id),
         requirements=requirements,

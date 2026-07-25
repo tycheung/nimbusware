@@ -19,7 +19,7 @@ from agent_core.models import (
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
-from orchestrator.llm.common import append_gate_decision_event
+from orchestrator.llm.gate_helpers import append_gate_decision_event
 from orchestrator.refactor_proposal import (
     build_refactor_proposal,
     estimate_loc_delta_from_patch,
@@ -101,7 +101,7 @@ def emit_refactor_stage_and_critique(
                     nimbusware_ollama_base_url,
                     nimbusware_use_llm_enabled,
                 )
-                from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+                from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
                 from orchestrator.refactor_proposal import build_refactor_patch_artifact
 
                 if nimbusware_use_llm_enabled():
@@ -128,6 +128,7 @@ def emit_refactor_stage_and_critique(
                             },
                         ],
                         agent_role="refactorer",
+                        peel_strict=True,  # sak492-d
                     )
                     if payload.get("summary"):
                         llm_summary = str(payload.get("summary"))[:500]
@@ -154,7 +155,18 @@ def emit_refactor_stage_and_critique(
                             proposal_meta,
                             workspace,
                         )
+            except RuntimeError as exc:
+                from broker_client.flags import broker_llm_enabled
+
+                # sak493-e / sak495-h: under LLM peel, no code_intel soft fallback on LLM failure.
+                if broker_llm_enabled():
+                    raise
+                refactor_mode = "code_intel_proposal"
             except Exception:
+                from broker_client.flags import broker_llm_enabled
+
+                if broker_llm_enabled():  # sak495-h
+                    raise
                 refactor_mode = "code_intel_proposal"
     refactor_meta: dict[str, Any] = {
         "stub_only": block.stub_only,

@@ -134,7 +134,11 @@ class MicroSliceMixin:
         memory_settings = memory_settings_from_run_metadata(run_meta)
         actor_id = actor_user_id_from_run_metadata(run_meta)
         retrieval_policy = participant_memory_policy(run_meta, actor_id)
-        if run_memory_retrieval_enabled(run_meta) and self._memory_chunk_store is not None:
+        from broker_client.flags import broker_memory_enabled
+
+        if run_memory_retrieval_enabled(run_meta) and (
+            broker_memory_enabled() or self._memory_chunk_store is not None
+        ):
             memory_excerpt, memory_hits, memory_scope = retrieve_memory_excerpt_for_slice(
                 self._memory_chunk_store,
                 p,
@@ -180,30 +184,31 @@ class MicroSliceMixin:
             from orchestrator.workflow.memory import memory_chunk_ids_from_hits
 
             meta["memory_chunk_ids"] = memory_chunk_ids_from_hits(memory_hits)
-            from memory.index.audit import append_memory_retrieval_emitted_event
+            if not broker_memory_enabled():  # sak495-b: peel_index audit only when local
+                from memory.peel_index.audit import append_memory_retrieval_emitted_event
 
-            chunk_store = self._memory_chunk_store
-            assert chunk_store is not None
-            append_memory_retrieval_emitted_event(
-                self._store,
-                run_id=run_id,
-                stage_name="slice.gate",
-                slice_id=p.slice_id,
-                query_digest=query_digest(
-                    " ".join(
-                        [p.slice_id, p.rationale, *p.target_paths],
-                    ).strip()
-                    or "failure fix gate security",
-                ),
-                hits=memory_hits,
-                excerpt=memory_excerpt,
-                retrieval_k=memory_settings.retrieval_k,
-                repo_scope_hash=memory_scope,
-                generation_id=pinned_generation_for_scope(
-                    chunk_store,
-                    repo_root=self._repo_root,
-                ),
-            )
+                chunk_store = self._memory_chunk_store
+                assert chunk_store is not None
+                append_memory_retrieval_emitted_event(
+                    self._store,
+                    run_id=run_id,
+                    stage_name="slice.gate",
+                    slice_id=p.slice_id,
+                    query_digest=query_digest(
+                        " ".join(
+                            [p.slice_id, p.rationale, *p.target_paths],
+                        ).strip()
+                        or "failure fix gate security",
+                    ),
+                    hits=memory_hits,
+                    excerpt=memory_excerpt,
+                    retrieval_k=memory_settings.retrieval_k,
+                    repo_scope_hash=memory_scope,
+                    generation_id=pinned_generation_for_scope(
+                        chunk_store,
+                        repo_root=self._repo_root,
+                    ),
+                )
         self._store.append(
             StageStartedEvent(
                 event_type=EventType.STAGE_STARTED,

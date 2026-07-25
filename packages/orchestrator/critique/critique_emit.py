@@ -17,7 +17,7 @@ from agent_core.models import (
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
-from orchestrator.llm.common import append_gate_decision_event
+from orchestrator.llm.gate_helpers import append_gate_decision_event
 from orchestrator.registry import RoleRegistry
 from orchestrator.workflow.scan_critique import (
     ScanCritiqueBlock,

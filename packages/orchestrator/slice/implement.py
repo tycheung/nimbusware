@@ -82,7 +82,7 @@ def execute_slice_implement(
         )
 
     if mode == "agent":
-        from agent_tools.runtime import execute_slice_implement_agent
+        from agent_tools.runtime_facade import execute_slice_implement_agent
 
         return execute_slice_implement_agent(
             workspace,
@@ -96,7 +96,7 @@ def execute_slice_implement(
         )
 
     if mode == "llm" and llm_base_url and llm_model_id:
-        from orchestrator.llm.llm_slice import execute_slice_implement_llm
+        from orchestrator.llm.slice_facade import execute_slice_implement_llm
         from orchestrator.slice.patch_apply import apply_slice_file_edits
         from orchestrator.stack.catalog import load_stack_catalog
 

@@ -26,7 +26,7 @@ from orchestrator.critique.routing import (
     taxonomy_keys_for_run_lifecycle,
 )
 from orchestrator.critique.security_scan import run_security_scan, security_scan_tool_summary
-from orchestrator.llm import (
+from orchestrator.llm import (  # sak497-b: plan_stage via chat_facade peel_strict
     emit_stub_frontend_writer_critique_panel,
     emit_stub_implementation_critique_panel,
     emit_stub_module_integrator_critique_panel,

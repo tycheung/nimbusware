@@ -21,10 +21,9 @@ from agent_core.models import (
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
-from orchestrator.llm.common import (
-    append_gate_decision_event,
-    ollama_chat_json_via_plan_patch,
-)
+from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
+from orchestrator.llm.gate_helpers import append_gate_decision_event
 from orchestrator.registry import RoleRegistry
 from store.protocol import EventStore
 
@@ -66,8 +65,18 @@ def execute_persona_rules_critique_llm(
             ],
             timeout_seconds=timeout_seconds,
             agent_role="security_critic",
+            peel_strict=True,  # sak493-d
         )
         parsed = response_model.model_validate(raw)
+    except RuntimeError as exc:
+        from broker_client.flags import broker_llm_enabled
+
+        # sak493-d / sak499-e: peel raises; off-peel only broker_miss/transport soft-return.
+        if broker_llm_enabled():
+            raise
+        if _llm_broker_miss_or_transport(exc):
+            return False
+        raise
     except (
         httpx.HTTPError,
         ValueError,

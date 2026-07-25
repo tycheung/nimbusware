@@ -33,6 +33,8 @@ __all__ = [
     "load_yaml",
     "merge_policy_snapshot",
     "run_model_preflight",
+    "try_broker_capacity_probe",
+    "try_broker_compute_work",
 ]
 
 
@@ -41,5 +43,13 @@ def __getattr__(name: str) -> Any:
         from orchestrator.pipeline import RunOrchestrator
 
         return RunOrchestrator
+    if name == "try_broker_compute_work":
+        from orchestrator.compute_broker_bridge import try_broker_compute_work
+
+        return try_broker_compute_work
+    if name == "try_broker_capacity_probe":
+        from orchestrator.capacity_broker_bridge import try_broker_capacity_probe
+
+        return try_broker_capacity_probe
     msg = f"module {__name__!r} has no attribute {name!r}"
     raise AttributeError(msg)

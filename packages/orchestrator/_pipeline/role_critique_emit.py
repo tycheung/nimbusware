@@ -33,9 +33,11 @@ def emit_role_critique_optional(
     if spec.pre_emit is not None:
         spec.pre_emit(host, run_id)
     emitted_llm = False
+    llm_attempted = False
     if spec.llm(eff):
         model = host._selected_model_for_run(run_id)
         if model:
+            llm_attempted = True
             base_url, timeout = ollama_runtime_from_host(host)
             emitted_llm = spec.execute_llm(
                 host._store,
@@ -49,6 +51,13 @@ def emit_role_critique_optional(
                 timeout_seconds=timeout,
             )
     if not emitted_llm and spec.stub(eff):
+        if llm_attempted:
+            from broker_client.flags import broker_llm_enabled
+
+            if broker_llm_enabled():  # sak497-h: no stub fallback under peel
+                raise RuntimeError(
+                    "broker_miss: role_critique_emit: post-verify LLM failed under peel"
+                )
         spec.emit_stub(
             host._store,
             host._registry,

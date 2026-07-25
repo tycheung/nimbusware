@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 
 from config import ConfigMaterializer, config_from_db_enabled
 from env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
+from broker_client.flags import broker_memory_enabled
 from extensions.bundle_memory_factory import build_bundle_outcome_store
-from memory.factory import build_memory_chunk_store
 from orchestrator.pipeline import RunOrchestrator, default_paths
 from orchestrator.registry import RoleRegistry
 from orchestrator.registry_db import load_registry_from_postgres
@@ -96,6 +96,14 @@ def build_event_store(url: str | None) -> EventStore:
     return InMemoryEventStore()
 
 
+def resolve_memory_chunk_store_for_bootstrap(url: str | None) -> None:
+    """sak498-a: peel-safe bootstrap — skip removed memory.factory at startup."""
+    if broker_memory_enabled():
+        return None
+    # sak413 removed local factory; routes build on demand when peel is off.
+    return None
+
+
 def start_config_notify(
     url: str,
     materializer: ConfigMaterializer,
@@ -150,7 +158,7 @@ def build_runtime_orchestrator(
         repo_root=repo,
         base_config_path=base,
         config_materializer=materializer,
-        memory_chunk_store=build_memory_chunk_store(url),
+        memory_chunk_store=resolve_memory_chunk_store_for_bootstrap(url),
         bundle_outcome_store=build_bundle_outcome_store(url),
     )
     return RuntimeBootstrapResult(

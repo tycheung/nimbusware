@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agent_tools.risk_caps import AgentRiskCaps
+from agent_tools.risk_caps_facade import AgentRiskCaps
 from orchestrator.workflow.profiles import workflow_profile_dict
 
 

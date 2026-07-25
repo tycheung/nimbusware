@@ -72,4 +72,3 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 - After mechanical splits in console display packages, run `poetry run python scripts/ci/explicit_star_imports.py` and `poetry run python scripts/ci/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci/ci_check.ps1` locally.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

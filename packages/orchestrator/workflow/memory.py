@@ -7,17 +7,17 @@ from typing import Any
 from uuid import UUID
 
 from env.env_flags import memory_excerpt_max_chars
-from memory.index.manifest import default_memory_index_dir, latest_generation_id
-from memory.index.models import EmbeddingMode, MemoryRetrievalHit
-from memory.index.repo_scope import repo_scope_hash
-from memory.index.search import (
+from memory.peel_index.manifest import default_memory_index_dir, latest_generation_id
+from memory.peel_index.models import EmbeddingMode, MemoryRetrievalHit
+from memory.peel_index.repo_scope import repo_scope_hash
+from memory.peel_index.search import (
     format_memory_excerpt,
     pinned_generation_id,
     search_memory,
     search_user_memory,
 )
-from memory.index.user_scope import memory_retrieval_policy as default_memory_retrieval_policy
-from memory.store.protocol import MemoryChunkStore
+from memory.peel_index.user_scope import memory_retrieval_policy as default_memory_retrieval_policy
+from memory.peel_store.protocol import MemoryChunkStore
 from orchestrator.slice.micro_slice import SlicePlan
 from orchestrator.workflow.profiles import workflow_profile_dict
 
@@ -167,7 +167,7 @@ def actor_user_id_from_run_metadata(metadata: object) -> str:
 
 
 def retrieve_memory_excerpt_for_slice(
-    memory_store: MemoryChunkStore,
+    memory_store: MemoryChunkStore | None,
     plan: SlicePlan,
     *,
     repo_root: Path,
@@ -176,6 +176,14 @@ def retrieve_memory_excerpt_for_slice(
     retrieval_policy: dict[str, bool] | None = None,
 ) -> tuple[str, list[MemoryRetrievalHit], str]:
     query = memory_query_from_slice_plan(plan)
+    from broker_client.flags import broker_memory_enabled
+
+    if broker_memory_enabled():
+        return _retrieve_slice_memory_via_broker(query, settings=settings)
+
+    if memory_store is None:
+        return "", [], ""
+
     scope = repo_scope_hash(repo_root)
     policy = retrieval_policy or default_memory_retrieval_policy()
     use_private = bool(policy.get("private", True))
@@ -208,10 +216,29 @@ def retrieve_memory_excerpt_for_slice(
         hits = hits[: settings.retrieval_k]
     excerpt = format_memory_excerpt(hits, max_chars=settings.excerpt_max_chars)
     if _memory_index_first_enabled():
-        from memory.index.index_table import build_memory_index_table
+        from memory.peel_index.index_table import build_memory_index_table
 
         excerpt = build_memory_index_table(hits, max_chars=settings.excerpt_max_chars)
     return excerpt, hits, scope
+
+
+def _retrieve_slice_memory_via_broker(
+    query: str,
+    *,
+    settings: MemoryWorkflowBlock,
+) -> tuple[str, list[MemoryRetrievalHit], str]:
+    """Broker memory for slice/plan excerpt; refuse local search (`sak494-a`, `sak495-b`)."""
+    from agent_tools.memory_bridge import try_broker_memory_search
+    from memory.broker_route import broker_memory_hits, format_broker_memory_excerpt
+
+    broker_result = try_broker_memory_search(query, limit=settings.retrieval_k)
+    if isinstance(broker_result, dict):
+        hits = broker_memory_hits(broker_result)
+        excerpt = format_broker_memory_excerpt(hits, max_chars=settings.excerpt_max_chars) or ""
+        return excerpt, [], ""
+    raise RuntimeError(
+        "broker_miss: slice_memory: unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"
+    )
 
 
 def memory_chunk_ids_from_hits(hits: list[MemoryRetrievalHit]) -> list[str]:

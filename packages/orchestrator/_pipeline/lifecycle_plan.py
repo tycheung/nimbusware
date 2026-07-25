@@ -8,6 +8,11 @@ from orchestrator._pipeline._helpers import (
     optional_meta_section,
 )
 from orchestrator._pipeline.protocol_hosts import LifecyclePlanHost
+from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
+
+_PLAN_BROKER_MISS = (
+    "broker_miss: lifecycle_plan: plan LLM unavailable under NIMBUSWARE_BROKER_LLM=1|2"
+)
 
 
 class LifecyclePlanMixin:
@@ -28,7 +33,7 @@ class LifecyclePlanMixin:
             model = self._selected_model_for_run(run_id)
             if model:
                 try:
-                    execute_plan_stage_llm(
+                    execute_plan_stage_llm(  # sak497-b: chat_facade peel_strict
                         self._store,
                         self._registry,
                         self._critique_router,
@@ -37,9 +42,20 @@ class LifecyclePlanMixin:
                         model_id=model,
                         timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                     )
-                except Exception:
-                    self._execute_plan_stage_stub(run_id)
+                except RuntimeError as exc:
+                    from broker_client.flags import broker_llm_enabled
+
+                    if broker_llm_enabled():  # sak496-a / sak498-i
+                        raise
+                    if _llm_broker_miss_or_transport(exc):
+                        self._execute_plan_stage_stub(run_id)
+                    else:
+                        raise
             else:
+                from broker_client.flags import broker_llm_enabled
+
+                if broker_llm_enabled():  # sak496-a
+                    raise RuntimeError(_PLAN_BROKER_MISS)
                 self._execute_plan_stage_stub(run_id)
         else:
             self._execute_plan_stage_stub(run_id)
@@ -64,7 +80,7 @@ class LifecyclePlanMixin:
                 model = self._selected_model_for_run(run_id)
                 if model:
                     try:
-                        execute_plan_stage_llm(
+                        execute_plan_stage_llm(  # sak497-b: chat_facade peel_strict
                             self._store,
                             self._registry,
                             self._critique_router,
@@ -75,9 +91,20 @@ class LifecyclePlanMixin:
                                 runtime.get("request_timeout_seconds", 120),
                             ),
                         )
-                    except Exception:
-                        self._execute_plan_stage_stub(run_id)
+                    except RuntimeError as exc:
+                        from broker_client.flags import broker_llm_enabled
+
+                        if broker_llm_enabled():  # sak496-a / sak498-i
+                            raise
+                        if _llm_broker_miss_or_transport(exc):
+                            self._execute_plan_stage_stub(run_id)
+                        else:
+                            raise
                 else:
+                    from broker_client.flags import broker_llm_enabled
+
+                    if broker_llm_enabled():  # sak496-a
+                        raise RuntimeError(_PLAN_BROKER_MISS)
                     self._execute_plan_stage_stub(run_id)
             else:
                 self._execute_plan_stage_stub(run_id)

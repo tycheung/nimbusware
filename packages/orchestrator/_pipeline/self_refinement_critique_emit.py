@@ -64,6 +64,12 @@ def try_emit_self_refinement_critique_for_host(
         if isinstance(summary_raw, str) and summary_raw.strip():
             out["llm_critique_summary"] = summary_raw.strip()[:500]
         return out
+    from broker_client.flags import broker_llm_enabled
+
+    if broker_llm_enabled():  # sak496-b / sak498-c
+        raise RuntimeError(
+            "self_refinement critique LLM local path removed (sak411); use broker llm bind"
+        )
     if env_truthy("NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB"):
         emit_stub_self_refinement_critique_panel(
             host._store,

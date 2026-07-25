@@ -55,7 +55,7 @@ def dispatch_role_execute(
 
     set_active_run_for_mesh(run_id)
     hydrate_mesh_binding_from_run(run_id)
-    from orchestrator.llm.budget_sample_emit import bind_budget_sample_context
+    from orchestrator.llm.budget_facade import bind_budget_sample_context
 
     store = getattr(orch, "_store", None)
     if store is not None:

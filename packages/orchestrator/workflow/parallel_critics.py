@@ -37,11 +37,37 @@ def parse_parallel_critics_workflow_block(
 def _governor_from_resource_meta(
     resource_governor: dict[str, Any] | None,
 ) -> ResourceGovernor | None:
-    if not isinstance(resource_governor, dict):
+    if isinstance(resource_governor, dict):
+        if "resource_governor" in resource_governor:
+            return governor_from_metadata(resource_governor)
+        return governor_from_metadata({"resource_governor": resource_governor})
+    try:
+        from broker_client.flags import broker_capacity_enabled, broker_capacity_only
+
+        if not broker_capacity_enabled():
+            return None
+        from orchestrator._pipeline.resource_governor_resolve import resolve_resource_governor
+
+        _profile, meta = resolve_resource_governor()
+        gov = governor_from_metadata(meta)
+        if gov is not None:
+            return gov
+        if broker_capacity_only() or broker_capacity_enabled():
+            raise RuntimeError(
+                "broker_miss: parallel_critics governor unavailable under "
+                "NIMBUSWARE_BROKER_CAPACITY=1|2"
+            )
         return None
-    if "resource_governor" in resource_governor:
-        return governor_from_metadata(resource_governor)
-    return governor_from_metadata({"resource_governor": resource_governor})
+    except RuntimeError:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise RuntimeError(
+                f"broker_miss: parallel_critics governor: {exc}"
+            ) from exc
+        return None
 
 
 def parallel_critics_enabled(

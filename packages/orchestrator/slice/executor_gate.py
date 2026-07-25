@@ -8,7 +8,7 @@ from env.env_flags import (
     nimbusware_slice_p3_evidence_enabled,
     nimbusware_use_llm_enabled,
 )
-from orchestrator.llm.llm_slice import execute_slice_critique_llm
+from orchestrator.llm.slice_facade import execute_slice_critique_llm
 from orchestrator.slice.cycle_integration import (
     apply_operator_pause,
     ensure_dev_environment_for_slice,

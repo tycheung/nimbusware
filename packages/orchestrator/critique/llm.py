@@ -21,10 +21,8 @@ from agent_core.models import (
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
-from orchestrator.llm.common import (
-    append_gate_decision_event,
-    ollama_chat_json_via_plan_patch,
-)
+from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+from orchestrator.llm.gate_helpers import append_gate_decision_event
 from orchestrator.registry import RoleRegistry
 from orchestrator.workflow.scan_critique import severity_for_critique_floor
 from store.protocol import EventStore
@@ -87,8 +85,16 @@ def execute_scan_critique_llm(
             timeout_seconds=timeout_seconds,
             stage_name=stage_name,
             agent_role=agent_role,
+            peel_strict=True,  # sak493-d
         )
         parsed = response_model.model_validate(raw)
+    except RuntimeError:
+        from broker_client.flags import broker_llm_enabled
+
+        # sak492-e / sak493-d / sak496-c: under LLM peel, propagate — no silent False fallback.
+        if broker_llm_enabled():
+            raise
+        return False
     except (
         httpx.HTTPError,
         ValueError,
@@ -96,8 +102,11 @@ def execute_scan_critique_llm(
         json.JSONDecodeError,
         ValidationError,
         KeyError,
-        RuntimeError,
     ):
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():  # sak496-c
+            raise
         return False
 
     llm_fail = llm_failed_fn(parsed, tool_failed, failing)

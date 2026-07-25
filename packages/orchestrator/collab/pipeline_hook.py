@@ -99,12 +99,15 @@ def mesh_assign_parallel_stages(
     )
     if session_id is None or workload_distribution == "host_only":
         return assignments
-    queue = get_work_unit_queue()
+    from broker_client.flags import broker_compute_enabled
     from env import find_repo_root
     from maker.user_agent_overlay import prompt_extension_for_taxonomy_key
+    from orchestrator import try_broker_compute_work
     from orchestrator.collab.mesh_bindings import executor_binding_hint
 
     root = find_repo_root()
+    # sak431-c: under COMPUTE=1|2 never fall back to local queue.enqueue.
+    queue = None if broker_compute_enabled() else get_work_unit_queue()
     for stage_name, node_id in assignments.items():
         if node_id is None:
             continue
@@ -122,21 +125,46 @@ def mesh_assign_parallel_stages(
         if surface_by_slice and stage_name.startswith("campaign.slice:"):
             slice_id = stage_name.split(":", 1)[1]
             surface_id = surface_by_slice.get(slice_id)
+        payload = _mesh_enqueue_payload(
+            node_id,
+            stage_name=stage_name,
+            workspace=workspace,
+            workflow_profile=workflow_profile,
+            binding_hint=hint,
+            agent_overlay_prompt=overlay or None,
+            surface_id=surface_id,
+        )
+        broker_payload = {
+            "run_id": str(run_id),
+            "session_id": str(session_id),
+            "stage_name": stage_name,
+            "agent_role": stage_name,
+            "executor_user_id": executor,
+            "payload": payload,
+        }
+        # sak439-b: empty dict must not count as enqueue success under peel.
+        broker_hit = try_broker_compute_work(broker_payload)
+        if broker_hit is not None:
+            from compute.broker_session_status import assert_broker_compute_record_ok
+
+            assert_broker_compute_record_ok(
+                broker_hit if isinstance(broker_hit, dict) else {"result": broker_hit},
+                feature="pipeline_hook.enqueue",
+                record_key="work",
+            )
+            continue
+        if broker_compute_enabled() or queue is None:
+            raise RuntimeError(
+                "compute local queue.enqueue unavailable under "
+                "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_work"
+            )
         queue.enqueue(
             run_id=run_id,
             session_id=session_id,
             stage_name=stage_name,
             agent_role=stage_name,
             executor_user_id=executor,
-            payload=_mesh_enqueue_payload(
-                node_id,
-                stage_name=stage_name,
-                workspace=workspace,
-                workflow_profile=workflow_profile,
-                binding_hint=hint,
-                agent_overlay_prompt=overlay or None,
-                surface_id=surface_id,
-            ),
+            payload=payload,
         )
     return assignments
 
@@ -188,7 +216,54 @@ def mesh_assign_campaign_slices(
     return {sid: raw.get(f"campaign.slice:{sid}") for sid in slice_ids}
 
 
+def _broker_mesh_node_ids(session_id: UUID | None = None) -> list[UUID] | None:
+    """List broker compute nodes when COMPUTE is on (`sak422-e` / `sak432-d`).
+
+    Returns a list (possibly empty) on success. Raises ``RuntimeError`` with
+    ``broker_miss`` prefix on transport/shape miss under COMPUTE enabled.
+    """
+    from broker_client.flags import broker_compute_enabled
+    from broker_client.stage_bind.compute import (
+        build_compute_list_nodes_payload,
+        compute_node_via_broker,
+        node_id_from_broker_record,
+    )
+    from compute.broker_session_status import assert_broker_compute_ok
+
+    if not broker_compute_enabled():
+        return None
+    try:
+        raw = assert_broker_compute_ok(
+            compute_node_via_broker(
+                build_compute_list_nodes_payload(
+                    session_id=str(session_id) if session_id else None,
+                )
+            ),
+            feature="pipeline_hook.mesh_nodes",
+            list_key="nodes",
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"broker_miss: mesh nodes: {exc}") from exc
+    nodes = raw.get("nodes")
+    if not isinstance(nodes, list):
+        raise RuntimeError("broker_miss: mesh nodes missing list")
+    out: list[UUID] = []
+    for item in nodes:
+        if not isinstance(item, dict):
+            continue
+        nid = node_id_from_broker_record(item)
+        if not nid:
+            continue
+        try:
+            out.append(UUID(nid))
+        except ValueError:
+            continue
+    return out
+
+
 def resolve_mesh_context_for_run(run_id: UUID) -> tuple[UUID | None, str, list[UUID]]:
+    from broker_client.flags import broker_compute_enabled
+
     try:
         from compute.node_store import build_compute_node_store
         from env.env_flags import nimbusware_database_url
@@ -199,11 +274,20 @@ def resolve_mesh_context_for_run(run_id: UUID) -> tuple[UUID | None, str, list[U
         if sess is None:
             return None, "host_only", []
         workload = sess.workload_distribution or "host_only"
+        if broker_compute_enabled():
+            # sak432-d / sak434-a: broker miss raises; empty list is valid.
+            broker_ids = _broker_mesh_node_ids(sess.session_id)
+            return sess.session_id, workload, broker_ids or []
         node_store = build_compute_node_store(nimbusware_database_url())
         rows = node_store.list_for_session(sess.session_id)
         node_ids = [r.node_id for r in rows if r.status in {"online", "degraded"}]
         return sess.session_id, workload, node_ids
-    except Exception:
+    except RuntimeError:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        # sak434-a: under COMPUTE=1|2 do not silently downgrade to host_only.
+        if broker_compute_enabled():
+            raise RuntimeError(f"broker_miss: resolve_mesh_context: {exc}") from exc
         return None, "host_only", []
 
 

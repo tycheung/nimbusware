@@ -61,6 +61,40 @@ def parse_parallel_writers_workflow_block(
 
 
 def max_parallel_writer_stages_from_governor() -> int | None:
+    """Prefer broker capacity cap (`sak418-e` / `sak433-d`); refuse local under CAPACITY=1|2."""
+    try:
+        from broker_client.capacity_bridge import (
+            try_broker_capacity_probe,
+            try_broker_parallel_writer_stages,
+        )
+        from broker_client.flags import broker_capacity_enabled
+        from broker_client.stage_bind.capacity import governor_metadata_from_capacity
+        from hw.capacity_route import refuse_legacy
+
+        broker_cap = try_broker_parallel_writer_stages()
+        if broker_cap is not None:
+            return broker_cap
+        hit = try_broker_capacity_probe()
+        if hit is not None:
+            meta = governor_metadata_from_capacity(hit)
+            stages = meta.get("max_parallel_writer_stages")
+            if isinstance(stages, int) and stages >= 1:
+                return stages
+        if broker_capacity_enabled():
+            refuse_legacy(
+                "parallel_writers governor unavailable under "
+                "NIMBUSWARE_BROKER_CAPACITY=1|2; use SwissArmyNoife /v1/sak/capacity"
+            )
+            return None
+    except ImportError:
+        # sak439-d: under CAPACITY peel, ImportError is refuse (not soft None).
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise RuntimeError(
+                "broker_miss: parallel_writers governor import unavailable under "
+                "NIMBUSWARE_BROKER_CAPACITY=1|2"
+            ) from None
     try:
         from hw.cache import get_cached_profile
         from hw.governor import governor_for_profile
@@ -70,6 +104,13 @@ def max_parallel_writer_stages_from_governor() -> int | None:
         level, _ = sample_pressure(gov)
         return pressure_limits_parallel(level, gov.max_parallel_writer_stages)
     except ImportError:
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise RuntimeError(
+                "broker_miss: parallel_writers local governor unavailable under "
+                "NIMBUSWARE_BROKER_CAPACITY=1|2"
+            ) from None
         return None
 
 

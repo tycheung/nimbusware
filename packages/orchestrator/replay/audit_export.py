@@ -14,7 +14,7 @@ def scope_snapshot_from_requirements(requirements: dict[str, Any] | None) -> dic
     manifest = requirements.get("stack_manifest")
     if not isinstance(manifest, dict):
         return None
-    from orchestrator.routing.preflight import surface_stage_map
+    from orchestrator.model_routing.preflight import surface_stage_map
 
     return {
         "stack_manifest": manifest,

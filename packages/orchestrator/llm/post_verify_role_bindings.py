@@ -11,11 +11,8 @@ from agent_core.critique_stages import (
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.llm.common import (
-    MODULE_INTEGRATOR_CRITIQUE_STAGE,
-    SELF_REFINEMENT_CRITIQUE_STAGE,
-)
-from orchestrator.llm.post_verify_role_critique import bind_post_verify_role_critique
+from orchestrator.llm.gate_helpers import MODULE_INTEGRATOR_CRITIQUE_STAGE, SELF_REFINEMENT_CRITIQUE_STAGE
+from orchestrator.llm.gate_helpers import bind_post_verify_role_critique  # sak497-h
 from orchestrator.registry import RoleRegistry
 from store.protocol import EventStore
 
@@ -23,7 +20,7 @@ EmitStubPanel = Callable[
     [EventStore, RoleRegistry, UniversalCritiqueRouter],
     None,
 ]
-ExecuteRoleCritiqueLlm = Callable[..., bool]
+ExecuteRoleCritiqueLlm = Callable[..., bool | dict[str, str] | None]
 
 
 @dataclass(frozen=True)
@@ -35,7 +32,7 @@ class _RoleBindingSpec:
     review_label: str | None = None
     min_pairing_count: int = 2
     max_critics: int | None = None
-    stub_only: bool = False
+    self_refinement: bool = False
 
 
 _ROLE_SPECS: tuple[_RoleBindingSpec, ...] = (
@@ -68,7 +65,7 @@ _ROLE_SPECS: tuple[_RoleBindingSpec, ...] = (
         "self_refinement",
         min_pairing_count=1,
         max_critics=2,
-        stub_only=True,
+        self_refinement=True,
     ),
 )
 
@@ -84,7 +81,7 @@ def _bind_all() -> dict[str, EmitStubPanel | ExecuteRoleCritiqueLlm]:
             review_label=spec.review_label,
             min_pairing_count=spec.min_pairing_count,
             max_critics=spec.max_critics,
-            bind_execute_llm=not spec.stub_only,
+            self_refinement=spec.self_refinement,
         )
         bound[f"emit_stub_{spec.name}_critique_panel"] = emit  # type: ignore[assignment]
         if execute is not None:
@@ -96,6 +93,9 @@ _bound = _bind_all()
 
 emit_stub_implementation_critique_panel: EmitStubPanel = _bound[  # type: ignore[assignment]
     "emit_stub_implementation_critique_panel"
+]
+execute_implementation_critique_llm: ExecuteRoleCritiqueLlm = _bound[  # type: ignore[assignment]
+    "execute_implementation_critique_llm"
 ]
 emit_stub_planner_critique_panel: EmitStubPanel = _bound["emit_stub_planner_critique_panel"]  # type: ignore[assignment]
 execute_planner_critique_llm: ExecuteRoleCritiqueLlm = _bound["execute_planner_critique_llm"]  # type: ignore[assignment]
@@ -115,6 +115,9 @@ emit_stub_module_integrator_critique_panel: EmitStubPanel = _bound[  # type: ign
 emit_stub_self_refinement_critique_panel: EmitStubPanel = _bound[  # type: ignore[assignment]
     "emit_stub_self_refinement_critique_panel"
 ]
+execute_self_refinement_critique_llm: ExecuteRoleCritiqueLlm = _bound[  # type: ignore[assignment]
+    "execute_self_refinement_critique_llm"
+]
 execute_module_integrator_critique_llm: ExecuteRoleCritiqueLlm = _bound[  # type: ignore[assignment]
     "execute_module_integrator_critique_llm"
 ]
@@ -122,6 +125,7 @@ execute_module_integrator_critique_llm: ExecuteRoleCritiqueLlm = _bound[  # type
 __all__ = [
     "emit_stub_frontend_writer_critique_panel",
     "emit_stub_implementation_critique_panel",
+    "execute_implementation_critique_llm",
     "emit_stub_module_integrator_critique_panel",
     "emit_stub_planner_critique_panel",
     "emit_stub_self_refinement_critique_panel",
@@ -129,5 +133,6 @@ __all__ = [
     "execute_frontend_writer_critique_llm",
     "execute_module_integrator_critique_llm",
     "execute_planner_critique_llm",
+    "execute_self_refinement_critique_llm",
     "execute_test_writer_critique_llm",
 ]

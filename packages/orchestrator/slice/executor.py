@@ -8,7 +8,7 @@ from uuid import UUID
 from env.env_flags import (
     nimbusware_use_llm_enabled,
 )
-from orchestrator.llm.llm_slice import execute_slice_replan_llm
+from orchestrator.llm.slice_facade import execute_slice_replan_llm
 from orchestrator.slice.diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
@@ -55,7 +55,7 @@ def execute_single_micro_slice(
     plan: SlicePlan | None = None,
     backlog_slice_id: str | None = None,
 ) -> SliceGateChainResult:
-    from orchestrator.llm.budget_sample_emit import bind_budget_sample_context
+    from orchestrator.llm.budget_facade import bind_budget_sample_context
 
     bind_budget_sample_context(store=orch._store, run_id=run_id)
     rows = orch._store.list_run_events(str(run_id))
@@ -303,7 +303,7 @@ def execute_micro_slice_pass(
         results.append(gate)
         if not gate.passed:
             break
-    orch.maybe_rebuild_memory_index(run_id)
+    orch.maybe_rebuild_memory_index(run_id)  # sak495-a: gated in CreateRunMixin
     from orchestrator.git_outputs import emit_git_finalize_after_micro_slice_pass
 
     emit_git_finalize_after_micro_slice_pass(

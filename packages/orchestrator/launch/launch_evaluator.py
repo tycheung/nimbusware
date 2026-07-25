@@ -9,7 +9,7 @@ from typing import Any
 from uuid import UUID
 
 from env.env_flags import env_bool, env_str
-from orchestrator.routing.manage import ollama_base_url
+from orchestrator.model_routing.manage import ollama_base_url
 
 
 @dataclass(frozen=True)
@@ -102,7 +102,8 @@ _RUBRIC_DIMENSIONS = frozenset(
 def fetch_llm_rubric_panel(workspace: Path) -> dict[str, Any] | None:
     import httpx
 
-    from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+    from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+    from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 
     try:
         data = ollama_chat_json_via_plan_patch(
@@ -122,10 +123,30 @@ def fetch_llm_rubric_panel(workspace: Path) -> dict[str, Any] | None:
             ],
             timeout_seconds=30.0,
             agent_role="planner",
+            peel_strict=True,  # sak492-d
         )
+    except RuntimeError as exc:
+        if _llm_broker_miss_or_transport(exc):  # sak499-e
+            raise
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():
+            raise
+        return None
     except (OSError, ValueError, TypeError, json.JSONDecodeError, httpx.HTTPError):
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():
+            raise
         return None
     if not isinstance(data, dict):
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():
+            raise RuntimeError(
+                "broker_miss: launch_evaluator: invalid LLM panel response under "
+                "NIMBUSWARE_BROKER_LLM=1|2"
+            )
         return None
     return data
 
@@ -159,6 +180,13 @@ def _llm_panel_extras(workspace: Path) -> tuple[tuple[str, ...], tuple[tuple[str
         dimensions = _parse_llm_dimensions(panel.get("dimensions"))
         if findings or dimensions:
             return findings, dimensions
+    from broker_client.flags import broker_llm_enabled
+
+    if broker_llm_enabled():
+        raise RuntimeError(
+            "broker_miss: launch_evaluator: LLM panel unavailable under "
+            "NIMBUSWARE_BROKER_LLM=1|2"
+        )  # sak494-f
     py_count = len(list(workspace.rglob("*.py")))
     test_count = len(list(workspace.rglob("tests/test_*.py")))
     return (

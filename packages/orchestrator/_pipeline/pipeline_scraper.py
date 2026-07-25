@@ -281,6 +281,12 @@ class PipelineScraperMixin:
                 )
                 return
             except RuntimeError as exc:
+                msg = str(exc)[:2000]
+                reason_code = (
+                    "broker_miss"
+                    if "broker_miss" in msg
+                    else "scraper_fetch_error"  # sak494-e
+                )
                 self._store.append(
                     StageFailedEvent(
                         event_type=EventType.STAGE_FAILED,
@@ -290,8 +296,8 @@ class PipelineScraperMixin:
                         metadata=fail_meta(parsed_host, fetches_out),
                         payload=StageFailedPayload(
                             stage_name="scraper:fetch",
-                            reason_code="scraper_fetch_error",
-                            message=str(exc)[:2000],
+                            reason_code=reason_code,
+                            message=msg,
                         ),
                     ),
                 )

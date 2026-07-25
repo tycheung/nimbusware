@@ -6,7 +6,7 @@ from uuid import UUID
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from env.env_flags import nimbusware_use_llm_enabled
-from orchestrator.llm.llm_slice import execute_slice_plan_llm
+from orchestrator.llm.slice_facade import execute_slice_plan_llm
 from orchestrator.slice.micro_slice import SlicePlan, parse_slice_plan
 
 if TYPE_CHECKING:
@@ -64,7 +64,11 @@ def plan_one_slice(
         run_memory_retrieval_enabled,
     )
 
-    if run_memory_retrieval_enabled(run_meta) and orch._memory_chunk_store is not None:
+    from broker_client.flags import broker_memory_enabled
+
+    if run_memory_retrieval_enabled(run_meta) and (
+        broker_memory_enabled() or orch._memory_chunk_store is not None
+    ):
         settings = memory_settings_from_run_metadata(run_meta)
         actor_id = actor_user_id_from_run_metadata(run_meta)
         retrieval_policy = participant_memory_policy(run_meta, actor_id)
@@ -81,6 +85,14 @@ def plan_one_slice(
         runtime = mapping_or_empty(orch._base_cfg().get("runtime"))
         model = orch._selected_model_for_run(run_id)
         if model:
+            from orchestrator.slice.handoff import latest_handoff_from_events
+
+            prior = latest_handoff_from_events(rows)
+            handoff_summary = ""
+            if prior is not None:
+                from orchestrator.slice.handoff import handoff_markdown_capped
+
+                handoff_summary = handoff_markdown_capped(prior)
             plan = execute_slice_plan_llm(
                 rows=rows,
                 base_url=str(runtime.get("base_url", "http://localhost:11434")),
@@ -90,6 +102,7 @@ def plan_one_slice(
                 system_prompt=custom_agent_system_prompt(orch, rows),
                 budget_feedback=budget_feedback,
                 memory_excerpt=memory_excerpt,
+                handoff_summary=handoff_summary,
             )
             if plan is not None:
                 return plan

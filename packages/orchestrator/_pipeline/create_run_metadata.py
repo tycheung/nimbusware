@@ -4,11 +4,9 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from agent_tools.filesystem_jail import default_jail_policy
-from agent_tools.risk_caps import PATCH_DEFAULT_CAPS, resolve_agent_risk_caps
-from agent_tools.sandbox import resolve_sandbox_backend
-from hw.cache import get_cached_profile
-from hw.governor import governor_for_profile
+from agent_tools.jail_facade import default_jail_policy
+from agent_tools.risk_caps_facade import PATCH_DEFAULT_CAPS, resolve_agent_risk_caps
+from agent_tools.sandbox_bridge import resolve_sandbox_backend
 from orchestrator._pipeline._helpers import (
     agent_evaluator_production_default_on,
     self_refinement_production_ungated_effective,
@@ -16,6 +14,7 @@ from orchestrator._pipeline._helpers import (
     universal_critique_production_default_on,
 )
 from orchestrator._pipeline.create_run_workflow_blocks import CreateRunWorkflowBlocks
+from orchestrator._pipeline.resource_governor_resolve import resolve_resource_governor
 from orchestrator.critique.pack_resolve import resolve_critic_pack_for_workflow
 from orchestrator.patch_context import normalize_patch_context
 from orchestrator.profiles.autopilot_profiles import autopilot_effective_metadata
@@ -180,8 +179,7 @@ def build_run_created_metadata(
         config_materializer=mat,
         blocks=blocks,
     )
-    hw_profile = get_cached_profile()
-    resource_governor = governor_for_profile(hw_profile).to_metadata()
+    hw_profile, resource_governor = resolve_resource_governor()
     patch_block = blocks.patch_block
     risk_caps = resolve_agent_risk_caps()
     if patch_block.enabled and patch_block.risk_caps is not None:

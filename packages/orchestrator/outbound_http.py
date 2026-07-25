@@ -42,6 +42,7 @@ def egress_checked_get_for_run(
     client: httpx.Client | None = None,
     max_response_bytes: int | None = None,
 ) -> httpx.Response:
+    """Run-bound egress GET; ``broker_miss`` from executor.fetch propagates (`sak494-e`)."""
     scrapers, domains = network_egress_from_run_created(store, run_id)
     return egress_checked_httpx_get(
         url,

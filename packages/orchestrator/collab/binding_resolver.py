@@ -37,7 +37,7 @@ def participant_memory_policy(
     session_metadata: dict[str, Any] | None, user_id: str
 ) -> dict[str, bool]:
     if not session_metadata or not user_id:
-        from memory.index.user_scope import memory_retrieval_policy
+        from memory.peel_index.user_scope import memory_retrieval_policy
 
         return memory_retrieval_policy()
     collab = mapping_or_empty(session_metadata.get("collab"))
@@ -48,7 +48,7 @@ def participant_memory_policy(
             "private": bool(raw.get("private", True)),
             "project_shared": bool(raw.get("project_shared", True)),
         }
-    from memory.index.user_scope import memory_retrieval_policy
+    from memory.peel_index.user_scope import memory_retrieval_policy
 
     return memory_retrieval_policy()
 

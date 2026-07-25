@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field, ValidationError
 
 from env.env_flags import env_bool, env_str, nimbusware_ollama_base_url
 from orchestrator.interaction.interaction_surface_map import discover_surfaces_combined
-from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 from orchestrator.ui_flow_synthesis import validate_ui_flow_yaml
 
 
@@ -83,6 +84,7 @@ def generate_llm_ui_flow_dict(
             ],
             timeout_seconds=90.0,
             agent_role="test_writer",
+            peel_strict=True,  # sak493-d
         )
         parsed = _LlmUiFlowResponse.model_validate(raw)
         flow = dict(parsed.flow)
@@ -90,7 +92,27 @@ def generate_llm_ui_flow_dict(
             flow["id"] = flow_id
         errors = validate_ui_flow_yaml(flow)
         if errors:
+            from broker_client.flags import broker_llm_enabled
+
+            if broker_llm_enabled():
+                raise RuntimeError(
+                    "broker_miss: launch_test_llm: invalid UI flow under "
+                    "NIMBUSWARE_BROKER_LLM=1|2"
+                ) from None
             return None
         return flow
+    except RuntimeError as exc:
+        # sak493-d / sak494-f / sak499-e: broker_miss/transport propagate; peel else raises.
+        if _llm_broker_miss_or_transport(exc):
+            raise
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():
+            raise
+        return None
     except (ValidationError, TypeError, ValueError, json.JSONDecodeError, OSError):
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():
+            raise
         return None

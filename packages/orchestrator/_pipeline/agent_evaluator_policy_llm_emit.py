@@ -42,6 +42,13 @@ def resolve_agent_evaluator_policy_llm_for_host(
             persona_id=block.persona_id,
             timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
         )
+    if llm_result is None and agent_evaluator_llm_branch_effective(block):
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():  # sak496-b / sak498-d: no stub/rules fallback under peel
+            raise RuntimeError(
+                "broker_miss: agent_evaluator_policy_llm_emit: policy LLM failed under peel"
+            )
     if llm_result is None and agent_evaluator_llm_stub_env_enabled():
         gaps_raw = rules_eval.get("gaps")
         llm_result = {

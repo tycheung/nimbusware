@@ -5,8 +5,10 @@ import subprocess
 from pathlib import Path
 from typing import Literal
 
+import httpx
 from env.env_flags import env_str, env_truthy
-from orchestrator.llm.common import ollama_chat_json_via_plan_patch
+from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
+from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 
 
 def _run_test_writer_stage_subprocess(workspace: Path) -> tuple[int, str]:
@@ -39,6 +41,7 @@ def _run_test_writer_stage_llm(
             base_url=base_url,
             model=model_id,
             timeout_seconds=timeout_seconds,
+            peel_strict=True,  # sak496-c
             messages=[
                 {
                     "role": "system",
@@ -54,7 +57,20 @@ def _run_test_writer_stage_llm(
             ],
             agent_role="test_writer",
         )
-    except Exception as exc:  # pragma: no cover - exercised via fallback tests
+    except RuntimeError as exc:
+        from broker_client.flags import broker_llm_enabled
+
+        # sak492-e / sak495-h / sak498-i: peel raises; off-peel only broker_miss/transport soft-return.
+        if broker_llm_enabled():
+            raise
+        if _llm_broker_miss_or_transport(exc):
+            return 1, f"llm test-writer failed: {str(exc)[:200]}"
+        raise
+    except httpx.HTTPError as exc:
+        from broker_client.flags import broker_llm_enabled
+
+        if broker_llm_enabled():  # sak498-i
+            raise
         return 1, f"llm test-writer failed: {str(exc)[:200]}"
     summary = str(payload.get("summary", "llm test-writer completed")).strip()
     return 0, summary[:500]

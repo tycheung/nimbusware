@@ -135,20 +135,52 @@ class WritersParallelMixin:
         ):
             runners = runners[:cap]
             try:
+                from broker_client.flags import broker_capacity_only
                 from hw.audit import maybe_append_resource_pressure_warn
                 from hw.cache import get_cached_profile
                 from hw.governor import governor_for_profile
 
-                maybe_append_resource_pressure_warn(
-                    self._store,
-                    run_id=run_id,
-                    governor=governor_for_profile(get_cached_profile()),
-                    hook="parallel_writers_cap",
-                )
+                if broker_capacity_only():
+                    # CAPACITY=2: skip local hw.cache/governor pressure warn (`sak423-h`).
+                    pass
+                else:
+                    maybe_append_resource_pressure_warn(
+                        self._store,
+                        run_id=run_id,
+                        governor=governor_for_profile(get_cached_profile()),
+                        hook="parallel_writers_cap",
+                    )
             except ImportError:
-                pass
+                # sak490-c: no soft swallow under CAPACITY peel.
+                from broker_client.flags import broker_capacity_enabled
+
+                if broker_capacity_enabled():
+                    raise RuntimeError(
+                        "broker_miss: writers_parallel pressure warn import unavailable "
+                        "under NIMBUSWARE_BROKER_CAPACITY=1|2"
+                    ) from None
+            except RuntimeError:
+                from broker_client.flags import broker_capacity_enabled
+
+                if broker_capacity_enabled():
+                    raise
         remote = remote_stage_names(assignments)
         local_runners = [(name, fn) for name, fn in runners if name not in remote]
+        # sak489-b: close dual-run local writer path when mesh expects broker dispatch.
+        if local_runners:
+            from broker_client.flags import broker_compute_enabled
+
+            if (
+                broker_compute_enabled()
+                and session_id is not None
+                and workload != "host_only"
+            ):
+                names = ", ".join(sorted(name for name, _ in local_runners))
+                raise RuntimeError(
+                    "writers_parallel local runner unavailable under "
+                    f"NIMBUSWARE_BROKER_COMPUTE=1|2 when mesh expects broker dispatch "
+                    f"(local stages: {names})"
+                )
         results: list[WriterStageResult] = []
         if local_runners:
             results.extend(asyncio.run(run_parallel_writer_group(local_runners)))

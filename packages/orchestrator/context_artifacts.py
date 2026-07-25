@@ -261,15 +261,25 @@ def maybe_rebuild_memory_faiss_from_bridges(
     if not env_truthy("NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD"):
         return None
 
+    from broker_client.flags import broker_memory_enabled
+
+    if broker_memory_enabled():
+        from memory.broker_route import refuse_legacy
+
+        refuse_legacy(  # sak498-i: no silent skip when rebuild env set under MEMORY=1|2
+            "context-artifact FAISS rebuild unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; "
+            "use SwissArmyNoife memory_index",
+        )
+
     from env import find_repo_root
-    from memory.index.embeddings import embed_text, embedding_model_id_for_mode
-    from memory.index.faiss_index import build_memory_faiss_index
-    from memory.index.manifest import (
+    from memory.peel_index.embeddings import embed_text, embedding_model_id_for_mode
+    from memory.peel_index.faiss_index import build_memory_faiss_index
+    from memory.peel_index.manifest import (
         MemoryIndexManifest,
         default_memory_index_dir,
         write_manifest,
     )
-    from memory.index.models import MemoryChunkRecord
+    from memory.peel_index.models import MemoryChunkRecord
 
     root = repo_root or find_repo_root()
     bridge_dir = root / ".cache" / "nimbusware" / "memory-bridge" / project_id
