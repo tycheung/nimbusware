@@ -112,6 +112,14 @@ class ComputeNodeStore(Protocol):
 
 class InMemoryComputeNodeStore:
     def __init__(self) -> None:
+        # sak440-b: defense-in-depth refuse under COMPUTE peel.
+        from broker_client.flags import broker_compute_enabled
+
+        if broker_compute_enabled():
+            raise RuntimeError(
+                "compute InMemoryComputeNodeStore unavailable under "
+                "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_node"
+            )
         self._nodes: dict[UUID, ComputeNodeRow] = {}
 
     def register(
@@ -217,6 +225,14 @@ class InMemoryComputeNodeStore:
 
 class PostgresComputeNodeStore:
     def __init__(self, conninfo: str) -> None:
+        # sak440-b: defense-in-depth refuse under COMPUTE peel.
+        from broker_client.flags import broker_compute_enabled
+
+        if broker_compute_enabled():
+            raise RuntimeError(
+                "compute PostgresComputeNodeStore unavailable under "
+                "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_node"
+            )
         self._conninfo = conninfo
 
     def register(
@@ -399,6 +415,13 @@ _IN_MEMORY_SINGLETON: InMemoryComputeNodeStore | None = None
 
 
 def build_compute_node_store(database_url: str | None) -> ComputeNodeStore:
+    from broker_client.flags import broker_compute_enabled
+
+    if broker_compute_enabled():
+        raise RuntimeError(
+            "compute local node_store unavailable under "
+            "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_node"
+        )
     global _IN_MEMORY_SINGLETON
     if database_url:
         return PostgresComputeNodeStore(database_url)

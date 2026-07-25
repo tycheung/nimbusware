@@ -1,27 +1,35 @@
+"""Thin mesh workspace merge (`sak417-c` / `sak432-c`).
+
+Legacy under ``=0``. Non-absorb paths refuse when COMPUTE enabled (``=1|2``).
+Absorb helpers remain allowed under ``=2``.
+"""
+
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 
-_MAX_PATCH_BYTES = 400_000
+from broker_client.flags import broker_compute_enabled
+
+_MSG = (
+    "compute mesh_workspace_merge local path unavailable under NIMBUSWARE_BROKER_COMPUTE=1|2; "
+    "use SwissArmyNoife compute_work"
+)
 
 
-def _is_safe_rel_path(rel: str) -> bool:
-    parts = rel.replace("\\", "/").split("/")
-    return bool(rel) and ".." not in parts
+def _guard() -> None:
+    if broker_compute_enabled():
+        raise RuntimeError(_MSG)
+
+
+def _legacy():
+    from compute import mesh_workspace_merge_legacy as legacy
+
+    return legacy
 
 
 def workspace_file_digests(workspace: Path) -> dict[str, str]:
-    ws = workspace.resolve()
-    digests: dict[str, str] = {}
-    for path in ws.rglob("*"):
-        if not path.is_file():
-            continue
-        if any(part.startswith(".") for part in path.relative_to(ws).parts):
-            continue
-        rel = path.relative_to(ws).as_posix()
-        digests[rel] = hashlib.sha256(path.read_bytes()).hexdigest()
-    return digests
+    _guard()
+    return _legacy().workspace_file_digests(workspace)
 
 
 def diff_workspace_files(
@@ -29,36 +37,19 @@ def diff_workspace_files(
     after: dict[str, str],
     workspace: Path,
     *,
-    max_bytes: int = _MAX_PATCH_BYTES,
+    max_bytes: int | None = None,
 ) -> dict[str, str]:
-    changed: dict[str, str] = {}
-    total = 0
-    ws = workspace.resolve()
-    for rel, digest in after.items():
-        if not _is_safe_rel_path(rel) or before.get(rel) == digest:
-            continue
-        path = ws / rel
-        if not path.is_file():
-            continue
-        raw = path.read_bytes()
-        if total + len(raw) > max_bytes:
-            break
-        try:
-            changed[rel] = raw.decode("utf-8")
-        except UnicodeDecodeError:
-            continue
-        total += len(raw)
-    return changed
+    _guard()
+    if max_bytes is None:
+        return _legacy().diff_workspace_files(before, after, workspace)
+    return _legacy().diff_workspace_files(before, after, workspace, max_bytes=max_bytes)
 
 
 def apply_workspace_files(workspace: Path, files: dict[str, str]) -> list[str]:
-    ws = workspace.resolve()
-    applied: list[str] = []
-    for rel, content in files.items():
-        if not _is_safe_rel_path(rel):
-            continue
-        target = ws / rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(content, encoding="utf-8")
-        applied.append(rel)
-    return applied
+    _guard()
+    return _legacy().apply_workspace_files(workspace, files)
+
+
+def apply_workspace_files_absorb(workspace: Path, files: dict[str, str]) -> list[str]:
+    """Absorb-safe apply — allowed under COMPUTE=1|2 (`sak425-c` / `sak432-c`)."""
+    return _legacy().apply_workspace_files(workspace, files)

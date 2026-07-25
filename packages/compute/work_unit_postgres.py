@@ -10,6 +10,7 @@ from psycopg.types.json import Jsonb
 from compute.work_unit import (
     WORK_UNIT_STATUSES,
     WorkUnitRecord,
+    _refuse_direct_queue_op,
     _utc_now,
 )
 from compute.worker_policy import sanitize_work_unit_payload
@@ -43,10 +44,19 @@ def _row_to_record(row: dict[str, Any]) -> WorkUnitRecord:
 
 class PostgresWorkUnitQueue:
     def __init__(self, conninfo: str, *, tenant_id: UUID | None = None) -> None:
+        # sak439-i: defense-in-depth refuse under COMPUTE peel.
+        from broker_client.flags import broker_compute_enabled
+
+        if broker_compute_enabled():
+            raise RuntimeError(
+                "compute PostgresWorkUnitQueue unavailable under "
+                "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_work"
+            )
         self._conninfo = conninfo
         self._tenant_id = tenant_id or DEFAULT_TENANT_ID
 
     def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]:
+        _refuse_direct_queue_op("list_units")  # sak491-a
         with psycopg.connect(self._conninfo) as conn, conn.cursor(row_factory=dict_row) as cur:
             if run_id is None:
                 cur.execute(
@@ -66,6 +76,7 @@ class PostgresWorkUnitQueue:
         return [_row_to_record(dict(r)) for r in rows]
 
     def queued_count(self, *, session_id: UUID | None = None) -> int:
+        _refuse_direct_queue_op("queued_count")  # sak491-a
         with psycopg.connect(self._conninfo) as conn, conn.cursor() as cur:
             if session_id is None:
                 cur.execute(
@@ -92,6 +103,7 @@ class PostgresWorkUnitQueue:
         executor_user_id: str = "",
         payload: dict[str, Any] | None = None,
     ) -> WorkUnitRecord:
+        _refuse_direct_queue_op("enqueue")  # sak490-b
         safe_payload = sanitize_work_unit_payload(payload)
         wid = uuid4()
         now = _utc_now()
@@ -127,6 +139,7 @@ class PostgresWorkUnitQueue:
         session_id: UUID | None = None,
         node_id: UUID | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("dequeue")  # sak490-b
         with psycopg.connect(self._conninfo) as conn, conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 f"""
@@ -157,6 +170,7 @@ class PostgresWorkUnitQueue:
         status: str,
         result: dict[str, Any] | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("complete")  # sak490-b
         st = status if status in WORK_UNIT_STATUSES else "failed"
         with psycopg.connect(self._conninfo) as conn, conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
@@ -188,6 +202,7 @@ class PostgresWorkUnitQueue:
         return _row_to_record(dict(row))
 
     def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("terminate_restart")  # sak491-a
         with psycopg.connect(self._conninfo) as conn, conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 "SELECT status FROM nimbusware_work_unit WHERE work_unit_id = %s",

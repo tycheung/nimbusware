@@ -12,6 +12,31 @@ WORK_UNIT_STATUSES = frozenset(
     {"queued", "assigned", "running", "ok", "failed", "timeout", "cancelled"}
 )
 
+_QUEUE_REFUSE_OPS = frozenset(
+    {
+        "enqueue",
+        "dequeue",
+        "complete",
+        "list_units",  # sak491-a
+        "queued_count",  # sak491-a
+        "terminate_restart",  # sak491-a
+    }
+)
+
+
+def _refuse_direct_queue_op(op: str) -> None:
+    """Defense-in-depth when callers bypass ``get_work_unit_queue()`` (`sak490-b` / `sak491-a`)."""
+    if op not in _QUEUE_REFUSE_OPS:
+        msg = f"unexpected queue op: {op!r}"
+        raise ValueError(msg)
+    from broker_client.flags import broker_compute_enabled
+
+    if broker_compute_enabled():
+        raise RuntimeError(
+            f"broker_miss: compute queue.{op} unavailable under "
+            "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_work"
+        )
+
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -72,15 +97,19 @@ class InMemoryWorkUnitQueue:
     """In-memory work-unit queue (default; use Redis when configured)."""
 
     def __init__(self) -> None:
+        # Note: ctor not gated — tests inject via set_work_unit_queue under peel.
+        # Production gate remains get_work_unit_queue() (`sak433-a`).
         self._units: dict[UUID, WorkUnitRecord] = {}
 
     def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]:
+        _refuse_direct_queue_op("list_units")  # sak491-a
         units = list(self._units.values())
         if run_id is not None:
             units = [u for u in units if u.run_id == run_id]
         return sorted(units, key=lambda u: u.created_at or _utc_now())
 
     def queued_count(self, *, session_id: UUID | None = None) -> int:
+        _refuse_direct_queue_op("queued_count")  # sak491-a
         return sum(
             1
             for rec in self._units.values()
@@ -97,6 +126,7 @@ class InMemoryWorkUnitQueue:
         executor_user_id: str = "",
         payload: dict[str, Any] | None = None,
     ) -> WorkUnitRecord:
+        _refuse_direct_queue_op("enqueue")
         safe_payload = sanitize_work_unit_payload(payload)
         wid = uuid4()
         now = _utc_now()
@@ -120,6 +150,7 @@ class InMemoryWorkUnitQueue:
         session_id: UUID | None = None,
         node_id: UUID | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("dequeue")
         for rec in sorted(
             self._units.values(),
             key=lambda u: u.created_at or _utc_now(),
@@ -152,6 +183,7 @@ class InMemoryWorkUnitQueue:
         status: str,
         result: dict[str, Any] | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("complete")
         rec = self._units.get(work_unit_id)
         if rec is None:
             return None
@@ -177,6 +209,7 @@ class InMemoryWorkUnitQueue:
         return done
 
     def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("terminate_restart")  # sak491-a
         rec = self._units.get(work_unit_id)
         if rec is None:
             return None
@@ -204,6 +237,13 @@ def compute_work_queue_mode() -> str | None:
 
 
 def get_work_unit_queue() -> WorkUnitQueuePort:
+    from broker_client.flags import broker_compute_enabled
+
+    if broker_compute_enabled():
+        raise RuntimeError(
+            "compute local work_unit queue unavailable under "
+            "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_work"
+        )
     global _work_unit_queue
     with _work_unit_queue_lock:
         if _work_unit_queue is not None:

@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 from compute.work_unit import (
     WORK_UNIT_STATUSES,
     WorkUnitRecord,
+    _refuse_direct_queue_op,
     _utc_now,
 )
 from compute.worker_policy import sanitize_work_unit_payload
@@ -73,6 +74,14 @@ class RedisWorkUnitQueue:
         records_key: str = "nimbusware:compute:work_units:records",
         client: Any | None = None,
     ) -> None:
+        # sak439-i: defense-in-depth refuse under COMPUTE peel (prefer get_work_unit_queue gate).
+        from broker_client.flags import broker_compute_enabled
+
+        if broker_compute_enabled():
+            raise RuntimeError(
+                "compute RedisWorkUnitQueue unavailable under "
+                "NIMBUSWARE_BROKER_COMPUTE=1|2; use SwissArmyNoife compute_work"
+            )
         self._queue_key = queue_key
         self._records_key = records_key
         if client is not None:
@@ -97,6 +106,7 @@ class RedisWorkUnitQueue:
         return deserialize_work_unit_record(raw)
 
     def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]:
+        _refuse_direct_queue_op("list_units")  # sak491-a
         raw_map = self._client.hgetall(self._records_key)
         out: list[WorkUnitRecord] = []
         for raw in raw_map.values():
@@ -109,6 +119,7 @@ class RedisWorkUnitQueue:
         return out
 
     def queued_count(self, *, session_id: UUID | None = None) -> int:
+        _refuse_direct_queue_op("queued_count")  # sak491-a
         ids = self._client.lrange(self._queue_key, 0, -1)
         count = 0
         for wid in ids:
@@ -130,6 +141,7 @@ class RedisWorkUnitQueue:
         executor_user_id: str = "",
         payload: dict[str, Any] | None = None,
     ) -> WorkUnitRecord:
+        _refuse_direct_queue_op("enqueue")  # sak490-b
         safe_payload = sanitize_work_unit_payload(payload)
         wid = uuid4()
         now = _utc_now()
@@ -154,6 +166,7 @@ class RedisWorkUnitQueue:
         session_id: UUID | None = None,
         node_id: UUID | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("dequeue")  # sak490-b
         depth = int(self._client.llen(self._queue_key) or 0)
         attempts = max(depth, 1)
         for _ in range(attempts):
@@ -192,6 +205,7 @@ class RedisWorkUnitQueue:
         status: str,
         result: dict[str, Any] | None = None,
     ) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("complete")  # sak490-b
         rec = self._load(str(work_unit_id))
         if rec is None:
             return None
@@ -217,6 +231,7 @@ class RedisWorkUnitQueue:
         return done
 
     def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None:
+        _refuse_direct_queue_op("terminate_restart")  # sak491-a
         rec = self._load(str(work_unit_id))
         if rec is None:
             return None
