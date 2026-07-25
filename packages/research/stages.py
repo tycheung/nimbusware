@@ -22,7 +22,7 @@ from agent_core.models import (
     Verdict,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.registry import RoleRegistry
+from research.registry_facade import RoleRegistry
 from research.artifacts import persist_research_brief
 from research.bundle_promotion import (
     primary_stack_id_from_requirements,
@@ -82,7 +82,7 @@ def _emit_critique_panel(
             ),
         )
         critic_payloads.append(payload)
-    from orchestrator.llm.common import _finalize_critique_gate
+    from research.llm_common_facade import _finalize_critique_gate
 
     _finalize_critique_gate(
         store,

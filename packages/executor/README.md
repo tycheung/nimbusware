@@ -6,4 +6,3 @@ Role-gated outbound HTTP and subprocess helpers for slice implement agents. Cent
 
 `orchestrator` micro-slice implement path; tests under `tests/unit/test_executor.py`.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

@@ -22,7 +22,7 @@ from agent_core.models import (
 from extensions.extension_runtime import UniversalCritiqueRouter
 from maker.workspace.snapshot import create_workspace_snapshot
 from maker.workspace.workspace import workspace_path_from_run_created_metadata
-from orchestrator.registry import RoleRegistry
+from research.registry_facade import RoleRegistry
 from research.stages import _emit_critique_panel
 from research.stitch_manifests import (
     persist_transplant_manifest,

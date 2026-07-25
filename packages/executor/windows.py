@@ -3,7 +3,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from executor.egress import assert_egress_allowed, host_matches_allowlist
+from executor.egress_bridge import assert_egress_allowed, host_matches_allowlist
 
 
 def run_subprocess(
