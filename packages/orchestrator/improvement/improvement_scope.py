@@ -20,6 +20,9 @@ _SCOPE_MATRIX: dict[RepoScope, frozenset[ImprovementTrack]] = {
             ImprovementTrack.ARCHITECTURE_REVISE,
             ImprovementTrack.VARIANT_EXPERIMENT,
             ImprovementTrack.DISTILL_ARTIFACTS,
+            ImprovementTrack.RESEARCH_HARNESS,
+            ImprovementTrack.TRY_DIVERSE_REPO,
+            ImprovementTrack.RESEARCH_DOMAIN,
         },
     ),
     RepoScope.MAINTAIN: frozenset(
@@ -34,6 +37,9 @@ _SCOPE_MATRIX: dict[RepoScope, frozenset[ImprovementTrack]] = {
             ImprovementTrack.ARCHITECTURE_REVISE,
             ImprovementTrack.DOCUMENT_CONTRACTS,
             ImprovementTrack.DISTILL_ARTIFACTS,
+            ImprovementTrack.RESEARCH_HARNESS,
+            ImprovementTrack.TRY_DIVERSE_REPO,
+            ImprovementTrack.RESEARCH_DOMAIN,
         },
     ),
     RepoScope.HARDEN: frozenset(
@@ -43,6 +49,8 @@ _SCOPE_MATRIX: dict[RepoScope, frozenset[ImprovementTrack]] = {
             ImprovementTrack.SECURITY_HARDEN,
             ImprovementTrack.RESEARCH_TRANSPLANT,
             ImprovementTrack.DISTILL_ARTIFACTS,
+            ImprovementTrack.RESEARCH_HARNESS,
+            ImprovementTrack.RESEARCH_DOMAIN,
         },
     ),
 }

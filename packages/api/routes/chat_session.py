@@ -173,7 +173,7 @@ def start_chat_session(
             status_code=422,
             detail=problem(
                 "invalid_request",
-                "work_type must be one of quick, patch, slice, campaign, factory",
+                "work_type must be one of quick, patch, slice, campaign, factory, self_evolve",
             ),
         ) from exc
     work_type_source = resolve_work_type_source(body.work_type_source, session)
@@ -192,11 +192,15 @@ def start_chat_session(
     requirements = requirements_payload(
         body, last_user.text if last_user else None
     ) or requirements_from_path(path)
-    if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY) and requirements is None:
+    if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE) and requirements is None:
         raise HTTPException(
             status_code=422,
             detail=problem("invalid_request", "requirements or prior chat message required"),
         )
+    if work_type == WorkType.SELF_EVOLVE and requirements is not None:
+        from maker.intent.domain_keywords import attach_domain_keywords
+
+        requirements = attach_domain_keywords(requirements) or requirements
 
     enforce_discovery_gate(requirements, workflow_profile=profile)
 
@@ -208,7 +212,7 @@ def start_chat_session(
     )
 
     try:
-        if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY):
+        if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE):
             started = start_campaign(
                 orch=orch,
                 project_store=project_store,

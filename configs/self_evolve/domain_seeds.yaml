@@ -1,0 +1,55 @@
+# Seed catalogs for domain-specific self-evolve research.
+# Keywords on the run match `match` tokens; otherwise synthetic search targets are used.
+domains:
+  - id: accounting
+    match: [accounting, bookkeeping, ledger, invoicing, erp, quickbooks, xero, finance]
+    seeds:
+      - id: erpnext
+        url: https://github.com/frappe/erpnext
+        tags: [erp, accounting, open-source]
+        focus: [double-entry, multi-company, inventory]
+      - id: akaunting
+        url: https://github.com/akaunting/akaunting
+        tags: [accounting, laravel, saas]
+        focus: [invoicing, expenses, multi-tenant]
+      - id: bigcapital
+        url: https://github.com/bigcapitalhq/bigcapital
+        tags: [accounting, typescript]
+        focus: [modern-ledger, api-first]
+      - id: ledger-cli
+        url: https://github.com/ledger/ledger
+        tags: [cli, double-entry]
+        focus: [plain-text-accounting]
+  - id: healthcare
+    match: [healthcare, clinical, ehr, emr, hipaa, medical, patient]
+    seeds:
+      - id: openemr
+        url: https://github.com/openemr/openemr
+        tags: [ehr, php]
+        focus: [clinical-workflows, charts]
+      - id: medplum
+        url: https://github.com/medplum/medplum
+        tags: [fhir, typescript]
+        focus: [fhir-api, care-coordination]
+  - id: ecommerce
+    match: [ecommerce, e-commerce, shop, storefront, retail, marketplace]
+    seeds:
+      - id: saleor
+        url: https://github.com/saleor/saleor
+        tags: [graphql, python, commerce]
+        focus: [headless-commerce, catalog]
+      - id: medusa
+        url: https://github.com/medusajs/medusa
+        tags: [nodejs, commerce]
+        focus: [modular-commerce, carts]
+  - id: crm
+    match: [crm, salesforce, pipeline, leads, contacts]
+    seeds:
+      - id: twenty
+        url: https://github.com/twentyhq/twenty
+        tags: [crm, typescript]
+        focus: [modern-crm, ux]
+      - id: espocrm
+        url: https://github.com/espocrm/espocrm
+        tags: [crm, php]
+        focus: [classic-crm, entities]

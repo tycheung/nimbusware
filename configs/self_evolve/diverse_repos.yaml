@@ -1,0 +1,43 @@
+# Diverse, distinct trial repos for curriculum self-evolve (smoke-study, not full forks).
+# Prefer breadth across languages/domains Nimbusware may not already specialize in.
+repos:
+  - id: fastapi-todo
+    url: https://github.com/tiangolo/full-stack-fastapi-template
+    tags: [python, fullstack, fastapi]
+    distinct_axis: web-fullstack
+  - id: flask-mega
+    url: https://github.com/miguelgrinberg/microblog
+    tags: [python, flask, blog]
+    distinct_axis: classic-mvc
+  - id: express-api
+    url: https://github.com/hagopj13/node-express-boilerplate
+    tags: [javascript, express, api]
+    distinct_axis: node-api
+  - id: nextjs-commerce
+    url: https://github.com/vercel/commerce
+    tags: [typescript, nextjs, ecommerce]
+    distinct_axis: commerce-frontend
+  - id: go-kit-examples
+    url: https://github.com/go-kit/examples
+    tags: [go, microservices]
+    distinct_axis: go-services
+  - id: rails-sample
+    url: https://github.com/rails/rails
+    tags: [ruby, rails]
+    distinct_axis: rails-monolith
+  - id: spring-petclinic
+    url: https://github.com/spring-projects/spring-petclinic
+    tags: [java, spring]
+    distinct_axis: java-enterprise
+  - id: rust-axum
+    url: https://github.com/tokio-rs/axum
+    tags: [rust, http]
+    distinct_axis: rust-http
+  - id: dotnet-webapi
+    url: https://github.com/dotnet/AspNetCore.Docs
+    tags: [csharp, aspnet]
+    distinct_axis: dotnet-web
+  - id: django-polls
+    url: https://github.com/django/django
+    tags: [python, django]
+    distinct_axis: django-batteries

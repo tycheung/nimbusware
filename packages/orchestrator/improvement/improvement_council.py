@@ -21,6 +21,9 @@ class ImprovementTrack(str, Enum):
     ARCHITECTURE_REVISE = "architecture_revise"
     DOCUMENT_CONTRACTS = "document_contracts"
     DISTILL_ARTIFACTS = "distill_artifacts"
+    RESEARCH_HARNESS = "research_harness"
+    TRY_DIVERSE_REPO = "try_diverse_repo"
+    RESEARCH_DOMAIN = "research_domain"
 
 
 @dataclass

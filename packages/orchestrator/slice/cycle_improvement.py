@@ -463,6 +463,35 @@ def execute_improvement_track(
             ),
         )
         return
+    if track == ImprovementTrack.RESEARCH_HARNESS:
+        from env import find_repo_root
+        from orchestrator.improvement.self_evolve_curriculum import run_research_harness_track
+
+        root = (repo_root or find_repo_root(start=workspace)).resolve()
+        run_research_harness_track(store, run_id, workspace, repo_root=root)
+        return
+    if track == ImprovementTrack.TRY_DIVERSE_REPO:
+        from env import find_repo_root
+        from orchestrator.improvement.self_evolve_curriculum import run_try_diverse_repo_track
+
+        root = (repo_root or find_repo_root(start=workspace)).resolve()
+        run_try_diverse_repo_track(store, run_id, workspace, repo_root=root)
+        return
+    if track == ImprovementTrack.RESEARCH_DOMAIN:
+        from env import find_repo_root
+        from maker.intent.domain_keywords import domain_keywords_from_rows
+        from orchestrator.improvement.self_evolve_curriculum import run_research_domain_track
+
+        root = (repo_root or find_repo_root(start=workspace)).resolve()
+        rows = store.list_run_events(str(run_id))
+        run_research_domain_track(
+            store,
+            run_id,
+            workspace,
+            repo_root=root,
+            keywords=domain_keywords_from_rows(rows),
+        )
+        return
     if track == ImprovementTrack.REFACTOR_COHESION:
         from orchestrator.repo_intel.cohesion_graph import build_cohesion_graph
 

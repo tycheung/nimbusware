@@ -37,6 +37,7 @@ def build_requirements_artifact(
     recommend_for_me: bool = False,
     stack_manifest: dict[str, Any] | None = None,
     solo_discipline: str | None = None,
+    domain_keywords: list[str] | None = None,
 ) -> dict[str, Any]:
     prompt = business_prompt.strip()
     if not prompt:
@@ -71,7 +72,10 @@ def build_requirements_artifact(
     routes = build_solo_discipline_routes(prompt, solo_hat=solo_discipline)
     if routes:
         artifact["solo_discipline_routes"] = routes
-    return artifact
+    from maker.intent.domain_keywords import attach_domain_keywords
+
+    attached = attach_domain_keywords(artifact, extra=domain_keywords)
+    return attached if attached is not None else artifact
 
 
 def plan_summary_from_requirements(requirements: dict[str, Any] | None) -> str:

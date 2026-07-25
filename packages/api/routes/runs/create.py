@@ -38,6 +38,7 @@ class RunRequirementsBody(BaseModel):
     recommend_for_me: bool = False
     stack_manifest: dict[str, Any] | None = None
     solo_discipline: str | None = Field(default=None, max_length=32)
+    domain_keywords: list[str] = Field(default_factory=list, max_length=12)
 
 
 def build_requirements_from_body(requirements: RunRequirementsBody) -> dict[str, Any]:
@@ -56,6 +57,7 @@ def build_requirements_from_body(requirements: RunRequirementsBody) -> dict[str,
         recommend_for_me=requirements.recommend_for_me,
         stack_manifest=requirements.stack_manifest,
         solo_discipline=requirements.solo_discipline,
+        domain_keywords=list(requirements.domain_keywords or []),
     )
     if requirements.recommend_for_me and not requirements.scope_discovery:
         state = scope_discover(requirements.business_prompt)

@@ -229,6 +229,18 @@ def campaign_driver_tick(
                 rows,
                 slices_completed=completed,
             )
+            from orchestrator.improvement.self_evolve_curriculum import (
+                maybe_run_self_evolve_curriculum_tick,
+            )
+
+            maybe_run_self_evolve_curriculum_tick(
+                orch._store,
+                run_id,
+                Path(workspace),
+                orch._store.list_run_events(str(run_id)),
+                slices_completed=completed,
+                repo_root=orch.repo_root,
+            )
 
     if all_slices_terminal(backlog):
         from orchestrator.completion_evaluator import evaluate_and_finalize_campaign

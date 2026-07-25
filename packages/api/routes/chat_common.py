@@ -367,6 +367,8 @@ def resolve_workflow_profile(
         return DEFAULT_QUICK_WORKFLOW
     if work_type == WorkType.FACTORY:
         return "campaign_factory_zero_touch"
+    if work_type == WorkType.SELF_EVOLVE:
+        return "campaign_self_evolve"
     if work_type == WorkType.CAMPAIGN:
         return "campaign_fullstack"
     meta = project_metadata(project_store, project_uuid)

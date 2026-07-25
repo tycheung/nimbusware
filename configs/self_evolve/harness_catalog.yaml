@@ -1,0 +1,53 @@
+# Seed catalog of agentic harnesses / agent frameworks to study for meta self-improvement.
+# Distill patterns into skills/overlays only — never copy into Nimbusware packages/**.
+harnesses:
+  - id: aider
+    name: Aider
+    url: https://github.com/Aider-AI/aider
+    focus: [repo-map, edit-format, git-commit-loop]
+    distinct_from: "tight edit formats and git-native agent loop"
+  - id: openhands
+    name: OpenHands
+    url: https://github.com/All-Hands-AI/OpenHands
+    focus: [sandbox, event-stream, multi-agent]
+    distinct_from: "event-stream agent runtime and sandboxed tools"
+  - id: Continue
+    name: Continue
+    url: https://github.com/continuedev/continue
+    focus: [ide-bridge, context-providers, slash-commands]
+    distinct_from: "IDE context providers and slash UX"
+  - id: swe-agent
+    name: SWE-agent
+    url: https://github.com/SWE-agent/SWE-agent
+    focus: [aci, trajectory, issue-resolve]
+    distinct_from: "agent-computer interface for issue resolution"
+  - id: metagpt
+    name: MetaGPT
+    url: https://github.com/geekan/MetaGPT
+    focus: [role-sop, multi-agent-company]
+    distinct_from: "SOP-driven multi-role software company simulation"
+  - id: langgraph
+    name: LangGraph
+    url: https://github.com/langchain-ai/langgraph
+    focus: [graph-state, checkpoint, durable-execution]
+    distinct_from: "durable graph state machines for agents"
+  - id: crewai
+    name: CrewAI
+    url: https://github.com/crewAIInc/crewAI
+    focus: [crew-roles, task-delegation]
+    distinct_from: "role/task crew orchestration"
+  - id: autogen
+    name: AutoGen
+    url: https://github.com/microsoft/autogen
+    focus: [multi-agent-chat, tool-use]
+    distinct_from: "conversational multi-agent patterns"
+  - id: cline
+    name: Cline
+    url: https://github.com/cline/cline
+    focus: [plan-act, mcp-tools, checkpoints]
+    distinct_from: "plan/act IDE agent with MCP tool surface"
+  - id: goose
+    name: Goose
+    url: https://github.com/block/goose
+    focus: [local-first, recipes, extensions]
+    distinct_from: "local-first recipe/extension agent model"
