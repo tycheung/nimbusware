@@ -6,12 +6,12 @@ import pytest
 import yaml
 
 from orchestrator.role_telemetry import merge_role_telemetry_metadata
-from orchestrator.routing.cost_summary import summarize_run_role_cost
-from orchestrator.routing.presets import (
+from orchestrator.model_routing.cost_summary import summarize_run_role_cost
+from orchestrator.model_routing.presets import (
     apply_routing_preset,
     list_routing_preset_summaries,
 )
-from orchestrator.stage_provider_routing import (
+from orchestrator.provider_routing_facade import (
     probe_cloud_runtime,
     resolve_stage_provider,
     stage_chat_json,
@@ -99,7 +99,7 @@ def test_stage_chat_json_routes_cloud_stage(
             }
 
     monkeypatch.setattr(
-        "orchestrator.stage_provider_routing.httpx.post",
+        "orchestrator.provider_routing_facade.httpx.post",
         lambda *a, **k: _Resp(),
     )
     out = stage_chat_json(

@@ -9,7 +9,7 @@ from agent_tools.tool_registry import (
     agent_tools_allowlist,
     is_agent_tool_enabled,
 )
-from agent_tools.tools import tool_find, tool_ls
+from agent_tools.shell_tools import tool_find, tool_ls
 
 
 def test_default_allowlist_excludes_find_ls() -> None:

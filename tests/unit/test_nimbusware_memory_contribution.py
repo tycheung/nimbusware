@@ -8,9 +8,9 @@ import pytest
 from agent_core.models import EventType
 from env import find_repo_root
 from memory import InMemoryMemoryChunkStore
-from memory.index.contribution import maybe_rebuild_memory_index_for_run
-from memory.index.embeddings import deterministic_embed, embed_text
-from memory.sync import memory_index_sync_state, memory_sync_manifest_stub
+from memory.peel_index.contribution import maybe_rebuild_memory_index_for_run
+from memory.peel_index.embeddings import deterministic_embed, embed_text
+from memory.peel_sync import memory_index_sync_state, memory_sync_manifest_stub
 from orchestrator.pipeline import make_dev_orchestrator
 from store.memory import InMemoryEventStore
 

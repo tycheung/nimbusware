@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agent_tools.sandbox import (
+from agent_tools.sandbox_bridge import (
     build_docker_run_argv,
     docker_cli_available,
     resolve_sandbox_backend,
@@ -40,7 +40,7 @@ def test_build_docker_run_argv(tmp_path: Path) -> None:
 
 
 def test_docker_unavailable_fails_closed(tmp_path: Path) -> None:
-    with patch("agent_tools.sandbox.docker_cli_available", return_value=False):
+    with patch("agent_tools.sandbox_bridge.docker_cli_available", return_value=False):
         result = run_subprocess_in_sandbox(
             tmp_path,
             ["python", "-c", "print(1)"],
@@ -53,8 +53,8 @@ def test_docker_unavailable_fails_closed(tmp_path: Path) -> None:
 
 
 def test_docker_backend_invokes_container(tmp_path: Path) -> None:
-    with patch("agent_tools.sandbox.docker_cli_available", return_value=True):
-        with patch("agent_tools.sandbox.subprocess.run") as mock_run:
+    with patch("agent_tools.sandbox_bridge.docker_cli_available", return_value=True):
+        with patch("agent_tools.sandbox_bridge.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="ok\n", stderr="")
             result = run_subprocess_in_sandbox(
                 tmp_path,
@@ -89,7 +89,7 @@ def test_run_subprocess_in_sandbox_none_prefix(tmp_path: Path) -> None:
 
 def test_docker_cli_available_false_on_missing_binary(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "agent_tools.sandbox.subprocess.run",
+        "agent_tools.sandbox_bridge.subprocess.run",
         MagicMock(side_effect=FileNotFoundError),
     )
     assert docker_cli_available() is False

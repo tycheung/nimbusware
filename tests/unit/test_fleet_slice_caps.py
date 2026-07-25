@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from orchestrator.fleet.slice_caps import clamp_slice_budget, fleet_replan_metadata
-from orchestrator.routing.preflight import (
+from orchestrator.model_routing.preflight import (
     roles_for_stack_manifest,
     surface_stage_map,
 )

@@ -191,3 +191,40 @@ def test_classify_intent_use_llm_false_skips_llm(monkeypatch: pytest.MonkeyPatch
     )
     classify_intent("fix bug in login", use_llm=False)
     assert not called
+
+
+def test_classify_intent_peel_on_llm_failure_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    """sak491-h: LLM peel on — broker/LLM miss propagates (no rules fallback)."""
+    import orchestrator.model_routing.manage as manage_mod
+
+    monkeypatch.setenv("NIMBUSWARE_INTENT_CLASSIFIER_MODEL", "test-model")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_LLM", "1")
+    monkeypatch.setattr(manage_mod, "ollama_base_url", lambda: "http://ollama", raising=False)
+
+    def _boom(*_args: object, **_kwargs: object) -> object:
+        raise RuntimeError("broker down")
+
+    monkeypatch.setattr("maker.intent.classifier._classify_intent_llm", _boom)
+    with pytest.raises(RuntimeError, match="broker_miss"):
+        classify_intent("maybe do something vague")
+
+
+def test_classify_intent_peel_off_llm_failure_falls_back_to_rules(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """sak491-h: peel off — keep rules_result fallback on LLM failure."""
+    import orchestrator.model_routing.manage as manage_mod
+
+    monkeypatch.setenv("NIMBUSWARE_INTENT_CLASSIFIER_MODEL", "test-model")
+    monkeypatch.delenv("NIMBUSWARE_BROKER_LLM", raising=False)
+    monkeypatch.setattr(manage_mod, "ollama_base_url", lambda: "http://ollama", raising=False)
+
+    def _boom(*_args: object, **_kwargs: object) -> object:
+        raise RuntimeError("broker down")
+
+    monkeypatch.setattr("maker.intent.classifier._classify_intent_llm", _boom)
+    result = classify_intent(
+        "fix the bug in the login handler for src/auth/login.py",
+    )
+    assert result.work_type == WorkType.PATCH
+    assert "llm_classifier" not in result.signals

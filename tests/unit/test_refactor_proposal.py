@@ -93,7 +93,7 @@ def test_refactor_llm_patch_path(monkeypatch: object, tmp_path: Path) -> None:
 
     monkeypatch.setenv("NIMBUSWARE_USE_LLM", "1")
     monkeypatch.setattr(
-        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
         _fake_ollama,
     )
     monkeypatch.setattr(

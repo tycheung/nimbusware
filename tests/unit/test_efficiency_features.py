@@ -10,8 +10,8 @@ from agent_core.token_telemetry import (
     token_savings_summary,
 )
 from agent_core.tool_schema import default_tool_schema_resolver
-from memory.index.index_table import build_memory_index_table
-from memory.index.models import MemoryRetrievalHit
+from memory.peel_index.index_table import build_memory_index_table
+from memory.peel_index.models import MemoryRetrievalHit
 from orchestrator.role_context_audit import (
     artifact_only_handoff_enabled,
     filter_implement_context,
@@ -99,7 +99,7 @@ def test_memory_index_fingerprint_skip_rebuild(tmp_path, monkeypatch) -> None:
 
     from agent_core.models import EventType
     from memory import InMemoryMemoryChunkStore, rebuild_memory_index
-    from memory.index.fingerprint import memory_event_rows_fingerprint
+    from memory.peel_index.fingerprint import memory_event_rows_fingerprint
 
     monkeypatch.chdir(tmp_path)
     rid = uuid4()

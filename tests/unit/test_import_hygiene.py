@@ -12,8 +12,6 @@ _STAR_IMPORT_F403_ALLOWED: frozenset[str] = frozenset(
         "models/events.py",
         "store.py",
         "llm/__init__.py",
-        "llm/plan_stage.py",
-        "llm/agent_evaluator.py",
         "llm_plan.py",
         "openapi.py",
         "scraper_artifacts.py",

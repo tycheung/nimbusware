@@ -5,7 +5,7 @@ from orchestrator.collab.binding_resolver import (
     participant_binding_overrides,
 )
 from orchestrator.participant_output_packet import ParticipantOutputPacket
-from orchestrator.routing.resolver import ModelBindingResolver
+from orchestrator.model_routing.resolver import ModelBindingResolver
 
 
 def test_participant_output_packet_caps() -> None:

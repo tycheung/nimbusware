@@ -10,8 +10,8 @@ from orchestrator.role_telemetry import (
     extract_role_telemetry_hint,
     merge_role_telemetry_metadata,
 )
-from orchestrator.routing.chat import extract_ollama_usage
-from orchestrator.routing.suggestions import (
+from orchestrator.model_routing.chat import extract_ollama_usage
+from orchestrator.model_routing.suggestions import (
     enrich_aggregate_with_model_selection,
     suggest_model_routing_changes,
 )

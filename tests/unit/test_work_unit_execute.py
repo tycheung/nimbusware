@@ -2,11 +2,16 @@ from __future__ import annotations
 
 from uuid import UUID
 
+import pytest
+
 from compute.work_unit import WorkUnitRecord
 from compute.work_unit_execute import execute_work_unit_on_worker
 
 
-def test_execute_work_unit_on_worker_mesh_acks_without_workspace() -> None:
+def test_execute_work_unit_on_worker_mesh_acks_without_workspace(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_BROKER_COMPUTE", raising=False)
     rec = WorkUnitRecord(
         work_unit_id=UUID("00000000-0000-4000-8000-000000000001"),
         run_id=UUID("00000000-0000-4000-8000-000000000002"),

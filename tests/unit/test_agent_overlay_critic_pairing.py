@@ -11,7 +11,7 @@ from orchestrator.collab.mesh_context import (
     set_mesh_binding_context,
 )
 from orchestrator.critique.routing import load_critique_router
-from orchestrator.llm.llm_slice import _custom_agent_prompt_from_rows
+from orchestrator.llm.slice_facade import _custom_agent_prompt_from_rows
 from orchestrator.registry import RoleRegistry
 
 ROOT = find_repo_root()

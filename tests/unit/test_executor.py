@@ -5,36 +5,36 @@ from uuid import UUID
 import httpx
 import pytest
 
-from executor.egress import assert_egress_allowed, host_matches_allowlist
+from executor.egress_bridge import assert_egress_allowed, host_matches_allowlist
 from executor.fetch import EgressResponseTooLarge, egress_checked_httpx_get
 
-
-def test_host_suffix_allowlist() -> None:
-    assert host_matches_allowlist("files.pypi.org", [".pypi.org"])
-    assert not host_matches_allowlist("evil.com", [".pypi.org"])
+_STREAM_ACTOR = UUID("11111111-1111-4111-8111-111111111101")
 
 
-def test_egress_role_gate() -> None:
+def test_host_suffix_allowlist_raises_after_peel() -> None:
+    with pytest.raises(RuntimeError, match="local allowlist removed"):
+        host_matches_allowlist("files.pypi.org", [".pypi.org"])
+
+
+def test_egress_role_gate_raises_after_peel() -> None:
     rid = UUID("11111111-1111-4111-8111-111111111101")
-    assert_egress_allowed(
-        actor_role_id=rid,
-        target_host="pypi.org",
-        scraper_role_allowlist=[rid],
-        domain_allowlist=[".pypi.org"],
-    )
-    with pytest.raises(PermissionError):
+    with pytest.raises(RuntimeError, match="local policy removed"):
         assert_egress_allowed(
-            actor_role_id=UUID("22222222-2222-4222-8222-222222222202"),
+            actor_role_id=rid,
             target_host="pypi.org",
             scraper_role_allowlist=[rid],
             domain_allowlist=[".pypi.org"],
         )
 
 
-_STREAM_ACTOR = UUID("11111111-1111-4111-8111-111111111101")
+def test_egress_checked_stream_rejects_content_length_over_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "executor.egress_bridge.try_broker_egress_check",
+        lambda _url: {"allowed": True},
+    )
 
-
-def test_egress_checked_stream_rejects_content_length_over_budget() -> None:
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, headers={"content-length": "500"}, content=b"")
 
@@ -51,7 +51,13 @@ def test_egress_checked_stream_rejects_content_length_over_budget() -> None:
         )
 
 
-def test_egress_checked_stream_reads_body_within_budget() -> None:
+def test_egress_checked_stream_reads_body_within_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "executor.egress_bridge.try_broker_egress_check",
+        lambda _url: {"allowed": True},
+    )
     body = b"hello"
 
     def handler(_request: httpx.Request) -> httpx.Response:
@@ -70,7 +76,13 @@ def test_egress_checked_stream_reads_body_within_budget() -> None:
     assert r.content == body
 
 
-def test_egress_checked_stream_rejects_body_over_budget_without_cl() -> None:
+def test_egress_checked_stream_rejects_body_over_budget_without_cl(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "executor.egress_bridge.try_broker_egress_check",
+        lambda _url: {"allowed": True},
+    )
     big = b"x" * 50
 
     def handler(_request: httpx.Request) -> httpx.Response:

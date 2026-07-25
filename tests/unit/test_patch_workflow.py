@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agent_tools.risk_caps import PATCH_DEFAULT_CAPS, agent_risk_caps_from_run_rows
+from agent_tools.risk_caps_facade import PATCH_DEFAULT_CAPS, agent_risk_caps_from_run_rows
 from orchestrator.patch_context import (
     apply_patch_stub_hotfix,
     implementation_path_from_failing_test,

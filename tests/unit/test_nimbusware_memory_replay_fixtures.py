@@ -6,7 +6,7 @@ import pytest
 
 from agent_core.models import EventType
 from memory import InMemoryMemoryChunkStore, rebuild_memory_index, search_memory
-from memory.index.indexer import deterministic_chunk_id
+from memory.peel_index.indexer import deterministic_chunk_id
 from orchestrator.replay.harness import (
     build_replay_snapshot,
     load_fixture_rows,
@@ -71,7 +71,7 @@ def test_deterministic_chunk_id_matches_indexer(tmp_path, monkeypatch) -> None:
     pl = finding_row["payload"]
     from uuid import UUID
 
-    from memory.index.chunking import _finding_excerpt
+    from memory.peel_index.chunking import _finding_excerpt
 
     expected_finding = deterministic_chunk_id(
         repo_scope_hash=scope,

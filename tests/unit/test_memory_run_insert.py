@@ -18,9 +18,9 @@ from agent_core.models import (  # noqa: E402
 )
 from api.app import app  # noqa: E402
 from maker.workspace.workspace import project_metadata_block  # noqa: E402
-from memory.index.models import MemoryChunkRecord  # noqa: E402
-from memory.index.repo_scope import repo_scope_hash  # noqa: E402
-from memory.store.memory import InMemoryMemoryChunkStore  # noqa: E402
+from memory.peel_index.models import MemoryChunkRecord  # noqa: E402
+from memory.peel_index.repo_scope import repo_scope_hash  # noqa: E402
+from memory.peel_store.memory import InMemoryMemoryChunkStore  # noqa: E402
 from store.memory import InMemoryEventStore  # noqa: E402
 
 
@@ -29,7 +29,7 @@ def memory_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[T
     store = InMemoryEventStore()
     chunk_store = InMemoryMemoryChunkStore()
     monkeypatch.setattr(
-        "api.routes.runs.memory_insert.build_memory_chunk_store",
+        "api.routes.runs.memory_insert.require_local_memory_chunk_store",
         lambda **_: chunk_store,
     )
     with TestClient(app) as c:

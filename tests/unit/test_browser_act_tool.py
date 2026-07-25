@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agent_tools.tools import tool_browser_act
+from agent_tools.shell_tools import tool_browser_act
 from e2e.harness.playwright_skip import require_playwright_chromium
 
 

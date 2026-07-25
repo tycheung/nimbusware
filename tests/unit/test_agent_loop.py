@@ -69,7 +69,7 @@ def test_agent_loop_respects_tool_step_cap(tmp_path: Path) -> None:
     def endless_read(**_kwargs: object) -> dict[str, object]:
         return {"done": False, "tool_calls": [{"tool": "read", "path": "a.py"}]}
 
-    from agent_tools.risk_caps import AgentRiskCaps
+    from agent_tools.risk_caps_facade import AgentRiskCaps
 
     result = run(
         ws,
@@ -121,7 +121,7 @@ def test_jit_loop_skips_gather_context(
         fake_run,
     )
 
-    from agent_tools.runtime import execute_slice_implement_agent
+    from agent_tools.runtime_facade import execute_slice_implement_agent
 
     execute_slice_implement_agent(
         ws,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from orchestrator.llm.llm_slice import execute_slice_plan_llm
+from orchestrator.llm.slice_facade import execute_slice_plan_llm
 from orchestrator.slice.micro_slice import parse_slice_plan
 
 
@@ -24,7 +24,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
         "acceptance_criteria": "tests pass",
     }
     with patch(
-        "orchestrator.llm.llm_slice.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.slice_facade._require_broker_chat",
         return_value=fake,
     ):
         plan = execute_slice_plan_llm(
@@ -40,7 +40,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
 
 def test_execute_slice_plan_llm_returns_none_on_failure() -> None:
     with patch(
-        "orchestrator.llm.llm_slice.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.slice_facade._require_broker_chat",
         side_effect=RuntimeError("down"),
     ):
         plan = execute_slice_plan_llm(

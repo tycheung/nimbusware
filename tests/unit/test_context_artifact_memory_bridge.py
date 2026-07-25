@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from memory.index.faiss_index import memory_faiss_index_ready
-from memory.index.manifest import default_memory_index_dir
+from memory.peel_index.faiss_index import memory_faiss_index_ready
+from memory.peel_index.manifest import default_memory_index_dir
 from orchestrator.context_artifacts import (
     bridge_artifact_to_memory_index,
     create_context_artifact,

@@ -7,6 +7,7 @@ from uuid import UUID
 from compute.mesh_stage_runner import execute_mesh_stage_on_worker
 from compute.work_unit import WorkUnitRecord
 from orchestrator.parallel_writers import WriterStageResult
+import pytest
 
 
 def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
@@ -27,7 +28,7 @@ def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
     orch = MagicMock()
     orch._store.list_run_events.return_value = []
     with patch(
-        "compute.mesh_stage_runner._mesh_orchestrator",
+        "compute.mesh_stage_runner_legacy._mesh_orchestrator",
         return_value=orch,
     ):
         with patch.object(
@@ -84,7 +85,7 @@ def test_execute_mesh_stage_sets_agent_overlay_context(tmp_path: Path) -> None:
     orch = MagicMock()
     orch._store.list_run_events.return_value = []
     with patch(
-        "compute.mesh_stage_runner._mesh_orchestrator",
+        "compute.mesh_stage_runner_legacy._mesh_orchestrator",
         return_value=orch,
     ):
         with patch.object(
@@ -102,3 +103,19 @@ def test_execute_mesh_stage_sets_agent_overlay_context(tmp_path: Path) -> None:
                 execute_mesh_stage_on_worker(rec)
     set_ctx.assert_called_once()
     assert set_ctx.call_args.kwargs.get("agent_overlay_prompt") == "Mesh overlay text."
+
+
+def test_execute_mesh_stage_broker_only_refuses_local(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
+    rec = WorkUnitRecord(
+        work_unit_id=UUID("00000000-0000-4000-8000-000000000001"),
+        run_id=UUID("00000000-0000-4000-8000-000000000002"),
+        session_id=None,
+        stage_name="implementation",
+        agent_role="implementation",
+        executor_user_id="",
+        status="assigned",
+        payload={"mesh_assignment": True},
+    )
+    with pytest.raises(RuntimeError, match=r"COMPUTE=1\|2"):
+        execute_mesh_stage_on_worker(rec)

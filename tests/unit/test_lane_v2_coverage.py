@@ -68,7 +68,7 @@ def test_execute_test_writer_role_critique_llm_success() -> None:
         }
 
     with patch(
-        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_test_writer_critique_llm(

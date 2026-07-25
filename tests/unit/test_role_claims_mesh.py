@@ -4,7 +4,7 @@ import pytest
 
 from orchestrator.collab.scheduler import MeshScheduler
 from orchestrator.role_claims_mesh import stage_role_claims
-from orchestrator.routing.audit import (
+from orchestrator.model_routing.audit import (
     RoleClaimConflictError,
     active_role_claims_from_events,
     assert_role_claim_available,

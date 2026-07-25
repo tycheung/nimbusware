@@ -48,10 +48,10 @@ def test_rank_models_includes_routing_allowlist() -> None:
 
 def test_probe_hardware_fixture_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_HW_FIXTURE", "weak")
-    from hw import cache
+    from hw import cache_legacy
 
-    cache._cached = None
+    cache_legacy._cached = None
     raw = probe_hardware()
     assert raw.get("tier") == "weak"
-    cache._cached = None
+    cache_legacy._cached = None
     monkeypatch.delenv("NIMBUSWARE_HW_FIXTURE", raising=False)

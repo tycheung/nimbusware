@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from agent_tools.allowlist import path_in_plan, validate_shell_invocation
-from agent_tools.runtime import execute_slice_implement_agent
-from agent_tools.tools import (
+from agent_tools.runtime_facade import execute_slice_implement_agent
+from agent_tools.shell_tools import (
     tool_edit_file,
     tool_find,
     tool_grep,

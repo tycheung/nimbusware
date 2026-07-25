@@ -7,7 +7,7 @@ from unittest.mock import patch
 from agent_core.models.slice_handoff import SliceHandoffSummary
 from agent_core.prompt_tiers import assemble_prompt
 from agent_tools.agent_loop import _stable_system_prompt, _volatile_user_prompt
-from agent_tools.runtime import _gather_context
+from agent_tools.runtime_facade import _gather_context
 from orchestrator.context_compaction import compact_campaign_context
 from orchestrator.slice.handoff import handoff_markdown_capped
 from orchestrator.slice.micro_slice import parse_slice_plan

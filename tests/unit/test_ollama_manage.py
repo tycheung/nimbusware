@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from orchestrator.routing.manage import (
+from orchestrator.model_routing.manage import (
     OllamaManageError,
     OllamaModelRow,
     delete_model,
@@ -55,7 +55,7 @@ def test_ollama_reachable_false_on_error() -> None:
 
 
 def test_pull_model_requires_reachable() -> None:
-    with patch("orchestrator.routing.manage.ollama_reachable", return_value=False):
+    with patch("orchestrator.model_routing.manage.ollama_reachable", return_value=False):
         with pytest.raises(OllamaManageError, match="not reachable"):
             pull_model("x")
 

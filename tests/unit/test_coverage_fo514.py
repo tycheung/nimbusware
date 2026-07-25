@@ -12,12 +12,12 @@ from api.schemas.ollama import (
     OllamaUserPolicyBody,
 )
 from config.persist import load_model_routing_dict, persist_model_routing_dict
-from orchestrator.routing.manage import (
+from orchestrator.model_routing.manage import (
     OllamaModelRow,
     filter_models,
     runtime_base_url_from_routing,
 )
-from orchestrator.routing.user_policy import policy_from_routing
+from orchestrator.model_routing.user_policy import policy_from_routing
 
 
 def test_load_and_persist_model_routing_roundtrip(tmp_path: Path) -> None:

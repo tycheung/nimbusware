@@ -8,8 +8,8 @@ _TARGETS = _REPO / "scripts" / "ci" / "mypy_ci_targets.py"
 
 _ORCHESTRATOR_STRICT = frozenset(
     {
-        "orchestrator.routing.manage",
-        "orchestrator.routing.user_policy",
+        "orchestrator.model_routing.manage",
+        "orchestrator.model_routing.user_policy",
         "orchestrator.preflight",
         "orchestrator.merge",
         "orchestrator.workflow.profiles",

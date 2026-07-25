@@ -18,7 +18,7 @@ from config.persist import (
     load_workflow_profile_dict,
 )
 from memory.event_scan import fetch_event_rows_for_memory_index
-from memory.sync import memory_index_sync_state, memory_sync_manifest_stub
+from memory.peel_sync import memory_index_sync_state, memory_sync_manifest_stub
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
 from projections.builders import stage_timeline
 from projections.builders.integrator_gate import integrator_gate_timeline_summary

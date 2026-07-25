@@ -3,11 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from memory.index.embeddings import embed_text
-from memory.index.models import MemoryChunkRecord
-from memory.index.search import search_user_memory
-from memory.index.user_scope import user_scope_hash
-from memory.store.memory import InMemoryMemoryChunkStore
+from memory.peel_index.embeddings import embed_text
+from memory.peel_index.models import MemoryChunkRecord
+from memory.peel_index.search import search_user_memory
+from memory.peel_index.user_scope import user_scope_hash
+from memory.peel_store.memory import InMemoryMemoryChunkStore
 
 
 def test_search_user_memory_returns_hits(tmp_path: Path) -> None:

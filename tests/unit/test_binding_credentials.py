@@ -3,8 +3,8 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
-from orchestrator.routing.credentials import resolve_binding_api_key
-from orchestrator.routing.resolver import ResolvedBinding
+from orchestrator.model_routing.credentials import resolve_binding_api_key
+from orchestrator.model_routing.resolver import ResolvedBinding
 
 
 def _binding(**kwargs: object) -> ResolvedBinding:
@@ -26,7 +26,7 @@ def _binding(**kwargs: object) -> ResolvedBinding:
 def test_resolve_binding_api_key_from_env_ref() -> None:
     binding = _binding(api_key_ref="OPENAI_API_KEY")
     with patch(
-        "orchestrator.routing.credentials.env_str",
+        "orchestrator.model_routing.credentials.env_str",
         return_value="sk-test",
     ):
         assert resolve_binding_api_key(binding, user_id="u1") == "sk-test"
@@ -43,7 +43,7 @@ def test_resolve_binding_api_key_from_vault() -> None:
         return_value=store,
     ):
         with patch(
-            "orchestrator.routing.credentials.nimbusware_database_url",
+            "orchestrator.model_routing.credentials.nimbusware_database_url",
             return_value="postgresql://x",
         ):
             assert resolve_binding_api_key(binding, user_id="user-a") == "vault-key"

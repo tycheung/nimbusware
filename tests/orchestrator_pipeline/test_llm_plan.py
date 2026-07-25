@@ -5,6 +5,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import httpx
+import pytest
 
 from env import find_repo_root
 from extensions.extension_runtime import UniversalCritiqueRouter
@@ -17,7 +18,7 @@ from orchestrator.llm import (
 from orchestrator.registry import RoleRegistry
 from store.memory import InMemoryEventStore
 
-_MOCK_RESOLVER_CHAT = "orchestrator.routing.resolver.ModelBindingResolver.chat_json"
+_MOCK_RESOLVER_CHAT = "orchestrator.model_routing.resolver.ModelBindingResolver.chat_json"
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"
 
@@ -163,7 +164,7 @@ def test_implementation_critique_llm_records_events() -> None:
         }
 
     with patch(
-        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_implementation_critique_llm(
@@ -193,7 +194,10 @@ def test_implementation_critique_llm_records_events() -> None:
     assert len(gates) == 1
 
 
-def test_test_writer_critique_llm_invalid_shape_returns_false() -> None:
+def test_test_writer_critique_llm_invalid_shape_returns_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_BROKER_LLM", raising=False)
     store = InMemoryEventStore()
     reg = RoleRegistry.from_yaml(ROOT / "configs" / "roles.yaml")
     run_id = uuid4()
@@ -201,7 +205,10 @@ def test_test_writer_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
+    with patch(
+        "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch",
+        side_effect=bad_json,
+    ):
         ok = execute_test_writer_critique_llm(
             store,
             reg,
@@ -243,7 +250,7 @@ def test_test_writer_critique_llm_records_events() -> None:
         }
 
     with patch(
-        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_test_writer_critique_llm(
@@ -273,7 +280,10 @@ def test_test_writer_critique_llm_records_events() -> None:
     assert len(gates) == 1
 
 
-def test_planner_critique_llm_invalid_shape_returns_false() -> None:
+def test_planner_critique_llm_invalid_shape_returns_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_BROKER_LLM", raising=False)
     store = InMemoryEventStore()
     reg = RoleRegistry.from_yaml(ROOT / "configs" / "roles.yaml")
     run_id = uuid4()
@@ -281,7 +291,10 @@ def test_planner_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
+    with patch(
+        "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch",
+        side_effect=bad_json,
+    ):
         ok = execute_planner_critique_llm(
             store,
             reg,
@@ -323,7 +336,7 @@ def test_planner_critique_llm_records_events() -> None:
         }
 
     with patch(
-        "orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_planner_critique_llm(

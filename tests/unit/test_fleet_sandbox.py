@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from agent_tools.fleet_sandbox import run_e2b_sandbox, run_kubernetes_sandbox
-from agent_tools.sandbox import resolve_sandbox_backend, run_subprocess_in_sandbox
+from agent_tools.sandbox_bridge import resolve_sandbox_backend, run_subprocess_in_sandbox
 
 
 def test_resolve_sandbox_backend_accepts_fleet_backends(monkeypatch: pytest.MonkeyPatch) -> None:

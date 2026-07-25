@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from orchestrator.routing.resolver import ModelBindingResolver
+from orchestrator.model_routing.resolver import ModelBindingResolver
 
 REPO = Path(__file__).resolve().parents[2]
 

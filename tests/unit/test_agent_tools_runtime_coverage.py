@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from agent_tools.runtime import (
+from agent_tools.runtime_facade import (
     AgentStep,
     _allowed_paths,
     _execute_step,
@@ -11,7 +11,7 @@ from agent_tools.runtime import (
     _parse_steps,
     re_escape_simple,
 )
-from agent_tools.tools import ToolResult
+from agent_tools.shell_tools import ToolResult
 from orchestrator.slice.micro_slice import SlicePlan
 
 

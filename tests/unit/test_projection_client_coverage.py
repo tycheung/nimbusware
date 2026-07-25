@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agent_tools.runtime import AgentStep
+from agent_tools.runtime_facade import AgentStep
 from client.http import admin_headers, api_base, user_headers
 from maker.readiness.platform import build_platform_readiness
 from maker.slice_preview import (

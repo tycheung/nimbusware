@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from agent_tools.allowlist import resolve_workspace_file
-from agent_tools.filesystem_jail import FilesystemJailPolicy
-from agent_tools.tools import tool_grep, tool_read_file
+from agent_tools.jail_facade import FilesystemJailPolicy
+from agent_tools.shell_tools import tool_grep, tool_read_file
 
 
 def test_denies_env_and_git_paths() -> None:

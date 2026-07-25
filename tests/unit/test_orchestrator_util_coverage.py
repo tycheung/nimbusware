@@ -11,7 +11,7 @@ from config.listener import (
 )
 from config.notify import ConfigNotifyHub, encode_notify_payload
 from orchestrator.critique.security_semgrep import run_semgrep_scan
-from orchestrator.routing.chat import (
+from orchestrator.model_routing.chat import (
     OllamaLlmJson,
     extract_ollama_usage,
     ollama_chat_json,
@@ -42,7 +42,7 @@ def test_ollama_chat_json_parses_message(monkeypatch) -> None:
         def post(self, *args, **kwargs):
             return response
 
-    monkeypatch.setattr("orchestrator.routing.chat.httpx.post", _Client().post)
+    monkeypatch.setattr("orchestrator.model_routing.chat.httpx.post", _Client().post)
     out = ollama_chat_json(
         base_url="http://127.0.0.1:11434",
         model="tiny",

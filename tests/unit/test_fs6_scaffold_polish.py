@@ -16,7 +16,7 @@ from orchestrator.replay.audit_export import (
     scope_snapshot_from_requirements,
     surface_outcomes_from_events,
 )
-from orchestrator.routing.preflight import surface_binding_rows
+from orchestrator.model_routing.preflight import surface_binding_rows
 from orchestrator.stack.agent_scaffold import scaffold_agents_for_manifest
 from research.bundle_promotion import (
     list_catalog_candidates_for_stack,

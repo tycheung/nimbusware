@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from orchestrator.routing.user_policy import merge_policy_into_routing
+from orchestrator.model_routing.user_policy import merge_policy_into_routing
 
 
 def test_policy_merge_stamps_updated_at() -> None:
