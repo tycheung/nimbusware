@@ -20,6 +20,11 @@ if TYPE_CHECKING:
     from store.protocol import EventStore
 
 
+def _sample_pressure_for_audit(governor: Any | None) -> tuple[PressureLevel, dict[str, Any]]:
+    """Broker-first pressure for audit events (`sak421-i`); sample_pressure already thinned."""
+    return sample_pressure(governor)
+
+
 def _profile_fingerprint(profile: HardwareProfile) -> str:
     blob = json.dumps(profile.model_dump_public(), sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
@@ -32,8 +37,11 @@ def append_hardware_profile_detected_event(
     profile: HardwareProfile,
     governor: Any | None = None,
 ) -> int:
-    level, details = sample_pressure(governor)
+    level, details = _sample_pressure_for_audit(governor)
     pub = profile.model_dump_public()
+    # Prefer broker capacity_source / platform on the profile when present (`sak421-i`).
+    if isinstance(details, dict) and details.get("source") == "broker_capacity":
+        pub = {**pub, "capacity_source": "broker"}
     tier = str(pub.get("tier") or profile.tier or "weak")
     reason = details.get("reason") if isinstance(details, dict) else None
     event = HardwareProfileDetectedEvent(
@@ -82,7 +90,7 @@ def maybe_append_resource_pressure_warn(
 ) -> int | None:
     """Rate-limited mid-run ``resource.pressure.warn`` when governor sampling is elevated."""
     if level is None:
-        level, sampled = sample_pressure(governor)
+        level, sampled = _sample_pressure_for_audit(governor)
         details = sampled if isinstance(sampled, dict) else {}
     elif details is None:
         details = {}

@@ -1,86 +1,26 @@
+"""Thin model fit ranking (`sak419-e`). Prefer broker profile; legacy under dual-run/`=0`."""
+
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-from hw.catalog import load_model_catalog
-from hw.ollama_presets import ollama_presets_for_model
+from broker_client.flags import broker_capacity_enabled
 from hw.profile import HardwareProfile
 
 FIT_LEVELS = ("perfect", "good", "marginal", "too_tight")
 
-
-def _load_routing_models(repo_root: Path) -> list[str]:
-    path = repo_root / "configs" / "model-routing.yaml"
-    if not path.is_file():
-        return []
-    try:
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, yaml.YAMLError):
-        return []
-    if not isinstance(doc, dict):
-        return []
-    models_raw = doc.get("models")
-    if not isinstance(models_raw, dict):
-        return []
-    out: list[str] = []
-    primary = models_raw.get("primary")
-    if isinstance(primary, dict):
-        pid = primary.get("id")
-        if isinstance(pid, str) and pid.strip():
-            out.append(pid.strip())
-    fallbacks = models_raw.get("fallbacks")
-    if isinstance(fallbacks, list):
-        for fb in fallbacks:
-            if isinstance(fb, dict):
-                fid = fb.get("id")
-                if isinstance(fid, str) and fid.strip():
-                    out.append(fid.strip())
-    return out
+_MSG = (
+    "hw.fit local path unavailable under NIMBUSWARE_BROKER_CAPACITY=1|2; "
+    "use SwissArmyNoife capacity probe + local rank on broker profile "
+    "(MCP capacity_fit needs binding_id)"
+)
 
 
-def _params_hint(model_id: str, catalog: list[dict[str, Any]]) -> float:
-    for row in catalog:
-        if str(row.get("id")) == model_id:
-            raw = row.get("params_b")
-            if isinstance(raw, (int, float)):
-                return float(raw)
-    mid = model_id.lower()
-    if "70b" in mid:
-        return 70.0
-    if "14b" in mid or "13b" in mid:
-        return 14.0
-    if "8b" in mid or "7b" in mid:
-        return 8.0
-    if "3b" in mid:
-        return 3.0
-    return 4.0
+def _legacy():
+    from hw import fit_legacy as legacy
 
-
-def _fit_level_for_model(
-    model_id: str,
-    profile: HardwareProfile,
-    *,
-    params_b: float,
-    gpu_only: bool,
-) -> str:
-    tier = profile.tier
-    avail = profile.ram_available_gb or profile.ram_total_gb or 8.0
-    has_gpu = bool(profile.gpus) or profile.unified_memory
-    size_hint = max(2.0, params_b * 0.5)
-    if gpu_only and not has_gpu:
-        return "too_tight"
-    if gpu_only and tier == "weak":
-        return "too_tight" if size_hint > 3 else "marginal"
-    if tier == "strong" and avail >= size_hint + 4:
-        return "perfect"
-    if tier == "medium" and avail >= size_hint + 2:
-        return "good"
-    if avail >= size_hint:
-        return "marginal"
-    return "too_tight"
+    return legacy
 
 
 def rank_models(
@@ -92,42 +32,50 @@ def rank_models(
     gpu_only: bool = False,
     gpu_group_index: int = 0,
     limit: int = 50,
+    binding_id: str | None = None,
+    candidates: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    del use_case
-    group_gpus: list[str] = []
-    if profile.gpu_groups and 0 <= gpu_group_index < len(profile.gpu_groups):
-        group_gpus = list(profile.gpu_groups[gpu_group_index])
-    catalog = load_model_catalog(repo_root)
-    allowlist = _load_routing_models(repo_root)
-    tags = installed_tags or []
-    candidates = list(dict.fromkeys([*allowlist, *tags]))
-    ranked: list[dict[str, Any]] = []
-    for model_id in candidates:
-        params_b = _params_hint(model_id, catalog)
-        fit_level = _fit_level_for_model(
-            model_id,
-            profile,
-            params_b=params_b,
-            gpu_only=gpu_only,
-        )
-        score = {"perfect": 4, "good": 3, "marginal": 2, "too_tight": 1}[fit_level]
-        row = {
-            "model_id": model_id,
-            "ollama_tag": model_id,
-            "fit_level": fit_level,
-            "score": score,
-            "run_mode": (
-                "gpu" if profile.tier != "weak" and (group_gpus or profile.gpus) else "cpu_only"
-            ),
-            "gpu_group_index": gpu_group_index,
-            "required_gb": round(params_b * 0.6, 1),
-            "params_b": params_b,
-        }
-        row["presets"] = ollama_presets_for_model(row, profile)
-        ranked.append(row)
-    ranked.sort(key=lambda r: (-int(r["score"]), r["model_id"]))
-    if gpu_only:
-        ranked = [r for r in ranked if r["fit_level"] != "too_tight"] + [
-            r for r in ranked if r["fit_level"] == "too_tight"
-        ]
-    return ranked[: max(1, limit)]
+    """Rank models. Under CAPACITY=1|2 prefer broker-derived profile when ``profile`` is local-empty.
+
+    When ``binding_id`` + ``candidates`` are provided, try MCP ``capacity_fit`` first (`sak430-g`).
+    Ranking math otherwise stays in ``fit_legacy``; under CAPACITY=1|2 refuse when the
+    capacity probe itself is unavailable (no local profile fallthrough).
+    """
+    if broker_capacity_enabled() and binding_id and candidates is not None:
+        from hw.capacity_route import refuse_legacy
+
+        try:
+            from broker_client.stage_bind.capacity import capacity_fit_via_broker
+
+            hit = capacity_fit_via_broker(candidates, binding_id=binding_id)
+            ranked = hit.get("ranked") if isinstance(hit, dict) else None
+            if isinstance(ranked, list):
+                return [r for r in ranked if isinstance(r, dict)][:limit]
+            result = hit.get("result") if isinstance(hit, dict) else None
+            if isinstance(result, list):
+                return [r for r in result if isinstance(r, dict)][:limit]
+        except RuntimeError:
+            # sak440-c / sak490-d: re-raise peel miss (error-dict / broker_miss) without swallowing.
+            raise
+        except Exception:
+            refuse_legacy(_MSG)
+    active_profile = profile
+    if broker_capacity_enabled():
+        from broker_client.capacity_bridge import try_broker_probe_dict
+        from hw.capacity_route import refuse_legacy
+        from hw.profile import profile_from_probe
+
+        hit = try_broker_probe_dict()
+        if hit is not None:
+            active_profile = profile_from_probe(hit)
+        else:
+            refuse_legacy(_MSG)
+    return _legacy().rank_models(
+        repo_root,
+        active_profile,
+        installed_tags=installed_tags,
+        use_case=use_case,
+        gpu_only=gpu_only,
+        gpu_group_index=gpu_group_index,
+        limit=limit,
+    )
