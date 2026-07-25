@@ -18,4 +18,3 @@ Campaign projections: `builders/campaign_progress.py`, `builders/backlog_tree.py
 
 Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

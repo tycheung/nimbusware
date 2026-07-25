@@ -412,7 +412,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         if gate_summary not in sentences:
             sentences.append(gate_summary)
 
-    from orchestrator.routing.cost_summary import summarize_run_role_cost
+    from orchestrator.model_routing.cost_summary import summarize_run_role_cost
 
     role_cost = summarize_run_role_cost(events)
     if role_cost:

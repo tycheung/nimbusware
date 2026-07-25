@@ -55,7 +55,7 @@ def usage_from_provider_response(response: dict[str, Any]) -> dict[str, int]:
             "cache_read": int(usage.get("cache_read_input_tokens") or 0),
             "cache_write": int(usage.get("cache_creation_input_tokens") or 0),
         }
-    from orchestrator.routing.chat import extract_ollama_usage
+    from orchestrator.model_routing.chat import extract_ollama_usage
 
     ollama = extract_ollama_usage(response)
     return {

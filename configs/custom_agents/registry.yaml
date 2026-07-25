@@ -25,12 +25,12 @@ agents:
   system_prompt: Implement Python FastAPI backend slices for the frozen stack manifest
     globs.
   description: Auto-scaffolded from fastapi_python stack catalog
-  version: 34
+  version: 35
   bound_role_id: backend_writer
 - id: react_vite_writer
   display_name: React + Vite writer
   system_prompt: Implement React + Vite frontend slices for the frozen stack manifest
     globs.
   description: Auto-scaffolded from react_vite stack catalog
-  version: 34
+  version: 35
   bound_role_id: frontend_writer

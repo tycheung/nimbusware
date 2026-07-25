@@ -1,5 +1,14 @@
 # mcp
 
+> **Not the capability broker.** This package is the **Nimbusware Maker / IDE API bridge**
+> (`nimbusware_patch`, `maker_pending`, slice/campaign/chat tools). It does **not** expose
+> SwissArmyNoife tools such as `llm_chat`, `sandbox_exec`, `memory_search`, `research_fetch`,
+> `egress_*`, or `compute_*`.
+>
+> For capability MCP, use **SwissArmyNoife** `mcp` / `mcp-http` (see
+> [docs/mcp-split.md](../../../docs/mcp-split.md)). Cursor should run **both** servers when you
+> need Maker workflows and capability offers. **Do not delete this package** during peel.
+
 Stdio MCP server (`nimbusware-mcp`) for IDE integration with a running Nimbusware API. Complements Maker **Chat** (`#/chat`); see [docs/ide-bridge.md](../../docs/ide-bridge.md).
 
 ## Configuration

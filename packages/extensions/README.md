@@ -19,4 +19,3 @@ Promoted personas should define **`scope_in`**, **`scope_out`**, **`capability_p
 
 `orchestrator` (workflow merge, persona shelves), `console` (config tooling, catalog panels), `api` (admin config routes).
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

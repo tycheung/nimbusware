@@ -37,6 +37,13 @@ def window_tokens_from_events(events: list[dict[str, Any]]) -> int:
 
         profile = get_cached_profile()
         return _TIER_WINDOW_DEFAULTS.get(str(profile.tier or "weak"), 8192)
+    except RuntimeError:
+        # sak436-g: CAPACITY peel miss must not soft-default to weak tier.
+        from broker_client.flags import broker_capacity_enabled
+
+        if broker_capacity_enabled():
+            raise
+        return 8192
     except (ImportError, OSError, TypeError, ValueError):
         return 8192
 

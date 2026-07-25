@@ -17,4 +17,3 @@ When `NIMBUSWARE_CONFIG_FROM_DB=1`, `ConfigMaterializer` is the runtime source o
 
 `api` admin routes, `console` config tooling, `orchestrator` workflow merge at run start.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

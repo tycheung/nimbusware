@@ -37,6 +37,11 @@ _TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
         "properties": {"chunk_id": {"type": "string"}},
         "required": ["chunk_id"],
     },
+    "memory_search": {
+        "description": "Semantic search over indexed memory chunks.",
+        "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}},
+        "required": ["query"],
+    },
 }
 
 

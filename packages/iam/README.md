@@ -6,4 +6,3 @@ Enterprise edition API keys, tenants, and scope checks (`maker_user` / `maker_ad
 
 `api` dependencies (`UserDep`, `AdminDep`); launcher and env helpers in `env`.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.
