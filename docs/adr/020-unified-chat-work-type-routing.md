@@ -6,7 +6,7 @@ Accepted.
 
 ## Context
 
-Operators need a single Maker entry point that classifies intent (patch, slice, campaign, factory, quick), routes to the correct workflow profile, and supports mid-run steering without spawning unnecessary campaigns.
+Operators need a single Maker entry point that classifies intent (patch, slice, campaign, factory, quick, self_evolve), routes to the correct workflow profile, and supports mid-run steering without spawning unnecessary campaigns.
 
 ## Decision
 

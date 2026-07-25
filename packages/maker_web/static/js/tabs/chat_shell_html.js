@@ -4,7 +4,7 @@ import { chatInterjectionRibbonHtml } from "../interjection-ribbon.js";
 import { isSafeCodingUx } from "../safe-coding-ux.js";
 import { workTypeLabel } from "./chat_session_ui.js";
 
-export const CHAT_WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
+export const CHAT_WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "self_evolve", "quick"];
 export const SAFE_CODING_WORK_TYPES = ["auto", "patch", "slice", "quick"];
 
 export function chatLayoutHtml() {

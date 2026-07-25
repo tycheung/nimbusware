@@ -22,6 +22,7 @@ The orchestrator ([`packages/orchestrator`](../packages/orchestrator/)) and shar
 | `micro_slice` | Bounded files/LOC per slice, verify → critique → test → optional `slice.e2e` → gate |
 | `micro_slice_fullstack` | Full-stack + launch-test writer/critic stages |
 | `campaign_micro_slice` | Autonomous campaign — heuristic or LLM backlog → one slice/tick → completion |
+| `campaign_self_evolve` | Meta curriculum — harness research + diverse repo trials + distill (work type `self_evolve`) |
 | `campaign_factory_zero_touch` | Factory scaffold T0–T3 with PUT E2E |
 
 Configs: [`configs/workflows/`](../../configs/workflows/). Default: `micro_slice` (all verify passes run the micro-slice loop; `nimbusware_production` remains for extended YAML flags).

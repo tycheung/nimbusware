@@ -357,7 +357,7 @@ def switch_chat_mode(
             status_code=422,
             detail=problem(
                 "invalid_request",
-                "work_type must be one of quick, patch, slice, campaign, factory",
+                "work_type must be one of quick, patch, slice, campaign, factory, self_evolve",
             ),
         ) from exc
     prior = session.work_type_override or ((session.last_classification or {}).get("work_type"))

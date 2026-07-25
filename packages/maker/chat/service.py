@@ -92,7 +92,7 @@ def resolve_work_type(
     try:
         return WorkType(raw)
     except ValueError as exc:
-        raise ValueError("work_type must be one of quick, patch, slice, campaign, factory") from exc
+        raise ValueError("work_type must be one of quick, patch, slice, campaign, factory, self_evolve") from exc
 
 
 def switch_mode_rationale(from_wt: str | None, to_wt: str) -> str:

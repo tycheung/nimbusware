@@ -71,7 +71,7 @@ def preset_for_level(level: int) -> AutopilotProfile:
 
 def default_autopilot_level_for_work_type(work_type: str | None) -> int:
     wt = str(work_type or "").strip().lower()
-    if wt == "factory":
+    if wt in {"factory", "self_evolve"}:
         return 10
     if wt == "patch":
         return 8

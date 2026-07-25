@@ -234,7 +234,12 @@ def build_run_created_metadata(
     )
     patch_ctx_norm = normalize_patch_context(patch_context)
     git_meta: dict[str, Any] | None = None
-    if project_meta and str(work_type or "").strip().lower() in {"campaign", "factory"}:
+    if project_meta and str(work_type or "").strip().lower() in {
+        "campaign",
+        "factory",
+        "self_evolve",
+    }:
+
         ws_git = Path(str(project_meta["workspace_path"]))
         if (ws_git / ".git").is_dir():
             git_meta = {"native_outputs": True, "open_pr_on_complete": True}

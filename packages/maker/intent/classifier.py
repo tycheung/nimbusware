@@ -23,6 +23,9 @@ from maker.intent.classifier_rules import (
     PROFILE_BY_WORK_TYPE as _PROFILE_BY_WORK_TYPE,
 )
 from maker.intent.classifier_rules import (
+    SELF_EVOLVE_KEYWORDS as _SELF_EVOLVE_KEYWORDS,
+)
+from maker.intent.classifier_rules import (
     SLICE_KEYWORDS as _SLICE_KEYWORDS,
 )
 from maker.intent.classifier_rules import (
@@ -204,6 +207,11 @@ def _score_work_types(
         scores[WorkType.FACTORY] += 4.0
         signals.append("attachment_prompt_id")
 
+    self_evolve_hits = _keyword_hits(message, _SELF_EVOLVE_KEYWORDS)
+    if self_evolve_hits:
+        scores[WorkType.SELF_EVOLVE] += 3.0 + 0.5 * len(self_evolve_hits)
+        signals.append("keyword_self_evolve")
+
     inferred_paths = _infer_paths(message, extracted)
     if inferred_paths:
         if len(inferred_paths) <= 2:
@@ -232,6 +240,7 @@ def _score_work_types(
         scores[WorkType.SLICE],
         scores[WorkType.FACTORY],
         scores[WorkType.QUICK],
+        scores[WorkType.SELF_EVOLVE],
     ):
         warnings.append("forced_campaign_short_message")
 
@@ -256,10 +265,15 @@ def _rationale_for(work_type: WorkType, signals: list[str]) -> str:
         WorkType.SLICE: "Bounded feature work — one micro-slice pass fits best.",
         WorkType.CAMPAIGN: "Full product delivery — autonomous campaign backlog.",
         WorkType.FACTORY: "Factory catalog or zero-touch factory profile.",
+        WorkType.SELF_EVOLVE: (
+            "Self-evolve curriculum — harness research, diverse repos, and optional domain study."
+        ),
     }
     base = rationales[work_type]
     if "attachment_failing_test" in signals or "attachment_stack_trace" in signals:
         return "Error context detected — patch lane with targeted test."
+    if "keyword_self_evolve" in signals:
+        return "Self-improvement intent — harness / diverse / domain curriculum."
     if "keyword_campaign" in signals:
         return "Product-scale intent — full-stack campaign recommended."
     if "attachment_prompt_id" in signals:
@@ -322,7 +336,7 @@ def _classify_intent_llm(
     from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
 
     schema = (
-        '{"work_type":"patch|slice|campaign|factory|quick",'
+        '{"work_type":"patch|slice|campaign|factory|quick|self_evolve",'
         '"confidence":0.0,"rationale":"...","signals":["..."]}'
     )
     data = ollama_chat_json_via_plan_patch(

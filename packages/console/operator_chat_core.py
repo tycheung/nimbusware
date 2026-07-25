@@ -12,6 +12,7 @@ WORK_TYPE_PROFILES: dict[str, str] = {
     "campaign": "campaign_micro_slice",
     "factory": "campaign_factory_zero_touch",
     "quick": "quick_local",
+    "self_evolve": "campaign_self_evolve",
 }
 
 
