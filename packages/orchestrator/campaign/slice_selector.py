@@ -87,25 +87,7 @@ def _ready_slices(
                             slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
                         ),
                     )
-    if ready:
-        return ready
-
-    # No pending work: retry failed slices whose deps are already passed so the
-    # campaign can re-enter implement/verify instead of stalling the chain.
-    retries: list[SelectedSlice] = []
-    for epic in backlog.epics:
-        for feature in epic.features:
-            for sl in feature.slices:
-                if sl.status != SliceStatus.FAILED:
-                    continue
-                deps = graph.get(sl.slice_id, ())
-                if all(dep in passed for dep in deps):
-                    retries.append(
-                        SelectedSlice(
-                            slice=sl, epic_id=epic.epic_id, feature_id=feature.feature_id
-                        ),
-                    )
-    return retries
+    return ready
 
 
 def _pick_round_robin_batch(
@@ -145,21 +127,51 @@ def _pick_round_robin_batch(
 def _select_with_extra_passed(
     backlog: DeliveryBacklog,
     extra_passed: set[str],
+    rows: list[dict] | None = None,
 ) -> SelectedSlice | None:
     ready = _ready_slices(backlog, extra_passed)
-    return _pick_round_robin(ready, backlog)
+    if ready:
+        return _pick_round_robin(ready, backlog)
+    if not rows:
+        return None
+    from orchestrator.campaign.failure_escalate import decide_escalation
+
+    decision = decide_escalation(backlog, rows)
+    if decision is None:
+        return None
+    index = {
+        sl.slice_id: (sl, epic.epic_id, feature.feature_id)
+        for epic in backlog.epics
+        for feature in epic.features
+        for sl in feature.slices
+    }
+    found = index.get(decision.slice_id)
+    if found is None:
+        return None
+    sl, epic_id, feature_id = found
+    return SelectedSlice(slice=sl, epic_id=epic_id, feature_id=feature_id)
 
 
-def select_next_slice(backlog: DeliveryBacklog) -> SelectedSlice | None:
-    return _select_with_extra_passed(backlog, set())
+def select_next_slice(
+    backlog: DeliveryBacklog,
+    rows: list[dict] | None = None,
+) -> SelectedSlice | None:
+    return _select_with_extra_passed(backlog, set(), rows=rows)
 
 
-def select_next_slices(backlog: DeliveryBacklog, max_n: int) -> list[SelectedSlice]:
+def select_next_slices(
+    backlog: DeliveryBacklog,
+    max_n: int,
+    rows: list[dict] | None = None,
+) -> list[SelectedSlice]:
     if max_n <= 1:
-        one = select_next_slice(backlog)
+        one = select_next_slice(backlog, rows=rows)
         return [one] if one is not None else []
     ready = _ready_slices(backlog)
-    return _pick_round_robin_batch(ready, backlog, max_n)
+    if ready:
+        return _pick_round_robin_batch(ready, backlog, max_n)
+    one = select_next_slice(backlog, rows=rows)
+    return [one] if one is not None else []
 
 
 def all_slices_terminal(backlog: DeliveryBacklog) -> bool:

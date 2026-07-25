@@ -98,6 +98,15 @@ def test_select_next_slice_retries_failed_head_when_chain_blocked() -> None:
             ),
         )
     )
-    selected = select_next_slice(backlog)
+    rows = [
+        {
+            "payload": {"stage_name": "slice.gate"},
+            "metadata": {
+                "backlog_slice_id": "slice-failed",
+                "slice_gate_verdict": "FAIL",
+            },
+        }
+    ]
+    selected = select_next_slice(backlog, rows=rows)
     assert selected is not None
     assert selected.slice.slice_id == "slice-failed"

@@ -83,11 +83,43 @@ def _parallel_slice_count_for_run(run_id: UUID, store: Any | None = None) -> int
 def _select_slices_for_tick(
     run_id: UUID, backlog: Any, store: Any | None = None
 ) -> list[SelectedSlice]:
+    rows: list[dict[str, Any]] = []
+    if store is not None:
+        rows = store.list_run_events(str(run_id))
+        from orchestrator.campaign.failure_escalate import (
+            decide_escalation,
+            revise_backlog_with_replan,
+        )
+        from orchestrator.campaign.generator import emit_backlog_revised
+
+        # Only escalate when pending work is exhausted.
+        from orchestrator.campaign.slice_selector import _ready_slices
+
+        if not _ready_slices(backlog):
+            decision = decide_escalation(backlog, rows)
+            if decision is not None and decision.needs_replan:
+                revised = revise_backlog_with_replan(
+                    backlog,
+                    failed_slice_id=decision.failed_slice_id,
+                    fail_streak=decision.fail_streak,
+                )
+                emit_backlog_revised(
+                    store,
+                    run_id,
+                    revised,
+                    revision_reason="failure_escalate_replan",
+                )
+                rows = store.list_run_events(str(run_id))
+                backlog = apply_slice_outcomes(
+                    backlog_from_events(rows) or revised,
+                    rows,
+                )
+
     parallel = _parallel_slice_count_for_run(run_id, store=store)
     if parallel <= 1:
-        one = select_next_slice(backlog)
+        one = select_next_slice(backlog, rows=rows or None)
         return [one] if one is not None else []
-    return select_next_slices(backlog, parallel)
+    return select_next_slices(backlog, parallel, rows=rows or None)
 
 
 def _execute_campaign_slices(
