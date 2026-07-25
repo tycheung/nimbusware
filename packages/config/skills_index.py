@@ -12,6 +12,11 @@ class SkillBrief:
     id: str
     name: str
     description: str
+    status: str = "promoted"
+    tags: tuple[str, ...] = ()
+    surfaces: tuple[str, ...] = ()
+    fingerprint: str | None = None
+    parent_id: str | None = None
 
 
 def _skills_dir(repo_root: Path | None = None) -> Path:
@@ -34,12 +39,28 @@ def list_skill_briefs(*, repo_root: Path | None = None) -> tuple[SkillBrief, ...
         skill_id = str(item.get("id") or "").strip()
         if not skill_id:
             continue
+        status = str(item.get("status") or "promoted").strip() or "promoted"
+        if status == "shelved":
+            continue
+        tags_raw = item.get("tags") or []
+        tags = tuple(str(t) for t in tags_raw) if isinstance(tags_raw, list) else ()
+        surfaces_raw = item.get("surfaces") or []
+        surfaces = (
+            tuple(str(s) for s in surfaces_raw) if isinstance(surfaces_raw, list) else ()
+        )
+        fp = item.get("fingerprint")
+        parent = item.get("parent_id")
         desc = str(item.get("description") or "")[:200]
         briefs.append(
             SkillBrief(
                 id=skill_id,
                 name=str(item.get("name") or skill_id),
                 description=desc,
+                status=status,
+                tags=tags,
+                surfaces=surfaces,
+                fingerprint=str(fp) if fp else None,
+                parent_id=str(parent) if parent else None,
             ),
         )
     return tuple(briefs)
