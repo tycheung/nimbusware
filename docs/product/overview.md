@@ -14,6 +14,7 @@ Build and fix software on your machine with an agent that must pass tests and se
 - **Safe Coding** archetype adds extra approval gates and industry critics. **Engineer workspace** enables collaborative discipline rosters and agent overlays.
 - Optional **VS Code / Cursor extension** (`extensions/nimbusware-status`) mirrors scope approval and deploy deep links alongside Maker MCP ([ide-bridge.md](../ide-bridge.md)).
 - Tune **autonomy** and **enforcement depth** independently. Campaign workflows decompose a `business_prompt` into verified micro-slices.
+- **Self-evolution** (prompts, skills, sandboxed variants) under gates — see [self-evolution.md](self-evolution.md).
 
 **Manager PWA** (`?manager=1`) provides read-only Progress/Review plus Scope approval on phone. **Mobile native** is deferred — [mobile.md](mobile.md).
 

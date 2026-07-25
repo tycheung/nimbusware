@@ -41,6 +41,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [032-incremental-maker-progress-sse.md](adr/032-incremental-maker-progress-sse.md) | Tail event fetch + `progress_delta` SSE |
 | [033-structure-over-source-reads.md](adr/033-structure-over-source-reads.md) | Agent read modes: outline, digest, full |
 | [034-standards-platform-rollout.md](adr/034-standards-platform-rollout.md) | Standards platform v1 rollout (parallel CI, gate, UI) |
+| [035-self-evolution-boundary.md](adr/035-self-evolution-boundary.md) | Self-evolution layers + packages deny |
 | [029-standards-ci-streams.md](adr/029-standards-ci-streams.md) | Named CI streams, verdict modes, stream runner |
 | [030-standards-bundles-mart.md](adr/030-standards-bundles-mart.md) | Standards bundles, facades, mart tiers |
 

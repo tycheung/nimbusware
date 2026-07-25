@@ -8,6 +8,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Package catalog: 
 |----------|----------|
 | [getting-started.md](getting-started.md) | Everyone — install, bootstrap, run, Docker |
 | [product/overview.md](product/overview.md) | Friendly product intro (individuals, enterprise, personas) |
+| [product/self-evolution.md](product/self-evolution.md) | Prompt / skill / variant self-evolution under gates |
 | [product/maker.md](product/maker.md) | Makers — Chat, Progress, Review, Model Hub |
 | [product/journeys/README.md](product/journeys/README.md) | Per-archetype “first full-stack app” walkthroughs (A1/A2/A3) |
 | [product/admin.md](product/admin.md) | Operators — Admin Console, fleet, metrics |

@@ -11,6 +11,7 @@ The orchestrator ([`packages/orchestrator`](../packages/orchestrator/)) and shar
 - **Bundle integrator** — catalog search, FAISS ranking, integrator gate with live adapter probe
 - **Personas** — business + development shelves, probation automation
 - **Self-refinement** — gated/ungated loops with optional LLM critique
+- **Self-evolution** — L1 overlays, L2 skills, L3 variant arena under ADR 035 ([product/self-evolution.md](product/self-evolution.md)); improvement tracks include security/coverage/discover/distill
 
 ## Workflow profiles
 
