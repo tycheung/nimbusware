@@ -91,7 +91,31 @@ def _ensure_poetry(*, install: bool) -> str:
 
 
 def _repo_root_from_script() -> Path:
+    """Repo root when this file lives at ``scripts/install/install_nimbusware.py``."""
     return Path(__file__).resolve().parent.parent.parent
+
+
+def _resolve_repo_root(*, allow_cwd_fallback: bool = False) -> Path:
+    env = os.environ.get("NIMBUSWARE_REPO_ROOT", "").strip()
+    if env:
+        return Path(env).expanduser().resolve()
+    try:
+        script = Path(__file__).resolve()
+    except OSError:
+        script = None
+    if script is not None and script.is_file():
+        # Preferred layout: scripts/install/install_nimbusware.py
+        if script.parent.name == "install" and script.parent.parent.name == "scripts":
+            return script.parent.parent.parent
+        # Legacy / wrapper-adjacent: scripts/install_nimbusware.py
+        if script.parent.name == "scripts":
+            return script.parent.parent
+    if allow_cwd_fallback:
+        return Path.cwd().resolve()
+    raise SetupError(
+        "Cannot determine Nimbusware repo root. Pass --repo-root, set "
+        "NIMBUSWARE_REPO_ROOT, or run from a checkout / use --clone."
+    )
 
 
 def _is_nimbusware_repo(path: Path) -> bool:
@@ -257,7 +281,7 @@ def _run_postgres_native_install(
             build=postgres_build,
             superpassword=postgres_superpassword,
             interactive=not postgres_installer_silent,
-            repo_root=_repo_root_from_script(),
+            repo_root=_resolve_repo_root(allow_cwd_fallback=True),
             database_url=database_url,
             log=_log,
         )
@@ -825,17 +849,17 @@ def _apply_edition_profile_defaults(args: argparse.Namespace, edition_name: str)
 def _one_command_install_lines(repo: Path) -> list[str]:
     return [
         (
-            "python scripts/install_nimbusware.py --clone <repo-url> "
-            "--target-dir ./Nimbusware --non-interactive --skip-postgres "
-            "--install-profile recommended"
+            "python scripts/install/install_nimbusware.py --clone <repo-url> "
+            "--target-dir ./Nimbusware --non-interactive --seed-config "
+            "--postgres-choice provided --skip-docker --install-profile recommended"
         ),
         (
-            "python scripts/install_nimbusware.py --clone <repo-url> "
+            "python scripts/install/install_nimbusware.py --clone <repo-url> "
             "--target-dir ./Nimbusware --non-interactive --skip-postgres "
             "--install-profile barebones"
         ),
         (
-            f"cd {repo} && python scripts/install_nimbusware.py "
+            f"cd {repo} && python scripts/install/install_nimbusware.py "
             "--non-interactive --skip-postgres --no-poetry-install --install-profile barebones"
         ),
     ]
@@ -983,12 +1007,19 @@ def _check_prerequisites(*, install_poetry: bool) -> list[str]:
 
 
 def _load_repo_dotenv() -> None:
-    repo = _repo_root_from_script()
+    try:
+        repo = _resolve_repo_root(allow_cwd_fallback=True)
+    except SetupError:
+        return
+    if not _is_nimbusware_repo(repo):
+        return
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from env import load_dotenv  # noqa: PLC0415
-
+    try:
+        from env import load_dotenv  # noqa: PLC0415
+    except ImportError:
+        return
     load_dotenv(repo_root=repo)
 
 
@@ -1229,13 +1260,18 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.consumer_plan:
         clone_url = "https://github.com/tycheung/nimbusware.git"
+        raw_script = (
+            "https://raw.githubusercontent.com/tycheung/nimbusware/main/"
+            "scripts/install/install_nimbusware.py"
+        )
         recommended = (
-            f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
+            f"curl -fsSL {raw_script} "
             f"| python - --clone {clone_url} --target-dir ./Nimbusware "
-            "--non-interactive --skip-postgres --install-profile recommended"
+            "--non-interactive --seed-config --postgres-choice provided "
+            "--skip-docker --install-profile recommended"
         )
         barebones = (
-            f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
+            f"curl -fsSL {raw_script} "
             f"| python - --clone {clone_url} --target-dir ./Nimbusware "
             "--non-interactive --skip-postgres --install-profile barebones"
         )
@@ -1246,7 +1282,16 @@ def main(argv: list[str] | None = None) -> int:
         _log("  4. cd Nimbusware && poetry run nimbusware-run --quick")
         return 0
 
-    repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
+    if args.repo_root is not None:
+        repo = args.repo_root.resolve()
+    else:
+        try:
+            repo = _resolve_repo_root(allow_cwd_fallback=bool(args.clone))
+        except SetupError:
+            if args.clone:
+                repo = Path.cwd().resolve()
+            else:
+                raise
     if args.print_one_command:
         _print_one_command_install(repo)
         return 0

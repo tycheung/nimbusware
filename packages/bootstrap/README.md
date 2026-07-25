@@ -56,10 +56,10 @@ On a machine without a monorepo checkout:
 ```bash
 pip install nimbusware-bootstrap
 nimbusware-bootstrap --print-only
-python scripts/install_nimbusware.py --consumer-plan   # when install script is available via clone
+python scripts/install/install_nimbusware.py --consumer-plan   # when install script is available via clone
 ```
 
-Or use the printed curl line to clone and run `install_nimbusware.py`.
+Or use the printed curl line (raw.githubusercontent.com … `/scripts/install/install_nimbusware.py`).
 
 **Install profiles** (v1.2):
 
@@ -70,8 +70,13 @@ Or use the printed curl line to clone and run `install_nimbusware.py`.
 
 ```bash
 # Recommended consumer (GPU demo machine)
-curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --install-profile recommended
+curl -fsSL https://raw.githubusercontent.com/tycheung/nimbusware/main/scripts/install/install_nimbusware.py \
+  | python - --clone https://github.com/tycheung/nimbusware.git --target-dir ./Nimbusware \
+    --non-interactive --seed-config --postgres-choice provided --skip-docker \
+    --install-profile recommended
 
 # Barebones consumer (fast VM / CI)
-curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --skip-postgres --install-profile barebones
+curl -fsSL https://raw.githubusercontent.com/tycheung/nimbusware/main/scripts/install/install_nimbusware.py \
+  | python - --clone https://github.com/tycheung/nimbusware.git --target-dir ./Nimbusware \
+    --non-interactive --skip-postgres --install-profile barebones
 ```

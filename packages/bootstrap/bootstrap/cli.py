@@ -5,7 +5,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from bootstrap.platform import launcher_asset_filename, launcher_release_download_url
+from bootstrap.platform import (
+    install_script_raw_url,
+    launcher_asset_filename,
+    launcher_release_download_url,
+)
 
 _DEFAULT_REPO = "https://github.com/tycheung/nimbusware.git"
 _PROFILE_BAREBONES = "barebones"
@@ -21,13 +25,13 @@ def curl_bootstrap_line(
     extras = (
         "--skip-postgres"
         if profile == _PROFILE_BAREBONES
-        else "--postgres-choice provided --skip-docker"
+        else "--postgres-choice provided --skip-docker --seed-config"
     )
-    seed = "--seed-config" if profile == _PROFILE_RECOMMENDED else ""
-    flags = f"--non-interactive {extras} {seed}".split()
+    flags = f"--non-interactive {extras}".split()
     flag_str = " ".join(flag for flag in flags if flag)
+    script_url = install_script_raw_url(repo_url)
     return (
-        f"curl -fsSL {repo_url}/raw/main/scripts/install_nimbusware.py "
+        f"curl -fsSL {script_url} "
         f"| python - --clone {repo_url} --target-dir {target_dir} "
         f"{flag_str} --install-profile {profile}"
     )
@@ -38,6 +42,7 @@ def pip_hint() -> str:
 
 
 def resolve_install_script() -> Path | None:
+    # packages/bootstrap/bootstrap/cli.py → repo root is parents[3]
     repo_root = Path(__file__).resolve().parents[3]
     install = repo_root / "scripts" / "install" / "install_nimbusware.py"
     if install.is_file() and (repo_root / "pyproject.toml").is_file():
@@ -70,7 +75,7 @@ def run_remote_install(
     profile: str,
     target_dir: str = "./Nimbusware",
 ) -> int:
-    script_url = f"{repo_url.rstrip('/')}/raw/main/scripts/install_nimbusware.py"
+    script_url = install_script_raw_url(repo_url)
     curl = subprocess.run(
         ["curl", "-fsSL", script_url],
         capture_output=True,
@@ -133,9 +138,10 @@ def run(argv: list[str] | None = None) -> int:
             print(f"  {idx}. {line}")
         return 0
     if install is not None:
+        # scripts/install/install_nimbusware.py → repo root is parents[2]
         return subprocess.call(
             [sys.executable, str(install), *install_script_argv(args.install_profile)],
-            cwd=install.parents[1],
+            cwd=str(install.parents[2]),
         )
     if args.install or args.run:
         return run_remote_install(

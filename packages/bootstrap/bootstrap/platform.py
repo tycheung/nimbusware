@@ -48,3 +48,14 @@ def launcher_release_download_url(repo_url: str, *, tag: str = "latest") -> str:
     if tag == "latest":
         return f"https://github.com/{owner}/{repo}/releases/latest/download/{filename}"
     return f"https://github.com/{owner}/{repo}/releases/download/{tag}/{filename}"
+
+
+def install_script_raw_url(
+    repo_url: str,
+    *,
+    branch: str = "main",
+    script_path: str = "scripts/install/install_nimbusware.py",
+) -> str:
+    """HTTPS URL for curling the real installer (not the thin scripts/ wrapper)."""
+    owner, repo = github_repo_parts(repo_url)
+    return f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{script_path.lstrip('/')}"

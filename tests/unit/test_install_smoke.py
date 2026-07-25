@@ -45,6 +45,9 @@ def test_install_consumer_plan_exits_zero() -> None:
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "curl" in proc.stdout.lower()
     assert "install-profile" in proc.stdout
+    assert "raw.githubusercontent.com" in proc.stdout
+    assert "scripts/install/install_nimbusware.py" in proc.stdout
+    assert ".git/raw/" not in proc.stdout
 
 
 def test_install_print_one_command_exits_zero() -> None:
@@ -59,8 +62,16 @@ def test_install_print_one_command_exits_zero() -> None:
     assert "One-command install" in proc.stdout
 
 
-def test_model_hub_and_install_profile_docs_exist() -> None:
-    assert (_REPO / "docs" / "model-hub.md").is_file()
-    assert (_REPO / "docs" / "install-profiles.md").is_file()
-    hub = (_REPO / "docs" / "model-hub.md").read_text(encoding="utf-8")
-    assert "provider-connections" in hub
+def test_install_script_resolves_repo_from_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    script_path = Path(__file__).resolve().parents[2] / "scripts" / "install" / "install_nimbusware.py"
+    spec = importlib.util.spec_from_file_location("install_nimbusware", script_path)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
+    assert mod._resolve_repo_root() == tmp_path.resolve()

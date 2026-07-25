@@ -5,7 +5,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-INSTALL="$ROOT/scripts/install_nimbusware.py"
+INSTALL="$ROOT/scripts/install/install_nimbusware.py"
 
 if command -v poetry >/dev/null 2>&1; then
   exec poetry run python "$INSTALL" "$@"

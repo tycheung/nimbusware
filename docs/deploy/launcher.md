@@ -58,7 +58,7 @@ poetry run python scripts/publish/package_launcher_release.py   # zip + INSTALL.
 | `poetry run nimbusware-launcher` | Developers with a checkout |
 | `pip install nimbusware-bootstrap` + `nimbusware-bootstrap --print-only` | Clean VM; prints launcher URL + curl installer |
 | `nimbusware-bootstrap --install` | Remote curl install without GUI |
-| `curl …/install_nimbusware.py \| python - …` | Script-only bootstrap |
+| `curl …/scripts/install/install_nimbusware.py \| python - …` | Script-only bootstrap (use raw.githubusercontent.com URL) |
 
 ## Operator notes
 

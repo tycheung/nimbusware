@@ -55,6 +55,7 @@ def test_resolve_install_script_from_repo() -> None:
     script = resolve_install_script(root)
     assert script.name == "install_nimbusware.py"
     assert script.is_file()
+    assert script.parent.name == "install"
 
 
 def test_extract_github_zip_layout(tmp_path: Path) -> None:
