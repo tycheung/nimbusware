@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, Query
 from fastapi.routing import APIRouter
+from pydantic import BaseModel
 
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
@@ -13,24 +14,79 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from env.env_flags import nimbusware_repo_root_path
 
 router = APIRouter()
 
 
+class LifecycleStartResponse(BaseModel):
+    """POST /runs/{run_id}/lifecycle/start (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class LifecyclePlanResponse(BaseModel):
+    """POST /runs/{run_id}/lifecycle/plan (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class LifecycleVerifyResponse(BaseModel):
+    """POST /runs/{run_id}/lifecycle/verify (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    dispatch: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class LifecycleSliceResponse(BaseModel):
+    """POST /runs/{run_id}/lifecycle/slice (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    dispatch: str | None = None
+    slices_completed: int | None = None
+    slices_blocked: int | None = None
+    slice_total: int | None = None
+    pending: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.post(
     "/runs/{run_id}/lifecycle/start",
-    responses={
-        200: {
-            "description": "Preflight completed and run started",
-            "content": {
-                "application/json": {"example": {"status": "started"}},
+    response_model=LifecycleStartResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak502-g
+        {
+            200: {
+                "description": "Preflight completed and run started",
+                "content": {
+                    "application/json": {"example": {"status": "started"}},
+                },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def lifecycle_start(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
     rows = store.list_run_events(str(run_id))
@@ -45,17 +101,21 @@ def lifecycle_start(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, s
 
 @router.post(
     "/runs/{run_id}/lifecycle/plan",
-    responses={
-        200: {
-            "description": "Plan stage recorded",
-            "content": {
-                "application/json": {"example": {"status": "plan_stage_recorded"}},
+    response_model=LifecyclePlanResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak504-h
+        {
+            200: {
+                "description": "Plan stage recorded",
+                "content": {
+                    "application/json": {"example": {"status": "plan_stage_recorded"}},
+                },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def lifecycle_plan(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
     rows = store.list_run_events(str(run_id))
@@ -70,19 +130,23 @@ def lifecycle_plan(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, st
 
 @router.post(
     "/runs/{run_id}/lifecycle/verify",
-    responses={
-        200: {
-            "description": "Writer/verifier pass recorded",
-            "content": {
-                "application/json": {
-                    "example": {"status": "verify_recorded", "dispatch": "sync"},
+    response_model=LifecycleVerifyResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak504-h
+        {
+            200: {
+                "description": "Writer/verifier pass recorded",
+                "content": {
+                    "application/json": {
+                        "example": {"status": "verify_recorded", "dispatch": "sync"},
+                    },
                 },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
     rows = store.list_run_events(str(run_id))
@@ -100,23 +164,27 @@ def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, 
 
 @router.post(
     "/runs/{run_id}/lifecycle/slice",
-    responses={
-        200: {
-            "description": "Micro-slice pass recorded",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "status": "micro_slice_recorded",
-                        "slices_completed": 2,
-                        "slices_blocked": 0,
+    response_model=LifecycleSliceResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak504-h
+        {
+            200: {
+                "description": "Micro-slice pass recorded",
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "status": "micro_slice_recorded",
+                            "slices_completed": 2,
+                            "slices_blocked": 0,
+                        },
                     },
                 },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def lifecycle_slice(
     run_id: UUID,

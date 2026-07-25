@@ -12,6 +12,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from extensions.catalog import (
     bundle_faiss_index_ready,
     bundle_faiss_index_sync_state,
@@ -24,11 +25,13 @@ router = APIRouter()
 @router.get(
     "/search",
     response_model=BundleSearchResponse,
-    responses={
-        200: BUNDLE_SEARCH_RESPONSE_200,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    responses=with_long_tail_peel_503(  # sak505-b
+        {
+            200: BUNDLE_SEARCH_RESPONSE_200,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
     summary="Search bundle catalog",
 )
 def get_bundle_search(

@@ -11,6 +11,7 @@ from agent_core.models import EventType
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import with_long_tail_peel_503
 from research.stitch_outcome_stats import transplant_outcome_for_run
 
 router = APIRouter()
@@ -35,7 +36,7 @@ class StitchSummaryResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/stitch-summary",
     response_model=StitchSummaryResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak502-h
 )
 def get_run_stitch_summary(run_id: UUID, store: StoreDep) -> StitchSummaryResponse:
     rid = str(run_id)

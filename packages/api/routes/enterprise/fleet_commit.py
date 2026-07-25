@@ -11,6 +11,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     FleetCommitPolicy,
     load_fleet_commit_policies,
@@ -26,7 +27,20 @@ class FleetCommitPolicyBody(BaseModel):
     message_regex: str = Field(default="", max_length=256)
 
 
-@router.get("/tenants/{tenant_ref}/commit-policy")
+class FleetCommitPolicyResponse(BaseModel):
+    """GET/PUT fleet commit-policy (`sak449-e`)."""
+
+    tenant_slug: str | None = None
+    require_auto_commit: bool = False
+    message_regex: str = ""
+
+
+@router.get(
+    "/tenants/{tenant_ref}/commit-policy",
+    response_model=FleetCommitPolicyResponse,
+    summary="Fleet commit policy (`sak449-e`)",
+    responses=with_enterprise_peel_503(),  # sak504-b
+)
 def get_fleet_commit_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -37,7 +51,12 @@ def get_fleet_commit_policy(
     return tenant_commit_policy(slug).to_dict()
 
 
-@router.put("/tenants/{tenant_ref}/commit-policy")
+@router.put(
+    "/tenants/{tenant_ref}/commit-policy",
+    response_model=FleetCommitPolicyResponse,
+    summary="Update fleet commit policy (`sak449-e`)",
+    responses=with_enterprise_peel_503(),  # sak504-b
+)
 def put_fleet_commit_policy(
     tenant_ref: str,
     body: FleetCommitPolicyBody,

@@ -10,6 +10,7 @@ from api.deps import OrchDep, StoreDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep, OptionalUserDep
 from api.routes.platform_deploy import (
+    PlatformDeployResponse,
     DeployApplyBody,
     DeployCiPollBody,
     DeployCredentialsBody,
@@ -22,6 +23,7 @@ from api.routes.platform_deploy import (
     resolved_deploy_environment,
 )
 from api.user import maker_user_id_str
+from api.schemas.peel_responses import with_long_tail_peel_503
 from maker.deploy.credential_vault import (
     audit_credentials_updated,
     audit_credentials_used,
@@ -58,7 +60,13 @@ from orchestrator.git_outputs import run_branch_name
 router = APIRouter(tags=["platform"])
 
 
-@router.post("/platform/deploy/apply")
+@router.post(
+    "/platform/deploy/apply",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy apply (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-a
+)
 def post_deploy_apply(
     body: DeployApplyBody,
     request: Request,
@@ -150,7 +158,13 @@ def post_deploy_apply(
     return result
 
 
-@router.post("/platform/deploy/smoke")
+@router.post(
+    "/platform/deploy/smoke",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy smoke (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-a
+)
 def post_deploy_smoke(
     body: DeploySmokeBody,
     store: StoreDep,
@@ -188,7 +202,13 @@ def post_deploy_smoke(
     return result
 
 
-@router.post("/platform/deploy/rollback")
+@router.post(
+    "/platform/deploy/rollback",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy rollback (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-b
+)
 def post_deploy_rollback(
     body: DeployRollbackBody,
     request: Request,
@@ -271,7 +291,13 @@ def post_deploy_rollback(
     return result
 
 
-@router.post("/platform/deploy/ci-poll")
+@router.post(
+    "/platform/deploy/ci-poll",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy CI poll (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-b
+)
 def post_deploy_ci_poll(
     body: DeployCiPollBody,
     request: Request,
@@ -308,7 +334,13 @@ def post_deploy_ci_poll(
     return result
 
 
-@router.put("/platform/deploy/credentials")
+@router.put(
+    "/platform/deploy/credentials",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Put deploy credentials (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-c
+)
 def put_deploy_credentials(
     body: DeployCredentialsBody,
     request: Request,

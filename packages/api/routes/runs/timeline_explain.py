@@ -5,10 +5,12 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
 from fastapi.routing import APIRouter as _APIRouter
+from pydantic import BaseModel
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from api.deps import StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import long_tail_json_openapi_responses
 from console.integrator_gate._helpers import integrator_gate_from_timeline
 from console.integrator_gate.latest_delta.exports import integrator_gate_summary_rows
 from orchestrator.interjection_queue import queue_for_run
@@ -19,6 +21,20 @@ from orchestrator.interjection_slo import (
 from store.protocol import serialized_event_from_row
 
 router: _APIRouter = APIRouter()
+
+
+class TimelineExplainResponse(BaseModel):
+    """GET /runs/{run_id}/timeline/{section}/explain (`sak484-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    section: str | None = None
+    markdown: str | None = None
+    event_count: int | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 def _timeline_body_for_run(store: StoreDep, run_id: UUID) -> dict[str, Any]:
@@ -64,7 +80,13 @@ def _markdown_for_section(section: str, timeline_body: dict[str, Any]) -> str:
     )
 
 
-@router.get("/runs/{run_id}/timeline/{section}/explain")
+@router.get(
+    "/runs/{run_id}/timeline/{section}/explain",
+    response_model=TimelineExplainResponse,
+    response_model_exclude_none=True,
+    summary="Timeline section explain (`sak484-g`)",
+    responses=long_tail_json_openapi_responses(),  # sak502-i
+)
 def get_timeline_section_explain(
     run_id: UUID,
     section: str,

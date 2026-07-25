@@ -8,6 +8,10 @@ class OllamaUserPolicyBody(BaseModel):
     allow_delete: bool = False
     allow_update_routing: bool = False
     updated_at: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e
 
 
 class OllamaModelEntry(BaseModel):
@@ -25,6 +29,10 @@ class OllamaModelsResponse(BaseModel):
     user_policy: OllamaUserPolicyBody
     models: list[OllamaModelEntry] = Field(default_factory=list)
     query: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e
 
 
 class OllamaPullRequest(BaseModel):
@@ -35,6 +43,10 @@ class OllamaPullResponse(BaseModel):
     model: str
     status: str = "pulled"
     job_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e
 
 
 class OllamaPullJobStatusResponse(BaseModel):
@@ -44,11 +56,17 @@ class OllamaPullJobStatusResponse(BaseModel):
     error: str | None = None
     created_at: str | None = None
     finished_at: str | None = None
+    via: str | None = None
+    feature: str | None = None
 
 
 class OllamaDeleteResponse(BaseModel):
     model: str
     status: str = "deleted"
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e
 
 
 class OllamaPrimaryRoutingRequest(BaseModel):
@@ -66,3 +84,7 @@ class OllamaBootstrapResponse(BaseModel):
     ok: bool
     message: str
     base_url: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e

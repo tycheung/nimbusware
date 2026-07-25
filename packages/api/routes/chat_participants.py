@@ -16,6 +16,7 @@ from api.routes.chat_service import (
     session_or_404,
 )
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import with_long_tail_peel_503
 from auth.models import SESSION_PARTICIPANT_ROLES
 from auth.permissions import require_session_participant
 from maker.collab.disciplines import normalize_discipline
@@ -119,6 +120,17 @@ class JoinResponse(BaseModel):
     role: str
 
 
+class ParticipantRemoveResponse(BaseModel):
+    """DELETE /chat/sessions/{session_id}/participants/{user_id} (`sak487-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 def _participant_response(row: Any) -> ParticipantResponse:
     d = row.to_dict()
     return ParticipantResponse(**d)
@@ -127,7 +139,7 @@ def _participant_response(row: Any) -> ParticipantResponse:
 @router.get(
     "/sessions/{session_id}/participants",
     response_model=list[ParticipantResponse],
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-c
 )
 def list_session_participants(
     session_id: UUID,
@@ -151,7 +163,7 @@ def list_session_participants(
 @router.post(
     "/sessions/{session_id}/participants",
     response_model=ParticipantResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-c
 )
 def add_session_participant(
     session_id: UUID,
@@ -217,7 +229,9 @@ def add_session_participant(
 
 @router.delete(
     "/sessions/{session_id}/participants/{user_id}",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=ParticipantRemoveResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-g
 )
 def remove_session_participant(
     session_id: UUID,
@@ -246,7 +260,7 @@ def remove_session_participant(
 @router.put(
     "/sessions/{session_id}/participants/me/discipline",
     response_model=ParticipantResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-g
 )
 def update_my_session_discipline(
     session_id: UUID,
@@ -277,7 +291,11 @@ def update_my_session_discipline(
     return _participant_response(row)
 
 
-@router.get("/join-preview", response_model=JoinPreviewResponse)
+@router.get(
+    "/join-preview",
+    response_model=JoinPreviewResponse,
+    responses=with_long_tail_peel_503(),  # sak515-h
+)
 def preview_chat_join(
     token: str,
     chat_store: ChatStoreDep,
@@ -315,6 +333,7 @@ def preview_chat_join(
 @router.post(
     "/sessions/{session_id}/invites",
     response_model=InviteResponse,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-h
 )
 def create_session_invite(
     session_id: UUID,
@@ -357,7 +376,11 @@ def create_session_invite(
     )
 
 
-@router.post("/join", response_model=JoinResponse)
+@router.post(
+    "/join",
+    response_model=JoinResponse,
+    responses=with_long_tail_peel_503(),  # sak515-i
+)
 def join_chat_session(
     body: JoinBody,
     chat_store: ChatStoreDep,

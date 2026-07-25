@@ -2,12 +2,17 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import ProjectStoreDep
 from api.errors import problem
+from api.schemas.peel_responses import (
+    DeleteOkResponse,
+    long_tail_json_openapi_responses,
+    with_long_tail_peel_503,
+)
 from api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -53,14 +58,22 @@ def _to_response(record: object) -> ProjectResponse:
     return ProjectResponse(**data)
 
 
-@router.get("", response_model=ProjectListResponse)
+@router.get(
+    "",
+    response_model=ProjectListResponse,
+    responses=long_tail_json_openapi_responses(),  # sak500-i
+)
 def list_projects(store: ProjectStoreDep, _user: UserDep) -> ProjectListResponse:
     tenant_id = resolve_store_tenant_id() if is_enterprise() else None
     rows = store.list(tenant_id=tenant_id) if tenant_id is not None else store.list()
     return ProjectListResponse(projects=[_to_response(p) for p in rows])
 
 
-@router.get("/{project_id}", response_model=ProjectResponse, responses={404: PROBLEM_RESPONSE_404})
+@router.get(
+    "/{project_id}",
+    response_model=ProjectResponse,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-g
+)
 def get_project(project_id: UUID, store: ProjectStoreDep) -> ProjectResponse:
     record = store.get(project_id)
     if record is None:
@@ -74,7 +87,9 @@ def get_project(project_id: UUID, store: ProjectStoreDep) -> ProjectResponse:
 @router.post(
     "",
     response_model=ProjectResponse,
-    responses={422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses=with_long_tail_peel_503(
+        {422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    ),  # sak512-g
 )
 def create_project(
     body: ProjectCreateRequest,
@@ -108,7 +123,9 @@ def create_project(
 @router.patch(
     "/{project_id}",
     response_model=ProjectResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),  # sak512-h
 )
 def update_project(
     project_id: UUID,
@@ -143,13 +160,14 @@ def update_project(
 
 @router.delete(
     "/{project_id}",
-    status_code=204,
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=DeleteOkResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-h
 )
-def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> Response:
+def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> DeleteOkResponse:
     if not store.delete(project_id):
         raise HTTPException(
             status_code=404,
             detail=problem("project_not_found", f"Unknown project id: {project_id}"),
         )
-    return Response(status_code=204)
+    return DeleteOkResponse(ok=True)

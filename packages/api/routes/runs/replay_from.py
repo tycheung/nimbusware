@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import with_long_tail_peel_503
 from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.campaign.campaign import campaign_enabled_for_run
 from orchestrator.replay.replay_from import ReplayPolicy, emit_replay_started_event
@@ -35,7 +36,9 @@ class ReplayFromResponse(BaseModel):
 @router.post(
     "/runs/{run_id}/replay-from",
     response_model=ReplayFromResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(  # sak503-h
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def replay_from_checkpoint(
     run_id: UUID,

@@ -12,6 +12,8 @@ from agent_core.models.events_payloads import CampaignFailedPayload, CampaignPau
 from agent_core.models.events_records import CampaignFailedEvent, CampaignPausedEvent
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
+from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import campaign_json_openapi_responses
 
 router = APIRouter()
 
@@ -20,7 +22,26 @@ class CampaignActionBody(BaseModel):
     reason_code: str = Field(default="operator", max_length=64)
 
 
-@router.post("/campaigns/{campaign_id}/pause")
+class CampaignActionResponse(BaseModel):
+    """POST campaign pause/resume/cancel (`sak484-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    campaign_id: str | None = None
+    status: str | None = None
+    dispatch_mode: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.post(
+    "/campaigns/{campaign_id}/pause",
+    response_model=CampaignActionResponse,
+    response_model_exclude_none=True,
+    summary="Pause campaign (`sak484-e`)",
+    responses=campaign_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-d
+)
 def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
@@ -47,7 +68,13 @@ def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep)
     return {"campaign_id": str(campaign_id), "status": "paused"}
 
 
-@router.post("/campaigns/{campaign_id}/resume")
+@router.post(
+    "/campaigns/{campaign_id}/resume",
+    response_model=CampaignActionResponse,
+    response_model_exclude_none=True,
+    summary="Resume campaign (`sak484-e`)",
+    responses=campaign_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-d
+)
 def resume_campaign(campaign_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
@@ -56,7 +83,13 @@ def resume_campaign(campaign_id: UUID, orch: OrchDep, store: StoreDep) -> dict[s
     return {"campaign_id": str(campaign_id), "status": "resumed", "dispatch_mode": mode}
 
 
-@router.post("/campaigns/{campaign_id}/cancel")
+@router.post(
+    "/campaigns/{campaign_id}/cancel",
+    response_model=CampaignActionResponse,
+    response_model_exclude_none=True,
+    summary="Cancel campaign (`sak484-e`)",
+    responses=campaign_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-d
+)
 def cancel_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:

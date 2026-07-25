@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from standards import (
     mart_catalog,
     run_bundle,
@@ -75,7 +76,103 @@ class UserStandardsProfileBody(BaseModel):
     connectors: list[str] = Field(default_factory=list)
 
 
-@router.get("/standards/registry")
+class StandardsRegistryResponse(BaseModel):
+    """GET /standards/registry (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class StandardsPresetResponse(BaseModel):
+    """GET /standards/presets/{preset_id} (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class StandardsPresetDefaultsResponse(BaseModel):
+    """GET /standards/presets/{preset_id}/defaults (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class RunStandardsResponse(BaseModel):
+    """GET/PUT /runs/{run_id}/standards (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    standards_effective: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class RunStandardsReportResponse(BaseModel):
+    """GET /runs/{run_id}/standards/report (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    passed: bool | None = None
+    failing_check_ids: list[str] | None = None
+    results: list[dict[str, Any]] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class RunStandardsRunResponse(BaseModel):
+    """POST /runs/{run_id}/standards/run (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    result: dict[str, Any] | None = None
+    results: list[dict[str, Any]] | dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class UserStandardsProfilesResponse(BaseModel):
+    """GET /users/me/standards-profile (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    profiles: list[dict[str, Any]] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class UserStandardsProfileResponse(BaseModel):
+    """PUT /users/me/standards-profile/{profile_id} (`sak483-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/standards/registry",
+    response_model=StandardsRegistryResponse,
+    response_model_exclude_none=True,
+    summary="Standards registry (`sak483-e`)",
+    responses=long_tail_json_openapi_responses(),  # sak500-e
+)
 def get_standards_registry() -> dict[str, Any]:
     if not standards_platform_enabled():
         raise HTTPException(
@@ -85,7 +182,13 @@ def get_standards_registry() -> dict[str, Any]:
     return mart_catalog()
 
 
-@router.get("/standards/presets/{preset_id}")
+@router.get(
+    "/standards/presets/{preset_id}",
+    response_model=StandardsPresetResponse,
+    response_model_exclude_none=True,
+    summary="Standards preset (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-h
+)
 def get_standards_preset(preset_id: str, level: int = 5) -> dict[str, Any]:
     manifest = load_facade_manifest(preset_id)
     if manifest is None:
@@ -99,7 +202,13 @@ def get_standards_preset(preset_id: str, level: int = 5) -> dict[str, Any]:
     }
 
 
-@router.get("/standards/presets/{preset_id}/defaults")
+@router.get(
+    "/standards/presets/{preset_id}/defaults",
+    response_model=StandardsPresetDefaultsResponse,
+    response_model_exclude_none=True,
+    summary="Standards preset defaults (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-h
+)
 def get_standards_preset_defaults(preset_id: str, level: int = 5) -> dict[str, Any]:
     manifest = load_facade_manifest(preset_id)
     if manifest is None:
@@ -110,7 +219,13 @@ def get_standards_preset_defaults(preset_id: str, level: int = 5) -> dict[str, A
     return preset_defaults_summary(preset_id, level)
 
 
-@router.get("/runs/{run_id}/standards")
+@router.get(
+    "/runs/{run_id}/standards",
+    response_model=RunStandardsResponse,
+    response_model_exclude_none=True,
+    summary="Run standards GET (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-c
+)
 def get_run_standards(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -132,7 +247,13 @@ def get_run_standards(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     return {"run_id": str(run_id), "standards_effective": profile.to_dict()}
 
 
-@router.get("/runs/{run_id}/standards/report")
+@router.get(
+    "/runs/{run_id}/standards/report",
+    response_model=RunStandardsReportResponse,
+    response_model_exclude_none=True,
+    summary="Run standards report (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-c
+)
 def get_run_standards_report(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     _, workspace = _run_workspace_from_store(run_id, store)
     profile = resolve_standards_profile(workspace=workspace)
@@ -151,7 +272,13 @@ def get_run_standards_report(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     }
 
 
-@router.put("/runs/{run_id}/standards")
+@router.put(
+    "/runs/{run_id}/standards",
+    response_model=RunStandardsResponse,
+    response_model_exclude_none=True,
+    summary="Run standards PUT (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-i
+)
 def put_run_standards(run_id: UUID, body: StandardsProfileBody, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -186,7 +313,13 @@ def put_run_standards(run_id: UUID, body: StandardsProfileBody, store: StoreDep)
     return {"run_id": str(run_id), "standards_effective": merged.to_dict()}
 
 
-@router.post("/runs/{run_id}/standards/run")
+@router.post(
+    "/runs/{run_id}/standards/run",
+    response_model=RunStandardsRunResponse,
+    response_model_exclude_none=True,
+    summary="Run standards execution (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak506-i
+)
 def post_run_standards_run(run_id: UUID, body: StandardsRunBody, store: StoreDep) -> dict[str, Any]:
     _, workspace = _run_workspace_from_store(run_id, store)
     if body.stream:
@@ -209,13 +342,25 @@ def post_run_standards_run(run_id: UUID, body: StandardsRunBody, store: StoreDep
     }
 
 
-@router.get("/users/me/standards-profile")
+@router.get(
+    "/users/me/standards-profile",
+    response_model=UserStandardsProfilesResponse,
+    response_model_exclude_none=True,
+    summary="User standards profiles GET (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak507-c
+)
 def get_user_standards_profile(orch: OrchDep) -> dict[str, Any]:
     profiles = load_user_standards_profiles(orch.repo_root)
     return {"profiles": [p.to_dict() for p in profiles.values()]}
 
 
-@router.put("/users/me/standards-profile/{profile_id}")
+@router.put(
+    "/users/me/standards-profile/{profile_id}",
+    response_model=UserStandardsProfileResponse,
+    response_model_exclude_none=True,
+    summary="User standards profile PUT (`sak483-e`)",
+    responses=with_long_tail_peel_503(),  # sak507-c
+)
 def put_user_standards_profile(
     profile_id: str,
     body: UserStandardsProfileBody,

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Query, Response
+from fastapi import APIRouter, Header, HTTPException, Query
+from pydantic import BaseModel
 
 from api.admin import AdminDep
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import DeleteOkResponse, with_long_tail_peel_503
 from api.routes.personas_helpers import (
     _RESERVED_PERSONA_IDS,
     entry_version,
@@ -46,10 +48,25 @@ from orchestrator.persona.probation_reliability import (
 router = APIRouter(prefix="/personas", tags=["personas"])
 
 
+class PersonaOverlapReportResponse(BaseModel):
+    """GET /personas/overlap-report (`sak487-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    pair_count: int | None = None
+    rows: list[dict[str, Any]] | None = None
+    warning: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.get(
     "",
     response_model=PersonaShelvesResponse,
-    responses={200: PERSONAS_RESPONSE_200, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses=with_long_tail_peel_503(  # sak505-a
+        {200: PERSONAS_RESPONSE_200, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    ),
     summary="List persona shelves",
 )
 def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
@@ -59,7 +76,11 @@ def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
 
 @router.get(
     "/overlap-report",
-    responses={200: PERSONAS_RESPONSE_200, 401: PROBLEM_RESPONSE_401, 500: PROBLEM_RESPONSE_500},
+    response_model=PersonaOverlapReportResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak505-a
+        {200: PERSONAS_RESPONSE_200, 401: PROBLEM_RESPONSE_401, 500: PROBLEM_RESPONSE_500},
+    ),
     summary="Persona scope_in overlap report",
 )
 def get_persona_overlap_report(orch: OrchDep, _admin: AdminDep) -> dict[str, Any]:
@@ -76,7 +97,13 @@ def get_persona_overlap_report(orch: OrchDep, _admin: AdminDep) -> dict[str, Any
 @router.get(
     "/{shelf}/{persona_id}/probation-reliability",
     response_model=ProbationReliabilityResponse,
-    responses={200: PERSONAS_RESPONSE_200, 404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(
+        {
+            200: PERSONAS_RESPONSE_200,
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+        },
+    ),  # sak512-b
     summary="Probation reliability metrics for a persona",
 )
 def get_persona_probation_reliability(
@@ -362,7 +389,8 @@ def patch_persona(
 
 @router.delete(
     "/{shelf}/{persona_id}",
-    status_code=204,
+    response_model=DeleteOkResponse,
+    response_model_exclude_none=True,
     responses={
         401: PROBLEM_RESPONSE_401,
         404: PROBLEM_RESPONSE_404,
@@ -381,7 +409,7 @@ def delete_persona(
     _admin: AdminDep,
     expected_version: int = Query(..., ge=1),
     actor: str | None = Query(default=None, max_length=200),
-) -> Response:
+) -> DeleteOkResponse:
     validate_shelf_name(shelf)
     persona_shelf = load_shelf(orch)
     existing = persona_shelf.find_entry(shelf, persona_id)
@@ -421,4 +449,4 @@ def delete_persona(
         actor=actor,
         correlation_id=None,
     )
-    return Response(status_code=204)
+    return DeleteOkResponse(ok=True)

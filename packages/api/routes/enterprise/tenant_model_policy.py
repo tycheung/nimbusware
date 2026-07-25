@@ -9,6 +9,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
+from api.schemas.peel_responses import with_enterprise_peel_503
 from config.tenant_policy_store import (
     load_tenant_model_policy,
     save_tenant_model_policy,
@@ -24,7 +25,31 @@ class TenantModelPolicyBody(BaseModel):
     audit_include_binding_events: bool = True
 
 
-@router.get("/tenants/{tenant_ref}/model-policy")
+class TenantModelPolicyResponse(BaseModel):
+    """GET/PUT tenant model-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    version: int | None = None
+    allowed_cloud_providers: list[str] | None = None
+    require_admin_for_cloud_swap: bool | None = None
+    blocked_model_ids: list[str] | None = None
+    audit_include_binding_events: bool | None = None
+    ok: bool | None = None
+    policy: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/model-policy",
+    response_model=TenantModelPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant model policy GET (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak520-a
+)
 def get_tenant_model_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -35,7 +60,13 @@ def get_tenant_model_policy(
     return {"tenant_slug": slug, "version": int(policy.get("version") or 1), **policy}
 
 
-@router.put("/tenants/{tenant_ref}/model-policy")
+@router.put(
+    "/tenants/{tenant_ref}/model-policy",
+    response_model=TenantModelPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant model policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak520-a
+)
 def put_tenant_model_policy(
     tenant_ref: str,
     body: TenantModelPolicyBody,

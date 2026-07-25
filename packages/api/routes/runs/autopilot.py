@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from iam.context import get_auth_context
 from orchestrator.profiles.autopilot_profiles import (
     autopilot_profile_from_rows,
@@ -34,7 +35,10 @@ class RunAutopilotResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/autopilot",
     response_model=RunAutopilotResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses={
+        404: PROBLEM_RESPONSE_404,
+        **long_tail_json_openapi_responses(),  # sak501-c
+    },
 )
 def get_run_autopilot(run_id: UUID, store: StoreDep) -> RunAutopilotResponse:
     rows = store.list_run_events(str(run_id))
@@ -56,7 +60,7 @@ def get_run_autopilot(run_id: UUID, store: StoreDep) -> RunAutopilotResponse:
 @router.put(
     "/runs/{run_id}/autopilot",
     response_model=RunAutopilotResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak505-i
 )
 def put_run_autopilot(
     run_id: UUID,

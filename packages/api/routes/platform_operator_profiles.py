@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import OrchDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from api.user import maker_user_id_str
 from orchestrator.profiles.user_operator_profiles import (
     load_user_operator_profiles,
@@ -22,7 +23,23 @@ class OperatorProfilesBody(BaseModel):
     enforcement_profile_id: str | None = Field(default=None, max_length=120)
 
 
-@router.get("/platform/operator-profiles")
+class OperatorProfilesResponse(BaseModel):
+    """GET/PUT /platform/operator-profiles (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/platform/operator-profiles",
+    response_model=OperatorProfilesResponse,
+    response_model_exclude_none=True,
+    summary="Operator profiles GET (`sak483-g`)",
+    responses=long_tail_json_openapi_responses(),  # sak501-i
+)
 def get_operator_profiles(
     request: Request,
     orch: OrchDep,
@@ -37,7 +54,13 @@ def get_operator_profiles(
     return load_user_operator_profiles(uid, repo_root=orch.repo_root)
 
 
-@router.put("/platform/operator-profiles")
+@router.put(
+    "/platform/operator-profiles",
+    response_model=OperatorProfilesResponse,
+    response_model_exclude_none=True,
+    summary="Operator profiles PUT (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak516-c
+)
 def put_operator_profiles(
     body: OperatorProfilesBody,
     request: Request,

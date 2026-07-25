@@ -13,6 +13,7 @@ from api.routes.enterprise._fleet_policy_helpers import (
     tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     FleetSlicePolicy,
     FleetStackPolicy,
@@ -39,7 +40,40 @@ class FleetStackPolicyBody(BaseModel):
     allowed_stacks: dict[str, str] = Field(default_factory=dict)
 
 
-@router.get("/tenants/{tenant_ref}/slice-policy")
+class FleetSlicePolicyResponse(BaseModel):
+    """GET/PUT tenant slice-policy (`sak482-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    slice_budget_preset: str | None = None
+    max_files: int | None = None
+    max_loc: int | None = None
+    require_unanimous_gate: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class FleetStackPolicyResponse(BaseModel):
+    """GET/PUT tenant stack-policy (`sak482-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    allowed_stacks: dict[str, str] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/slice-policy",
+    response_model=FleetSlicePolicyResponse,
+    response_model_exclude_none=True,
+    summary="Fleet slice policy GET (`sak482-g`)",
+    responses=with_enterprise_peel_503(),  # sak518-i
+)
 def get_fleet_slice_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -49,7 +83,13 @@ def get_fleet_slice_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_slice_policy)
 
 
-@router.put("/tenants/{tenant_ref}/slice-policy")
+@router.put(
+    "/tenants/{tenant_ref}/slice-policy",
+    response_model=FleetSlicePolicyResponse,
+    response_model_exclude_none=True,
+    summary="Fleet slice policy PUT (`sak482-g`)",
+    responses=with_enterprise_peel_503(),  # sak518-i
+)
 def put_fleet_slice_policy(
     tenant_ref: str,
     body: FleetSlicePolicyBody,
@@ -75,7 +115,13 @@ def put_fleet_slice_policy(
     )
 
 
-@router.get("/tenants/{tenant_ref}/stack-policy")
+@router.get(
+    "/tenants/{tenant_ref}/stack-policy",
+    response_model=FleetStackPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Fleet stack policy GET (`sak482-g`)",
+    responses=with_enterprise_peel_503(),  # sak519-a
+)
 def get_fleet_stack_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -85,7 +131,13 @@ def get_fleet_stack_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_stack_policy)
 
 
-@router.put("/tenants/{tenant_ref}/stack-policy")
+@router.put(
+    "/tenants/{tenant_ref}/stack-policy",
+    response_model=FleetStackPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Fleet stack policy PUT (`sak482-g`)",
+    responses=with_enterprise_peel_503(),  # sak519-a
+)
 def put_fleet_stack_policy(
     tenant_ref: str,
     body: FleetStackPolicyBody,

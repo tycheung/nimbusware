@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter
+from pydantic import BaseModel, Field
 
 from api.deps import IamStoreDep, StoreDep
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import enterprise_peel_json_openapi_responses
 from config.tenant_policy_store import audit_redaction, load_tenant_audit_policy
 from orchestrator.fleet.policies import (
     load_fleet_autopilot_policies,
@@ -19,7 +21,31 @@ from projections.builders.competitive_metrics import build_compliance_dashboard_
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 
 
-@router.get("/compliance/summary")
+class ComplianceSummaryResponse(BaseModel):
+    """GET /enterprise/compliance/summary (`sak481-c`)."""
+
+    model_config = {"extra": "allow"}
+
+    audit_retention_days: int | None = None
+    iam_action_count: int | None = None
+    event_row_count: int | None = None
+    fleet_policy_counts: dict[str, Any] | None = None
+    tenant_count: int | None = None
+    gate_pass_rate: float | None = None
+    gate_pass_count: int | None = None
+    completed_runs: int | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/compliance/summary",
+    response_model=ComplianceSummaryResponse,
+    response_model_exclude_none=True,
+    summary="Compliance summary (`sak481-c`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def compliance_summary(
     _: EnterpriseDep,
     iam: IamStoreDep,

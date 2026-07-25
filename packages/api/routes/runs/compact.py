@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, model_validator
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import with_long_tail_peel_503
 from orchestrator.context_compaction import maybe_emit_compaction_event
 
 router = APIRouter()
@@ -48,7 +49,7 @@ def agent_compact_enabled() -> bool:
 @router.post(
     "/runs/{run_id}/compact",
     response_model=CompactRunResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak503-g
 )
 def compact_run(
     run_id: UUID,

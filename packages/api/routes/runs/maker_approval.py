@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import llm_json_openapi_responses, with_long_tail_peel_503
 from maker.approval import git_outputs_from_rows, last_git_commit_from_rows
 from maker.slice_workflow import (
     apply_pending_slice,
@@ -31,9 +32,71 @@ class PendingSliceResponse(BaseModel):
     last_snapshot: dict[str, Any] | None = None
 
 
+class LaunchEvalResponse(BaseModel):
+    """POST /runs/{id}/maker/launch-eval (`sak482-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class MakerGitStatusResponse(BaseModel):
+    """GET /runs/{id}/maker/git-status (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    git_commit: dict[str, Any] | None = None
+    git_outputs: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class MakerOpenPrResponse(BaseModel):
+    """POST /runs/{id}/maker/open-pr (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    pr: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class MakerActionResponse(BaseModel):
+    """Maker workflow POST actions (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class MakerRunTestsResponse(BaseModel):
+    """POST /runs/{id}/maker/run-tests (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tests_passed: bool | None = None
+    exit_code: int | None = None
+    detail: str | None = None
+    targets: list[str] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.get(
     "/runs/{run_id}/maker/git-status",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=MakerGitStatusResponse,
+    response_model_exclude_none=True,
+    summary="Maker git status (`sak483-g`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak507-a
 )
 def get_maker_git_status(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -51,7 +114,12 @@ def get_maker_git_status(run_id: UUID, store: StoreDep) -> dict[str, Any]:
 
 @router.post(
     "/runs/{run_id}/maker/open-pr",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerOpenPrResponse,
+    response_model_exclude_none=True,
+    summary="Maker open PR (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-g
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_open_pr(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -80,7 +148,7 @@ def post_maker_open_pr(run_id: UUID, store: StoreDep) -> dict[str, Any]:
 @router.get(
     "/runs/{run_id}/maker/pending",
     response_model=PendingSliceResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak507-a
 )
 def get_maker_pending(run_id: UUID, orch: OrchDep, store: StoreDep) -> PendingSliceResponse:
     rows = store.list_run_events(str(run_id))
@@ -95,7 +163,12 @@ def get_maker_pending(run_id: UUID, orch: OrchDep, store: StoreDep) -> PendingSl
 
 @router.post(
     "/runs/{run_id}/maker/plan/approve",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerActionResponse,
+    response_model_exclude_none=True,
+    summary="Maker plan approve (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-b
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_plan_approve(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
     rows = store.list_run_events(str(run_id))
@@ -115,7 +188,12 @@ def post_maker_plan_approve(run_id: UUID, orch: OrchDep, store: StoreDep) -> dic
 
 @router.post(
     "/runs/{run_id}/maker/slices/prepare",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerActionResponse,
+    response_model_exclude_none=True,
+    summary="Maker slice prepare (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-b
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_slice_prepare(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -139,7 +217,12 @@ class SliceActionBody(BaseModel):
 
 @router.post(
     "/runs/{run_id}/maker/slices/apply",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerActionResponse,
+    response_model_exclude_none=True,
+    summary="Maker slice apply (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-g
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_slice_apply(
     run_id: UUID,
@@ -164,7 +247,12 @@ def post_maker_slice_apply(
 
 @router.post(
     "/runs/{run_id}/maker/slices/skip",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerActionResponse,
+    response_model_exclude_none=True,
+    summary="Maker slice skip (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-h
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_slice_skip(
     run_id: UUID,
@@ -189,7 +277,12 @@ def post_maker_slice_skip(
 
 @router.post(
     "/runs/{run_id}/workspace/revert",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerActionResponse,
+    response_model_exclude_none=True,
+    summary="Workspace revert (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-h
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_workspace_revert(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -209,7 +302,12 @@ def post_workspace_revert(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[
 
 @router.post(
     "/runs/{run_id}/maker/run-tests",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=MakerRunTestsResponse,
+    response_model_exclude_none=True,
+    summary="Maker run tests (`sak483-g`)",
+    responses=with_long_tail_peel_503(  # sak507-i
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def post_maker_run_tests(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -244,7 +342,13 @@ def post_maker_run_tests(run_id: UUID, store: StoreDep) -> dict[str, Any]:
 
 @router.post(
     "/runs/{run_id}/maker/launch-eval",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=LaunchEvalResponse,
+    response_model_exclude_none=True,
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak499-c
+        422: PROBLEM_RESPONSE_422,
+    },
+    summary="Launch eval scorecard (`sak482-f`)",
 )
 def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -269,7 +373,25 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     from orchestrator.launch.launch_evaluator import merge_dev_env_into_scorecard
 
     attach = attach_context_from_run(rows)
-    scorecard = evaluate_workspace_rubric(ws)
+    try:
+        scorecard = evaluate_workspace_rubric(ws)
+    except RuntimeError as exc:
+        if "broker_miss" not in str(exc):
+            raise
+        from broker_client.dual_run_route import map_domain_broker_http_miss
+        from broker_client.flags import broker_llm_enabled, broker_llm_only
+
+        return map_domain_broker_http_miss(  # sak500-b
+            exc,
+            feature="launch_eval",
+            enabled=broker_llm_enabled,
+            only=broker_llm_only,
+            only_code="broker_llm_unavailable",
+            only_msg=(
+                "Launch eval unavailable under NIMBUSWARE_BROKER_LLM=2; "
+                "use SwissArmyNoife llm_chat"
+            ),
+        )
     scorecard = merge_dev_env_into_scorecard(scorecard, rows)
     emit_launch_eval_completed(store, run_id, scorecard, attach_context=attach or None)
     payload = scorecard.to_dict()

@@ -2,16 +2,19 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse, Response
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from api.deps import StoreDep
 from api.errors import problem
+from api.export_peel import early_export_json_miss
 from api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import ExportErrorResponse, with_long_tail_peel_503
 from maker.intent.requirements import requirements_from_run_created_metadata
 from maker.workspace.workspace import run_created_metadata_from_rows
 from orchestrator.policy_snapshot_diff import policy_snapshot_from_run_created_metadata
@@ -27,16 +30,32 @@ from store.protocol import serialized_event_from_row
 router = APIRouter(tags=["audit"])
 
 
+class RunAuditExportErrorResponse(ExportErrorResponse):
+    """GET /runs/{run_id}/audit-export peel miss (`sak488-e`)."""
+
+    pass
+
+
 @router.get(
     "/runs/{run_id}/audit-export",
-    responses={
-        200: {"content": {"application/gzip": {}}},
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    response_model=None,
+    responses=with_long_tail_peel_503(
+        {
+            200: {
+                "content": {
+                    "application/gzip": {},
+                    "application/json": {"model": RunAuditExportErrorResponse},
+                },
+            },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),  # sak511-i
 )
-def audit_export(run_id: UUID, store: StoreDep) -> Response:
+def audit_export(run_id: UUID, store: StoreDep):
+    if miss := early_export_json_miss(feature="audit_export"):
+        return miss
     rid = str(run_id)
     rows = store.list_run_events(rid)
     if not rows:

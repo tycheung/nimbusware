@@ -10,6 +10,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from api.schemas.scraper_artifacts import ScraperArtifactInventoryResponse
 from env.env_flags import nimbusware_scraper_artifact_max_age_days_raw
 from orchestrator.scraper.artifacts import (
@@ -25,11 +26,13 @@ INVENTORY_MAX_ENTRIES = 500
 @router.get(
     "/scraper-artifacts/inventory",
     response_model=ScraperArtifactInventoryResponse,
-    responses={
-        200: SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    responses=with_long_tail_peel_503(  # sak505-b
+        {
+            200: SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
 )
 def get_scraper_artifact_inventory(
     orch: OrchDep,

@@ -13,6 +13,10 @@ from api.routes.enterprise._fleet_policy_helpers import (
     tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import (
+    enterprise_peel_json_openapi_responses,
+    with_enterprise_peel_503,
+)
 from orchestrator.fleet.policies import (
     VALID_DISCOVERY_FIELD_IDS,
     FleetDiscoveryPolicy,
@@ -28,7 +32,25 @@ class FleetDiscoveryPolicyBody(BaseModel):
     discovery_required_fields: list[str] = Field(default_factory=list, max_length=12)
 
 
-@router.get("/tenants/{tenant_ref}/discovery-policy")
+class FleetDiscoveryPolicyResponse(BaseModel):
+    """GET/PUT tenant discovery-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    discovery_required_fields: list[str] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/discovery-policy",
+    response_model=FleetDiscoveryPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant discovery policy GET (`sak483-f`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak502-c
+)
 def get_fleet_discovery_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -38,7 +60,13 @@ def get_fleet_discovery_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_discovery_policy)
 
 
-@router.put("/tenants/{tenant_ref}/discovery-policy")
+@router.put(
+    "/tenants/{tenant_ref}/discovery-policy",
+    response_model=FleetDiscoveryPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant discovery policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak519-b
+)
 def put_fleet_discovery_policy(
     tenant_ref: str,
     body: FleetDiscoveryPolicyBody,

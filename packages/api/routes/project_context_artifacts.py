@@ -9,6 +9,7 @@ from api.access import assert_project_accessible
 from api.deps import ProjectStoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import memory_json_openapi_responses, with_long_tail_peel_503
 from api.user import UserDep, maker_user_id_str
 from orchestrator.context_artifacts import (
     ContextArtifactRecord,
@@ -52,7 +53,7 @@ def _to_response(record: ContextArtifactRecord) -> ContextArtifactResponse:
 @router.get(
     "/{project_id}/context-artifacts",
     response_model=ContextArtifactListResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak516-a
 )
 def get_project_context_artifacts(
     project_id: UUID,
@@ -79,7 +80,9 @@ def get_project_context_artifacts(
 @router.post(
     "/{project_id}/context-artifacts",
     response_model=ContextArtifactResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),  # sak516-b
 )
 def post_project_context_artifact(
     project_id: UUID,
@@ -117,16 +120,25 @@ def post_project_context_artifact(
 
 
 class ContextArtifactBridgeResponse(BaseModel):
+    model_config = {"extra": "allow"}
+
     project_id: str
     artifact_id: str
-    bridge_path: str
+    bridge_path: str = ""
     indexed: bool = False
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
 @router.post(
     "/{project_id}/context-artifacts/{artifact_id}/bridge-memory",
     response_model=ContextArtifactBridgeResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model_exclude_none=True,
+    responses={
+        **memory_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak499-c
+    },
 )
 def bridge_context_artifact_to_memory(
     project_id: UUID,
@@ -151,7 +163,33 @@ def bridge_context_artifact_to_memory(
                 details={"artifact_id": artifact_id},
             ),
         )
-    bridge = bridge_artifact_to_memory_index(artifact)
+    try:
+        bridge = bridge_artifact_to_memory_index(artifact)
+    except RuntimeError as exc:
+        from broker_client.flags import broker_memory_enabled
+
+        if not broker_memory_enabled():
+            raise
+        from memory.broker_route import map_broker_memory_http_miss
+
+        miss = map_broker_memory_http_miss(
+            exc,
+            feature="context_artifact_bridge",
+            miss_extra={
+                "project_id": str(project_id),
+                "artifact_id": artifact_id,
+            },
+        )
+        return ContextArtifactBridgeResponse(
+            project_id=str(project_id),
+            artifact_id=artifact_id,
+            bridge_path="",
+            indexed=False,
+            via=miss.get("via"),
+            error=miss.get("error"),
+            feature=miss.get("feature"),
+            status=miss.get("status"),
+        )
     return ContextArtifactBridgeResponse(
         project_id=str(project_id),
         artifact_id=artifact.artifact_id,

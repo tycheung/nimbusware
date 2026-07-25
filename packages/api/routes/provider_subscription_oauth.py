@@ -12,9 +12,12 @@ from urllib.parse import quote
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel, Field
 
 from api.deps import OrchDep
 from api.errors import problem
+from api.schemas.openapi import PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import long_tail_json_openapi_responses
 from api.user import UserDep, maker_user_id_str
 from config.provider_connections import (
     ProviderConnectionStore,
@@ -40,6 +43,29 @@ from orchestrator.provider_registry import (
 )
 
 router = APIRouter(tags=["platform"])
+
+
+class SubscriptionOauthProviderStatus(BaseModel):
+    """One subscription provider OAuth readiness row (`sak448-d`)."""
+
+    provider_id: str
+    label: str | None = None
+    oauth_ready: bool = False
+    scopes: str | None = None
+    authorize_path: str | None = None
+    configure_hint: str | None = None
+
+
+class SubscriptionOauthStatusResponse(BaseModel):
+    """GET /platform/provider-subscriptions/oauth/status (`sak448-d`)."""
+
+    providers: list[SubscriptionOauthProviderStatus] = Field(default_factory=list)
+    callback_path: str | None = None
+    mock_mode: bool = False
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
 
 _PKCE_COOKIE = "nimbusware_subscription_oauth_pkce"
 _COOKIE_PATH = "/v1/platform/provider-subscriptions/oauth"
@@ -180,7 +206,13 @@ def _config_for_provider(repo_root: Path, provider_id: str) -> SubscriptionOAuth
     return cfg
 
 
-@router.get("/platform/provider-subscriptions/oauth/status")
+@router.get(
+    "/platform/provider-subscriptions/oauth/status",
+    response_model=SubscriptionOauthStatusResponse,
+    response_model_exclude_none=True,
+    summary="Subscription OAuth status (`sak448-d`)",
+    responses=long_tail_json_openapi_responses(),  # sak495-d
+)
 def subscription_oauth_status(orch: OrchDep, _: UserDep) -> dict[str, Any]:
     providers: list[dict[str, Any]] = []
     for preset in load_subscription_provider_presets(orch.repo_root):
@@ -209,7 +241,13 @@ def subscription_oauth_status(orch: OrchDep, _: UserDep) -> dict[str, Any]:
     }
 
 
-@router.get("/platform/provider-subscriptions/{provider_id}/oauth/authorize")
+@router.get(
+    "/platform/provider-subscriptions/{provider_id}/oauth/authorize",
+    responses={
+        **long_tail_json_openapi_responses(),  # sak496-f
+        422: PROBLEM_RESPONSE_422,
+    },
+)
 def subscription_oauth_authorize(
     provider_id: str,
     request: Request,
@@ -278,7 +316,10 @@ def subscription_oauth_mock_authorize(
     return response
 
 
-@router.get("/platform/provider-subscriptions/oauth/callback")
+@router.get(
+    "/platform/provider-subscriptions/oauth/callback",
+    responses=long_tail_json_openapi_responses(),  # sak496-f
+)
 def subscription_oauth_callback(
     request: Request,
     orch: OrchDep,

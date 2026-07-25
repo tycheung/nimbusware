@@ -10,8 +10,15 @@ from pydantic import BaseModel, Field
 
 from api.deps import StoreDep
 from api.errors import problem
-from api.routes.runs.stream import _sse_pack
-from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.export_peel import early_export_json_miss
+from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
+from api.schemas.peel_responses import (
+    SseStreamErrorResponse,
+    TheaterExportMissResponse,
+    export_openapi_responses,
+    with_long_tail_peel_503,
+)
+from api.sse_peel import early_sse_peel_miss, sse_pack, sse_stream_openapi_responses
 from env.env_flags import nimbusware_collab_enabled
 from orchestrator.collab.output_redaction import redact_collab_output
 from projections.builders.chat_theater import build_theater_messages_for_profile
@@ -31,7 +38,7 @@ class TheaterResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/theater",
     response_model=TheaterResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak506-a
 )
 def get_run_theater(
     run_id: UUID,
@@ -63,12 +70,20 @@ def get_run_theater(
 
 @router.get(
     "/runs/{run_id}/theater/export",
+    response_model=None,
     responses={
-        200: {"content": {"text/markdown": {}}},
-        404: PROBLEM_RESPONSE_404,
+        200: {
+            "content": {
+                "text/markdown": {},
+                "application/json": {"model": TheaterExportMissResponse},
+            },
+        },
+        **export_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-g / sak506-a
     },
 )
-def export_run_theater(run_id: UUID, store: StoreDep) -> Response:
+def export_run_theater(run_id: UUID, store: StoreDep):
+    if miss := early_export_json_miss(feature="theater_export"):
+        return miss
     rid = str(run_id)
     rows = store.list_run_events(rid)
     if not rows:
@@ -85,7 +100,16 @@ def export_run_theater(run_id: UUID, store: StoreDep) -> Response:
     )
 
 
-@router.get("/runs/{run_id}/theater/stream")
+@router.get(
+    "/runs/{run_id}/theater/stream",
+    responses={
+        **sse_stream_openapi_responses(
+            miss_model=SseStreamErrorResponse,
+            not_found=PROBLEM_RESPONSE_404,
+        ),
+        503: PROBLEM_RESPONSE_503,  # sak511-h
+    },
+)
 def get_theater_stream(
     run_id: UUID,
     store: StoreDep,
@@ -102,6 +126,9 @@ def get_theater_stream(
         )
 
     async def generate() -> Any:
+        if peel := early_sse_peel_miss(feature="theater_stream"):
+            yield peel
+            return
         last_seq = cursor
         idle = 0
         while idle < 20:
@@ -122,12 +149,12 @@ def get_theater_stream(
                     ]
                 for m in new_msgs:
                     last_seq = max(last_seq, int(m.get("store_seq") or 0))
-                    yield _sse_pack("theater", m)
+                    yield sse_pack("theater", m)
             else:
                 idle += 1
-                yield _sse_pack("heartbeat", {"cursor": last_seq})
+                yield sse_pack("heartbeat", {"cursor": last_seq})
             await asyncio.sleep(poll_seconds)
-        yield _sse_pack("done", {"run_id": str(run_id)})
+        yield sse_pack("done", {"run_id": str(run_id)})
 
     return StreamingResponse(
         generate(),

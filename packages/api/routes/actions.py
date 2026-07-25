@@ -27,6 +27,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from orchestrator.role_execute import (
     resolve_taxonomy_key,
     supported_role_taxonomy_keys,
@@ -55,19 +56,48 @@ class OverrideGateBody(BaseModel):
     policy_snapshot_id: str | None = None
 
 
+class ActionStatusResponse(BaseModel):
+    """POST run actions retry/escalate/override-gate (`sak487-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class RoleExecuteResponse(BaseModel):
+    """POST /roles/{role_id}/execute (`sak487-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    taxonomy_key: str | None = None
+    stage_name: str | None = None
+    run_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.post(
     "/runs/{run_id}/actions/retry",
-    responses={
-        200: {
-            "description": "Retry stage marker appended",
-            "content": {
-                "application/json": {"example": {"status": "retry_recorded"}},
+    response_model=ActionStatusResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak506-b
+        {
+            200: {
+                "description": "Retry stage marker appended",
+                "content": {
+                    "application/json": {"example": {"status": "retry_recorded"}},
+                },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def retry_stage(run_id: UUID, store: StoreDep) -> dict[str, str]:
     rid_s = str(run_id)
@@ -92,17 +122,21 @@ def retry_stage(run_id: UUID, store: StoreDep) -> dict[str, str]:
 
 @router.post(
     "/runs/{run_id}/actions/escalate",
-    responses={
-        200: {
-            "description": "Escalation event appended",
-            "content": {
-                "application/json": {"example": {"status": "escalated"}},
+    response_model=ActionStatusResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak506-b
+        {
+            200: {
+                "description": "Escalation event appended",
+                "content": {
+                    "application/json": {"example": {"status": "escalated"}},
+                },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def escalate(run_id: UUID, body: EscalateBody, store: StoreDep) -> dict[str, str]:
     rid_s = str(run_id)
@@ -131,17 +165,21 @@ def escalate(run_id: UUID, body: EscalateBody, store: StoreDep) -> dict[str, str
 
 @router.post(
     "/runs/{run_id}/actions/override-gate",
-    responses={
-        200: {
-            "description": "Gate override event appended (audit trail only)",
-            "content": {
-                "application/json": {"example": {"status": "gate_overridden"}},
+    response_model=ActionStatusResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak506-g
+        {
+            200: {
+                "description": "Gate override event appended (audit trail only)",
+                "content": {
+                    "application/json": {"example": {"status": "gate_overridden"}},
+                },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def override_gate(run_id: UUID, body: OverrideGateBody, store: StoreDep) -> dict[str, str]:
     rid_s = str(run_id)
@@ -171,6 +209,8 @@ def override_gate(run_id: UUID, body: OverrideGateBody, store: StoreDep) -> dict
 
 @router.post(
     "/roles/{role_id}/execute",
+    response_model=RoleExecuteResponse,
+    response_model_exclude_none=True,
     responses={
         200: {
             "description": "Role stage dispatched",

@@ -124,11 +124,17 @@ PERSONA_UPSERT_RESPONSE_200: dict[str, Any] = {
     },
 }
 
-PERSONA_DELETE_RESPONSE_204: dict[str, Any] = {
+PERSONA_DELETE_RESPONSE_200: dict[str, Any] = {
     "description": (
         "Persona entry was removed. ``persona.shelf.updated`` event recorded "
-        "the deletion (``fields_changed = ['__deleted__']``)."
+        "the deletion (``fields_changed = ['__deleted__']``). Peel miss bodies "
+        "use ``via`` / ``error`` / ``feature`` instead of ``ok``."
     ),
+    "content": {
+        "application/json": {
+            "example": {"ok": True},
+        },
+    },
 }
 
 PERSONA_VERSION_CONFLICT_409: dict[str, Any] = {

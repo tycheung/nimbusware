@@ -13,6 +13,7 @@ from api.routes.enterprise._fleet_policy_helpers import (
     tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     FleetEnforcementPolicy,
     load_fleet_enforcement_policies,
@@ -35,7 +36,27 @@ class FleetEnforcementPolicyBody(BaseModel):
         return self
 
 
-@router.get("/tenants/{tenant_ref}/enforcement-policy")
+class FleetEnforcementPolicyResponse(BaseModel):
+    """GET/PUT tenant enforcement-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    min_enforcement_level: int | None = None
+    max_enforcement_level: int | None = None
+    required_enforcement_profile_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/enforcement-policy",
+    response_model=FleetEnforcementPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant enforcement policy GET (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak503-c / sak503-d
+)
 def get_tenant_enforcement_policy(
     tenant_ref: str,
     _gate: EnterpriseDep,
@@ -44,7 +65,13 @@ def get_tenant_enforcement_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_enforcement_policy)
 
 
-@router.put("/tenants/{tenant_ref}/enforcement-policy")
+@router.put(
+    "/tenants/{tenant_ref}/enforcement-policy",
+    response_model=FleetEnforcementPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant enforcement policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak518-h
+)
 def put_tenant_enforcement_policy(
     tenant_ref: str,
     body: FleetEnforcementPolicyBody,

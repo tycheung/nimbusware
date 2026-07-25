@@ -16,6 +16,7 @@ from api.routes.admin_ui_timeline import (
 )
 from api.routes.personas_helpers import load_shelf
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import admin_bff_json_openapi_responses
 from console import enterprise_console as ent_console
 from console.critic_matrix_display import critic_matrix_rows_from_events
 from console.critic_reliability_display import (
@@ -63,9 +64,45 @@ class OperatorChatMessageResponse(BaseModel):
     reply: str
     last_run_id: str = ""
     classification: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
-@router.post("/operator-chat/message", response_model=OperatorChatMessageResponse)
+class FleetDashboardResponse(BaseModel):
+    """GET /admin/ui/enterprise/fleet-dashboard (`sak480-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    memory_rows: list[Any] = Field(default_factory=list)
+    worker_caption: str | None = None
+    sli_caption: str | None = None
+    hardware_rows: list[Any] = Field(default_factory=list)
+    export_json: Any = None
+    export_filename_slug: str | None = None
+    fleet_memory: dict[str, Any] | None = None
+    preflight_aggregate: dict[str, Any] | None = None
+    fleet_worker: dict[str, Any] | None = None
+    hardware_fleet: dict[str, Any] | None = None
+    critic_reliability: dict[str, Any] | None = None
+    critic_reliability_caption: str | None = None
+    critic_reliability_rows: list[Any] | None = None
+    archetype_fit_rows: list[Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    capacity_source: str | None = None
+    status: str | None = None
+
+
+@router.post(
+    "/operator-chat/message",
+    response_model=OperatorChatMessageResponse,
+    response_model_exclude_none=True,
+    summary="Operator chat message (`sak491-h`; peel-aware `sak494-g`)",
+    responses=admin_bff_json_openapi_responses(),
+)
 def operator_chat_message(
     body: OperatorChatMessageBody,
     _admin: AdminDep,
@@ -74,16 +111,35 @@ def operator_chat_message(
     key = (x_nimbusware_chat_session or "default").strip()[:128] or "default"
     state = _chat_sessions.setdefault(key, ChatState())
     reply = process_user_message(body.text, state)
+    miss = state.last_peel_miss
     return OperatorChatMessageResponse(
         reply=reply,
         last_run_id=state.last_run_id,
         classification=state.last_classification,
+        via=miss.get("via") if miss else None,
+        error=miss.get("error") if miss else None,
+        feature=miss.get("feature") if miss else None,
+        status=miss.get("status") if miss else None,
     )
 
 
+
+
+class AdminProjectionResponse(BaseModel):
+    """OpenAPI payload (`sak481-e` / `sak481-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
 @router.get(
     "/runs/{run_id}/findings-table",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+    summary="Findings table (`sak481-f`)",
 )
 def findings_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -106,7 +162,10 @@ def findings_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str,
 
 @router.get(
     "/runs/{run_id}/critic-matrix-table",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+    summary="Critic matrix (`sak481-f`)",
 )
 def critic_matrix_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -125,7 +184,10 @@ def critic_matrix_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict
 
 @router.get(
     "/runs/{run_id}/integration-adapter-writer",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+    summary="Integration adapter writer (`sak482-f`)",
 )
 def integration_adapter_writer_run(
     run_id: UUID,
@@ -150,7 +212,10 @@ def integration_adapter_writer_run(
 
 @router.get(
     "/runs/{run_id}/critic-reliability",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+    summary="Critic reliability table (`sak482-f`)",
 )
 def critic_reliability_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -205,7 +270,13 @@ def _require_enterprise_api_key(
     return key
 
 
-@router.get("/enterprise/fleet-dashboard")
+@router.get(
+    "/enterprise/fleet-dashboard",
+    response_model=FleetDashboardResponse,
+    response_model_exclude_none=True,
+    summary="Enterprise fleet dashboard BFF (`sak480-e`; peel-aware `sak494-g`)",
+    responses=admin_bff_json_openapi_responses(),
+)
 def enterprise_fleet_dashboard(
     _admin: AdminDep,
     iam: IamStoreDep,
@@ -232,7 +303,15 @@ def enterprise_fleet_dashboard(
         )
         critic_caption = fleet_critic_reliability_caption(critic)
         critic_rows = fleet_critic_reliability_table_rows(critic)
+    peel = enterprise_svc.first_peel_from_fetches(
+        memory,
+        preflight,
+        worker,
+        hardware,
+        critic,
+    )
     return {
+        **peel,
         "memory_rows": ent_console.fleet_memory_status_table_rows(memory),
         "worker_caption": ent_console.fleet_worker_health_caption(worker),
         "sli_caption": ent_console.fleet_sli_aggregate_caption(preflight),
@@ -254,7 +333,13 @@ def enterprise_fleet_dashboard(
     }
 
 
-@router.get("/personas/overlap-report")
+@router.get(
+    "/personas/overlap-report",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Persona scope overlap report (`sak482-f`)",
+    responses=admin_bff_json_openapi_responses(),  # sak520-b
+)
 def admin_persona_overlap_report(_admin: AdminDep, orch: OrchDep) -> dict[str, Any]:
     shelf = load_shelf(orch)
     rows = persona_scope_overlap_report(shelf)
@@ -285,7 +370,13 @@ class FleetEnforcementPolicyBody(BaseModel):
     max_enforcement_level: int = Field(ge=0, le=10, default=10)
 
 
-@router.get("/enterprise/fleet-autopilot-policy")
+@router.get(
+    "/enterprise/fleet-autopilot-policy",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Fleet autopilot policy GET (`sak482-f`)",
+    responses=admin_bff_json_openapi_responses(),  # sak520-c
+)
 def enterprise_fleet_autopilot_policy_get(
     _admin: AdminDep,
     iam: IamStoreDep,
@@ -308,7 +399,13 @@ def enterprise_fleet_autopilot_policy_get(
     }
 
 
-@router.put("/enterprise/fleet-autopilot-policy")
+@router.put(
+    "/enterprise/fleet-autopilot-policy",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Fleet autopilot policy PUT (`sak482-f`)",
+    responses=admin_bff_json_openapi_responses(),  # sak520-c
+)
 def enterprise_fleet_autopilot_policy_put(
     body: FleetAutopilotPolicyBody,
     _admin: AdminDep,
@@ -336,7 +433,13 @@ def enterprise_fleet_autopilot_policy_put(
     return policy.to_dict()
 
 
-@router.get("/enterprise/fleet-enforcement-policy")
+@router.get(
+    "/enterprise/fleet-enforcement-policy",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Fleet enforcement policy GET (`sak482-f`)",
+    responses=admin_bff_json_openapi_responses(),  # sak520-g
+)
 def enterprise_fleet_enforcement_policy_get(
     _admin: AdminDep,
     iam: IamStoreDep,
@@ -356,7 +459,13 @@ def enterprise_fleet_enforcement_policy_get(
     return policy.to_dict()
 
 
-@router.put("/enterprise/fleet-enforcement-policy")
+@router.put(
+    "/enterprise/fleet-enforcement-policy",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Fleet enforcement policy PUT (`sak482-f`)",
+    responses=admin_bff_json_openapi_responses(),  # sak520-h
+)
 def enterprise_fleet_enforcement_policy_put(
     body: FleetEnforcementPolicyBody,
     _admin: AdminDep,
@@ -391,7 +500,13 @@ def enterprise_fleet_enforcement_policy_put(
     return policy.to_dict()
 
 
-@router.get("/enterprise/fleet-compare")
+@router.get(
+    "/enterprise/fleet-compare",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    summary="Fleet tenant compare (`sak482-f`; peel-aware `sak494-g`)",
+    responses=admin_bff_json_openapi_responses(),
+)
 def enterprise_fleet_compare(
     _admin: AdminDep,
     store: StoreDep,
@@ -433,7 +548,13 @@ def enterprise_fleet_compare(
     }
 
 
-@router.get("/runs/{run_id}/timeline-panels")
+@router.get(
+    "/runs/{run_id}/timeline-panels",
+    response_model=AdminProjectionResponse,
+    response_model_exclude_none=True,
+    responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+    summary="Timeline panels projection (`sak482-f`)",
+)
 def admin_ui_timeline_panels(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
     """Projection summaries for React admin — same read path as ``GET /runs/{id}/timeline``."""
     events = timeline_events_from_store(store, run_id)

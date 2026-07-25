@@ -14,6 +14,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.slice.diff_api import build_slice_diff_response
 from store.protocol import serialized_event_from_row
@@ -45,11 +46,13 @@ class SliceDiffResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/slices/{slice_index}/diff",
     response_model=SliceDiffResponse,
-    responses={
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    responses=with_long_tail_peel_503(  # sak502-h
+        {
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
 )
 def get_slice_diff(run_id: UUID, slice_index: int, store: StoreDep) -> SliceDiffResponse:
     rid_s = str(run_id)

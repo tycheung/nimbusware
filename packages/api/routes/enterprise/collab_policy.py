@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import with_enterprise_peel_503
 from config.collab_policy_store import load_collab_policy, save_collab_policy
 from env.dotenv import find_repo_root
 
@@ -20,13 +21,43 @@ class CollabPolicyBody(BaseModel):
     write_may_start_runs: bool = False
 
 
-@router.get("/collab-policy")
+class CollabPolicyResponse(BaseModel):
+    """GET/PUT /collab-policy (`sak486-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    version: int | None = None
+    allow_external_collaborators: bool | None = None
+    max_session_participants: int | None = None
+    host_transfer_consent_hours: int | None = None
+    default_invite_role: str | None = None
+    write_may_start_runs: bool | None = None
+    ok: bool | None = None
+    policy: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/collab-policy",
+    response_model=CollabPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Global collab policy GET (`sak486-f`)",
+    responses=with_enterprise_peel_503(),  # sak519-h
+)
 def get_collab_policy(_: EnterpriseDep) -> dict[str, Any]:
     policy = load_collab_policy(find_repo_root())
     return {"version": int(policy.get("version") or 1), **policy}
 
 
-@router.put("/collab-policy")
+@router.put(
+    "/collab-policy",
+    response_model=CollabPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Global collab policy PUT (`sak486-f`)",
+    responses=with_enterprise_peel_503(),  # sak519-h
+)
 def put_collab_policy(body: CollabPolicyBody, _: EnterpriseDep) -> dict[str, Any]:
     repo = find_repo_root()
     doc = {

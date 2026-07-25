@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import OrchDep
@@ -28,10 +29,35 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
 )
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from extensions.catalog import validate_bundle_catalog_content
 
 router = APIRouter(prefix="/bundles", tags=["bundles"])
 router.include_router(bundles_search.router)
+
+
+class CatalogCandidatesResponse(BaseModel):
+    """GET /bundles/catalog-candidates (`sak480-e`)."""
+
+    candidates: list[dict[str, Any]] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class BundleCatalogSourceResponse(BaseModel):
+    """GET /bundles/catalog/source (`sak487-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    authoritative: str | None = None
+    document: str | None = None
+    namespace: str | None = None
+    document_key: str | None = None
+    path: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 @router.get(
@@ -46,7 +72,10 @@ def get_bundle_catalog(orch: OrchDep) -> BundleCatalogResponse:
 
 @router.get(
     "/catalog/source",
+    response_model=BundleCatalogSourceResponse,
+    response_model_exclude_none=True,
     summary="Bundle catalog authority metadata",
+    responses=long_tail_json_openapi_responses(),  # sak495-d
 )
 def get_bundle_catalog_source(orch: OrchDep) -> dict[str, Any]:
     mat = config_materializer(orch)
@@ -233,12 +262,14 @@ def delete_bundle_catalog_entry(
 @router.post(
     "/catalog-candidates/{run_id}/{candidate_id}/promote",
     response_model=BundleCatalogResponse,
-    responses={
-        401: PROBLEM_RESPONSE_401,
-        404: PROBLEM_RESPONSE_404,
-        409: PROBLEM_RESPONSE_422,
-        422: PROBLEM_RESPONSE_422,
-    },
+    responses=with_long_tail_peel_503(
+        {
+            401: PROBLEM_RESPONSE_401,
+            404: PROBLEM_RESPONSE_404,
+            409: PROBLEM_RESPONSE_422,
+            422: PROBLEM_RESPONSE_422,
+        },
+    ),  # sak512-a
     summary="Promote a catalog candidate into the bundle catalog (admin)",
 )
 def promote_bundle_catalog_candidate(
@@ -304,11 +335,13 @@ def promote_bundle_catalog_candidate(
 @router.post(
     "/catalog-candidates/promote-stitch-pending",
     response_model=BundleCatalogResponse,
-    responses={
-        401: PROBLEM_RESPONSE_401,
-        409: PROBLEM_RESPONSE_422,
-        422: PROBLEM_RESPONSE_422,
-    },
+    responses=with_long_tail_peel_503(
+        {
+            401: PROBLEM_RESPONSE_401,
+            409: PROBLEM_RESPONSE_422,
+            422: PROBLEM_RESPONSE_422,
+        },
+    ),  # sak512-a
     summary="Promote all pending stitch catalog candidates into the bundle catalog (admin)",
 )
 def promote_pending_stitch_catalog_candidates(
@@ -374,8 +407,10 @@ def promote_pending_stitch_catalog_candidates(
 
 @router.get(
     "/catalog-candidates",
-    summary="List Code Researcher catalog promotion candidates (admin)",
-    responses={401: PROBLEM_RESPONSE_401},
+    response_model=CatalogCandidatesResponse,
+    response_model_exclude_none=True,
+    summary="List catalog promotion candidates (`sak480-e`)",
+    responses=long_tail_json_openapi_responses(unauthorized=PROBLEM_RESPONSE_401),  # sak495-d
 )
 def list_bundle_catalog_candidates(
     orch: OrchDep,

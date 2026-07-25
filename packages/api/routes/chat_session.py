@@ -28,6 +28,11 @@ from api.routes.chat_service import (
 )
 from api.routes.runs.create import enforce_discovery_gate
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import (
+    compute_json_openapi_responses,
+    llm_json_openapi_responses,
+    with_long_tail_peel_503,
+)
 from api.user import UserDep
 from auth.permissions import require_session_participant
 from compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
@@ -145,7 +150,9 @@ def _scope_pending_response(
 @router.post(
     "/sessions/{session_id}/start",
     response_model=StartChatSessionResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),  # sak512-i
 )
 def start_chat_session(
     session_id: UUID,
@@ -291,7 +298,7 @@ def start_chat_session(
 @router.post(
     "/sessions/{session_id}/scope/publish",
     response_model=ScopePendingResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-i
 )
 def post_session_scope_publish(
     session_id: UUID,
@@ -318,7 +325,7 @@ def post_session_scope_publish(
 @router.get(
     "/sessions/{session_id}/scope/pending",
     response_model=ScopePendingResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-i
 )
 def get_session_scope_pending(
     session_id: UUID,
@@ -342,7 +349,7 @@ def get_session_scope_pending(
 @router.post(
     "/sessions/{session_id}/scope/approve",
     response_model=ScopePendingResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-i
 )
 def post_session_scope_approve(
     session_id: UUID,
@@ -393,12 +400,20 @@ class ScopeDiscoverResponse(BaseModel):
     scope: dict[str, Any]
 
 
-@router.post("/scope/discover", response_model=ScopeDiscoverResponse)
+@router.post(
+    "/scope/discover",
+    response_model=ScopeDiscoverResponse,
+    responses=llm_json_openapi_responses(),  # sak497-e
+)
 def post_scope_discover(body: ScopeDiscoverBody) -> ScopeDiscoverResponse:
     return ScopeDiscoverResponse(scope=scope_discover(body.business_prompt))
 
 
-@router.post("/scope/gather", response_model=ScopeDiscoverResponse)
+@router.post(
+    "/scope/gather",
+    response_model=ScopeDiscoverResponse,
+    responses=llm_json_openapi_responses(),  # sak497-e
+)
 def post_scope_gather(body: ScopeGatherBody) -> ScopeDiscoverResponse:
     setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     may_defer = autopilot_may_auto_defer(
@@ -421,7 +436,11 @@ class ScopeRecommendBody(BaseModel):
     archetype: str | None = Field(default=None, max_length=80)
 
 
-@router.post("/scope/recommend", response_model=ScopeDiscoverResponse)
+@router.post(
+    "/scope/recommend",
+    response_model=ScopeDiscoverResponse,
+    responses=llm_json_openapi_responses(),  # sak497-e
+)
 def post_scope_recommend(body: ScopeRecommendBody) -> ScopeDiscoverResponse:
     setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     tenant = scope_tenant_slug()
@@ -441,7 +460,11 @@ class ScopeConfirmBody(BaseModel):
     state: dict[str, Any]
 
 
-@router.post("/scope/confirm", response_model=ScopeDiscoverResponse)
+@router.post(
+    "/scope/confirm",
+    response_model=ScopeDiscoverResponse,
+    responses=llm_json_openapi_responses(),  # sak497-e
+)
 def post_scope_confirm(body: ScopeConfirmBody) -> ScopeDiscoverResponse:
     try:
         confirmed = scope_confirm(body.state, tenant_slug=scope_tenant_slug())
@@ -457,7 +480,27 @@ class DelegateControlBody(BaseModel):
     allow_host_resource_management: bool = False
 
 
-@router.post("/sessions/{session_id}/compute/delegate-control")
+class DelegateControlResponse(BaseModel):
+    """POST session compute delegate-control (`sak444-d`)."""
+
+    session_id: str | None = None
+    allow_host_resource_management: bool | None = None
+    node: dict[str, Any] | None = None
+    via: str | None = None
+    status: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.post(
+    "/sessions/{session_id}/compute/delegate-control",
+    response_model=DelegateControlResponse,
+    response_model_exclude_none=True,
+    summary="Session compute delegate-control (broker-first; sak444-d)",
+    responses=compute_json_openapi_responses(
+        not_found=PROBLEM_RESPONSE_404,
+    ),  # sak513-a
+)
 def session_compute_delegate_control(
     session_id: UUID,
     body: DelegateControlBody,
@@ -467,6 +510,14 @@ def session_compute_delegate_control(
     user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
+    from broker_client.flags import broker_compute_enabled
+    from broker_client.stage_bind.compute import (
+        build_compute_list_nodes_payload,
+        build_compute_register_payload,
+        compute_node_via_broker,
+        node_id_from_broker_record,
+    )
+
     require_collab_enabled()
     session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
@@ -476,6 +527,84 @@ def session_compute_delegate_control(
         user_id=actor_id,
         minimum_role="session_write",
     )
+
+    if broker_compute_enabled():
+        try:
+            from compute.broker_session_status import assert_broker_compute_ok
+
+            listed = assert_broker_compute_ok(
+                compute_node_via_broker(
+                    build_compute_list_nodes_payload(session_id=str(session_id))
+                ),
+                feature="delegate_control.list",
+                list_key="nodes",
+            )
+            from compute.broker_node_match import pick_broker_node_for_user
+
+            nodes = listed.get("nodes") if isinstance(listed, dict) else None
+            target = None
+            if isinstance(nodes, list):
+                target = pick_broker_node_for_user(nodes, str(actor_id))
+            if target is None:
+                from compute.broker_route import map_broker_chat_compute_miss
+
+                return map_broker_chat_compute_miss(
+                    "no compute node for session",
+                    feature="delegate_control",
+                    only_msg=(
+                        "register compute for this session before delegating control"
+                    ),
+                )
+            nid = node_id_from_broker_record(target)
+            caps = list(target.get("caps") or []) if isinstance(target.get("caps"), list) else []
+            caps = [
+                c
+                for c in caps
+                if not str(c).startswith("allow_host_resource_management=")
+            ]
+            caps.append(
+                f"allow_host_resource_management="
+                f"{'true' if body.allow_host_resource_management else 'false'}"
+            )
+            from compute.broker_session_status import assert_broker_compute_record_ok
+
+            raw = assert_broker_compute_record_ok(
+                compute_node_via_broker(
+                    build_compute_register_payload(
+                        str(target.get("label") or f"user:{actor_id}"),
+                        caps=caps,
+                        node_id=nid or None,
+                        session_id=str(session_id),
+                    )
+                ),
+                feature="delegate_control.register",
+                record_key="node",
+            )
+            node = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            return {
+                "node": {
+                    "node_id": node_id_from_broker_record(node),
+                    "display_name": node.get("label"),
+                    "session_id": str(session_id),
+                    "allow_host_resource_management": body.allow_host_resource_management,
+                    "via": "broker",
+                }
+            }
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            from compute.broker_route import map_broker_compute_http_error
+
+            return map_broker_compute_http_error(
+                exc,
+                feature="delegate_control",
+                only_msg=(
+                    "session compute delegate-control unavailable under "
+                    f"NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
+                ),
+            )
+
+    # sak447-i: COMPUTE peel already handled above — never fall through to node_store.
     store = build_compute_node_store(nimbusware_database_url())
     row = store.set_delegate_control(
         session_id=session_id,
@@ -497,7 +626,20 @@ class SessionOptimizerBody(BaseModel):
     priority: list[str] = Field(default_factory=list)
 
 
-@router.get("/sessions/{session_id}/optimizer-weights")
+class SessionOptimizerWeightsResponse(BaseModel):
+    """GET/PUT session optimizer-weights (`sak445-d`)."""
+
+    priority: list[str] = Field(default_factory=list)
+    weights: dict[str, Any] = Field(default_factory=dict)
+
+
+@router.get(
+    "/sessions/{session_id}/optimizer-weights",
+    response_model=SessionOptimizerWeightsResponse,
+    response_model_exclude_none=True,
+    summary="Session optimizer weights (`sak445-d`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-b
+)
 def get_session_optimizer_weights(
     session_id: UUID,
     chat_store: ChatStoreDep,
@@ -515,7 +657,13 @@ def get_session_optimizer_weights(
     return {"priority": priority, "weights": weights}
 
 
-@router.put("/sessions/{session_id}/optimizer-weights")
+@router.put(
+    "/sessions/{session_id}/optimizer-weights",
+    response_model=SessionOptimizerWeightsResponse,
+    response_model_exclude_none=True,
+    summary="Update session optimizer weights (`sak445-d`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-b
+)
 def put_session_optimizer_weights(
     session_id: UUID,
     body: SessionOptimizerBody,
@@ -547,7 +695,28 @@ class SessionComputeOptInBody(BaseModel):
     base_url: str = Field(default="http://127.0.0.1:0", max_length=500)
 
 
-@router.post("/sessions/{session_id}/compute/opt-in")
+class SessionComputeOptInResponse(BaseModel):
+    """POST session compute opt-in/out (`sak443-g`)."""
+
+    session_id: str | None = None
+    enabled: bool | None = None
+    share_policy: str | None = None
+    via: str | None = None
+    status: str | None = None
+    feature: str | None = None
+    error: str | None = None
+    node: dict[str, Any] | None = None
+
+
+@router.post(
+    "/sessions/{session_id}/compute/opt-in",
+    response_model=SessionComputeOptInResponse,
+    response_model_exclude_none=True,
+    summary="Session compute opt-in/out (broker-first; sak443-g)",
+    responses=compute_json_openapi_responses(
+        not_found=PROBLEM_RESPONSE_404,
+    ),  # sak513-a
+)
 def session_compute_opt_in(
     session_id: UUID,
     body: SessionComputeOptInBody,
@@ -556,10 +725,89 @@ def session_compute_opt_in(
     user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
+    from broker_client.flags import broker_compute_enabled
+    from broker_client.stage_bind.compute import (
+        build_compute_register_payload,
+        compute_node_via_broker,
+        node_id_from_broker_record,
+    )
+
     session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else None
     if actor_id is None and nimbusware_collab_enabled():
         actor_id = actor_user_id(request, user)
+
+    if broker_compute_enabled() and body.enabled:
+        try:
+            label = body.host_label or (f"user:{actor_id}" if actor_id else "local")
+            caps = ["mesh_worker", "session_opt_in"]
+            if actor_id:
+                caps.append(f"user:{actor_id}")
+            from compute.broker_session_status import assert_broker_compute_record_ok
+
+            raw = assert_broker_compute_record_ok(
+                compute_node_via_broker(
+                    build_compute_register_payload(
+                        label,
+                        caps=caps,
+                        session_id=str(session_id),
+                    )
+                ),
+                feature="session_compute_opt_in.register",
+                record_key="node",
+            )
+            node = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            nid = node_id_from_broker_record(node)
+            return {
+                "session_id": str(session_id),
+                "enabled": True,
+                "share_policy": body.share_policy,
+                "via": "broker",
+                "node": {
+                    "node_id": nid,
+                    "display_name": node.get("label"),
+                    "host_label": node.get("label"),
+                    "session_id": str(session_id),
+                    "share_policy": body.share_policy,
+                },
+            }
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            from compute.broker_route import map_broker_compute_http_error
+
+            return map_broker_compute_http_error(
+                exc,
+                feature="session_compute_opt_in",
+                only_msg=(
+                    "session compute opt-in unavailable under "
+                    f"NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
+                ),
+                miss_extra={
+                    "session_id": str(session_id),
+                    "enabled": True,
+                    "share_policy": body.share_policy,
+                },
+            )
+
+    # sak429-e / sak443-c: under COMPUTE dual-run, never fall through to node_store
+    # (incl. opt-out). Opt-out is explicit broker_opt_out — not masquerading via=broker.
+    if broker_compute_enabled():
+        return {
+            "session_id": str(session_id),
+            "enabled": body.enabled,
+            "share_policy": body.share_policy,
+            "via": "broker_opt_out" if not body.enabled else "broker",
+            "status": "ok",
+            "feature": (
+                "session_compute_opt_out" if not body.enabled else "session_compute_opt_in"
+            ),
+            "node": None,
+        }
+
+    from compute.broker_route import refuse_broker_only_http
+
+    refuse_broker_only_http()
     store = build_compute_node_store(nimbusware_database_url())
     tid = resolve_store_tenant_id()
     tenant_id = tid if isinstance(tid, UUID) else default_tenant_id()
@@ -583,7 +831,93 @@ def session_compute_opt_in(
     }
 
 
+class SessionComputeStatusResponse(BaseModel):
+    """GET session compute status (`sak441-e`)."""
+
+    session_id: str | None = None
+    nodes: list[dict[str, Any]] = Field(default_factory=list)
+    queue_depth: int = 0
+    via: str | None = None
+    status: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/sessions/{session_id}/compute/status",
+    response_model=SessionComputeStatusResponse,
+    response_model_exclude_none=True,
+    summary="Session compute status (broker-first; sak431-g / sak435-e / sak441-e)",
+    responses=compute_json_openapi_responses(
+        not_found=PROBLEM_RESPONSE_404,
+    ),
+)
+def session_compute_status(
+    session_id: UUID,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    """Broker-first session compute status (`sak431-g` / `sak435-d` / `sak436-b`)."""
+    from broker_client.flags import broker_compute_enabled
+    from compute.broker_route import map_broker_compute_http_error, refuse_broker_only_http
+    from compute.broker_session_status import broker_session_compute_status
+
+    session_or_404(chat_store, session_id)
+
+    if broker_compute_enabled():
+        try:
+            raw = broker_session_compute_status(str(session_id))
+            nodes_out = [
+                {
+                    "node_id": n.get("node_id"),
+                    "display_name": n.get("display_name"),
+                    "via": n.get("via", "broker"),
+                }
+                for n in (raw.get("nodes") or [])
+                if isinstance(n, dict)
+            ]
+            out: dict[str, Any] = {
+                "session_id": str(session_id),
+                "nodes": nodes_out,
+                "queue_depth": int(raw.get("queue_depth") or 0),
+            }
+            if raw.get("via") == "broker_miss" or raw.get("status") == "degraded":  # sak492-g
+                out["via"] = raw.get("via", "broker_miss")
+                out["status"] = raw.get("status", "degraded")
+                if raw.get("error") is not None:
+                    out["error"] = raw.get("error")
+                if raw.get("feature") is not None:
+                    out["feature"] = raw.get("feature")
+                return out
+            return {**out, "via": "broker", "status": "ok"}
+        except Exception as exc:  # noqa: BLE001
+            return map_broker_compute_http_error(
+                exc,
+                feature="session_compute_status",
+                only_msg=f"session compute status unavailable: {exc}",
+                miss_extra={
+                    "session_id": str(session_id),
+                    "nodes": [],
+                    "queue_depth": 0,
+                    "status": "degraded",
+                },
+            )
+
+    refuse_broker_only_http()
+    store = build_compute_node_store(nimbusware_database_url())
+    from compute.work_unit import get_work_unit_queue
+
+    rows = store.list_for_session(session_id)
+    return {
+        "session_id": str(session_id),
+        "nodes": [row_to_public(r) for r in rows],
+        "queue_depth": get_work_unit_queue().queued_count(session_id=session_id),
+    }
+
+
 class ParticipantRoleBindingBody(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     agent_role: str = Field(min_length=1, max_length=128)
     provider_kind: str = Field(default="cloud", max_length=32)
     provider_id: str = Field(min_length=1, max_length=64)
@@ -591,7 +925,20 @@ class ParticipantRoleBindingBody(BaseModel):
     connection_id: str | None = Field(default=None, max_length=128)
 
 
-@router.get("/sessions/{session_id}/participant-bindings")
+class ParticipantBindingsResponse(BaseModel):
+    """GET/PUT session participant-bindings (`sak446-a`)."""
+
+    user_id: str | None = None
+    roles: dict[str, Any] = Field(default_factory=dict)
+
+
+@router.get(
+    "/sessions/{session_id}/participant-bindings",
+    response_model=ParticipantBindingsResponse,
+    response_model_exclude_none=True,
+    summary="Participant model bindings (`sak446-a`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-c
+)
 def get_participant_bindings(
     session_id: UUID,
     request: Request,
@@ -612,7 +959,13 @@ def get_participant_bindings(
     }
 
 
-@router.put("/sessions/{session_id}/participant-bindings")
+@router.put(
+    "/sessions/{session_id}/participant-bindings",
+    response_model=ParticipantBindingsResponse,
+    response_model_exclude_none=True,
+    summary="Update participant model binding (`sak446-a`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-c
+)
 def put_participant_binding(
     session_id: UUID,
     body: ParticipantRoleBindingBody,

@@ -9,6 +9,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
+from api.schemas.peel_responses import with_enterprise_peel_503
 from config.tenant_policy_store import (
     load_tenant_collab_policy,
     save_tenant_collab_policy,
@@ -27,7 +28,27 @@ class TenantCollabPolicyBody(BaseModel):
     default_agent_overlays: dict[str, str] = Field(default_factory=dict)
 
 
-@router.get("/tenants/{tenant_ref}/collab-policy")
+class TenantCollabPolicyResponse(BaseModel):
+    """GET/PUT tenant collab-policy (`sak481-c`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    version: int | None = None
+    ok: bool | None = None
+    policy: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/collab-policy",
+    response_model=TenantCollabPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant collab policy (`sak481-c`)",
+    responses=with_enterprise_peel_503(),  # sak519-i
+)
 def get_tenant_collab_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -38,7 +59,13 @@ def get_tenant_collab_policy(
     return {"tenant_slug": slug, "version": int(policy.get("version") or 1), **policy}
 
 
-@router.put("/tenants/{tenant_ref}/collab-policy")
+@router.put(
+    "/tenants/{tenant_ref}/collab-policy",
+    response_model=TenantCollabPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Update tenant collab policy (`sak481-c`)",
+    responses=with_enterprise_peel_503(),  # sak519-i
+)
 def put_tenant_collab_policy(
     tenant_ref: str,
     body: TenantCollabPolicyBody,

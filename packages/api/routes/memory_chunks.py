@@ -5,15 +5,31 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
 
 from api.deps import ProjectStoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import memory_json_openapi_responses
 from api.user import UserDep
-from memory.factory import build_memory_chunk_store
-from memory.index.repo_scope import repo_scope_hash
+from memory.broker_route import require_local_memory_chunk_store
+from memory.peel_index.repo_scope import repo_scope_hash
 
 router = APIRouter(prefix="/memory", tags=["memory"])
+
+
+class MemoryChunksResponse(BaseModel):
+    """GET /memory/chunks (`sak480-e`)."""
+
+    project_id: str | None = None
+    repo_scope_hash: str | None = None
+    workspace_path: str | None = None
+    chunks: list[dict[str, Any]] = Field(default_factory=list)
+    total: int = 0
+    caption: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 def _chunk_preview(record: Any, *, max_chars: int = 240) -> dict[str, Any]:
@@ -34,8 +50,12 @@ def _chunk_preview(record: Any, *, max_chars: int = 240) -> dict[str, Any]:
 
 @router.get(
     "/chunks",
-    responses={404: PROBLEM_RESPONSE_404},
-    summary="List memory chunks for a project workspace scope",
+    response_model=MemoryChunksResponse,
+    response_model_exclude_none=True,
+    responses={
+        **memory_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-b
+    },
+    summary="List memory chunks (`sak480-e`; peel-aware `sak498-b`)",
 )
 def list_memory_chunks(
     project_id: Annotated[UUID, Query(description="Project whose workspace defines repo scope")],
@@ -51,7 +71,19 @@ def list_memory_chunks(
         )
     ws = Path(str(record.workspace_path))
     scope = repo_scope_hash(ws)
-    memory_store = build_memory_chunk_store(allow_in_memory=True)
+    store_or_miss = require_local_memory_chunk_store(
+        feature="memory_chunks_list",
+        miss_extra={
+            "project_id": str(project_id),
+            "repo_scope_hash": scope,
+            "workspace_path": str(ws),
+            "chunks": [],
+            "total": 0,
+        },
+    )
+    if isinstance(store_or_miss, dict):
+        return store_or_miss
+    memory_store = store_or_miss
     if memory_store is None:
         return {
             "project_id": str(project_id),

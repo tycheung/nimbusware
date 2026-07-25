@@ -10,6 +10,7 @@ from api.deps import IamStoreDep
 from api.routes.enterprise._fleet_policy_helpers import tenant_slug_for_ref
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.enterprise.iam_audit import log_fleet_policy_updated
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     VALID_DEPLOY_APPROVAL_CHAINS,
     FleetDeployApprovalPolicy,
@@ -25,7 +26,25 @@ class FleetDeployApprovalPolicyBody(BaseModel):
     deploy_approval_chain: str = Field(default="maker_only", max_length=32)
 
 
-@router.get("/tenants/{tenant_ref}/deploy-approval-policy")
+class FleetDeployApprovalPolicyResponse(BaseModel):
+    """GET/PUT tenant deploy-approval-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    deploy_approval_chain: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/deploy-approval-policy",
+    response_model=FleetDeployApprovalPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant deploy approval policy GET (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak504-c
+)
 def get_fleet_deploy_approval_policy(
     tenant_ref: str,
     _: EnterpriseDep,
@@ -36,7 +55,13 @@ def get_fleet_deploy_approval_policy(
     return tenant_deploy_approval_policy(slug).to_dict()
 
 
-@router.put("/tenants/{tenant_ref}/deploy-approval-policy")
+@router.put(
+    "/tenants/{tenant_ref}/deploy-approval-policy",
+    response_model=FleetDeployApprovalPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant deploy approval policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak504-c
+)
 def put_fleet_deploy_approval_policy(
     tenant_ref: str,
     body: FleetDeployApprovalPolicyBody,

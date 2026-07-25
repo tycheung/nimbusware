@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from api.deps import OrchDep
 from api.errors import problem
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from api.user import UserDep, maker_user_id_str
 from config.provider_connections import (
     ProviderConnectionStore,
@@ -38,6 +39,32 @@ class ProviderConnectionBody(BaseModel):
     subscription_connected: bool = False
 
 
+class ProviderPresetsResponse(BaseModel):
+    """GET /platform/provider-presets (`sak447-e`)."""
+
+    providers: list[dict[str, Any]] = Field(default_factory=list)
+    subscription_providers: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ProviderConnectionsListResponse(BaseModel):
+    """GET /platform/provider-connections (`sak447-e`)."""
+
+    connections: list[dict[str, Any]] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ProviderConnectionMutationResponse(BaseModel):
+    """PUT/POST provider-connection mutations (`sak447-e`)."""
+
+    connection: dict[str, Any] | None = None
+    oauth_hint: str | None = None
+    deleted: bool | None = None
+    connection_id: str | None = None
+    probe: dict[str, Any] | None = None
+
+
 def _connection_user_id(request: Request) -> str:
     if is_enterprise():
         ctx = get_auth_context()
@@ -63,7 +90,13 @@ def _store() -> ProviderConnectionStore:
     return ProviderConnectionStore(url)
 
 
-@router.get("/platform/provider-presets")
+@router.get(
+    "/platform/provider-presets",
+    response_model=ProviderPresetsResponse,
+    response_model_exclude_none=True,
+    summary="Provider presets (`sak447-e`)",
+    responses=long_tail_json_openapi_responses(),  # sak502-b
+)
 def list_provider_presets(orch: OrchDep, _: UserDep) -> dict[str, Any]:
     return {
         "providers": load_provider_presets(orch.repo_root),
@@ -77,7 +110,13 @@ class SubscriptionLinkBody(BaseModel):
     default_model_id: str | None = Field(default=None, max_length=200)
 
 
-@router.post("/platform/provider-connections/subscription-link")
+@router.post(
+    "/platform/provider-connections/subscription-link",
+    response_model=ProviderConnectionMutationResponse,
+    response_model_exclude_none=True,
+    summary="Link subscription provider (`sak447-e`)",
+    responses=with_long_tail_peel_503(),  # sak517-a
+)
 def link_subscription_provider(
     body: SubscriptionLinkBody, request: Request, orch: OrchDep, _: UserDep
 ) -> dict[str, Any]:
@@ -113,7 +152,13 @@ def link_subscription_provider(
     return {"connection": _row_to_public(row), "oauth_hint": preset.get("oauth_hint")}
 
 
-@router.get("/platform/provider-connections")
+@router.get(
+    "/platform/provider-connections",
+    response_model=ProviderConnectionsListResponse,
+    response_model_exclude_none=True,
+    summary="List provider connections (`sak447-e`)",
+    responses=long_tail_json_openapi_responses(),  # sak502-b
+)
 def list_provider_connections(request: Request, _: UserDep) -> dict[str, Any]:
     store = _store()
     user_id = _connection_user_id(request)
@@ -121,7 +166,13 @@ def list_provider_connections(request: Request, _: UserDep) -> dict[str, Any]:
     return {"connections": [_row_to_public(r) for r in rows]}
 
 
-@router.put("/platform/provider-connections")
+@router.put(
+    "/platform/provider-connections",
+    response_model=ProviderConnectionMutationResponse,
+    response_model_exclude_none=True,
+    summary="Upsert provider connection (`sak447-e`)",
+    responses=with_long_tail_peel_503(),  # sak517-b
+)
 def upsert_provider_connection(
     body: ProviderConnectionBody, request: Request, _: UserDep
 ) -> dict[str, Any]:
@@ -148,7 +199,13 @@ def upsert_provider_connection(
     return {"connection": _row_to_public(row)}
 
 
-@router.delete("/platform/provider-connections/{connection_id}")
+@router.delete(
+    "/platform/provider-connections/{connection_id}",
+    response_model=ProviderConnectionMutationResponse,
+    response_model_exclude_none=True,
+    summary="Delete provider connection (`sak447-e`)",
+    responses=with_long_tail_peel_503(),  # sak517-b
+)
 def delete_provider_connection(connection_id: UUID, request: Request, _: UserDep) -> dict[str, Any]:
     store = _store()
     user_id = _connection_user_id(request)
@@ -160,7 +217,13 @@ def delete_provider_connection(connection_id: UUID, request: Request, _: UserDep
     return {"deleted": True, "connection_id": str(connection_id)}
 
 
-@router.post("/platform/provider-connections/{connection_id}/probe")
+@router.post(
+    "/platform/provider-connections/{connection_id}/probe",
+    response_model=ProviderConnectionMutationResponse,
+    response_model_exclude_none=True,
+    summary="Probe provider connection (`sak447-e`)",
+    responses=with_long_tail_peel_503(),  # sak517-c
+)
 def probe_provider_connection(
     connection_id: UUID,
     orch: OrchDep,

@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, Query
 from api.admin import AdminDep
 from api.deps import OrchDep
 from api.errors import problem
+from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import llm_json_openapi_responses
 from api.schemas.ollama import (
     OllamaBootstrapRequest,
     OllamaBootstrapResponse,
@@ -22,8 +24,8 @@ from api.schemas.ollama import (
 from api.user import UserDep
 from config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from config.persist import load_model_routing_dict, persist_model_routing_dict
-from orchestrator.routing.bootstrap import bootstrap_ollama_from_repo
-from orchestrator.routing.manage import (
+from orchestrator.model_routing.bootstrap import bootstrap_ollama_from_repo
+from orchestrator.model_routing.manage import (
     OllamaManageError,
     delete_model,
     filter_models,
@@ -32,8 +34,8 @@ from orchestrator.routing.manage import (
     pull_model,
     runtime_base_url_from_routing,
 )
-from orchestrator.routing.pull_jobs import get_pull_job, start_pull_job
-from orchestrator.routing.user_policy import (
+from orchestrator.model_routing.pull_jobs import get_pull_job, start_pull_job
+from orchestrator.model_routing.user_policy import (
     assert_user_may,
     merge_policy_into_routing,
     policy_from_routing,
@@ -121,7 +123,11 @@ def _models_response(
     )
 
 
-@router.get("/platform/ollama/models", response_model=OllamaModelsResponse)
+@router.get(
+    "/platform/ollama/models",
+    response_model=OllamaModelsResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def get_ollama_models(
     orch: OrchDep,
     q: Annotated[str | None, Query(description="Filter installed model names")] = None,
@@ -129,7 +135,11 @@ def get_ollama_models(
     return _models_response(orch, query=q)
 
 
-@router.post("/platform/ollama/bootstrap", response_model=OllamaBootstrapResponse)
+@router.post(
+    "/platform/ollama/bootstrap",
+    response_model=OllamaBootstrapResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def post_ollama_bootstrap(
     body: OllamaBootstrapRequest,
     orch: OrchDep,
@@ -154,7 +164,11 @@ def _policy_forbidden(action: str) -> HTTPException:
     )
 
 
-@router.post("/platform/ollama/pull", response_model=OllamaPullResponse)
+@router.post(
+    "/platform/ollama/pull",
+    response_model=OllamaPullResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def post_ollama_pull(body: OllamaPullRequest, orch: OrchDep) -> OllamaPullResponse:
     routing = _load_routing(orch)
     policy = policy_from_routing(routing)
@@ -167,7 +181,11 @@ def post_ollama_pull(body: OllamaPullRequest, orch: OrchDep) -> OllamaPullRespon
     return OllamaPullResponse(model=body.model.strip(), status="accepted", job_id=job.job_id)
 
 
-@router.get("/platform/ollama/pull/{job_id}", response_model=OllamaPullJobStatusResponse)
+@router.get(
+    "/platform/ollama/pull/{job_id}",
+    response_model=OllamaPullJobStatusResponse,
+    responses=llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
+)
 def get_ollama_pull_job(job_id: str) -> OllamaPullJobStatusResponse:
     job = get_pull_job(job_id.strip())
     if job is None:
@@ -187,7 +205,11 @@ def get_ollama_pull_job(job_id: str) -> OllamaPullJobStatusResponse:
     )
 
 
-@router.delete("/platform/ollama/models/{model_name}", response_model=OllamaDeleteResponse)
+@router.delete(
+    "/platform/ollama/models/{model_name}",
+    response_model=OllamaDeleteResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def delete_ollama_model(model_name: str, orch: OrchDep) -> OllamaDeleteResponse:
     routing = _load_routing(orch)
     policy = policy_from_routing(routing)
@@ -206,7 +228,11 @@ def delete_ollama_model(model_name: str, orch: OrchDep) -> OllamaDeleteResponse:
     return OllamaDeleteResponse(model=model_name.strip())
 
 
-@router.patch("/platform/ollama/routing/primary", response_model=OllamaModelsResponse)
+@router.patch(
+    "/platform/ollama/routing/primary",
+    response_model=OllamaModelsResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def patch_primary_routing(
     body: OllamaPrimaryRoutingRequest,
     orch: OrchDep,
@@ -230,7 +256,11 @@ def patch_primary_routing(
     return _models_response(orch)
 
 
-@router.patch("/admin/ollama/user-policy", response_model=OllamaUserPolicyBody)
+@router.patch(
+    "/admin/ollama/user-policy",
+    response_model=OllamaUserPolicyBody,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def patch_ollama_user_policy(
     body: OllamaUserPolicyBody,
     orch: OrchDep,
@@ -251,7 +281,11 @@ def patch_ollama_user_policy(
     return OllamaUserPolicyBody(**body_kwargs)
 
 
-@router.post("/admin/ollama/pull", response_model=OllamaPullResponse)
+@router.post(
+    "/admin/ollama/pull",
+    response_model=OllamaPullResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def admin_post_ollama_pull(
     body: OllamaPullRequest,
     orch: OrchDep,
@@ -269,7 +303,11 @@ def admin_post_ollama_pull(
     return OllamaPullResponse(model=body.model.strip())
 
 
-@router.delete("/admin/ollama/models/{model_name}", response_model=OllamaDeleteResponse)
+@router.delete(
+    "/admin/ollama/models/{model_name}",
+    response_model=OllamaDeleteResponse,
+    responses=llm_json_openapi_responses(),  # sak498-e
+)
 def admin_delete_ollama_model(
     model_name: str,
     orch: OrchDep,

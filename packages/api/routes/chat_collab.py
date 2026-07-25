@@ -18,16 +18,17 @@ from api.routes.auth import AuthUserDep
 from api.routes.chat_common import ChatMessageResponse, require_collab_enabled
 from api.routes.chat_service import session_or_404
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import llm_json_openapi_responses, with_long_tail_peel_503
 from api.user import UserDep, maker_user_id_str
 from auth.permissions import require_session_participant
 from maker.chat.acl import effective_session_role
 from maker.host_transfer_bundle import build_transfer_manifest, import_transfer_bundle
 from maker.host_transfer_store import default_consent_hours
-from orchestrator.routing.audit import (
+from orchestrator.model_routing.audit import (
     RoleClaimConflictError,
     assert_role_claim_available,
 )
-from orchestrator.routing.swap import (
+from orchestrator.model_routing.swap import (
     append_model_binding_override,
     append_role_claim,
     append_role_release,
@@ -47,7 +48,10 @@ class SessionModelBindingSwapBody(BaseModel):
 @router.post(
     "/sessions/{session_id}/model-bindings/swap",
     response_model=ChatMessageResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def session_model_binding_swap(
     session_id: UUID,
@@ -98,7 +102,21 @@ class SessionRoleClaimBody(BaseModel):
     model_id: str = Field(min_length=1, max_length=200)
 
 
-@router.post("/sessions/{session_id}/role-claims")
+class RoleClaimResponse(BaseModel):
+    """POST/DELETE session role-claims (`sak447-f`)."""
+
+    ok: bool = True
+    event: str | None = None
+    payload: dict[str, Any] | None = None
+
+
+@router.post(
+    "/sessions/{session_id}/role-claims",
+    response_model=RoleClaimResponse,
+    response_model_exclude_none=True,
+    summary="Claim agent role (`sak447-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-h
+)
 def session_role_claim(
     session_id: UUID,
     body: SessionRoleClaimBody,
@@ -147,7 +165,13 @@ def session_role_claim(
     return {"ok": True, "event": "workload.role_claimed", "payload": payload}
 
 
-@router.delete("/sessions/{session_id}/role-claims/{agent_role}")
+@router.delete(
+    "/sessions/{session_id}/role-claims/{agent_role}",
+    response_model=RoleClaimResponse,
+    response_model_exclude_none=True,
+    summary="Release agent role (`sak447-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-h
+)
 def session_role_release(
     session_id: UUID,
     agent_role: str,
@@ -185,11 +209,35 @@ class HostTransferBody(BaseModel):
     to_user_id: UUID
 
 
+class HostTransferResponse(BaseModel):
+    """POST host-transfer (`sak449-f`)."""
+
+    ok: bool = True
+    transfer: dict[str, Any] = Field(default_factory=dict)
+
+
+class HostTransferListResponse(BaseModel):
+    """GET host-transfer list (`sak449-f`)."""
+
+    transfers: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class HostTransferBundleResponse(BaseModel):
+    """GET host-transfer bundle (`sak480-f`)."""
+
+    manifest: dict[str, Any] = Field(default_factory=dict)
+
+
 class ImportBundleBody(BaseModel):
     manifest: dict[str, Any]
 
 
-@router.post("/sessions/{session_id}/host-transfer")
+@router.post(
+    "/sessions/{session_id}/host-transfer",
+    response_model=HostTransferResponse,
+    summary="Request host transfer (`sak449-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-i
+)
 def request_host_transfer(
     session_id: UUID,
     body: HostTransferBody,
@@ -224,7 +272,12 @@ def request_host_transfer(
     return {"ok": True, "transfer": row.to_dict()}
 
 
-@router.get("/sessions/{session_id}/host-transfer")
+@router.get(
+    "/sessions/{session_id}/host-transfer",
+    response_model=HostTransferListResponse,
+    summary="List host transfers (`sak449-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak513-i
+)
 def list_host_transfers(
     session_id: UUID,
     chat_store: ChatStoreDep,
@@ -237,7 +290,12 @@ def list_host_transfers(
     return {"transfers": [r.to_dict() for r in rows]}
 
 
-@router.get("/sessions/{session_id}/host-transfer/{transfer_id}/bundle")
+@router.get(
+    "/sessions/{session_id}/host-transfer/{transfer_id}/bundle",
+    response_model=HostTransferBundleResponse,
+    summary="Export host-transfer bundle (`sak480-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-a
+)
 def export_host_transfer_bundle(
     session_id: UUID,
     transfer_id: UUID,
@@ -266,7 +324,12 @@ def export_host_transfer_bundle(
     return {"manifest": manifest}
 
 
-@router.post("/sessions/{session_id}/host-transfer/{transfer_id}/accept")
+@router.post(
+    "/sessions/{session_id}/host-transfer/{transfer_id}/accept",
+    response_model=HostTransferResponse,
+    summary="Accept host transfer (`sak480-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-a
+)
 def accept_host_transfer(
     session_id: UUID,
     transfer_id: UUID,
@@ -311,7 +374,12 @@ def accept_host_transfer(
     return {"ok": True, "transfer": frozen.to_dict()}
 
 
-@router.post("/sessions/{session_id}/host-transfer/{transfer_id}/import")
+@router.post(
+    "/sessions/{session_id}/host-transfer/{transfer_id}/import",
+    response_model=HostTransferResponse,
+    summary="Import host-transfer bundle (`sak480-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-b
+)
 def import_host_transfer_bundle(
     session_id: UUID,
     transfer_id: UUID,
@@ -353,7 +421,12 @@ def import_host_transfer_bundle(
     return {"ok": True, "transfer": completed.to_dict()}
 
 
-@router.post("/sessions/{session_id}/host-transfer/{transfer_id}/complete")
+@router.post(
+    "/sessions/{session_id}/host-transfer/{transfer_id}/complete",
+    response_model=HostTransferResponse,
+    summary="Complete host transfer (`sak480-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-b
+)
 def complete_host_transfer(
     session_id: UUID,
     transfer_id: UUID,
@@ -388,7 +461,12 @@ def complete_host_transfer(
     return {"ok": True, "transfer": completed.to_dict()}
 
 
-@router.post("/sessions/{session_id}/host-transfer/{transfer_id}/decline")
+@router.post(
+    "/sessions/{session_id}/host-transfer/{transfer_id}/decline",
+    response_model=HostTransferResponse,
+    summary="Decline host transfer (`sak480-f`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-c
+)
 def decline_host_transfer(
     session_id: UUID,
     transfer_id: UUID,
@@ -459,7 +537,100 @@ class SessionLibraryBody(BaseModel):
     tags: list[str] | None = None
 
 
-@router.get("/folders")
+class FolderListResponse(BaseModel):
+    """GET /chat/folders (`sak481-d`)."""
+
+    folders: list[dict[str, Any]] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class FolderMutationResponse(BaseModel):
+    """POST/PATCH/DELETE folder (`sak481-d`)."""
+
+    model_config = {"extra": "allow"}
+
+    folder: dict[str, Any] | None = None
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class GroupListResponse(BaseModel):
+    """GET /chat/groups (`sak481-d`)."""
+
+    groups: list[dict[str, Any]] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class AccessGrantListResponse(BaseModel):
+    """GET /chat/access-grants (`sak481-d`)."""
+
+    grants: list[dict[str, Any]] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class EffectiveRoleResponse(BaseModel):
+    """GET effective-role (`sak481-d`)."""
+
+    model_config = {"extra": "allow"}
+
+    user_id: str | None = None
+    effective_role: str | None = None
+    direct_role: str | None = None
+    grant_roles: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class GroupMutationResponse(BaseModel):
+    """POST /chat/groups + members (`sak482-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    group: dict[str, Any] | None = None
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class AccessGrantMutationResponse(BaseModel):
+    """POST/DELETE /chat/access-grants (`sak482-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    grant: dict[str, Any] | None = None
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class SessionLibraryResponse(BaseModel):
+    """PUT /chat/sessions/{id}/library (`sak482-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    session: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/folders",
+    response_model=FolderListResponse,
+    summary="List chat folders (`sak481-d`)",
+    responses=with_long_tail_peel_503(),  # sak514-g
+)
 def list_folders(
     project_id: UUID,
     library_store: ChatLibraryStoreDep,
@@ -470,7 +641,12 @@ def list_folders(
     return {"folders": [f.to_dict() for f in folders]}
 
 
-@router.post("/folders")
+@router.post(
+    "/folders",
+    response_model=FolderMutationResponse,
+    summary="Create chat folder (`sak481-d`)",
+    responses=with_long_tail_peel_503(),  # sak514-g
+)
 def create_folder(
     body: FolderBody,
     library_store: ChatLibraryStoreDep,
@@ -486,7 +662,12 @@ def create_folder(
     return {"folder": folder.to_dict()}
 
 
-@router.patch("/folders/{folder_id}")
+@router.patch(
+    "/folders/{folder_id}",
+    response_model=FolderMutationResponse,
+    summary="Patch chat folder (`sak481-d`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-h
+)
 def patch_folder(
     folder_id: UUID,
     body: FolderPatchBody,
@@ -513,7 +694,12 @@ def patch_folder(
     return {"folder": updated.to_dict()}
 
 
-@router.delete("/folders/{folder_id}")
+@router.delete(
+    "/folders/{folder_id}",
+    response_model=FolderMutationResponse,
+    summary="Delete chat folder (`sak481-d`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-h
+)
 def delete_folder(
     folder_id: UUID,
     library_store: ChatLibraryStoreDep,
@@ -529,7 +715,12 @@ def delete_folder(
     return {"ok": True}
 
 
-@router.get("/groups")
+@router.get(
+    "/groups",
+    response_model=GroupListResponse,
+    summary="List chat groups (`sak481-d`)",
+    responses=with_long_tail_peel_503(),  # sak514-i
+)
 def list_groups(
     library_store: ChatLibraryStoreDep,
     user: AuthUserDep,
@@ -539,7 +730,12 @@ def list_groups(
     return {"groups": [g.to_dict() for g in groups]}
 
 
-@router.post("/groups")
+@router.post(
+    "/groups",
+    response_model=GroupMutationResponse,
+    summary="Create chat group (`sak482-e`)",
+    responses=with_long_tail_peel_503(),  # sak514-i
+)
 def create_group(
     body: GroupBody,
     library_store: ChatLibraryStoreDep,
@@ -550,7 +746,12 @@ def create_group(
     return {"group": group.to_dict()}
 
 
-@router.post("/groups/{group_id}/members")
+@router.post(
+    "/groups/{group_id}/members",
+    response_model=GroupMutationResponse,
+    summary="Add chat group member (`sak482-e`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-i
+)
 def add_group_member(
     group_id: UUID,
     body: GroupMemberBody,
@@ -568,7 +769,12 @@ def add_group_member(
     return {"ok": True}
 
 
-@router.get("/access-grants")
+@router.get(
+    "/access-grants",
+    response_model=AccessGrantListResponse,
+    summary="List access grants (`sak481-d`)",
+    responses=with_long_tail_peel_503(),  # sak515-a
+)
 def list_access_grants(
     library_store: ChatLibraryStoreDep,
     user: AuthUserDep,
@@ -585,7 +791,12 @@ def list_access_grants(
     return {"grants": [g.to_dict() for g in grants]}
 
 
-@router.post("/access-grants")
+@router.post(
+    "/access-grants",
+    response_model=AccessGrantMutationResponse,
+    summary="Create access grant (`sak482-e`)",
+    responses=with_long_tail_peel_503(),  # sak515-a
+)
 def create_access_grant(
     body: AccessGrantBody,
     library_store: ChatLibraryStoreDep,
@@ -621,7 +832,12 @@ def create_access_grant(
     return {"grant": grant.to_dict()}
 
 
-@router.delete("/access-grants/{grant_id}")
+@router.delete(
+    "/access-grants/{grant_id}",
+    response_model=AccessGrantMutationResponse,
+    summary="Delete access grant (`sak482-e`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-b
+)
 def delete_access_grant(
     grant_id: UUID,
     library_store: ChatLibraryStoreDep,
@@ -633,7 +849,12 @@ def delete_access_grant(
     return {"ok": True}
 
 
-@router.put("/sessions/{session_id}/library")
+@router.put(
+    "/sessions/{session_id}/library",
+    response_model=SessionLibraryResponse,
+    summary="Update session library (`sak482-e`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak514-c
+)
 def update_session_library(
     session_id: UUID,
     body: SessionLibraryBody,
@@ -658,7 +879,13 @@ def update_session_library(
     return {"session": updated.to_dict()}
 
 
-@router.get("/sessions/{session_id}/effective-role")
+@router.get(
+    "/sessions/{session_id}/effective-role",
+    response_model=EffectiveRoleResponse,
+    response_model_exclude_none=True,
+    summary="Effective collab role (`sak481-d`)",
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak515-b
+)
 def get_effective_role(
     session_id: UUID,
     chat_store: ChatStoreDep,

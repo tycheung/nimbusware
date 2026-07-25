@@ -11,6 +11,7 @@ from api.errors import problem
 from api.routes.auth import OptionalUserDep
 from api.routes.chat_common import actor_user_id
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from auth.permissions import require_session_participant
 from env.env_flags import nimbusware_collab_enabled
 from maker.collab.discipline_routing import enqueue_collab_discipline_routes
@@ -61,7 +62,10 @@ def _enforce_interjection_collab(
 @router.get(
     "/runs/{run_id}/interjection-queue",
     response_model=InterjectionQueueResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses={
+        404: PROBLEM_RESPONSE_404,
+        **long_tail_json_openapi_responses(),  # sak501-c
+    },
 )
 def get_interjection_queue(run_id: UUID, store: StoreDep) -> InterjectionQueueResponse:
     rows = store.list_run_events(str(run_id))
@@ -77,7 +81,7 @@ def get_interjection_queue(run_id: UUID, store: StoreDep) -> InterjectionQueueRe
 @router.post(
     "/runs/{run_id}/interjection-queue",
     response_model=InterjectionQueueResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak506-g
 )
 def post_interjection_enqueue(
     run_id: UUID,

@@ -16,6 +16,7 @@ from api.schemas.openapi import (
     CREATE_RUN_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from env.settings_catalog import SettingScope
 from env.settings_store import validate_patch
 from maker.intent.requirements import build_requirements_artifact
@@ -135,13 +136,28 @@ class CreateRunBody(BaseModel):
     consumer_archetype: str | None = Field(default=None, max_length=64)
 
 
+class CreateRunResponse(BaseModel):
+    """POST /runs (`sak487-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.post(
     "/runs",
-    responses={
-        200: CREATE_RUN_RESPONSE_200,
-        422: CREATE_RUN_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    response_model=CreateRunResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak502-a / sak502-d
+        {
+            200: CREATE_RUN_RESPONSE_200,
+            422: CREATE_RUN_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
 )
 def create_run(
     body: CreateRunBody,

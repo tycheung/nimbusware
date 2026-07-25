@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Query
+from pydantic import BaseModel
 
 from api.deps import ChatStoreDep, OrchDep, StoreDep
+from api.schemas.peel_responses import analytics_json_openapi_responses
 from console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
@@ -21,7 +23,23 @@ from research.stitch_outcome_stats import (
 router = APIRouter(tags=["platform"])
 
 
-@router.get("/platform/analytics/stitch-outcomes")
+class AnalyticsPayloadResponse(BaseModel):
+    """Platform analytics payloads (`sak481-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/platform/analytics/stitch-outcomes",
+    response_model=AnalyticsPayloadResponse,
+    response_model_exclude_none=True,
+    summary="Stitch outcome analytics (`sak481-e`)",
+    responses=analytics_json_openapi_responses(),  # sak495-c
+)
 def get_platform_stitch_outcomes(
     store: StoreDep,
     limit_runs: int = Query(default=500, ge=1, le=5000),
@@ -35,7 +53,13 @@ def get_platform_stitch_outcomes(
     }
 
 
-@router.get("/platform/analytics/competitive-summary")
+@router.get(
+    "/platform/analytics/competitive-summary",
+    response_model=AnalyticsPayloadResponse,
+    response_model_exclude_none=True,
+    summary="Competitive summary analytics (`sak481-e`)",
+    responses=analytics_json_openapi_responses(),  # sak495-c
+)
 def get_platform_competitive_summary(
     store: StoreDep,
     limit_runs: int = Query(default=500, ge=1, le=5000),
@@ -47,7 +71,13 @@ def get_platform_competitive_summary(
     )
 
 
-@router.get("/platform/analytics/pressure-history")
+@router.get(
+    "/platform/analytics/pressure-history",
+    response_model=AnalyticsPayloadResponse,
+    response_model_exclude_none=True,
+    summary="Pressure history analytics (`sak481-e`)",
+    responses=analytics_json_openapi_responses(),  # sak495-c
+)
 def get_platform_pressure_history(
     store: StoreDep,
     limit: int = Query(default=20, ge=1, le=200),
@@ -59,7 +89,13 @@ def get_platform_pressure_history(
     return {"limit": limit, "count": len(history), "entries": history}
 
 
-@router.get("/platform/analytics/chat-turns")
+@router.get(
+    "/platform/analytics/chat-turns",
+    response_model=AnalyticsPayloadResponse,
+    response_model_exclude_none=True,
+    summary="Chat turn analytics (`sak481-e`)",
+    responses=analytics_json_openapi_responses(),  # sak495-c
+)
 def get_platform_chat_turn_analytics(
     chat_store: ChatStoreDep,
     limit_sessions: int = Query(default=500, ge=1, le=5000),
@@ -74,7 +110,13 @@ def get_platform_chat_turn_analytics(
     return summary
 
 
-@router.get("/platform/analytics/bundle-outcomes")
+@router.get(
+    "/platform/analytics/bundle-outcomes",
+    response_model=AnalyticsPayloadResponse,
+    response_model_exclude_none=True,
+    summary="Bundle outcome analytics (`sak481-e`)",
+    responses=analytics_json_openapi_responses(),  # sak495-c
+)
 def get_platform_bundle_outcomes(orch: OrchDep) -> dict[str, Any]:
     store = getattr(orch, "_bundle_outcome_store", None)
     analytics = bundle_memory_analytics_from_store(store)

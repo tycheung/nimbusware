@@ -7,6 +7,7 @@ from fastapi import APIRouter, Query
 from api.deps import OrchDep, StoreDep
 from api.routes.enterprise.core import EnterpriseDep
 from api.routes.preflight import get_preflight_history
+from api.schemas.peel_responses import with_enterprise_peel_503
 from env.edition import enterprise_feature_enabled
 from orchestrator.fleet.ollama_sli import (
     fleet_ollama_sli_enabled,
@@ -24,12 +25,18 @@ ollama_sli_router = APIRouter(prefix="/enterprise/fleet-ollama-sli", tags=["ente
 worker_router = APIRouter(prefix="/enterprise/fleet-worker", tags=["enterprise"])
 
 
-@ollama_sli_router.get("/status")
+@ollama_sli_router.get(
+    "/status",
+    responses=with_enterprise_peel_503(),  # sak518-g
+)
 def fleet_ollama_sli_status(_gate: EnterpriseDep) -> dict[str, Any]:
     return fleet_ollama_sli_status_snapshot()
 
 
-@ollama_sli_router.get("/preflight-aggregate")
+@ollama_sli_router.get(
+    "/preflight-aggregate",
+    responses=with_enterprise_peel_503(),  # sak518-g
+)
 def fleet_preflight_aggregate(
     _gate: EnterpriseDep,
     store: StoreDep,
@@ -59,12 +66,18 @@ def fleet_preflight_aggregate(
     return merge_preflight_history_aggregate(history.model_dump())
 
 
-@worker_router.get("/health")
+@worker_router.get(
+    "/health",
+    responses=with_enterprise_peel_503(),  # sak511-c
+)
 def fleet_worker_health(_gate: EnterpriseDep) -> dict[str, Any]:
     return fleet_worker_health_snapshot()
 
 
-@worker_router.get("/metrics")
+@worker_router.get(
+    "/metrics",
+    responses=with_enterprise_peel_503(),  # sak511-c
+)
 def fleet_worker_metrics(_gate: EnterpriseDep) -> dict[str, Any]:
     if not fleet_redis_worker_enabled():
         return {

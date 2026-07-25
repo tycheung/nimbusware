@@ -22,6 +22,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     RUN_LIST_LINK_HEADER,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from api.schemas.runs import RunListResponse, RunSummary
 from projections.run_summary import RUN_LIST_FILTER_STATUSES, build_run_summary
 
@@ -32,7 +33,8 @@ router = APIRouter()
     "/runs",
     response_model=RunListResponse,
     response_model_exclude_none=True,
-    responses={
+    responses=with_long_tail_peel_503(  # sak502-a / sak502-d
+    {
         200: {
             "description": "Recent run identifiers",
             "headers": {
@@ -98,6 +100,7 @@ router = APIRouter()
         422: PROBLEM_RESPONSE_422,
         500: PROBLEM_RESPONSE_500,
     },
+    ),
 )
 def list_runs(
     request: Request,

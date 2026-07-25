@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, Response
 from fastapi.routing import APIRouter
+from pydantic import BaseModel
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from api.deps import StoreDep
@@ -20,6 +21,7 @@ from api.schemas.openapi import (
     format_run_findings_link_header,
     format_run_timeline_link_header,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from api.schemas.runs import RunDetailResponse, RunTimelineResponse
 from console.critic_reliability_display import (
     critic_reliability_caption,
@@ -57,32 +59,60 @@ from store.protocol import serialized_event_from_row
 router = APIRouter()
 
 
+class RunProjectionResponse(BaseModel):
+    """Run detail projections (`sak482-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    caption: str | None = None
+    rows: list[Any] | None = None
+    summary: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class RunFindingsResponse(BaseModel):
+    """GET /runs/{run_id}/findings (`sak485-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    findings: list[dict[str, Any]] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.get(
     "/runs/{run_id}",
     response_model=RunDetailResponse,
     response_model_exclude_none=True,
-    responses={
-        200: {
-            "description": "Run summary from replayed events",
-            "headers": {
-                "Link": RUN_DETAIL_LINK_HEADER,
-            },
-            "content": {
-                "application/json": {
-                    "example": {
-                        "status": "running",
-                        "workflow_profile": "default",
-                        "event_count": 5,
-                        "findings_count": 0,
-                        "has_escalation": False,
+    responses=with_long_tail_peel_503(  # sak502-g
+        {
+            200: {
+                "description": "Run summary from replayed events",
+                "headers": {
+                    "Link": RUN_DETAIL_LINK_HEADER,
+                },
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "status": "running",
+                            "workflow_profile": "default",
+                            "event_count": 5,
+                            "findings_count": 0,
+                            "has_escalation": False,
+                        },
                     },
                 },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def get_run(run_id: UUID, store: StoreDep, response: Response) -> RunDetailResponse:
     rows = store.list_run_events(str(run_id))
@@ -100,12 +130,14 @@ def get_run(run_id: UUID, store: StoreDep, response: Response) -> RunDetailRespo
 @router.get(
     "/runs/{run_id}/timeline",
     response_model=RunTimelineResponse,
-    responses={
-        200: RUN_TIMELINE_RESPONSE_200,
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    responses=with_long_tail_peel_503(  # sak504-g
+        {
+            200: RUN_TIMELINE_RESPONSE_200,
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
 )
 def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineResponse:
     rows = store.list_run_events(str(run_id))
@@ -185,25 +217,30 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
 
 @router.get(
     "/runs/{run_id}/findings",
-    responses={
-        200: {
-            "description": "Finding events for the run",
-            "headers": {
-                "Link": RUN_FINDINGS_LINK_HEADER,
-            },
-            "content": {
-                "application/json": {
-                    "example": {
-                        "run_id": "11111111-1111-4111-8111-111111111111",
-                        "findings": [],
+    response_model=RunFindingsResponse,
+    response_model_exclude_none=True,
+    summary="Run findings (`sak485-e`)",
+    responses=with_long_tail_peel_503(  # sak504-g
+        {
+            200: {
+                "description": "Finding events for the run",
+                "headers": {
+                    "Link": RUN_FINDINGS_LINK_HEADER,
+                },
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "run_id": "11111111-1111-4111-8111-111111111111",
+                            "findings": [],
+                        },
                     },
                 },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
 )
 def findings(run_id: UUID, store: StoreDep, response: Response) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -226,7 +263,10 @@ def findings(run_id: UUID, store: StoreDep, response: Response) -> dict[str, Any
 
 @router.get(
     "/runs/{run_id}/critic-reliability",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=RunProjectionResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak504-i
+    summary="Critic reliability (`sak482-f`)",
 )
 def critic_reliability(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
@@ -246,23 +286,28 @@ def critic_reliability(run_id: UUID, store: StoreDep) -> dict[str, Any]:
 
 @router.get(
     "/runs/{run_id}/memory-influence",
-    responses={
-        200: {
-            "description": "Memory retrieval rows for Maker progress panel",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "run_id": "11111111-1111-4111-8111-111111111111",
-                        "rows": [],
-                        "summary": None,
+    response_model=RunProjectionResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(  # sak504-i
+        {
+            200: {
+                "description": "Memory retrieval rows for Maker progress panel",
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "run_id": "11111111-1111-4111-8111-111111111111",
+                            "rows": [],
+                            "summary": None,
+                        },
                     },
                 },
             },
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        404: PROBLEM_RESPONSE_404,
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
+    ),
+    summary="Memory influence (`sak482-f`)",
 )
 def memory_influence(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))

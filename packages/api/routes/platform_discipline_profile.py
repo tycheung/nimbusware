@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import OrchDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from api.user import maker_user_id_str
 from maker.collab.disciplines import normalize_discipline
 from maker.user_agent_overlay import (
@@ -40,7 +41,54 @@ class AgentOverlayBody(BaseModel):
     prompt_extension: str | None = Field(default=None, max_length=2000)
 
 
-@router.get("/users/me/discipline-profile")
+class DisciplineProfileResponse(BaseModel):
+    """GET/PUT /users/me/discipline-profile (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ParticipantContextResponse(BaseModel):
+    """GET/PUT /users/me/participant-context (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class AgentOverlaysResponse(BaseModel):
+    """GET /users/me/agent-overlays (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    disciplines: list[dict[str, Any]] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class AgentOverlayResponse(BaseModel):
+    """PUT /users/me/agent-overlays/{discipline} (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/users/me/discipline-profile",
+    response_model=DisciplineProfileResponse,
+    response_model_exclude_none=True,
+    summary="Discipline profile GET (`sak483-g`)",
+    responses=long_tail_json_openapi_responses(),  # sak503-b
+)
 def get_discipline_profile(
     request: Request,
     orch: OrchDep,
@@ -55,7 +103,13 @@ def get_discipline_profile(
     return load_user_discipline_profile(uid, repo_root=orch.repo_root)
 
 
-@router.put("/users/me/discipline-profile")
+@router.put(
+    "/users/me/discipline-profile",
+    response_model=DisciplineProfileResponse,
+    response_model_exclude_none=True,
+    summary="Discipline profile PUT (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak516-h
+)
 def put_discipline_profile(
     body: DisciplineProfileBody,
     request: Request,
@@ -92,7 +146,13 @@ def put_discipline_profile(
         ) from exc
 
 
-@router.get("/users/me/participant-context")
+@router.get(
+    "/users/me/participant-context",
+    response_model=ParticipantContextResponse,
+    response_model_exclude_none=True,
+    summary="Participant context GET (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak516-h
+)
 def get_participant_context(
     request: Request,
     orch: OrchDep,
@@ -107,7 +167,13 @@ def get_participant_context(
     return load_user_participant_context(uid, repo_root=orch.repo_root)
 
 
-@router.put("/users/me/participant-context")
+@router.put(
+    "/users/me/participant-context",
+    response_model=ParticipantContextResponse,
+    response_model_exclude_none=True,
+    summary="Participant context PUT (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak516-i
+)
 def put_participant_context(
     body: ParticipantContextBody,
     request: Request,
@@ -133,7 +199,13 @@ def put_participant_context(
         ) from exc
 
 
-@router.get("/users/me/agent-overlays")
+@router.get(
+    "/users/me/agent-overlays",
+    response_model=AgentOverlaysResponse,
+    response_model_exclude_none=True,
+    summary="Agent overlays GET (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak516-i
+)
 def get_agent_overlays(
     request: Request,
     orch: OrchDep,
@@ -150,7 +222,13 @@ def get_agent_overlays(
     return body
 
 
-@router.put("/users/me/agent-overlays/{discipline}")
+@router.put(
+    "/users/me/agent-overlays/{discipline}",
+    response_model=AgentOverlayResponse,
+    response_model_exclude_none=True,
+    summary="Agent overlay PUT (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak517-a
+)
 def put_agent_overlay(
     discipline: str,
     body: AgentOverlayBody,

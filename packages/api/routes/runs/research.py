@@ -16,6 +16,7 @@ from agent_core.models import (
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import research_json_openapi_responses
 from projections.builders.run_research import run_research_briefs_from_events
 
 router = APIRouter()
@@ -31,10 +32,34 @@ class ResearchReviewBody(BaseModel):
     notes: str = Field(default="", max_length=2000)
 
 
+class ResearchApproveResponse(BaseModel):
+    """POST /runs/{run_id}/research/{brief_id}/approve (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    brief_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ResearchRejectResponse(BaseModel):
+    """POST /runs/{run_id}/research/{brief_id}/reject (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    status: str | None = None
+    brief_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.get(
     "/runs/{run_id}/research",
     response_model=ResearchBriefsResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=research_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
 )
 def get_run_research(run_id: UUID, store: StoreDep) -> ResearchBriefsResponse:
     rows = store.list_run_events(str(run_id))
@@ -57,7 +82,12 @@ def _find_brief(rows: list[dict[str, Any]], brief_id: str) -> dict[str, Any] | N
 
 @router.post(
     "/runs/{run_id}/research/{brief_id}/approve",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=ResearchApproveResponse,
+    response_model_exclude_none=True,
+    responses={
+        **research_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def post_research_approve(
     run_id: UUID,
@@ -106,7 +136,12 @@ def post_research_approve(
 
 @router.post(
     "/runs/{run_id}/research/{brief_id}/reject",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=ResearchRejectResponse,
+    response_model_exclude_none=True,
+    responses={
+        **research_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def post_research_reject(
     run_id: UUID,

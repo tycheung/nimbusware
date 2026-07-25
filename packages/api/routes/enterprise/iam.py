@@ -10,6 +10,7 @@ from api.admin import AdminDep
 from api.deps import IamStoreDep
 from api.errors import problem
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import enterprise_peel_json_openapi_responses
 from iam.constants import DEFAULT_TENANT_ID
 from iam.context import get_auth_context
 from iam.scopes import DEFAULT_ADMIN_SCOPES, DEFAULT_USER_SCOPES, normalize_scopes
@@ -28,7 +29,87 @@ class ApiKeyCreateBody(BaseModel):
     api_scopes: list[str] = Field(default_factory=lambda: list(DEFAULT_USER_SCOPES))
 
 
-@router.post("/iam/bootstrap")
+class IamBootstrapResponse(BaseModel):
+    """POST /enterprise/iam/bootstrap (`sak485-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_id: str | None = None
+    tenant_slug: str | None = None
+    key_id: str | None = None
+    key_prefix: str | None = None
+    api_key: str | None = None
+    role_taxonomy_keys: list[str] | None = None
+    api_scopes: list[str] | None = None
+    message: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class IamMeResponse(BaseModel):
+    """GET /enterprise/iam/me (`sak485-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_id: str | None = None
+    tenant_slug: str | None = None
+    key_id: str | None = None
+    role_taxonomy_keys: list[str] | None = None
+    api_scopes: list[str] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class TenantsListResponse(BaseModel):
+    """GET /enterprise/tenants (`sak485-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenants: list[dict[str, Any]] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class TenantCreateResponse(BaseModel):
+    """POST /enterprise/tenants (`sak485-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_id: str | None = None
+    slug: str | None = None
+    display_name: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ApiKeyCreateResponse(BaseModel):
+    """POST /enterprise/tenants/{tenant_id}/api-keys (`sak485-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_id: str | None = None
+    key_id: str | None = None
+    key_prefix: str | None = None
+    api_key: str | None = None
+    label: str | None = None
+    api_scopes: list[str] | None = None
+    message: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.post(
+    "/iam/bootstrap",
+    response_model=IamBootstrapResponse,
+    response_model_exclude_none=True,
+    summary="IAM bootstrap (`sak485-g`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def bootstrap_iam(
     _admin: AdminDep,
     _gate: EnterpriseDep,
@@ -64,7 +145,13 @@ def bootstrap_iam(
     }
 
 
-@router.get("/iam/me")
+@router.get(
+    "/iam/me",
+    response_model=IamMeResponse,
+    response_model_exclude_none=True,
+    summary="IAM me (`sak485-g`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def iam_me(_gate: EnterpriseDep) -> dict[str, Any]:
     ctx = get_auth_context()
     if ctx is None:
@@ -81,7 +168,13 @@ def iam_me(_gate: EnterpriseDep) -> dict[str, Any]:
     }
 
 
-@router.get("/tenants")
+@router.get(
+    "/tenants",
+    response_model=TenantsListResponse,
+    response_model_exclude_none=True,
+    summary="List tenants (`sak485-g`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def list_tenants(_gate: EnterpriseDep, iam: IamStoreDep) -> dict[str, Any]:
     rows = iam.list_tenants()
     return {
@@ -96,7 +189,13 @@ def list_tenants(_gate: EnterpriseDep, iam: IamStoreDep) -> dict[str, Any]:
     }
 
 
-@router.post("/tenants")
+@router.post(
+    "/tenants",
+    response_model=TenantCreateResponse,
+    response_model_exclude_none=True,
+    summary="Create tenant (`sak485-g`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def create_tenant(
     body: TenantCreateBody,
     _gate: EnterpriseDep,
@@ -116,7 +215,13 @@ def create_tenant(
     }
 
 
-@router.post("/tenants/{tenant_id}/api-keys")
+@router.post(
+    "/tenants/{tenant_id}/api-keys",
+    response_model=ApiKeyCreateResponse,
+    response_model_exclude_none=True,
+    summary="Create API key (`sak485-g`)",
+    responses=enterprise_peel_json_openapi_responses(),  # sak496-e
+)
 def create_api_key(
     tenant_id: UUID,
     body: ApiKeyCreateBody,

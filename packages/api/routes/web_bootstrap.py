@@ -3,7 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Request
+from pydantic import BaseModel
 
+from api.schemas.peel_responses import platform_bootstrap_json_openapi_responses
 from env.admin_token import is_loopback_host
 from env.edition import edition, is_enterprise
 from env.env_flags import env_str
@@ -12,6 +14,27 @@ from maker.push_subscriptions import push_web_enabled, vapid_public_key
 from maker.quick_mode import quick_mode_enabled
 
 router = APIRouter(tags=["web"])
+
+
+class WebBootstrapResponse(BaseModel):
+    """GET /maker|admin/app/bootstrap.json (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    api_base: str | None = None
+    edition: str | None = None
+    setup_bundle: str | None = None
+    quick_mode: bool | None = None
+    ui_backend: str | None = None
+    user_token_required: bool | None = None
+    admin_token_required: bool | None = None
+    default_profiles: dict[str, Any] | None = None
+    features: dict[str, Any] | None = None
+    push: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None  # sak498-e: optional degraded peel envelope
 
 
 def _api_base(request: Request) -> str:
@@ -62,11 +85,22 @@ def admin_bootstrap_payload(request: Request) -> dict[str, Any]:
     return body
 
 
-@router.get("/maker/app/bootstrap.json")
+@router.get(
+    "/maker/app/bootstrap.json",
+    response_model=WebBootstrapResponse,
+    response_model_exclude_none=True,
+    summary="Maker app bootstrap (`sak483-g`)",
+)
 def get_maker_app_bootstrap(request: Request) -> dict[str, Any]:
     return maker_bootstrap_payload(request)
 
 
-@router.get("/admin/app/bootstrap.json")
+@router.get(
+    "/admin/app/bootstrap.json",
+    response_model=WebBootstrapResponse,
+    response_model_exclude_none=True,
+    summary="Admin app bootstrap (`sak483-g`)",
+    responses=platform_bootstrap_json_openapi_responses(),  # sak520-b
+)
 def get_admin_app_bootstrap(request: Request) -> dict[str, Any]:
     return admin_bootstrap_payload(request)

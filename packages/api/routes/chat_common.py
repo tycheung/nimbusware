@@ -25,6 +25,7 @@ __all__ = (
     "ChatMessageBody",
     "ChatMessageResponse",
     "ChatSessionResponse",
+    "ChatSessionListResponse",
     "ClassificationResponse",
     "ClassifyIntentBody",
     "CreateChatSessionBody",
@@ -124,6 +125,20 @@ class ChatSessionResponse(BaseModel):
     metadata: dict[str, Any] | None = None
     participants: list[dict[str, Any]] | None = None
     my_participant_role: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ChatSessionListResponse(BaseModel):
+    """GET /chat/sessions (`sak484-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    sessions: list[ChatSessionResponse] = Field(default_factory=list)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 class ChatMessageResponse(BaseModel):
@@ -133,7 +148,13 @@ class ChatMessageResponse(BaseModel):
 
 
 class ClassificationResponse(BaseModel):
+    """POST /chat/classify (`sak491-h` peel miss fields optional)."""
+
     classification: dict[str, Any]
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
 class StartChatSessionResponse(BaseModel):

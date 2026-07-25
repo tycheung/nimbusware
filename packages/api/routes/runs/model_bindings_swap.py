@@ -8,13 +8,14 @@ from pydantic import BaseModel, Field
 
 from api.deps import StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import with_long_tail_peel_503
 from api.user import UserDep, maker_user_id_str
-from orchestrator.routing.audit import (
+from orchestrator.model_routing.audit import (
     RoleClaimConflictError,
     assert_role_claim_available,
     extract_model_binding_audit_rows,
 )
-from orchestrator.routing.swap import (
+from orchestrator.model_routing.swap import (
     append_model_binding_override,
     append_role_claim,
     append_role_release,
@@ -36,6 +37,32 @@ class RoleClaimBody(BaseModel):
     model_id: str = Field(min_length=1, max_length=200)
 
 
+class ModelBindingMutationResponse(BaseModel):
+    """POST/DELETE model-binding mutations (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    ok: bool | None = None
+    event: str | None = None
+    payload: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ModelBindingAuditResponse(BaseModel):
+    """GET /runs/{id}/model-bindings/audit (`sak483-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    events: list[dict[str, Any]] | None = None
+    count: int | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 def _require_run(store: StoreDep, run_id: UUID) -> None:
     if not store.list_run_events(str(run_id)):
         raise HTTPException(
@@ -44,7 +71,13 @@ def _require_run(store: StoreDep, run_id: UUID) -> None:
         )
 
 
-@router.post("/runs/{run_id}/model-bindings/swap")
+@router.post(
+    "/runs/{run_id}/model-bindings/swap",
+    response_model=ModelBindingMutationResponse,
+    response_model_exclude_none=True,
+    summary="Model binding swap (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak505-g
+)
 def post_run_model_binding_swap(
     run_id: UUID,
     body: ModelBindingSwapBody,
@@ -63,7 +96,13 @@ def post_run_model_binding_swap(
     return {"ok": True, "event": "model.binding.overridden", "payload": payload}
 
 
-@router.post("/runs/{run_id}/role-claims")
+@router.post(
+    "/runs/{run_id}/role-claims",
+    response_model=ModelBindingMutationResponse,
+    response_model_exclude_none=True,
+    summary="Role claim POST (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak505-h
+)
 def post_run_role_claim(
     run_id: UUID,
     body: RoleClaimBody,
@@ -100,7 +139,13 @@ def post_run_role_claim(
     return {"ok": True, "event": "workload.role_claimed", "payload": payload}
 
 
-@router.delete("/runs/{run_id}/role-claims/{agent_role}")
+@router.delete(
+    "/runs/{run_id}/role-claims/{agent_role}",
+    response_model=ModelBindingMutationResponse,
+    response_model_exclude_none=True,
+    summary="Role claim DELETE (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak505-h
+)
 def delete_run_role_claim(
     run_id: UUID,
     agent_role: str,
@@ -112,7 +157,13 @@ def delete_run_role_claim(
     return {"ok": True, "event": "workload.role_released", "payload": payload}
 
 
-@router.get("/runs/{run_id}/model-bindings/audit")
+@router.get(
+    "/runs/{run_id}/model-bindings/audit",
+    response_model=ModelBindingAuditResponse,
+    response_model_exclude_none=True,
+    summary="Model binding audit GET (`sak483-g`)",
+    responses=with_long_tail_peel_503(),  # sak505-g
+)
 def get_run_model_binding_audit(
     run_id: UUID,
     store: StoreDep,

@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import runs_json_openapi_responses
 from maker.workspace.workspace import resolve_run_workspace
 from orchestrator.browser_controller import run_dev_env_ui_regression
 from orchestrator.dev_env.observability import dev_env_theater_excerpt, tail_dev_env_logs
@@ -27,36 +28,72 @@ router = APIRouter()
 
 
 class DevEnvStatusResponse(BaseModel):
+    """GET /runs/{run_id}/dev-env/status (`sak498-e` peel fields)."""
+
+    model_config = {"extra": "allow"}
+
     run_id: str
     active: bool = False
     session: dict[str, Any] | None = None
     probe: dict[str, Any] = Field(default_factory=dict)
     logs: dict[str, Any] = Field(default_factory=dict)
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
 class DevEnvActionResponse(BaseModel):
+    """POST /runs/{run_id}/dev-env/start|stop (`sak498-e` peel fields)."""
+
+    model_config = {"extra": "allow"}
+
     ok: bool
     run_id: str
     session: dict[str, Any] | None = None
     error: str | None = None
     probe: dict[str, Any] = Field(default_factory=dict)
+    via: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
 class DevEnvRegressionResponse(BaseModel):
+    """POST /runs/{run_id}/dev-env/regression|ui-regression (`sak498-e` peel fields)."""
+
+    model_config = {"extra": "allow"}
+
     passed: bool
     detail: str = ""
     put_e2e: dict[str, Any] | None = None
     flow_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
 
 
 class UiRegressionRequest(BaseModel):
     flow_id: str | None = None
 
 
+class DevEnvTheaterResponse(BaseModel):
+    """GET /runs/{run_id}/dev-env/theater (`sak485-e`; peel fields `sak498-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    headline: str | None = None
+    logs: dict[str, Any] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+    status: str | None = None
+
+
 @router.get(
     "/runs/{run_id}/dev-env/status",
     response_model=DevEnvStatusResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def get_dev_env_status(run_id: UUID, store: StoreDep) -> DevEnvStatusResponse:
     rows = store.list_run_events(str(run_id))
@@ -80,7 +117,7 @@ def get_dev_env_status(run_id: UUID, store: StoreDep) -> DevEnvStatusResponse:
 @router.post(
     "/runs/{run_id}/dev-env/start",
     response_model=DevEnvActionResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def post_dev_env_start(run_id: UUID, store: StoreDep) -> DevEnvActionResponse:
     rows = store.list_run_events(str(run_id))
@@ -103,7 +140,7 @@ def post_dev_env_start(run_id: UUID, store: StoreDep) -> DevEnvActionResponse:
 @router.post(
     "/runs/{run_id}/dev-env/stop",
     response_model=DevEnvActionResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def post_dev_env_stop(run_id: UUID, store: StoreDep) -> DevEnvActionResponse:
     rows = store.list_run_events(str(run_id))
@@ -120,7 +157,7 @@ def post_dev_env_stop(run_id: UUID, store: StoreDep) -> DevEnvActionResponse:
 @router.post(
     "/runs/{run_id}/dev-env/regression",
     response_model=DevEnvRegressionResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def post_dev_env_regression(run_id: UUID, store: StoreDep) -> DevEnvRegressionResponse:
     rows = store.list_run_events(str(run_id))
@@ -138,7 +175,7 @@ def post_dev_env_regression(run_id: UUID, store: StoreDep) -> DevEnvRegressionRe
 @router.post(
     "/runs/{run_id}/dev-env/ui-regression",
     response_model=DevEnvRegressionResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def post_dev_env_ui_regression(
     run_id: UUID,
@@ -175,7 +212,10 @@ def post_dev_env_ui_regression(
 
 @router.get(
     "/runs/{run_id}/dev-env/theater",
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=DevEnvTheaterResponse,
+    response_model_exclude_none=True,
+    summary="Dev-env theater excerpt (`sak485-e`)",
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
 )
 def get_dev_env_theater(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))

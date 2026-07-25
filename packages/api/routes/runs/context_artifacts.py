@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import memory_json_openapi_responses
 from maker.workspace.workspace import (
     project_id_from_run_created_metadata,
     run_created_metadata_from_rows,
@@ -25,9 +26,43 @@ class ContextArtifactFromCompactionBody(BaseModel):
     title: str | None = None
 
 
+class ContextArtifactFromCompactionResponse(BaseModel):
+    """POST context-artifacts/from-compaction (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    project_id: str | None = None
+    artifact_id: str | None = None
+    title: str | None = None
+    kind: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class ContextArtifactInsertResponse(BaseModel):
+    """POST context-artifacts/{id}/insert (`sak486-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    run_id: str | None = None
+    artifact_id: str | None = None
+    title: str | None = None
+    kind: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 @router.post(
     "/runs/{run_id}/context-artifacts/from-compaction",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=ContextArtifactFromCompactionResponse,
+    response_model_exclude_none=True,
+    responses={
+        **memory_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def post_context_artifact_from_compaction(
     run_id: UUID,
@@ -70,7 +105,12 @@ def post_context_artifact_from_compaction(
 
 @router.post(
     "/runs/{run_id}/context-artifacts/{artifact_id}/insert",
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    response_model=ContextArtifactInsertResponse,
+    response_model_exclude_none=True,
+    responses={
+        **memory_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak498-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def post_insert_context_artifact(
     run_id: UUID,

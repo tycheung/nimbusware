@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 
 from api.deps import StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import with_enterprise_peel_503
 from env.edition import (
     FEATURE_EPICS,
     edition,
@@ -31,7 +33,35 @@ def _require_enterprise() -> None:
 EnterpriseDep = Annotated[None, Depends(_require_enterprise)]
 
 
-@router.get("/status")
+class EnterpriseFeatureStatus(BaseModel):
+    status: str
+    epic: str = ""
+
+
+class EnterpriseStatusResponse(BaseModel):
+    """GET /enterprise/status (`sak449-e`)."""
+
+    edition: str | None = None
+    lane: str | None = None
+    bootstrap_epic: str | None = None
+    features: dict[str, EnterpriseFeatureStatus] = Field(default_factory=dict)
+    message: str | None = None
+
+
+class EnterpriseHealthResponse(BaseModel):
+    """GET /enterprise/health (`sak449-e`)."""
+
+    ok: bool = False
+    edition: str | None = None
+    iam: str | None = None
+
+
+@router.get(
+    "/status",
+    response_model=EnterpriseStatusResponse,
+    summary="Enterprise feature readiness (`sak449-e`)",
+    responses=with_enterprise_peel_503(),  # sak511-a
+)
 def enterprise_status(_gate: EnterpriseDep) -> dict[str, Any]:
     """Enterprise feature readiness map."""
     features = {
@@ -53,7 +83,12 @@ def enterprise_status(_gate: EnterpriseDep) -> dict[str, Any]:
     }
 
 
-@router.get("/health")
+@router.get(
+    "/health",
+    response_model=EnterpriseHealthResponse,
+    summary="Enterprise health probe (`sak449-e`)",
+    responses=with_enterprise_peel_503(),  # sak511-a
+)
 def enterprise_health(_gate: EnterpriseDep, store: StoreDep) -> dict[str, Any]:
     """Minimal enterprise probe (store reachable)."""
     _ = store

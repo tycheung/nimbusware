@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import with_long_tail_peel_503
 from orchestrator.context_compaction import (
     emit_compaction_revert_event,
     find_compaction_event,
@@ -33,7 +34,9 @@ class CompactionRevertResponse(BaseModel):
 @router.post(
     "/runs/{run_id}/compactions/{compaction_id}/revert",
     response_model=CompactionRevertResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses=with_long_tail_peel_503(  # sak503-g
+        {404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    ),
 )
 def revert_compaction(
     run_id: UUID,

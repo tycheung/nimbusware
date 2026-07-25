@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import runs_json_openapi_responses
 from projections.builders.maker_progress import (
     maker_progress_from_events,
     strip_operator_fields,
@@ -42,7 +43,7 @@ class MakerProgressResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/maker-progress",
     response_model=MakerProgressResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=runs_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
 )
 def get_maker_progress(
     run_id: UUID,

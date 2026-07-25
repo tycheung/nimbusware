@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from api.deps import ChatStoreDep, CollabStoreDep, UserStoreDep
 from api.errors import problem
+from api.schemas.peel_responses import with_long_tail_peel_503
 from auth.crypto import verify_password
 from auth.models import UserRecord
 from auth.session_cookie import (
@@ -36,6 +37,17 @@ class UserResponse(BaseModel):
     display_name: str
     is_owner: bool = False
     created_at: str
+
+
+class SignoutResponse(BaseModel):
+    """POST /auth/signout (`sak487-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 def _user_response(user: UserRecord) -> UserResponse:
@@ -94,7 +106,11 @@ def _bootstrap_migrate_sessions(
             )
 
 
-@router.post("/signup", response_model=UserResponse)
+@router.post(
+    "/signup",
+    response_model=UserResponse,
+    responses=with_long_tail_peel_503(),  # sak504-a
+)
 def auth_signup(
     body: SignupBody,
     response: Response,
@@ -132,7 +148,11 @@ def auth_signup(
     return _user_response(user)
 
 
-@router.post("/signin", response_model=UserResponse)
+@router.post(
+    "/signin",
+    response_model=UserResponse,
+    responses=with_long_tail_peel_503(),  # sak504-a
+)
 def auth_signin(
     body: SigninBody,
     response: Response,
@@ -156,12 +176,21 @@ def auth_signin(
     return _user_response(user)
 
 
-@router.post("/signout")
+@router.post(
+    "/signout",
+    response_model=SignoutResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503(),  # sak504-a
+)
 def auth_signout(response: Response) -> dict[str, bool]:
     clear_auth_session_cookie(response)
     return {"ok": True}
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    responses=with_long_tail_peel_503(),  # sak504-a
+)
 def auth_me(user: AuthUserDep) -> UserResponse:
     return _user_response(user)

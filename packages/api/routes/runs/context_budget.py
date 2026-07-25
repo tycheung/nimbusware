@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import with_long_tail_peel_503
 from projections.builders.context_budget import estimate_context_budget
 
 router = APIRouter()
@@ -33,7 +34,7 @@ class ContextBudgetResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/context_budget",
     response_model=ContextBudgetResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak503-h
 )
 def get_context_budget(run_id: UUID, store: StoreDep) -> ContextBudgetResponse:
     rows = store.list_run_events(str(run_id))

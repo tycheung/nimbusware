@@ -13,6 +13,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import with_long_tail_peel_503
 from env.dotenv import find_repo_root
 from maker.workspace.workspace import run_created_metadata_from_rows
 from orchestrator.policy_snapshot_diff import (
@@ -48,7 +49,13 @@ class PolicyCompareRecordBody(BaseModel):
 @router.get(
     "/policy/compare",
     response_model=PolicyDiffResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses=with_long_tail_peel_503(  # sak503-a
+        {
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),
 )
 def compare_run_policies(
     store: StoreDep,
@@ -92,7 +99,13 @@ def compare_run_policies(
 @router.post(
     "/policy/compare/record",
     response_model=PolicyDiffResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses=with_long_tail_peel_503(
+        {
+            404: PROBLEM_RESPONSE_404,
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
+        },
+    ),  # sak511-i
 )
 def record_policy_compare(
     store: StoreDep,

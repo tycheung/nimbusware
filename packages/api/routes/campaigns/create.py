@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from api.access import assert_project_accessible
 from api.deps import OrchDep, ProjectStoreDep, StoreDep
 from api.errors import problem
+from api.schemas.peel_responses import campaign_json_openapi_responses
 from api.routes.run_profiles import apply_operator_profiles_at_run_start
 from api.routes.runs.create import (
     RunRequirementsBody,
@@ -28,7 +29,28 @@ class CreateCampaignBody(BaseModel):
     enforcement_profile_id: str | None = Field(default=None, max_length=120)
 
 
-@router.post("/campaigns")
+class CreateCampaignResponse(BaseModel):
+    """POST /campaigns (`sak484-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    campaign_id: str | None = None
+    run_id: str | None = None
+    dispatch_mode: str | None = None
+    autonomous: bool | None = None
+    workflow_profile: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.post(
+    "/campaigns",
+    response_model=CreateCampaignResponse,
+    response_model_exclude_none=True,
+    summary="Create campaign (`sak484-e`)",
+    responses=campaign_json_openapi_responses(),  # sak497-d
+)
 def create_campaign(
     body: CreateCampaignBody,
     orch: OrchDep,

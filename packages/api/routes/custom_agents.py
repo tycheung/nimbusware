@@ -2,12 +2,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from api.admin import AdminDep
 from api.deps import OrchDep
 from api.errors import problem
+from api.schemas.peel_responses import (
+    DeleteOkResponse,
+    long_tail_json_openapi_responses,
+    with_long_tail_peel_503,
+)
 from api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -62,7 +67,11 @@ def _save(registry: CustomAgentRegistry, orch: Any) -> None:
     )
 
 
-@router.get("", response_model=CustomAgentListResponse)
+@router.get(
+    "",
+    response_model=CustomAgentListResponse,
+    responses=long_tail_json_openapi_responses(),  # sak500-e
+)
 def list_custom_agents(orch: OrchDep) -> CustomAgentListResponse:
     reg = _registry(orch)
     return CustomAgentListResponse(
@@ -71,7 +80,9 @@ def list_custom_agents(orch: OrchDep) -> CustomAgentListResponse:
 
 
 @router.get(
-    "/{agent_id}", response_model=CustomAgentResponse, responses={404: PROBLEM_RESPONSE_404}
+    "/{agent_id}",
+    response_model=CustomAgentResponse,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-c
 )
 def get_custom_agent(agent_id: str, orch: OrchDep) -> CustomAgentResponse:
     agent = _registry(orch).get(agent_id)
@@ -86,7 +97,9 @@ def get_custom_agent(agent_id: str, orch: OrchDep) -> CustomAgentResponse:
 @router.post(
     "",
     response_model=CustomAgentResponse,
-    responses={422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses=with_long_tail_peel_503(
+        {422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    ),  # sak512-c
 )
 def create_custom_agent(
     body: CustomAgentCreateRequest,
@@ -117,7 +130,7 @@ def create_custom_agent(
 @router.patch(
     "/{agent_id}",
     response_model=CustomAgentResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-c
 )
 def update_custom_agent(
     agent_id: str,
@@ -149,10 +162,11 @@ def update_custom_agent(
 
 @router.delete(
     "/{agent_id}",
-    status_code=204,
-    responses={404: PROBLEM_RESPONSE_404},
+    response_model=DeleteOkResponse,
+    response_model_exclude_none=True,
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-c
 )
-def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> Response:
+def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> DeleteOkResponse:
     reg = _registry(orch)
     if not reg.remove(agent_id):
         raise HTTPException(
@@ -160,4 +174,4 @@ def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> Respo
             detail=problem("custom_agent_not_found", f"Unknown agent id: {agent_id}"),
         )
     _save(reg, orch)
-    return Response(status_code=204)
+    return DeleteOkResponse(ok=True)

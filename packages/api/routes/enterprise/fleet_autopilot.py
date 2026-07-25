@@ -13,6 +13,7 @@ from api.routes.enterprise._fleet_policy_helpers import (
     tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     FleetAutopilotPolicy,
     load_fleet_autopilot_policies,
@@ -29,7 +30,26 @@ class FleetAutopilotPolicyBody(BaseModel):
     required_checkpoints: list[str] = Field(default_factory=list)
 
 
-@router.get("/tenants/{tenant_ref}/autopilot-policy")
+class FleetAutopilotPolicyResponse(BaseModel):
+    """GET/PUT tenant autopilot-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    max_autopilot_level: int | None = None
+    required_checkpoints: list[str] | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/autopilot-policy",
+    response_model=FleetAutopilotPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant autopilot policy GET (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak504-b
+)
 def get_tenant_autopilot_policy(
     tenant_ref: str,
     _gate: EnterpriseDep,
@@ -38,7 +58,13 @@ def get_tenant_autopilot_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_autopilot_policy)
 
 
-@router.put("/tenants/{tenant_ref}/autopilot-policy")
+@router.put(
+    "/tenants/{tenant_ref}/autopilot-policy",
+    response_model=FleetAutopilotPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant autopilot policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak504-b
+)
 def put_tenant_autopilot_policy(
     tenant_ref: str,
     body: FleetAutopilotPolicyBody,

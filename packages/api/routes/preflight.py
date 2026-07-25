@@ -13,6 +13,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from api.schemas.peel_responses import long_tail_json_openapi_responses
 from api.schemas.preflight import (
     PreflightHistoryEntry,
     PreflightHistoryResponse,
@@ -35,6 +36,7 @@ from projections.run_summary import RUN_LIST_FILTER_STATUSES
         200: PREFLIGHT_HISTORY_RESPONSE_200,
         422: PROBLEM_RESPONSE_422,
         500: PROBLEM_RESPONSE_500,
+        **long_tail_json_openapi_responses(),  # sak500-i
     },
 )
 def get_preflight_history(
@@ -221,7 +223,7 @@ def get_preflight_history(
                 status=list_status_filter,
             ),
         )
-    from orchestrator.stage_provider_routing import probe_cloud_runtime
+    from orchestrator.provider_routing_facade import probe_cloud_runtime
 
     routing_path = orch.repo_root / "configs" / "model-routing.yaml"
     cloud_preflight: dict[str, object] | None = None

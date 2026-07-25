@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import StoreDep
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from iam.context import get_auth_context
 from orchestrator.profiles.enforcement_profiles import (
     EnforcementProfile,
@@ -50,7 +51,10 @@ def _response_from_profile(run_id: str, profile: EnforcementProfile) -> RunEnfor
 @router.get(
     "/runs/{run_id}/enforcement",
     response_model=RunEnforcementResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses={
+        404: PROBLEM_RESPONSE_404,
+        **long_tail_json_openapi_responses(),  # sak501-c
+    },
 )
 def get_run_enforcement(run_id: UUID, store: StoreDep) -> RunEnforcementResponse:
     rows = store.list_run_events(str(run_id))
@@ -66,7 +70,7 @@ def get_run_enforcement(run_id: UUID, store: StoreDep) -> RunEnforcementResponse
 @router.put(
     "/runs/{run_id}/enforcement",
     response_model=RunEnforcementResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak505-i
 )
 def put_run_enforcement(
     run_id: UUID,

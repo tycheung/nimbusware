@@ -13,6 +13,7 @@ from api.routes.enterprise._fleet_policy_helpers import (
     tenant_slug_for_ref,
 )
 from api.routes.enterprise.core import EnterpriseDep
+from api.schemas.peel_responses import with_enterprise_peel_503
 from orchestrator.fleet.policies import (
     FleetStandardsPolicy,
     load_fleet_standards_policies,
@@ -29,7 +30,27 @@ class FleetStandardsPolicyBody(BaseModel):
     required_facade_id: str = Field(default="", max_length=120)
 
 
-@router.get("/tenants/{tenant_ref}/standards-policy")
+class FleetStandardsPolicyResponse(BaseModel):
+    """GET/PUT tenant standards-policy (`sak483-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    tenant_slug: str | None = None
+    min_bundle_ids: list[str] | None = None
+    blocked_origins: list[str] | None = None
+    required_facade_id: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+@router.get(
+    "/tenants/{tenant_ref}/standards-policy",
+    response_model=FleetStandardsPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant standards policy GET (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak503-c / sak503-d
+)
 def get_tenant_standards_policy(
     tenant_ref: str,
     _gate: EnterpriseDep,
@@ -38,7 +59,13 @@ def get_tenant_standards_policy(
     return fleet_tenant_policy_get(iam, tenant_ref, tenant_standards_policy)
 
 
-@router.put("/tenants/{tenant_ref}/standards-policy")
+@router.put(
+    "/tenants/{tenant_ref}/standards-policy",
+    response_model=FleetStandardsPolicyResponse,
+    response_model_exclude_none=True,
+    summary="Tenant standards policy PUT (`sak483-f`)",
+    responses=with_enterprise_peel_503(),  # sak518-h
+)
 def put_tenant_standards_policy(
     tenant_ref: str,
     body: FleetStandardsPolicyBody,

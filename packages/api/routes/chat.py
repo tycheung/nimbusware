@@ -30,6 +30,7 @@ from api.routes.chat_common import (
 )
 from api.routes.chat_service import session_or_404
 from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from api.schemas.peel_responses import llm_json_openapi_responses, with_long_tail_peel_503
 from api.user import UserDep
 from auth.permissions import enforce_collab_turn_write
 from env.env_flags import nimbusware_collab_enabled
@@ -44,7 +45,11 @@ router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_session.router)
 
 
-@router.post("/sessions", response_model=ChatSessionResponse)
+@router.post(
+    "/sessions",
+    response_model=ChatSessionResponse,
+    responses=with_long_tail_peel_503({422: PROBLEM_RESPONSE_422}),  # sak513-g
+)
 def create_chat_session(
     body: CreateChatSessionBody,
     chat_store: ChatStoreDep,
@@ -77,7 +82,13 @@ def create_chat_session(
     return ChatSessionResponse(**session_response(chat_store, session))
 
 
-@router.get("/sessions", response_model=list[ChatSessionResponse])
+@router.get(
+    "/sessions",
+    response_model=list[ChatSessionResponse],
+    response_model_exclude_none=True,
+    summary="List chat sessions (`sak484-g`)",
+    responses=with_long_tail_peel_503(),  # sak513-g
+)
 def list_chat_sessions(
     project_id: UUID,
     chat_store: ChatStoreDep,
@@ -92,7 +103,7 @@ def list_chat_sessions(
 @router.get(
     "/sessions/{session_id}",
     response_model=ChatSessionResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
 )
 def get_chat_session(
     session_id: UUID,
@@ -148,7 +159,7 @@ def get_chat_session(
 @router.get(
     "/sessions/{session_id}/graph",
     response_model=ChatGraphResponse,
-    responses={404: PROBLEM_RESPONSE_404},
+    responses=llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
 )
 def get_chat_graph(session_id: UUID, chat_store: ChatStoreDep, _user: UserDep) -> ChatGraphResponse:
     session_or_404(chat_store, session_id)
@@ -162,7 +173,10 @@ def get_chat_graph(session_id: UUID, chat_store: ChatStoreDep, _user: UserDep) -
 @router.post(
     "/sessions/{session_id}/fork",
     response_model=ChatSessionResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def fork_chat_session(
     session_id: UUID,
@@ -182,7 +196,10 @@ def fork_chat_session(
 @router.put(
     "/sessions/{session_id}/active-leaf",
     response_model=ChatSessionResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def set_chat_active_leaf(
     session_id: UUID,
@@ -202,7 +219,10 @@ def set_chat_active_leaf(
 @router.post(
     "/sessions/{session_id}/turns",
     response_model=ChatMessageResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def append_chat_turn(
     session_id: UUID,
@@ -285,7 +305,10 @@ def append_chat_turn(
 @router.post(
     "/sessions/{session_id}/messages",
     response_model=ChatMessageResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def post_chat_message(
     session_id: UUID,
@@ -314,7 +337,10 @@ def post_chat_message(
 @router.post(
     "/sessions/{session_id}/turns/{turn_id}/switch-mode",
     response_model=ChatSessionResponse,
-    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    responses={
+        **llm_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak497-e
+        422: PROBLEM_RESPONSE_422,
+    },
 )
 def switch_chat_mode(
     session_id: UUID,
@@ -365,7 +391,12 @@ def switch_chat_mode(
     return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
 
 
-@router.post("/classify", response_model=ClassificationResponse)
+@router.post(
+    "/classify",
+    response_model=ClassificationResponse,
+    summary="Classify chat intent (LLM peel-aware; sak493-b)",
+    responses=llm_json_openapi_responses(),  # sak513-h
+)
 def classify_chat_intent(
     body: ClassifyIntentBody,
     project_store: ProjectStoreDep,
@@ -381,10 +412,36 @@ def classify_chat_intent(
                 detail=problem("invalid_request", "project_id must be a UUID"),
             ) from exc
         meta = project_metadata(project_store, project_uuid)
-    result = classify_intent(
-        body.message,
-        attachments=body.attachments,
-        project_metadata=meta,
-        platform_hints=resolve_platform_hints(body.platform_hints),
-    )
+    try:
+        result = classify_intent(
+            body.message,
+            attachments=body.attachments,
+            project_metadata=meta,
+            platform_hints=resolve_platform_hints(body.platform_hints),
+        )
+    except RuntimeError as exc:
+        if "broker_miss" not in str(exc):
+            raise
+        from broker_client.dual_run_route import map_domain_broker_http_miss
+        from broker_client.flags import broker_llm_enabled, broker_llm_only
+
+        miss = map_domain_broker_http_miss(  # sak500-b
+            exc,
+            feature="intent_classifier",
+            enabled=broker_llm_enabled,
+            only=broker_llm_only,
+            only_code="broker_llm_unavailable",
+            only_msg=(
+                "Intent classifier unavailable under NIMBUSWARE_BROKER_LLM=2; "
+                "use SwissArmyNoife llm_chat"
+            ),
+            miss_extra={"classification": {}},
+        )
+        return ClassificationResponse(
+            classification=miss.get("classification") or {},
+            via=miss.get("via"),
+            error=miss.get("error"),
+            feature=miss.get("feature"),
+            status=miss.get("status"),
+        )
     return ClassificationResponse(classification=classification_dict(result))

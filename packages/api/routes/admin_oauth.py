@@ -9,8 +9,10 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
+from pydantic import BaseModel
 
 from api.errors import problem
+from api.schemas.peel_responses import long_tail_json_openapi_responses
 from console.services.oauth_pkce import accept_oidc_callback, build_authorize_url
 from env.admin_token import nimbusware_admin_token
 from env.edition import is_enterprise
@@ -22,6 +24,29 @@ router = APIRouter(prefix="/admin/oauth", tags=["admin"])
 _PKCE_COOKIE = "nimbusware_oidc_pkce"
 _SESSION_COOKIE = "nimbusware_oidc_session"
 _COOKIE_MAX_AGE = 3600
+
+
+class AdminOAuthSessionResponse(BaseModel):
+    """GET /admin/oauth/session (`sak487-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    authenticated: bool | None = None
+    console_role: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
+class AdminOAuthLogoutResponse(BaseModel):
+    """POST /admin/oauth/logout JSON body (`sak487-g`)."""
+
+    model_config = {"extra": "allow"}
+
+    ok: bool | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 def _require_enterprise_oauth() -> None:
@@ -187,7 +212,12 @@ def admin_oauth_callback(
     return response
 
 
-@router.get("/session")
+@router.get(
+    "/session",
+    response_model=AdminOAuthSessionResponse,
+    response_model_exclude_none=True,
+    responses=long_tail_json_openapi_responses(),  # sak495-d
+)
 def admin_oauth_session(request: Request) -> dict[str, Any]:
     _require_enterprise_oauth()
     payload = _session_payload(request)
@@ -197,7 +227,12 @@ def admin_oauth_session(request: Request) -> dict[str, Any]:
     }
 
 
-@router.post("/logout")
+@router.post(
+    "/logout",
+    response_model=AdminOAuthLogoutResponse,
+    response_model_exclude_none=True,
+    responses=long_tail_json_openapi_responses(),  # sak495-d
+)
 def admin_oauth_logout() -> Response:
     _require_enterprise_oauth()
     response = JSONResponse({"ok": True})

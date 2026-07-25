@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep, OptionalUserDep
+from api.schemas.peel_responses import long_tail_json_openapi_responses, with_long_tail_peel_503
 from api.user import maker_user_id_str
 from env.env_flags import env_str
 from iam.context import get_auth_context
@@ -150,17 +151,39 @@ def enforce_credential_scopes(
         )
 
 
+class PlatformDeployResponse(BaseModel):
+    """OpenAPI payload (`sak481-e`)."""
+
+    model_config = {"extra": "allow"}
+
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
+
+
 from api.routes.platform_deploy_mutations import router as mutations_router  # noqa: E402
 
 router.include_router(mutations_router)
 
 
-@router.get("/platform/deploy/environments")
+@router.get(
+    "/platform/deploy/environments",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy environments (`sak481-e`)",
+    responses=long_tail_json_openapi_responses(),  # sak503-b
+)
 def get_deploy_environments() -> dict[str, Any]:
     return deploy_environment_catalog()
 
 
-@router.post("/platform/deploy/approve")
+@router.post(
+    "/platform/deploy/approve",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Approve deploy (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-g
+)
 def post_deploy_approve(
     body: DeployApproveBody,
     request: Request,
@@ -209,7 +232,13 @@ def post_deploy_approve(
     return {"run_id": str(rid), "status": status, "approval_kind": kind}
 
 
-@router.post("/platform/deploy/terraform-validate")
+@router.post(
+    "/platform/deploy/terraform-validate",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Terraform validate (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-g
+)
 def post_terraform_validate(
     body: TerraformValidateBody,
     orch: OrchDep,
@@ -244,7 +273,13 @@ def post_terraform_validate(
     return result
 
 
-@router.get("/platform/deploy/credentials")
+@router.get(
+    "/platform/deploy/credentials",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy credentials (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-c
+)
 def get_deploy_credentials(
     request: Request,
     orch: OrchDep,
@@ -259,7 +294,13 @@ def get_deploy_credentials(
     return load_deploy_credentials(uid, repo_root=orch.repo_root)
 
 
-@router.get("/platform/deploy/audit")
+@router.get(
+    "/platform/deploy/audit",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="Deploy audit (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-h
+)
 def get_deploy_audit(
     orch: OrchDep,
     user: AuthUserDep,
@@ -288,7 +329,13 @@ def get_deploy_audit(
     return {"events": events, "run_id": rid or None, "count": len(events)}
 
 
-@router.get("/platform/deploy/github-workflow-template")
+@router.get(
+    "/platform/deploy/github-workflow-template",
+    response_model=PlatformDeployResponse,
+    response_model_exclude_none=True,
+    summary="GitHub workflow template (`sak481-e`)",
+    responses=with_long_tail_peel_503(),  # sak508-h
+)
 def get_github_workflow_template(orch: OrchDep) -> dict[str, Any]:
     path = orch.repo_root / "configs" / "deploy" / "github_actions_nimbusware.yaml"
     if not path.is_file():

@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from api.admin import AdminDep, require_admin_token
 from api.errors import problem
 from api.schemas.openapi import PROBLEM_RESPONSE_401
+from api.schemas.peel_responses import with_long_tail_peel_503
 from console.operator_chat_core import ChatState, process_user_message
 
 router = APIRouter(prefix="/integrations", tags=["admin"])
@@ -20,6 +21,22 @@ class ExternalChatWebhookBody(BaseModel):
     text: str = Field(min_length=1, max_length=8000)
     source: str = Field(default="generic", max_length=64)
     session_id: str = Field(default="external", max_length=128)
+
+
+class ExternalChatCapabilitiesResponse(BaseModel):
+    """GET /integrations/external-chat (`sak484-f`)."""
+
+    model_config = {"extra": "allow"}
+
+    scope: str | None = None
+    docs: str | None = None
+    in_product_chat: str | None = None
+    supported_commands: str | None = None
+    steering_prefixes: str | None = None
+    mention_routing: str | None = None
+    via: str | None = None
+    error: str | None = None
+    feature: str | None = None
 
 
 class ExternalChatWebhookResponse(BaseModel):
@@ -38,7 +55,13 @@ def _webhook_secret() -> str:
     return resolve_str("NIMBUSWARE_WEBHOOK_SECRET", default="").strip()
 
 
-@router.get("/external-chat")
+@router.get(
+    "/external-chat",
+    response_model=ExternalChatCapabilitiesResponse,
+    response_model_exclude_none=True,
+    summary="External chat capabilities (`sak484-f`)",
+    responses=with_long_tail_peel_503(),  # sak503-i
+)
 def external_chat_capabilities(_admin: AdminDep) -> dict[str, str]:
     return {
         "scope": "external_run_steering",
@@ -53,7 +76,7 @@ def external_chat_capabilities(_admin: AdminDep) -> dict[str, str]:
 @router.post(
     "/external-chat/webhook",
     response_model=ExternalChatWebhookResponse,
-    responses={401: PROBLEM_RESPONSE_401},
+    responses=with_long_tail_peel_503({401: PROBLEM_RESPONSE_401}),  # sak503-i
 )
 def external_chat_webhook(
     body: ExternalChatWebhookBody,
