@@ -13,6 +13,7 @@ _DOMAIN_FLAGS: dict[str, str] = {
     "research": "NIMBUSWARE_BROKER_RESEARCH",
     "egress": "NIMBUSWARE_BROKER_EGRESS",
     "compute": "NIMBUSWARE_BROKER_COMPUTE",
+    "capacity": "NIMBUSWARE_BROKER_CAPACITY",
 }
 
 _DOMAIN_OFFERS: dict[str, str] = {
@@ -23,6 +24,7 @@ _DOMAIN_OFFERS: dict[str, str] = {
     "research": "research.fetch",
     "egress": "network.egress.check",
     "compute": "compute.work",
+    "capacity": "capacity.probe",
 }
 
 

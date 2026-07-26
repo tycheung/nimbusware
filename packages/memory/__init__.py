@@ -1,4 +1,7 @@
-"""Memory package after sak413 — local index/store removed; use memory_bridge."""
+"""Memory package — broker bridge primary; local peel helpers for offline/unit paths."""
+
 from __future__ import annotations
 
-__all__: list[str] = []
+from memory.peel_store.memory import InMemoryMemoryChunkStore
+
+__all__ = ["InMemoryMemoryChunkStore"]

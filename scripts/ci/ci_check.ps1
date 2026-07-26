@@ -41,12 +41,13 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_loc_report.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/ci/mypy_ci_targets.py).Split(" ")
-poetry run mypy @mypyTargets
+poetry run python -m mypy @mypyTargets
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-poetry run bandit -c pyproject.toml -r packages -lll -q
+poetry run python -m bandit -c pyproject.toml -r packages -lll -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $ErrorActionPreference = "Continue"
-poetry run pip-audit 2>&1 | Out-Null
+# pip-audit (module form for Windows)
+poetry run python -m pip_audit 2>&1 | Out-Null
 $ErrorActionPreference = "Stop"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e and not e2e_journey and not e2e_stack and not slice_e2e" `

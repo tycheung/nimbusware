@@ -12,8 +12,7 @@ MEMORY_ONLY_MSG = (
 )
 
 MEMORY_EXCLUSIVE_MSG = (
-    "fleet memory unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; "
-    "use SwissArmyNoife memory_search"
+    "fleet memory unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; use SwissArmyNoife memory_search"
 )
 
 STATUS_PROBE_QUERY = "fleet-memory-status-probe"
@@ -124,8 +123,7 @@ def map_broker_memory_local_refuse(
 ) -> dict[str, Any]:
     """Refuse local fleet-memory peel_index under MEMORY=1|2 (`sak494-b`)."""
     error_msg = msg or (
-        f"{feature} unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; "
-        "use SwissArmyNoife memory_index"
+        f"{feature} unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; use SwissArmyNoife memory_index"
     )
     return map_broker_memory_http_miss(
         RuntimeError(error_msg),

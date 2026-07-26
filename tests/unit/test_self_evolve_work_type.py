@@ -1,5 +1,3 @@
-"""Tests for self_evolve work type and curriculum mix."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,13 +1,17 @@
+"""Provider routing facade — re-exports stage_provider_routing after sak411 peel."""
+
 from __future__ import annotations
 
-from typing import Any
+from orchestrator.stage_provider_routing import (
+    cloud_chat_json,
+    probe_cloud_runtime,
+    resolve_stage_provider,
+    stage_chat_json,
+)
 
-
-def __getattr__(name: str):
-    def _gone(*args: Any, **kwargs: Any) -> Any:
-        raise RuntimeError(
-            f"orchestrator.provider_routing_facade.{name} removed (sak411); "
-            "use broker_client / sak llm.resolve"
-        )
-
-    return _gone
+__all__ = [
+    "cloud_chat_json",
+    "probe_cloud_runtime",
+    "resolve_stage_provider",
+    "stage_chat_json",
+]

@@ -96,8 +96,7 @@ def generate_llm_ui_flow_dict(
 
             if broker_llm_enabled():
                 raise RuntimeError(
-                    "broker_miss: launch_test_llm: invalid UI flow under "
-                    "NIMBUSWARE_BROKER_LLM=1|2"
+                    "broker_miss: launch_test_llm: invalid UI flow under NIMBUSWARE_BROKER_LLM=1|2"
                 ) from None
             return None
         return flow

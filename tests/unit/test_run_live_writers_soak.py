@@ -30,6 +30,7 @@ def _minimal_soak_env() -> dict[str, str]:
             env[key] = value
     env["NIMBUSWARE_SKIP_PREFLIGHT"] = "1"
     env["NIMBUSWARE_REPO_ROOT"] = str(ROOT)
+    env["PYTHONPATH"] = str(ROOT / "packages") + os.pathsep + str(ROOT / "tests")
     return env
 
 

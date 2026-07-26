@@ -13,6 +13,7 @@ def test_egress_checked_get_invokes_httpx_after_broker_allow(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     role = UUID("11111111-1111-4111-8111-111111111101")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_EGRESS", "1")
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: {"allowed": True},
@@ -35,6 +36,7 @@ def test_egress_checked_get_raises_when_broker_none(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     role = UUID("11111111-1111-4111-8111-111111111101")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_EGRESS", "1")
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: None,

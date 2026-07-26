@@ -39,6 +39,8 @@ __all__ = (
     "maybe_apply_chat_replay_alignment",
     "patch_context_payload",
     "platform_hints",
+    "prepare_start_requirements",
+    "is_campaign_like_work_type",
     "project_metadata",
     "requirements_payload",
     "require_collab_enabled",
@@ -186,6 +188,31 @@ def requirements_payload(
     if path_text and path_text.strip():
         return build_requirements_artifact(business_prompt=path_text.strip())
     return None
+
+
+def prepare_start_requirements(
+    body: StartChatSessionBody,
+    *,
+    path_text: str | None,
+    path_requirements: dict[str, Any] | None,
+    work_type: WorkType,
+) -> dict[str, Any] | None:
+    requirements = requirements_payload(body, path_text) or path_requirements
+    campaign_like = work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE)
+    if campaign_like and requirements is None:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "requirements or prior chat message required"),
+        )
+    if work_type == WorkType.SELF_EVOLVE and requirements is not None:
+        from maker.intent.domain_keywords import attach_domain_keywords
+
+        requirements = attach_domain_keywords(requirements) or requirements
+    return requirements
+
+
+def is_campaign_like_work_type(work_type: WorkType) -> bool:
+    return work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE)
 
 
 def patch_context_payload(

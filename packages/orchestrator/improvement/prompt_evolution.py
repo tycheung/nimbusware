@@ -1,5 +1,3 @@
-"""L1 eval-gated prompt / overlay evolution (CONTEXT only; STABLE frozen)."""
-
 from __future__ import annotations
 
 import hashlib

@@ -433,11 +433,10 @@ def classify_intent(
     if use_llm is False or not _llm_classifier_enabled():
         return rules_result
 
-    from env.settings_resolve import resolve_str
-    from orchestrator.model_routing.manage import ollama_base_url
-
     from broker_client.dual_run_route import try_or_refuse
     from broker_client.flags import broker_llm_enabled, broker_llm_only
+    from env.settings_resolve import resolve_str
+    from orchestrator.model_routing.manage import ollama_base_url
 
     model_id = resolve_str("NIMBUSWARE_INTENT_CLASSIFIER_MODEL", default="").strip()
     base_url = ollama_base_url()

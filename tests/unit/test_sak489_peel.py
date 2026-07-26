@@ -2,16 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 
 def test_mesh_host_sync_broker_miss() -> None:
     """sak489-a."""
     src = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "mesh_host_sync.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "mesh_host_sync.py"
     ).read_text(encoding="utf-8")
     assert "_require_mesh_unit" in src
     assert "sak489-a" in src
@@ -33,17 +28,14 @@ def test_writers_parallel_refuse() -> None:
 
 def test_capacity_hw_refuse_deepen() -> None:
     """sak489-c."""
-    probe = (
-        Path(__file__).resolve().parents[2] / "packages" / "hw" / "probe.py"
-    ).read_text(encoding="utf-8")
-    pressure = (
-        Path(__file__).resolve().parents[2] / "packages" / "hw" / "pressure.py"
-    ).read_text(encoding="utf-8")
+    probe = (Path(__file__).resolve().parents[2] / "packages" / "hw" / "probe.py").read_text(
+        encoding="utf-8"
+    )
+    pressure = (Path(__file__).resolve().parents[2] / "packages" / "hw" / "pressure.py").read_text(
+        encoding="utf-8"
+    )
     worker = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "minimal_worker.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "minimal_worker.py"
     ).read_text(encoding="utf-8")
     assert "CAPACITY" in probe or "capacity" in probe.lower()
     assert "sak489" in probe or "NIMBUSWARE_BROKER_CAPACITY" in probe
@@ -62,9 +54,7 @@ def test_peel_assert_refactor() -> None:
 
     assert callable(assert_broker_compute_ok)
     assert is_compute_miss({"via": "broker_miss"}) is True
-    assert facade.is_compute_miss is is_compute_miss or callable(
-        facade.is_compute_miss
-    )
+    assert facade.is_compute_miss is is_compute_miss or callable(facade.is_compute_miss)
     soft = normalize_claim_work_response(
         {"work": None, "error": "queue empty"},
         feature="claim",
@@ -78,12 +68,7 @@ def test_theater_export_openapi() -> None:
 
     assert TheaterExportMissResponse().via is None or True
     theater = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "routes"
-        / "runs"
-        / "theater.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "runs" / "theater.py"
     ).read_text(encoding="utf-8")
     assert "TheaterExportMissResponse" in theater or "early_export_json_miss" in theater
 

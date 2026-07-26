@@ -184,8 +184,7 @@ def _llm_panel_extras(workspace: Path) -> tuple[tuple[str, ...], tuple[tuple[str
 
     if broker_llm_enabled():
         raise RuntimeError(
-            "broker_miss: launch_evaluator: LLM panel unavailable under "
-            "NIMBUSWARE_BROKER_LLM=1|2"
+            "broker_miss: launch_evaluator: LLM panel unavailable under NIMBUSWARE_BROKER_LLM=1|2"
         )  # sak494-f
     py_count = len(list(workspace.rglob("*.py")))
     test_count = len(list(workspace.rglob("tests/test_*.py")))

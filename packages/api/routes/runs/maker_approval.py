@@ -94,7 +94,6 @@ class MakerRunTestsResponse(BaseModel):
 @router.get(
     "/runs/{run_id}/maker/git-status",
     response_model=MakerGitStatusResponse,
-    response_model_exclude_none=True,
     summary="Maker git status (`sak483-g`)",
     responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak507-a
 )
@@ -388,8 +387,7 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             only=broker_llm_only,
             only_code="broker_llm_unavailable",
             only_msg=(
-                "Launch eval unavailable under NIMBUSWARE_BROKER_LLM=2; "
-                "use SwissArmyNoife llm_chat"
+                "Launch eval unavailable under NIMBUSWARE_BROKER_LLM=2; use SwissArmyNoife llm_chat"
             ),
         )
     scorecard = merge_dev_env_into_scorecard(scorecard, rows)

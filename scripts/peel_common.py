@@ -34,11 +34,13 @@ class PeelCandidate:
 # Kept bridges omitted: research_bridge, egress_bridge, memory/sandbox/llm bridges.
 DOMAIN_CANDIDATES: dict[str, tuple[PeelCandidate, ...]] = {
     "llm": (
-        PeelCandidate("packages/orchestrator/llm/providers", "delete"),
+        # Kept local provider probe path while peel default-on is suspended (docs/peel-runbook.md).
+        PeelCandidate("packages/orchestrator/llm/providers", "thin"),
         PeelCandidate("packages/orchestrator/llm/common.py", "delete"),
-        PeelCandidate("packages/orchestrator/llm/prompt_cache.py", "delete"),
-        PeelCandidate("packages/orchestrator/llm/provider_telemetry.py", "delete"),
-        PeelCandidate("packages/orchestrator/llm/budget_sample_emit.py", "delete"),
+        PeelCandidate("packages/orchestrator/llm/prompt_cache.py", "thin"),
+        PeelCandidate("packages/orchestrator/llm/provider_telemetry.py", "thin"),
+        # Kept while peel default-on is suspended — rate-limited context.budget.sampled.
+        PeelCandidate("packages/orchestrator/llm/budget_sample_emit.py", "thin"),
         PeelCandidate("packages/orchestrator/llm/plan_stage.py", "delete"),
         PeelCandidate("packages/orchestrator/llm/llm_slice.py", "delete"),
         PeelCandidate("packages/orchestrator/llm/implementation_critique.py", "delete"),
@@ -47,7 +49,7 @@ DOMAIN_CANDIDATES: dict[str, tuple[PeelCandidate, ...]] = {
         PeelCandidate("packages/orchestrator/llm/agent_evaluator.py", "delete"),
         PeelCandidate("packages/orchestrator/llm/backlog_generator.py", "delete"),
         PeelCandidate("packages/orchestrator/routing", "delete"),
-        PeelCandidate("packages/orchestrator/stage_provider_routing.py", "delete"),
+        PeelCandidate("packages/orchestrator/stage_provider_routing.py", "thin"),
         PeelCandidate("packages/agent_tools/llm_facade.py", "delete"),
         PeelCandidate("packages/agent_tools/facades/llm.py", "delete"),
     ),

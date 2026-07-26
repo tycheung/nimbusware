@@ -5,7 +5,8 @@ Consolidates assert/is/normalize helpers used by ``BrokerClient`` and compute ro
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 BROKER_MEMORY_ONLY = "broker_memory_only"
 BROKER_SANDBOX_ONLY = "broker_sandbox_only"
@@ -102,9 +103,7 @@ def is_sandbox_miss(raw: Any) -> bool:
 
 
 def is_tools_miss(raw: Any) -> bool:
-    return _is_feature_domain_miss(
-        raw, domain_code=BROKER_TOOLS_ONLY, keywords=("tools", "shell")
-    )
+    return _is_feature_domain_miss(raw, domain_code=BROKER_TOOLS_ONLY, keywords=("tools", "shell"))
 
 
 def is_research_miss(raw: Any) -> bool:
@@ -139,9 +138,7 @@ def assert_memory_ok(
         raise RuntimeError(f"broker_miss: {feature}: {raw.get('error')!r}")
     val = raw.get(list_key)
     if not isinstance(val, list):  # sak495-g: null/missing list is miss; ``[]`` ok
-        raise RuntimeError(
-            f"broker_miss: {feature}: missing or non-list key {list_key!r}"
-        )
+        raise RuntimeError(f"broker_miss: {feature}: missing or non-list key {list_key!r}")
     return raw
 
 
@@ -306,9 +303,7 @@ def assert_broker_compute_ok(
     if list_key is not None:
         val = raw.get(list_key)
         if not isinstance(val, list):  # sak488-i: null/missing list is miss; ``[]`` ok
-            raise RuntimeError(
-                f"broker_miss: {feature}: missing or non-list key {list_key!r}"
-            )
+            raise RuntimeError(f"broker_miss: {feature}: missing or non-list key {list_key!r}")
     return raw
 
 

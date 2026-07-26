@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from api.deps import IamStoreDep, StoreDep
 from api.routes.enterprise.core import EnterpriseDep

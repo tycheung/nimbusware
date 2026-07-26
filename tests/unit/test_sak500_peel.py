@@ -138,9 +138,9 @@ def test_sak500_e_routes_wire_openapi_helpers() -> None:
 
 def test_sak500_f_ci_workflow_lists_peel_unit() -> None:
     """sak500-f: nimbusware-peel.yml includes test_sak500_peel.py in peel-unit."""
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak500_peel.py" in peel_unit
 
@@ -159,9 +159,9 @@ def test_sak500_f_soak_lib_asserts_present() -> None:
 
 def test_sak500_g_sse_client_domain_capacity_only() -> None:
     """sak500-g: parseSsePeelMiss uses domain+capacity only (no isBrokerMiss)."""
-    src = (
-        _ROOT / "packages" / "maker_web" / "static" / "js" / "sse-client.js"
-    ).read_text(encoding="utf-8")
+    src = (_ROOT / "packages" / "maker_web" / "static" / "js" / "sse-client.js").read_text(
+        encoding="utf-8"
+    )
     assert "sak500-g" in src
     assert "isBrokerMiss" not in src
     assert "isDomainPeelMiss" in src
@@ -173,9 +173,9 @@ def test_sak500_g_sse_client_domain_capacity_only() -> None:
 
 def test_sak500_h_api_client_bootstrap_domain_peel() -> None:
     """sak500-h: isBootstrapPeelMiss uses isDomainPeelMiss."""
-    src = (
-        _ROOT / "packages" / "maker_web" / "static" / "js" / "api-client.js"
-    ).read_text(encoding="utf-8")
+    src = (_ROOT / "packages" / "maker_web" / "static" / "js" / "api-client.js").read_text(
+        encoding="utf-8"
+    )
     assert "sak500-h" in src
     assert "isDomainPeelMiss" in src
     assert "isBrokerMiss" not in src
@@ -234,9 +234,9 @@ def test_sak500_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak500_sse_bootstrap" in soak
     assert "sak500-j — Maker residual" in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak500_i" in workflow
     assert "sak500_e" in workflow
     assert "test_sak500_peel.py" in workflow

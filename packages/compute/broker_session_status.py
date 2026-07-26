@@ -64,9 +64,7 @@ def _broker_queue_depth_for_session(
     )
 
     work_raw = assert_broker_compute_ok(
-        compute_work_via_broker(
-            build_compute_list_payload(status="queued", limit=200)
-        ),
+        compute_work_via_broker(build_compute_list_payload(status="queued", limit=200)),
         feature=f"{feature}.work",
         list_key="work",
     )
@@ -93,9 +91,7 @@ def broker_session_compute_status(
 
     feat = feature or "session_compute_status"
     nodes_raw = assert_broker_compute_ok(
-        compute_node_via_broker(
-            build_compute_list_nodes_payload(session_id=session_id)
-        ),
+        compute_node_via_broker(build_compute_list_nodes_payload(session_id=session_id)),
         feature=f"{feat}.nodes",
         list_key="nodes",
     )

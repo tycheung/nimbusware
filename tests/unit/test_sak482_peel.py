@@ -26,7 +26,7 @@ def test_progress_review_depth_miss() -> None:
     assert "/* optional */" not in progress
     assert "maker-context-artifact-miss" in context
     assert "maker-memory-influence-miss" in context
-    assert "isBrokerMiss" in critic
+    assert "isDomainPeelMiss" in critic
     assert "toastIfMiss" in review
 
 
@@ -96,12 +96,12 @@ def test_admin_fleet_run_operator_peel() -> None:
     fleet = (root / "pages" / "FleetPage.tsx").read_text(encoding="utf-8")
     runs = (root / "pages" / "RunListPage.tsx").read_text(encoding="utf-8")
     hook = (root / "hooks" / "useApiGet.ts").read_text(encoding="utf-8")
-    assert ".catch(() => setCollabPolicyCaption(\"\"))" not in fleet
-    assert ".catch(() => setStackPolicyCaption(\"\"))" not in fleet
+    assert '.catch(() => setCollabPolicyCaption(""))' not in fleet
+    assert '.catch(() => setStackPolicyCaption(""))' not in fleet
     assert "collab policy unavailable" in fleet
     assert "fleet compare unavailable" in fleet
     assert "formatPeelMissMessage" in runs
-    assert "isComputeMiss" in hook
+    assert "isDomainPeelMiss" in hook
 
 
 def test_sdk_session_compute_status_parity() -> None:

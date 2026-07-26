@@ -13,9 +13,9 @@ _ROOT = Path(__file__).resolve().parents[2]
 
 def test_sak501_a_hardware_page_domain_peel_miss() -> None:
     """sak501-a: HardwarePage detects domain peel on load + catalog."""
-    src = (
-        _ROOT / "packages" / "admin_ui" / "src" / "pages" / "HardwarePage.tsx"
-    ).read_text(encoding="utf-8")
+    src = (_ROOT / "packages" / "admin_ui" / "src" / "pages" / "HardwarePage.tsx").read_text(
+        encoding="utf-8"
+    )
     assert "sak501-a" in src
     assert "isDomainPeelMiss" in src
     assert "isCapacityMiss" in src
@@ -40,13 +40,11 @@ def test_sak501_b_openapi_user_profiles_503() -> None:
         ),
     )
     for path, method in SAK501_B_PEEL_OPENAPI:
-        content = (
-            spec["paths"][path][method]["responses"]["503"]["content"]
-        )
+        content = spec["paths"][path][method]["responses"]["503"]["content"]
         assert "application/problem+json" in content, path
-    src = (
-        _ROOT / "packages" / "api" / "routes" / "platform_user_profiles.py"
-    ).read_text(encoding="utf-8")
+    src = (_ROOT / "packages" / "api" / "routes" / "platform_user_profiles.py").read_text(
+        encoding="utf-8"
+    )
     assert src.count("sak501-b") >= 2
     assert "long_tail_json_openapi_responses()" in src
 
@@ -70,9 +68,7 @@ def test_sak501_c_openapi_run_ribbons_503() -> None:
         ),
     )
     for path, method in SAK501_C_PEEL_OPENAPI:
-        content = (
-            spec["paths"][path][method]["responses"]["503"]["content"]
-        )
+        content = spec["paths"][path][method]["responses"]["503"]["content"]
         assert "application/problem+json" in content, path
     for rel in (
         "runs/enforcement.py",
@@ -89,17 +85,11 @@ def test_sak501_c_openapi_run_ribbons_503() -> None:
 
 def test_sak501_d_maker_format_capacity_miss() -> None:
     """sak501-d: broker_miss exports formatCapacityMissMessage; home readiness uses it."""
-    miss = (
-        _ROOT / "packages" / "maker_web" / "static" / "js" / "broker_miss.js"
-    ).read_text(encoding="utf-8")
+    miss = (_ROOT / "packages" / "maker_web" / "static" / "js" / "broker_miss.js").read_text(
+        encoding="utf-8"
+    )
     home = (
-        _ROOT
-        / "packages"
-        / "maker_web"
-        / "static"
-        / "js"
-        / "tabs"
-        / "home_readiness_ui.js"
+        _ROOT / "packages" / "maker_web" / "static" / "js" / "tabs" / "home_readiness_ui.js"
     ).read_text(encoding="utf-8")
     assert "sak501-d" in miss
     assert "export function formatCapacityMissMessage" in miss
@@ -113,9 +103,9 @@ def test_sak501_d_maker_format_capacity_miss() -> None:
 
 def test_sak501_e_ci_openapi_subsets() -> None:
     """sak501-e: peel-flag-matrix runs sak501 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak501_b" in yml
     assert "sak501_c" in yml
     assert "test_sak501_peel.py" in yml
@@ -130,9 +120,9 @@ def test_sak501_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak501_hardware_capacity_formatter" in soak
     assert "sak501-f — Hardware domain" in soak
     assert 'label.startswith("sak501")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak501_peel.py" in peel_unit
 
@@ -155,8 +145,9 @@ def test_sak501_g_openapi_settings_503() -> None:
         ),
     )
     for path, method in SAK501_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "operator_settings.py").read_text(
         encoding="utf-8",
@@ -182,8 +173,9 @@ def test_sak501_h_openapi_model_bindings_503() -> None:
         ),
     )
     for path, method in SAK501_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "model_bindings.py").read_text(
         encoding="utf-8",
@@ -209,15 +201,16 @@ def test_sak501_i_openapi_push_operator_profiles_503() -> None:
         ),
     )
     for path, method in SAK501_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     push = (_ROOT / "packages" / "api" / "routes" / "maker_push.py").read_text(
         encoding="utf-8",
     )
-    profiles = (
-        _ROOT / "packages" / "api" / "routes" / "platform_operator_profiles.py"
-    ).read_text(encoding="utf-8")
+    profiles = (_ROOT / "packages" / "api" / "routes" / "platform_operator_profiles.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak501-i" in push
     assert "sak501-i" in profiles
 
@@ -230,9 +223,9 @@ def test_sak501_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak501_openapi_settings_bindings" in soak
     assert "sak501-j — settings/bindings/push OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak501_g" in yml
     assert "sak501_h" in yml
     assert "sak501_i" in yml

@@ -64,7 +64,7 @@ _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
     "packages/maker_web/static/js/tabs/home.js",
     "tests/e2e/web/maker_enterprise_journey.spec.ts",
     "tests/e2e/web/maker_enterprise_install_journey.spec.ts",
-    "packages/memory/index/embeddings.py",
+    "packages/memory/peel_index/embeddings.py",
     "scripts/benchmarks/measure_gate_comprehension.py",
 )
 
@@ -138,7 +138,7 @@ def _content_checks(root: Path) -> dict[str, dict[str, object]]:
         "enterprise": {
             "compliance_metrics": "gate_pass_rate" in compliance,
             "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
-            "fleet_semantic_embedding": (root / "packages/memory/index/embeddings.py").is_file(),
+            "fleet_semantic_embedding": (root / "packages/memory/peel_index/embeddings.py").is_file(),
             "gate_comprehension_harness": (
                 root / "scripts/benchmarks/measure_gate_comprehension.py"
             ).is_file(),

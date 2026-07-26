@@ -25,8 +25,7 @@ def test_manifest_template_id_fullstack() -> None:
 def test_manifest_template_id_fullstack_crm_from_prompt() -> None:
     req = {
         "business_prompt": (
-            "Build a basic CRM that tracks users birthday dates and "
-            "sends birthday emails"
+            "Build a basic CRM that tracks users birthday dates and sends birthday emails"
         ),
         "stack_manifest": {
             "surfaces": ["api", "web"],
@@ -36,11 +35,7 @@ def test_manifest_template_id_fullstack_crm_from_prompt() -> None:
     }
     assert manifest_template_id(req) == "fullstack_crm"
     backlog = generate_heuristic_backlog("run-crm", requirements=req, max_slices=20)
-    titles = [
-        feature.title
-        for epic in backlog.epics
-        for feature in epic.features
-    ]
+    titles = [feature.title for epic in backlog.epics for feature in epic.features]
     assert any("CRM" in t or "birthday" in t.lower() for t in titles)
     assert not any("todo" in t.lower() for t in titles)
 

@@ -1,1 +1,9 @@
-# Deprecated: see configs/model-routing.yaml (model_bindings section)
+version: 1
+roles:
+  planner:
+    provider_kind: local
+    provider_id: ollama
+    model_id: llama3.1:8b
+    base_url: null
+    api_key_ref: null
+    connection_id: null

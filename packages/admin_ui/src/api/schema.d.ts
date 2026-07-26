@@ -63,7 +63,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Findings */
+        /** Run findings (`sak485-e`) */
         get: operations["findings_v1_runs__run_id__findings_get"];
         put?: never;
         post?: never;
@@ -80,7 +80,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Critic Reliability */
+        /** Critic reliability (`sak482-f`) */
         get: operations["critic_reliability_v1_runs__run_id__critic_reliability_get"];
         put?: never;
         post?: never;
@@ -97,7 +97,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Memory Influence */
+        /** Memory influence (`sak482-f`) */
         get: operations["memory_influence_v1_runs__run_id__memory_influence_get"];
         put?: never;
         post?: never;
@@ -184,7 +184,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Run Model Binding Swap */
+        /** Model binding swap (`sak483-g`) */
         post: operations["post_run_model_binding_swap_v1_runs__run_id__model_bindings_swap_post"];
         delete?: never;
         options?: never;
@@ -201,7 +201,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Run Role Claim */
+        /** Role claim POST (`sak483-g`) */
         post: operations["post_run_role_claim_v1_runs__run_id__role_claims_post"];
         delete?: never;
         options?: never;
@@ -219,7 +219,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete Run Role Claim */
+        /** Role claim DELETE (`sak483-g`) */
         delete: operations["delete_run_role_claim_v1_runs__run_id__role_claims__agent_role__delete"];
         options?: never;
         head?: never;
@@ -233,7 +233,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Run Model Binding Audit */
+        /** Model binding audit GET (`sak483-g`) */
         get: operations["get_run_model_binding_audit_v1_runs__run_id__model_bindings_audit_get"];
         put?: never;
         post?: never;
@@ -403,7 +403,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Dev Env Theater */
+        /** Dev-env theater excerpt (`sak485-e`) */
         get: operations["get_dev_env_theater_v1_runs__run_id__dev_env_theater_get"];
         put?: never;
         post?: never;
@@ -474,10 +474,44 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Run Learnings */
+        /** Run learnings (`sak485-e`) */
         get: operations["get_run_learnings_v1_runs__run_id__learnings_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/runs/{run_id}/evolution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evolution ledger timeline */
+        get: operations["get_run_evolution_v1_runs__run_id__evolution_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/runs/{run_id}/evolution/promote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Promote or reject a prompt evolution artifact */
+        post: operations["post_run_evolution_promote_v1_runs__run_id__evolution_promote_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -593,7 +627,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Campaign Artifact Bundle */
+        /** Campaign artifact bundle export (`sak484-f`) */
         get: operations["get_campaign_artifact_bundle_v1_runs__run_id__campaign_artifact_bundle_get"];
         put?: never;
         post?: never;
@@ -627,7 +661,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Maker Git Status */
+        /** Maker git status (`sak483-g`) */
         get: operations["get_maker_git_status_v1_runs__run_id__maker_git_status_get"];
         put?: never;
         post?: never;
@@ -646,7 +680,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Open Pr */
+        /** Maker open PR (`sak483-g`) */
         post: operations["post_maker_open_pr_v1_runs__run_id__maker_open_pr_post"];
         delete?: never;
         options?: never;
@@ -680,7 +714,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Plan Approve */
+        /** Maker plan approve (`sak483-g`) */
         post: operations["post_maker_plan_approve_v1_runs__run_id__maker_plan_approve_post"];
         delete?: never;
         options?: never;
@@ -697,7 +731,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Slice Prepare */
+        /** Maker slice prepare (`sak483-g`) */
         post: operations["post_maker_slice_prepare_v1_runs__run_id__maker_slices_prepare_post"];
         delete?: never;
         options?: never;
@@ -714,7 +748,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Slice Apply */
+        /** Maker slice apply (`sak483-g`) */
         post: operations["post_maker_slice_apply_v1_runs__run_id__maker_slices_apply_post"];
         delete?: never;
         options?: never;
@@ -731,7 +765,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Slice Skip */
+        /** Maker slice skip (`sak483-g`) */
         post: operations["post_maker_slice_skip_v1_runs__run_id__maker_slices_skip_post"];
         delete?: never;
         options?: never;
@@ -748,7 +782,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Workspace Revert */
+        /** Workspace revert (`sak483-g`) */
         post: operations["post_workspace_revert_v1_runs__run_id__workspace_revert_post"];
         delete?: never;
         options?: never;
@@ -765,7 +799,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Run Tests */
+        /** Maker run tests (`sak483-g`) */
         post: operations["post_maker_run_tests_v1_runs__run_id__maker_run_tests_post"];
         delete?: never;
         options?: never;
@@ -782,7 +816,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Maker Launch Eval */
+        /** Launch eval scorecard (`sak482-f`) */
         post: operations["post_maker_launch_eval_v1_runs__run_id__maker_launch_eval_post"];
         delete?: never;
         options?: never;
@@ -950,7 +984,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Timeline Section Explain */
+        /** Timeline section explain (`sak484-g`) */
         get: operations["get_timeline_section_explain_v1_runs__run_id__timeline__section__explain_get"];
         put?: never;
         post?: never;
@@ -969,7 +1003,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Campaign */
+        /** Create campaign (`sak484-e`) */
         post: operations["create_campaign_v1_campaigns_post"];
         delete?: never;
         options?: never;
@@ -984,7 +1018,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Campaign Backlog */
+        /** Campaign backlog (`sak484-e`) */
         get: operations["get_campaign_backlog_v1_campaigns__campaign_id__backlog_get"];
         put?: never;
         post?: never;
@@ -1003,7 +1037,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Pause Campaign */
+        /** Pause campaign (`sak484-e`) */
         post: operations["pause_campaign_v1_campaigns__campaign_id__pause_post"];
         delete?: never;
         options?: never;
@@ -1020,7 +1054,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Resume Campaign */
+        /** Resume campaign (`sak484-e`) */
         post: operations["resume_campaign_v1_campaigns__campaign_id__resume_post"];
         delete?: never;
         options?: never;
@@ -1037,7 +1071,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Cancel Campaign */
+        /** Cancel campaign (`sak484-e`) */
         post: operations["cancel_campaign_v1_campaigns__campaign_id__cancel_post"];
         delete?: never;
         options?: never;
@@ -1052,7 +1086,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Campaign Progress */
+        /** Campaign progress (`sak484-e`) */
         get: operations["get_campaign_progress_v1_campaigns__campaign_id__progress_get"];
         put?: never;
         post?: never;
@@ -1326,7 +1360,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Code Researcher catalog promotion candidates (admin) */
+        /** List catalog promotion candidates (`sak480-e`) */
         get: operations["list_bundle_catalog_candidates_v1_bundles_catalog_candidates_get"];
         put?: never;
         post?: never;
@@ -1762,7 +1796,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Session Compute Delegate Control */
+        /** Session compute delegate-control (broker-first; sak444-d) */
         post: operations["session_compute_delegate_control_v1_chat_sessions__session_id__compute_delegate_control_post"];
         delete?: never;
         options?: never;
@@ -1777,9 +1811,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Session Optimizer Weights */
+        /** Session optimizer weights (`sak445-d`) */
         get: operations["get_session_optimizer_weights_v1_chat_sessions__session_id__optimizer_weights_get"];
-        /** Put Session Optimizer Weights */
+        /** Update session optimizer weights (`sak445-d`) */
         put: operations["put_session_optimizer_weights_v1_chat_sessions__session_id__optimizer_weights_put"];
         post?: never;
         delete?: never;
@@ -1797,8 +1831,28 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Session Compute Opt In */
+        /** Session compute opt-in/out (broker-first; sak443-g) */
         post: operations["session_compute_opt_in_v1_chat_sessions__session_id__compute_opt_in_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chat/sessions/{session_id}/compute/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Session compute status (broker-first; sak431-g / sak435-e / sak441-e)
+         * @description Broker-first session compute status (`sak431-g` / `sak435-d` / `sak436-b`).
+         */
+        get: operations["session_compute_status_v1_chat_sessions__session_id__compute_status_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1812,9 +1866,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Participant Bindings */
+        /** Participant model bindings (`sak446-a`) */
         get: operations["get_participant_bindings_v1_chat_sessions__session_id__participant_bindings_get"];
-        /** Put Participant Binding */
+        /** Update participant model binding (`sak446-a`) */
         put: operations["put_participant_binding_v1_chat_sessions__session_id__participant_bindings_put"];
         post?: never;
         delete?: never;
@@ -1830,7 +1884,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Chat Sessions */
+        /** List chat sessions (`sak484-g`) */
         get: operations["list_chat_sessions_v1_chat_sessions_get"];
         put?: never;
         /** Create Chat Session */
@@ -1969,7 +2023,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Classify Chat Intent */
+        /** Classify chat intent (LLM peel-aware; sak493-b) */
         post: operations["classify_chat_intent_v1_chat_classify_post"];
         delete?: never;
         options?: never;
@@ -2003,7 +2057,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Session Role Claim */
+        /** Claim agent role (`sak447-f`) */
         post: operations["session_role_claim_v1_chat_sessions__session_id__role_claims_post"];
         delete?: never;
         options?: never;
@@ -2021,7 +2075,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Session Role Release */
+        /** Release agent role (`sak447-f`) */
         delete: operations["session_role_release_v1_chat_sessions__session_id__role_claims__agent_role__delete"];
         options?: never;
         head?: never;
@@ -2035,10 +2089,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Host Transfers */
+        /** List host transfers (`sak449-f`) */
         get: operations["list_host_transfers_v1_chat_sessions__session_id__host_transfer_get"];
         put?: never;
-        /** Request Host Transfer */
+        /** Request host transfer (`sak449-f`) */
         post: operations["request_host_transfer_v1_chat_sessions__session_id__host_transfer_post"];
         delete?: never;
         options?: never;
@@ -2053,7 +2107,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Export Host Transfer Bundle */
+        /** Export host-transfer bundle (`sak480-f`) */
         get: operations["export_host_transfer_bundle_v1_chat_sessions__session_id__host_transfer__transfer_id__bundle_get"];
         put?: never;
         post?: never;
@@ -2072,7 +2126,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Accept Host Transfer */
+        /** Accept host transfer (`sak480-f`) */
         post: operations["accept_host_transfer_v1_chat_sessions__session_id__host_transfer__transfer_id__accept_post"];
         delete?: never;
         options?: never;
@@ -2089,7 +2143,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Import Host Transfer Bundle */
+        /** Import host-transfer bundle (`sak480-f`) */
         post: operations["import_host_transfer_bundle_v1_chat_sessions__session_id__host_transfer__transfer_id__import_post"];
         delete?: never;
         options?: never;
@@ -2106,7 +2160,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Complete Host Transfer */
+        /** Complete host transfer (`sak480-f`) */
         post: operations["complete_host_transfer_v1_chat_sessions__session_id__host_transfer__transfer_id__complete_post"];
         delete?: never;
         options?: never;
@@ -2123,7 +2177,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Decline Host Transfer */
+        /** Decline host transfer (`sak480-f`) */
         post: operations["decline_host_transfer_v1_chat_sessions__session_id__host_transfer__transfer_id__decline_post"];
         delete?: never;
         options?: never;
@@ -2138,10 +2192,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Folders */
+        /** List chat folders (`sak481-d`) */
         get: operations["list_folders_v1_chat_folders_get"];
         put?: never;
-        /** Create Folder */
+        /** Create chat folder (`sak481-d`) */
         post: operations["create_folder_v1_chat_folders_post"];
         delete?: never;
         options?: never;
@@ -2159,11 +2213,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete Folder */
+        /** Delete chat folder (`sak481-d`) */
         delete: operations["delete_folder_v1_chat_folders__folder_id__delete"];
         options?: never;
         head?: never;
-        /** Patch Folder */
+        /** Patch chat folder (`sak481-d`) */
         patch: operations["patch_folder_v1_chat_folders__folder_id__patch"];
         trace?: never;
     };
@@ -2174,10 +2228,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Groups */
+        /** List chat groups (`sak481-d`) */
         get: operations["list_groups_v1_chat_groups_get"];
         put?: never;
-        /** Create Group */
+        /** Create chat group (`sak482-e`) */
         post: operations["create_group_v1_chat_groups_post"];
         delete?: never;
         options?: never;
@@ -2194,7 +2248,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Add Group Member */
+        /** Add chat group member (`sak482-e`) */
         post: operations["add_group_member_v1_chat_groups__group_id__members_post"];
         delete?: never;
         options?: never;
@@ -2209,10 +2263,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Access Grants */
+        /** List access grants (`sak481-d`) */
         get: operations["list_access_grants_v1_chat_access_grants_get"];
         put?: never;
-        /** Create Access Grant */
+        /** Create access grant (`sak482-e`) */
         post: operations["create_access_grant_v1_chat_access_grants_post"];
         delete?: never;
         options?: never;
@@ -2230,7 +2284,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete Access Grant */
+        /** Delete access grant (`sak482-e`) */
         delete: operations["delete_access_grant_v1_chat_access_grants__grant_id__delete"];
         options?: never;
         head?: never;
@@ -2245,7 +2299,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update Session Library */
+        /** Update session library (`sak482-e`) */
         put: operations["update_session_library_v1_chat_sessions__session_id__library_put"];
         post?: never;
         delete?: never;
@@ -2261,7 +2315,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Effective Role */
+        /** Effective collab role (`sak481-d`) */
         get: operations["get_effective_role_v1_chat_sessions__session_id__effective_role_get"];
         put?: never;
         post?: never;
@@ -2400,7 +2454,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Session Commentary */
+        /** Post session commentary (`sak482-e`) */
         post: operations["post_session_commentary_v1_chat_sessions__session_id__commentary_post"];
         delete?: never;
         options?: never;
@@ -2490,7 +2544,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Standards Registry */
+        /** Standards registry (`sak483-e`) */
         get: operations["get_standards_registry_v1_standards_registry_get"];
         put?: never;
         post?: never;
@@ -2507,7 +2561,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Standards Preset */
+        /** Standards preset (`sak483-e`) */
         get: operations["get_standards_preset_v1_standards_presets__preset_id__get"];
         put?: never;
         post?: never;
@@ -2524,7 +2578,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Standards Preset Defaults */
+        /** Standards preset defaults (`sak483-e`) */
         get: operations["get_standards_preset_defaults_v1_standards_presets__preset_id__defaults_get"];
         put?: never;
         post?: never;
@@ -2541,9 +2595,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Run Standards */
+        /** Run standards GET (`sak483-e`) */
         get: operations["get_run_standards_v1_runs__run_id__standards_get"];
-        /** Put Run Standards */
+        /** Run standards PUT (`sak483-e`) */
         put: operations["put_run_standards_v1_runs__run_id__standards_put"];
         post?: never;
         delete?: never;
@@ -2559,7 +2613,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Run Standards Report */
+        /** Run standards report (`sak483-e`) */
         get: operations["get_run_standards_report_v1_runs__run_id__standards_report_get"];
         put?: never;
         post?: never;
@@ -2578,7 +2632,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Run Standards Run */
+        /** Run standards execution (`sak483-e`) */
         post: operations["post_run_standards_run_v1_runs__run_id__standards_run_post"];
         delete?: never;
         options?: never;
@@ -2593,7 +2647,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get User Standards Profile */
+        /** User standards profiles GET (`sak483-e`) */
         get: operations["get_user_standards_profile_v1_users_me_standards_profile_get"];
         put?: never;
         post?: never;
@@ -2611,7 +2665,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Put User Standards Profile */
+        /** User standards profile PUT (`sak483-e`) */
         put: operations["put_user_standards_profile_v1_users_me_standards_profile__profile_id__put"];
         post?: never;
         delete?: never;
@@ -2627,7 +2681,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Hardware */
+        /** Platform hardware profile (CAPACITY peel-aware; sak443-f / sak444-e) */
         get: operations["get_platform_hardware_v1_platform_hardware_get"];
         put?: never;
         post?: never;
@@ -2646,7 +2700,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Platform Hardware Rescan */
+        /** Rescan platform hardware (CAPACITY peel-aware; sak444-e) */
         post: operations["post_platform_hardware_rescan_v1_platform_hardware_rescan_post"];
         delete?: never;
         options?: never;
@@ -2661,7 +2715,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Hardware Fleet */
+        /** Fleet hardware aggregate (CAPACITY peel-aware; sak444-e) */
         get: operations["get_platform_hardware_fleet_v1_platform_hardware_fleet_get"];
         put?: never;
         post?: never;
@@ -2680,7 +2734,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Platform Hardware Fleet Rescan */
+        /** Rescan fleet hardware (CAPACITY peel-aware; sak444-e) */
         post: operations["post_platform_hardware_fleet_rescan_v1_platform_hardware_fleet_rescan_post"];
         delete?: never;
         options?: never;
@@ -2695,7 +2749,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Autopilot Preset */
+        /** Autopilot preset (`sak483-e`) */
         get: operations["get_autopilot_preset_v1_autopilot_presets__level__get"];
         put?: never;
         post?: never;
@@ -2712,7 +2766,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get User Autopilot Profiles */
+        /** User autopilot profiles GET (`sak483-e`) */
         get: operations["get_user_autopilot_profiles_v1_platform_autopilot_user_profiles_get"];
         put?: never;
         post?: never;
@@ -2730,7 +2784,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Put User Autopilot Profile */
+        /** User autopilot profile PUT (`sak483-e`) */
         put: operations["put_user_autopilot_profile_v1_platform_autopilot_user_profiles__profile_id__put"];
         post?: never;
         delete?: never;
@@ -2746,7 +2800,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Enforcement Preset */
+        /** Enforcement preset (`sak483-e`) */
         get: operations["get_enforcement_preset_v1_enforcement_presets__level__get"];
         put?: never;
         post?: never;
@@ -2763,7 +2817,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get User Enforcement Profiles */
+        /** User enforcement profiles GET (`sak483-e`) */
         get: operations["get_user_enforcement_profiles_v1_platform_enforcement_user_profiles_get"];
         put?: never;
         post?: never;
@@ -2781,7 +2835,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Put User Enforcement Profile */
+        /** User enforcement profile PUT (`sak483-e`) */
         put: operations["put_user_enforcement_profile_v1_platform_enforcement_user_profiles__profile_id__put"];
         post?: never;
         delete?: never;
@@ -2797,9 +2851,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Operator Profiles */
+        /** Operator profiles GET (`sak483-g`) */
         get: operations["get_operator_profiles_v1_platform_operator_profiles_get"];
-        /** Put Operator Profiles */
+        /** Operator profiles PUT (`sak483-g`) */
         put: operations["put_operator_profiles_v1_platform_operator_profiles_put"];
         post?: never;
         delete?: never;
@@ -2815,9 +2869,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Discipline Profile */
+        /** Discipline profile GET (`sak483-g`) */
         get: operations["get_discipline_profile_v1_users_me_discipline_profile_get"];
-        /** Put Discipline Profile */
+        /** Discipline profile PUT (`sak483-g`) */
         put: operations["put_discipline_profile_v1_users_me_discipline_profile_put"];
         post?: never;
         delete?: never;
@@ -2833,9 +2887,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Participant Context */
+        /** Participant context GET (`sak483-g`) */
         get: operations["get_participant_context_v1_users_me_participant_context_get"];
-        /** Put Participant Context */
+        /** Participant context PUT (`sak483-g`) */
         put: operations["put_participant_context_v1_users_me_participant_context_put"];
         post?: never;
         delete?: never;
@@ -2851,7 +2905,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Agent Overlays */
+        /** Agent overlays GET (`sak483-g`) */
         get: operations["get_agent_overlays_v1_users_me_agent_overlays_get"];
         put?: never;
         post?: never;
@@ -2869,7 +2923,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Put Agent Overlay */
+        /** Agent overlay PUT (`sak483-g`) */
         put: operations["put_agent_overlay_v1_users_me_agent_overlays__discipline__put"];
         post?: never;
         delete?: never;
@@ -2887,7 +2941,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Deploy Apply */
+        /** Deploy apply (`sak481-e`) */
         post: operations["post_deploy_apply_v1_platform_deploy_apply_post"];
         delete?: never;
         options?: never;
@@ -2904,7 +2958,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Deploy Smoke */
+        /** Deploy smoke (`sak481-e`) */
         post: operations["post_deploy_smoke_v1_platform_deploy_smoke_post"];
         delete?: never;
         options?: never;
@@ -2921,7 +2975,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Deploy Rollback */
+        /** Deploy rollback (`sak481-e`) */
         post: operations["post_deploy_rollback_v1_platform_deploy_rollback_post"];
         delete?: never;
         options?: never;
@@ -2938,7 +2992,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Deploy Ci Poll */
+        /** Deploy CI poll (`sak481-e`) */
         post: operations["post_deploy_ci_poll_v1_platform_deploy_ci_poll_post"];
         delete?: never;
         options?: never;
@@ -2953,9 +3007,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Deploy Credentials */
+        /** Deploy credentials (`sak481-e`) */
         get: operations["get_deploy_credentials_v1_platform_deploy_credentials_get"];
-        /** Put Deploy Credentials */
+        /** Put deploy credentials (`sak481-e`) */
         put: operations["put_deploy_credentials_v1_platform_deploy_credentials_put"];
         post?: never;
         delete?: never;
@@ -2971,7 +3025,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Deploy Environments */
+        /** Deploy environments (`sak481-e`) */
         get: operations["get_deploy_environments_v1_platform_deploy_environments_get"];
         put?: never;
         post?: never;
@@ -2990,7 +3044,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Deploy Approve */
+        /** Approve deploy (`sak481-e`) */
         post: operations["post_deploy_approve_v1_platform_deploy_approve_post"];
         delete?: never;
         options?: never;
@@ -3007,7 +3061,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Terraform Validate */
+        /** Terraform validate (`sak481-e`) */
         post: operations["post_terraform_validate_v1_platform_deploy_terraform_validate_post"];
         delete?: never;
         options?: never;
@@ -3022,7 +3076,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Deploy Audit */
+        /** Deploy audit (`sak481-e`) */
         get: operations["get_deploy_audit_v1_platform_deploy_audit_get"];
         put?: never;
         post?: never;
@@ -3039,7 +3093,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Github Workflow Template */
+        /** GitHub workflow template (`sak481-e`) */
         get: operations["get_github_workflow_template_v1_platform_deploy_github_workflow_template_get"];
         put?: never;
         post?: never;
@@ -3056,7 +3110,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Catalog Info */
+        /** Model catalog info (`sak445-c`) */
         get: operations["get_model_catalog_info_v1_platform_models_catalog_info_get"];
         put?: never;
         post?: never;
@@ -3073,7 +3127,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Models Ranked */
+        /** Rank models for hardware (CAPACITY peel-aware; sak443-f) */
         get: operations["get_models_ranked_v1_platform_models_ranked_get"];
         put?: never;
         post?: never;
@@ -3092,7 +3146,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Apply Preset */
+        /** Apply model preset (CAPACITY peel-aware; sak443-a/f) */
         post: operations["post_apply_preset_v1_platform_models_apply_preset_post"];
         delete?: never;
         options?: never;
@@ -3107,7 +3161,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Routing Presets */
+        /** List routing presets (`sak445-c`) */
         get: operations["get_routing_presets_v1_platform_routing_presets_get"];
         put?: never;
         post?: never;
@@ -3126,7 +3180,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Apply Routing Preset */
+        /** Apply routing preset (CAPACITY peel-aware; sak445-b) */
         post: operations["post_apply_routing_preset_v1_platform_routing_presets_apply_post"];
         delete?: never;
         options?: never;
@@ -3141,7 +3195,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Dependencies */
+        /** Model dependency readiness (`sak445-c`) */
         get: operations["get_model_dependencies_v1_platform_models_dependencies_get"];
         put?: never;
         post?: never;
@@ -3158,7 +3212,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Collab Disciplines */
+        /** Collab disciplines (`sak449-d`) */
         get: operations["get_collab_disciplines_v1_platform_collab_disciplines_get"];
         put?: never;
         post?: never;
@@ -3175,7 +3229,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Invite Templates */
+        /** Invite templates (`sak449-d`) */
         get: operations["get_invite_templates_v1_platform_invite_templates_get"];
         put?: never;
         post?: never;
@@ -3192,9 +3246,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Collab Settings */
+        /** Collab settings (`sak449-d`) */
         get: operations["get_collab_settings_v1_platform_collab_settings_get"];
-        /** Put Collab Settings */
+        /** Update collab settings (`sak449-d`) */
         put: operations["put_collab_settings_v1_platform_collab_settings_put"];
         post?: never;
         delete?: never;
@@ -3212,7 +3266,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Workspace Scaffold */
+        /** Scaffold consumer tests (`sak480-d`) */
         post: operations["post_workspace_scaffold_v1_platform_workspace_scaffold_post"];
         delete?: never;
         options?: never;
@@ -3229,7 +3283,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Post Workspace Precommit */
+        /** Install workspace precommit (`sak480-d`) */
         post: operations["post_workspace_precommit_v1_platform_workspace_precommit_post"];
         delete?: never;
         options?: never;
@@ -3244,7 +3298,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Edition */
+        /** Edition manifest (`sak449-d`) */
         get: operations["get_platform_edition_v1_platform_edition_get"];
         put?: never;
         post?: never;
@@ -3261,7 +3315,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Readiness */
+        /** Platform readiness (CAPACITY peel-aware; sak447-c/d / sak493-a) */
         get: operations["get_platform_readiness_v1_platform_readiness_get"];
         put?: never;
         post?: never;
@@ -3278,7 +3332,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Fleet Governance */
+        /** Fleet governance summary (`sak448-e`) */
         get: operations["get_platform_fleet_governance_v1_platform_fleet_governance_get"];
         put?: never;
         post?: never;
@@ -3295,7 +3349,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Workspace Readiness */
+        /** Workspace readiness (`sak448-e`; peel OpenAPI `sak494-g`) */
         get: operations["get_workspace_readiness_v1_platform_workspace_readiness_get"];
         put?: never;
         post?: never;
@@ -3312,10 +3366,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Playwright Bootstrap */
+        /** Playwright bootstrap status (`sak449-d`) */
         get: operations["get_playwright_bootstrap_v1_platform_playwright_bootstrap_get"];
         put?: never;
-        /** Post Playwright Bootstrap */
+        /** Run Playwright bootstrap (`sak449-d`) */
         post: operations["post_playwright_bootstrap_v1_platform_playwright_bootstrap_post"];
         delete?: never;
         options?: never;
@@ -3330,10 +3384,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Onboarding */
+        /** Onboarding status (`sak447-d`) */
         get: operations["get_platform_onboarding_v1_platform_onboarding_get"];
         put?: never;
-        /** Post Platform Onboarding */
+        /** Mark onboarded (`sak447-d`) */
         post: operations["post_platform_onboarding_v1_platform_onboarding_post"];
         delete?: never;
         options?: never;
@@ -3348,9 +3402,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Optimizer Weights */
+        /** Platform optimizer weights (`sak446-c`) */
         get: operations["get_optimizer_weights_v1_platform_optimizer_weights_get"];
-        /** Put Optimizer Weights */
+        /** Update platform optimizer weights (`sak446-c`) */
         put: operations["put_optimizer_weights_v1_platform_optimizer_weights_put"];
         post?: never;
         delete?: never;
@@ -3366,7 +3420,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Industry Critic Packs */
+        /** Industry critic packs (`sak480-d`) */
         get: operations["get_industry_critic_packs_v1_platform_industry_critic_packs_get"];
         put?: never;
         post?: never;
@@ -3383,9 +3437,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Safe Coding Preferences */
+        /** Safe-coding preferences (`sak480-d`) */
         get: operations["get_safe_coding_preferences_v1_platform_safe_coding_preferences_get"];
-        /** Put Safe Coding Preferences */
+        /** Update safe-coding preferences (`sak480-d`) */
         put: operations["put_safe_coding_preferences_v1_platform_safe_coding_preferences_put"];
         post?: never;
         delete?: never;
@@ -3401,7 +3455,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Provider Presets */
+        /** Provider presets (`sak447-e`) */
         get: operations["list_provider_presets_v1_platform_provider_presets_get"];
         put?: never;
         post?: never;
@@ -3420,7 +3474,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Link Subscription Provider */
+        /** Link subscription provider (`sak447-e`) */
         post: operations["link_subscription_provider_v1_platform_provider_connections_subscription_link_post"];
         delete?: never;
         options?: never;
@@ -3435,9 +3489,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Provider Connections */
+        /** List provider connections (`sak447-e`) */
         get: operations["list_provider_connections_v1_platform_provider_connections_get"];
-        /** Upsert Provider Connection */
+        /** Upsert provider connection (`sak447-e`) */
         put: operations["upsert_provider_connection_v1_platform_provider_connections_put"];
         post?: never;
         delete?: never;
@@ -3456,7 +3510,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete Provider Connection */
+        /** Delete provider connection (`sak447-e`) */
         delete: operations["delete_provider_connection_v1_platform_provider_connections__connection_id__delete"];
         options?: never;
         head?: never;
@@ -3472,7 +3526,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Probe Provider Connection */
+        /** Probe provider connection (`sak447-e`) */
         post: operations["probe_provider_connection_v1_platform_provider_connections__connection_id__probe_post"];
         delete?: never;
         options?: never;
@@ -3487,7 +3541,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Subscription Oauth Status */
+        /** Subscription OAuth status (`sak448-d`) */
         get: operations["subscription_oauth_status_v1_platform_provider_subscriptions_oauth_status_get"];
         put?: never;
         post?: never;
@@ -3555,7 +3609,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Bindings Preflight */
+        /** Model bindings preflight (`sak446-b`) */
         get: operations["get_model_bindings_preflight_v1_platform_model_bindings_preflight_get"];
         put?: never;
         post?: never;
@@ -3572,9 +3626,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Binding Defaults */
+        /** Model binding defaults (`sak446-b`) */
         get: operations["get_model_binding_defaults_v1_platform_model_bindings_defaults_get"];
-        /** Put Model Binding Defaults */
+        /** Update model binding defaults (`sak446-b`) */
         put: operations["put_model_binding_defaults_v1_platform_model_bindings_defaults_put"];
         post?: never;
         delete?: never;
@@ -3590,7 +3644,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Binding Roles */
+        /** Model binding role catalog (`sak446-b`) */
         get: operations["get_model_binding_roles_v1_platform_model_bindings_roles_get"];
         put?: never;
         post?: never;
@@ -3607,7 +3661,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Compute Nodes */
+        /** List Compute Nodes (broker-first; sak441-e) */
         get: operations["list_compute_nodes_v1_compute_nodes_get"];
         put?: never;
         post?: never;
@@ -3626,7 +3680,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Register Compute Node */
+        /** Register Compute Node (broker-first; sak442-e) */
         post: operations["register_compute_node_v1_compute_nodes_register_post"];
         delete?: never;
         options?: never;
@@ -3643,8 +3697,28 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Heartbeat Compute Node */
+        /** Heartbeat Compute Node (broker-first; sak442-e) */
         post: operations["heartbeat_compute_node_v1_compute_nodes__node_id__heartbeat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/compute/work-units/enqueue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enqueue Work Unit (broker-first; sak442-e)
+         * @description Broker-first enqueue (`sak431-a`).
+         */
+        post: operations["enqueue_work_unit_v1_compute_work_units_enqueue_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3660,7 +3734,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Claim Work Unit */
+        /** Claim Work Unit (broker-first; empty→via=broker; sak440-g) */
         post: operations["claim_work_unit_v1_compute_work_units_claim_post"];
         delete?: never;
         options?: never;
@@ -3675,7 +3749,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Work Unit Queue Depth */
+        /** Work Unit Queue Depth (broker-first; sak441-e) */
         get: operations["work_unit_queue_depth_v1_compute_work_units_queue_get"];
         put?: never;
         post?: never;
@@ -3694,7 +3768,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Complete Work Unit */
+        /** Complete Work Unit (broker-first; sak442-e) */
         post: operations["complete_work_unit_v1_compute_work_units__work_unit_id__complete_post"];
         delete?: never;
         options?: never;
@@ -3711,7 +3785,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Terminate Restart Work Unit */
+        /** Terminate Restart Work Unit (broker-first; sak442-e) */
         post: operations["terminate_restart_work_unit_v1_compute_work_units__work_unit_id__terminate_restart_post"];
         delete?: never;
         options?: never;
@@ -3726,7 +3800,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List memory chunks for a project workspace scope */
+        /** List memory chunks (`sak480-e`; peel-aware `sak498-b`) */
         get: operations["list_memory_chunks_v1_memory_chunks_get"];
         put?: never;
         post?: never;
@@ -3743,7 +3817,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Stitch Outcomes */
+        /** Stitch outcome analytics (`sak481-e`) */
         get: operations["get_platform_stitch_outcomes_v1_platform_analytics_stitch_outcomes_get"];
         put?: never;
         post?: never;
@@ -3760,7 +3834,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Competitive Summary */
+        /** Competitive summary analytics (`sak481-e`) */
         get: operations["get_platform_competitive_summary_v1_platform_analytics_competitive_summary_get"];
         put?: never;
         post?: never;
@@ -3777,7 +3851,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Pressure History */
+        /** Pressure history analytics (`sak481-e`) */
         get: operations["get_platform_pressure_history_v1_platform_analytics_pressure_history_get"];
         put?: never;
         post?: never;
@@ -3794,7 +3868,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Chat Turn Analytics */
+        /** Chat turn analytics (`sak481-e`) */
         get: operations["get_platform_chat_turn_analytics_v1_platform_analytics_chat_turns_get"];
         put?: never;
         post?: never;
@@ -3811,7 +3885,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Platform Bundle Outcomes */
+        /** Bundle outcome analytics (`sak481-e`) */
         get: operations["get_platform_bundle_outcomes_v1_platform_analytics_bundle_outcomes_get"];
         put?: never;
         post?: never;
@@ -3828,7 +3902,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Settings Catalog */
+        /** Settings catalog (`sak480-c`) */
         get: operations["get_settings_catalog_v1_settings_catalog_get"];
         put?: never;
         post?: never;
@@ -3845,7 +3919,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Install Settings */
+        /** Install settings (`sak480-c`) */
         get: operations["get_install_settings_v1_settings_install_get"];
         put?: never;
         post?: never;
@@ -3862,14 +3936,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get System Settings */
+        /** System settings (`sak480-c`) */
         get: operations["get_system_settings_v1_settings_system_get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Patch System Settings */
+        /** Patch system settings (`sak480-c`) */
         patch: operations["patch_system_settings_v1_settings_system_patch"];
         trace?: never;
     };
@@ -3880,14 +3954,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get User Settings */
+        /** User settings (`sak480-c`) */
         get: operations["get_user_settings_v1_settings_me_get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Patch User Settings */
+        /** Patch user settings (`sak480-c`) */
         patch: operations["patch_user_settings_v1_settings_me_patch"];
         trace?: never;
     };
@@ -4052,7 +4126,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Enterprise Status
+         * Enterprise feature readiness (`sak449-e`)
          * @description Enterprise feature readiness map.
          */
         get: operations["enterprise_status_v1_enterprise_status_get"];
@@ -4072,7 +4146,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Enterprise Health
+         * Enterprise health probe (`sak449-e`)
          * @description Minimal enterprise probe (store reachable).
          */
         get: operations["enterprise_health_v1_enterprise_health_get"];
@@ -4093,7 +4167,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bootstrap Iam */
+        /** IAM bootstrap (`sak485-g`) */
         post: operations["bootstrap_iam_v1_enterprise_iam_bootstrap_post"];
         delete?: never;
         options?: never;
@@ -4108,7 +4182,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Iam Me */
+        /** IAM me (`sak485-g`) */
         get: operations["iam_me_v1_enterprise_iam_me_get"];
         put?: never;
         post?: never;
@@ -4125,10 +4199,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Tenants */
+        /** List tenants (`sak485-g`) */
         get: operations["list_tenants_v1_enterprise_tenants_get"];
         put?: never;
-        /** Create Tenant */
+        /** Create tenant (`sak485-g`) */
         post: operations["create_tenant_v1_enterprise_tenants_post"];
         delete?: never;
         options?: never;
@@ -4145,7 +4219,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Api Key */
+        /** Create API key (`sak485-g`) */
         post: operations["create_api_key_v1_enterprise_tenants__tenant_id__api_keys_post"];
         delete?: never;
         options?: never;
@@ -4160,7 +4234,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Memory Status */
+        /** Fleet memory status (MEMORY peel-aware; sak480-e / sak493-i) */
         get: operations["fleet_memory_status_v1_enterprise_fleet_memory_status_get"];
         put?: never;
         post?: never;
@@ -4179,7 +4253,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Fleet Memory Rebuild */
+        /** Fleet memory rebuild (`sak483-g`; peel-aware `sak494-b`) */
         post: operations["fleet_memory_rebuild_v1_enterprise_fleet_memory_rebuild_post"];
         delete?: never;
         options?: never;
@@ -4194,7 +4268,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Memory Search */
+        /** Fleet memory search (MEMORY peel-aware; sak480-e / sak493-i) */
         get: operations["fleet_memory_search_v1_enterprise_fleet_memory_search_get"];
         put?: never;
         post?: never;
@@ -4213,7 +4287,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Fleet Memory Sync */
+        /** Fleet memory sync (`sak483-g`; peel-aware `sak494-b`) */
         post: operations["fleet_memory_sync_v1_enterprise_fleet_memory_sync_post"];
         delete?: never;
         options?: never;
@@ -4228,7 +4302,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Learnings Search */
+        /** Fleet learnings search (`sak485-f`) */
         get: operations["fleet_learnings_search_v1_enterprise_fleet_learnings_search_get"];
         put?: never;
         post?: never;
@@ -4245,7 +4319,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Config Notify Status */
+        /** Config notify status (`sak486-e`) */
         get: operations["config_notify_status_v1_enterprise_config_notify_status_get"];
         put?: never;
         post?: never;
@@ -4262,7 +4336,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Scraper Artifact Storage Status */
+        /** Scraper artifact storage status (`sak486-e`) */
         get: operations["scraper_artifact_storage_status_v1_enterprise_scraper_artifacts_storage_get"];
         put?: never;
         post?: never;
@@ -4313,7 +4387,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Mesh Status */
+        /** Fleet mesh status (broker-first; sak444-e) */
         get: operations["fleet_mesh_status_v1_enterprise_fleet_mesh_status_get"];
         put?: never;
         post?: never;
@@ -4364,7 +4438,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Analytics Compare */
+        /** Fleet analytics compare (`sak485-f`) */
         get: operations["fleet_analytics_compare_v1_enterprise_fleet_analytics_compare_get"];
         put?: never;
         post?: never;
@@ -4381,7 +4455,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Analytics Tenant */
+        /** Fleet analytics tenant (`sak485-f`) */
         get: operations["fleet_analytics_tenant_v1_enterprise_fleet_analytics_tenant__tenant_id__get"];
         put?: never;
         post?: never;
@@ -4398,9 +4472,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Tenant Autopilot Policy */
+        /** Tenant autopilot policy GET (`sak483-f`) */
         get: operations["get_tenant_autopilot_policy_v1_enterprise_tenants__tenant_ref__autopilot_policy_get"];
-        /** Put Tenant Autopilot Policy */
+        /** Tenant autopilot policy PUT (`sak483-f`) */
         put: operations["put_tenant_autopilot_policy_v1_enterprise_tenants__tenant_ref__autopilot_policy_put"];
         post?: never;
         delete?: never;
@@ -4416,9 +4490,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Tenant Enforcement Policy */
+        /** Tenant enforcement policy GET (`sak483-f`) */
         get: operations["get_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_get"];
-        /** Put Tenant Enforcement Policy */
+        /** Tenant enforcement policy PUT (`sak483-f`) */
         put: operations["put_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_put"];
         post?: never;
         delete?: never;
@@ -4434,9 +4508,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Tenant Standards Policy */
+        /** Tenant standards policy GET (`sak483-f`) */
         get: operations["get_tenant_standards_policy_v1_enterprise_tenants__tenant_ref__standards_policy_get"];
-        /** Put Tenant Standards Policy */
+        /** Tenant standards policy PUT (`sak483-f`) */
         put: operations["put_tenant_standards_policy_v1_enterprise_tenants__tenant_ref__standards_policy_put"];
         post?: never;
         delete?: never;
@@ -4452,9 +4526,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Slice Policy */
+        /** Fleet slice policy GET (`sak482-g`) */
         get: operations["get_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_get"];
-        /** Put Fleet Slice Policy */
+        /** Fleet slice policy PUT (`sak482-g`) */
         put: operations["put_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_put"];
         post?: never;
         delete?: never;
@@ -4470,9 +4544,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Stack Policy */
+        /** Fleet stack policy GET (`sak482-g`) */
         get: operations["get_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_get"];
-        /** Put Fleet Stack Policy */
+        /** Fleet stack policy PUT (`sak482-g`) */
         put: operations["put_fleet_stack_policy_v1_enterprise_tenants__tenant_ref__stack_policy_put"];
         post?: never;
         delete?: never;
@@ -4488,9 +4562,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Commit Policy */
+        /** Fleet commit policy (`sak449-e`) */
         get: operations["get_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_get"];
-        /** Put Fleet Commit Policy */
+        /** Update fleet commit policy (`sak449-e`) */
         put: operations["put_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_put"];
         post?: never;
         delete?: never;
@@ -4506,9 +4580,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Deploy Policy */
+        /** Tenant deploy policy GET (`sak483-f`) */
         get: operations["get_fleet_deploy_policy_v1_enterprise_tenants__tenant_ref__deploy_policy_get"];
-        /** Put Fleet Deploy Policy */
+        /** Tenant deploy policy PUT (`sak483-f`) */
         put: operations["put_fleet_deploy_policy_v1_enterprise_tenants__tenant_ref__deploy_policy_put"];
         post?: never;
         delete?: never;
@@ -4524,9 +4598,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Deploy Approval Policy */
+        /** Tenant deploy approval policy GET (`sak483-f`) */
         get: operations["get_fleet_deploy_approval_policy_v1_enterprise_tenants__tenant_ref__deploy_approval_policy_get"];
-        /** Put Fleet Deploy Approval Policy */
+        /** Tenant deploy approval policy PUT (`sak483-f`) */
         put: operations["put_fleet_deploy_approval_policy_v1_enterprise_tenants__tenant_ref__deploy_approval_policy_put"];
         post?: never;
         delete?: never;
@@ -4542,9 +4616,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Fleet Discovery Policy */
+        /** Tenant discovery policy GET (`sak483-f`) */
         get: operations["get_fleet_discovery_policy_v1_enterprise_tenants__tenant_ref__discovery_policy_get"];
-        /** Put Fleet Discovery Policy */
+        /** Tenant discovery policy PUT (`sak483-f`) */
         put: operations["put_fleet_discovery_policy_v1_enterprise_tenants__tenant_ref__discovery_policy_put"];
         post?: never;
         delete?: never;
@@ -4560,7 +4634,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Fleet Critic Reliability */
+        /** Fleet critic reliability (`sak485-f`) */
         get: operations["fleet_critic_reliability_v1_enterprise_fleet_critic_reliability_get"];
         put?: never;
         post?: never;
@@ -4594,9 +4668,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Audit Policy */
+        /** Tenant audit policy (`sak481-c`) */
         get: operations["get_audit_policy_v1_enterprise_audit_policy_get"];
-        /** Put Audit Policy */
+        /** Update tenant audit policy (`sak481-c`) */
         put: operations["put_audit_policy_v1_enterprise_audit_policy_put"];
         post?: never;
         delete?: never;
@@ -4612,7 +4686,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Compliance Summary */
+        /** Compliance summary (`sak481-c`) */
         get: operations["compliance_summary_v1_enterprise_compliance_summary_get"];
         put?: never;
         post?: never;
@@ -4629,9 +4703,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Model Policy */
+        /** Global model policy GET (`sak486-f`) */
         get: operations["get_model_policy_v1_model_policy_get"];
-        /** Put Model Policy */
+        /** Global model policy PUT (`sak486-f`) */
         put: operations["put_model_policy_v1_model_policy_put"];
         post?: never;
         delete?: never;
@@ -4647,9 +4721,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Collab Policy */
+        /** Global collab policy GET (`sak486-f`) */
         get: operations["get_collab_policy_v1_collab_policy_get"];
-        /** Put Collab Policy */
+        /** Global collab policy PUT (`sak486-f`) */
         put: operations["put_collab_policy_v1_collab_policy_put"];
         post?: never;
         delete?: never;
@@ -4665,9 +4739,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Tenant Collab Policy */
+        /** Tenant collab policy (`sak481-c`) */
         get: operations["get_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_get"];
-        /** Put Tenant Collab Policy */
+        /** Update tenant collab policy (`sak481-c`) */
         put: operations["put_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_put"];
         post?: never;
         delete?: never;
@@ -4683,9 +4757,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Tenant Model Policy */
+        /** Tenant model policy GET (`sak483-f`) */
         get: operations["get_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_get"];
-        /** Put Tenant Model Policy */
+        /** Tenant model policy PUT (`sak483-f`) */
         put: operations["put_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_put"];
         post?: never;
         delete?: never;
@@ -4701,7 +4775,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Search Enterprise Users */
+        /** Search enterprise users (`sak486-e`) */
         get: operations["search_enterprise_users_v1_users_get"];
         put?: never;
         post?: never;
@@ -4718,7 +4792,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Research Index */
+        /** Enterprise research index (`sak486-e`) */
         get: operations["enterprise_research_index_v1_enterprise_research_index_get"];
         put?: never;
         post?: never;
@@ -4735,7 +4809,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Egress Audit */
+        /** Enterprise egress audit (`sak486-e`) */
         get: operations["enterprise_egress_audit_v1_enterprise_egress_audit_get"];
         put?: never;
         post?: never;
@@ -4752,7 +4826,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Maker App Bootstrap */
+        /** Maker app bootstrap (`sak483-g`) */
         get: operations["get_maker_app_bootstrap_v1_maker_app_bootstrap_json_get"];
         put?: never;
         post?: never;
@@ -4769,7 +4843,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Admin App Bootstrap */
+        /** Admin app bootstrap (`sak483-g`) */
         get: operations["get_admin_app_bootstrap_v1_admin_app_bootstrap_json_get"];
         put?: never;
         post?: never;
@@ -4788,7 +4862,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Operator Chat Message */
+        /** Operator chat message (`sak491-h`; peel-aware `sak494-g`) */
         post: operations["operator_chat_message_v1_admin_ui_operator_chat_message_post"];
         delete?: never;
         options?: never;
@@ -4803,7 +4877,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Findings Table */
+        /** Findings table (`sak481-f`) */
         get: operations["findings_table_v1_admin_ui_runs__run_id__findings_table_get"];
         put?: never;
         post?: never;
@@ -4820,7 +4894,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Critic Matrix Table */
+        /** Critic matrix (`sak481-f`) */
         get: operations["critic_matrix_table_v1_admin_ui_runs__run_id__critic_matrix_table_get"];
         put?: never;
         post?: never;
@@ -4837,7 +4911,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Integration Adapter Writer Run */
+        /** Integration adapter writer (`sak482-f`) */
         get: operations["integration_adapter_writer_run_v1_admin_ui_runs__run_id__integration_adapter_writer_get"];
         put?: never;
         post?: never;
@@ -4854,7 +4928,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Critic Reliability Table */
+        /** Critic reliability table (`sak482-f`) */
         get: operations["critic_reliability_table_v1_admin_ui_runs__run_id__critic_reliability_get"];
         put?: never;
         post?: never;
@@ -4871,7 +4945,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Fleet Dashboard */
+        /** Enterprise fleet dashboard BFF (`sak480-e`; peel-aware `sak494-g`) */
         get: operations["enterprise_fleet_dashboard_v1_admin_ui_enterprise_fleet_dashboard_get"];
         put?: never;
         post?: never;
@@ -4888,7 +4962,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Admin Persona Overlap Report */
+        /** Persona scope overlap report (`sak482-f`) */
         get: operations["admin_persona_overlap_report_v1_admin_ui_personas_overlap_report_get"];
         put?: never;
         post?: never;
@@ -4905,9 +4979,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Fleet Autopilot Policy Get */
+        /** Fleet autopilot policy GET (`sak482-f`) */
         get: operations["enterprise_fleet_autopilot_policy_get_v1_admin_ui_enterprise_fleet_autopilot_policy_get"];
-        /** Enterprise Fleet Autopilot Policy Put */
+        /** Fleet autopilot policy PUT (`sak482-f`) */
         put: operations["enterprise_fleet_autopilot_policy_put_v1_admin_ui_enterprise_fleet_autopilot_policy_put"];
         post?: never;
         delete?: never;
@@ -4923,9 +4997,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Fleet Enforcement Policy Get */
+        /** Fleet enforcement policy GET (`sak482-f`) */
         get: operations["enterprise_fleet_enforcement_policy_get_v1_admin_ui_enterprise_fleet_enforcement_policy_get"];
-        /** Enterprise Fleet Enforcement Policy Put */
+        /** Fleet enforcement policy PUT (`sak482-f`) */
         put: operations["enterprise_fleet_enforcement_policy_put_v1_admin_ui_enterprise_fleet_enforcement_policy_put"];
         post?: never;
         delete?: never;
@@ -4941,7 +5015,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Enterprise Fleet Compare */
+        /** Fleet tenant compare (`sak482-f`; peel-aware `sak494-g`) */
         get: operations["enterprise_fleet_compare_v1_admin_ui_enterprise_fleet_compare_get"];
         put?: never;
         post?: never;
@@ -4959,7 +5033,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Admin Ui Timeline Panels
+         * Timeline panels projection (`sak482-f`)
          * @description Projection summaries for React admin — same read path as ``GET /runs/{id}/timeline``.
          */
         get: operations["admin_ui_timeline_panels_v1_admin_ui_runs__run_id__timeline_panels_get"];
@@ -5063,7 +5137,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** External Chat Capabilities */
+        /** External chat capabilities (`sak484-f`) */
         get: operations["external_chat_capabilities_v1_integrations_external_chat_get"];
         put?: never;
         post?: never;
@@ -5097,12 +5171,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Push Subscriptions */
+        /** List web-push subscriptions (`sak484-f`) */
         get: operations["get_push_subscriptions_v1_maker_push_subscriptions_get"];
         put?: never;
-        /** Post Push Subscription */
+        /** Register web-push subscription (`sak484-f`) */
         post: operations["post_push_subscription_v1_maker_push_subscriptions_post"];
-        /** Delete Push Subscription */
+        /** Unregister web-push subscription (`sak484-f`) */
         delete: operations["delete_push_subscription_v1_maker_push_subscriptions_delete"];
         options?: never;
         head?: never;
@@ -5135,10 +5209,110 @@ export interface components {
             /** Session Id */
             session_id?: string | null;
         };
+        /**
+         * AccessGrantListResponse
+         * @description GET /chat/access-grants (`sak481-d`).
+         */
+        AccessGrantListResponse: {
+            /** Grants */
+            grants?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * AccessGrantMutationResponse
+         * @description POST/DELETE /chat/access-grants (`sak482-e`).
+         */
+        AccessGrantMutationResponse: {
+            /** Grant */
+            grant?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ActionStatusResponse
+         * @description POST run actions retry/escalate/override-gate (`sak487-e`).
+         */
+        ActionStatusResponse: {
+            /** Status */
+            status?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ActiveLeafBody */
         ActiveLeafBody: {
             /** Leaf Turn Id */
             leaf_turn_id: string;
+        };
+        /**
+         * AdminOAuthLogoutResponse
+         * @description POST /admin/oauth/logout JSON body (`sak487-g`).
+         */
+        AdminOAuthLogoutResponse: {
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * AdminOAuthSessionResponse
+         * @description GET /admin/oauth/session (`sak487-g`).
+         */
+        AdminOAuthSessionResponse: {
+            /** Authenticated */
+            authenticated?: boolean | null;
+            /** Console Role */
+            console_role?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * AdminProjectionResponse
+         * @description OpenAPI payload (`sak481-e` / `sak481-f`).
+         */
+        AdminProjectionResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** AgentOverlayBody */
         AgentOverlayBody: {
@@ -5146,6 +5320,52 @@ export interface components {
             custom_agent_id?: string | null;
             /** Prompt Extension */
             prompt_extension?: string | null;
+        };
+        /**
+         * AgentOverlayResponse
+         * @description PUT /users/me/agent-overlays/{discipline} (`sak483-g`).
+         */
+        AgentOverlayResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * AgentOverlaysResponse
+         * @description GET /users/me/agent-overlays (`sak483-g`).
+         */
+        AgentOverlaysResponse: {
+            /** Disciplines */
+            disciplines?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * AnalyticsPayloadResponse
+         * @description Platform analytics payloads (`sak481-e`).
+         */
+        AnalyticsPayloadResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ApiKeyCreateBody */
         ApiKeyCreateBody: {
@@ -5158,6 +5378,34 @@ export interface components {
             role_taxonomy_keys?: string[];
             /** Api Scopes */
             api_scopes?: string[];
+        };
+        /**
+         * ApiKeyCreateResponse
+         * @description POST /enterprise/tenants/{tenant_id}/api-keys (`sak485-g`).
+         */
+        ApiKeyCreateResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Key Id */
+            key_id?: string | null;
+            /** Key Prefix */
+            key_prefix?: string | null;
+            /** Api Key */
+            api_key?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Api Scopes */
+            api_scopes?: string[] | null;
+            /** Message */
+            message?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** AppendTurnBody */
         AppendTurnBody: {
@@ -5204,6 +5452,51 @@ export interface components {
             legal_hold: boolean;
             /** Redaction Patterns */
             redaction_patterns?: string[];
+        };
+        /**
+         * AuditPolicyResponse
+         * @description GET/PUT /enterprise/audit-policy (`sak481-c`).
+         */
+        AuditPolicyResponse: {
+            /** Version */
+            version?: number | null;
+            /**
+             * Legal Hold
+             * @default false
+             */
+            legal_hold: boolean;
+            /** Redaction Patterns */
+            redaction_patterns?: string[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * AutopilotPresetResponse
+         * @description GET /autopilot/presets/{level} (`sak483-e`).
+         */
+        AutopilotPresetResponse: {
+            /** Level */
+            level?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Checkpoints */
+            checkpoints?: string[] | null;
+            /** Custom */
+            custom?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** BundleCatalogCreateRequest */
         BundleCatalogCreateRequest: {
@@ -5264,6 +5557,30 @@ export interface components {
             /** Faiss Index Stale */
             faiss_index_stale?: boolean | null;
         };
+        /**
+         * BundleCatalogSourceResponse
+         * @description GET /bundles/catalog/source (`sak487-f`).
+         */
+        BundleCatalogSourceResponse: {
+            /** Authoritative */
+            authoritative?: string | null;
+            /** Document */
+            document?: string | null;
+            /** Namespace */
+            namespace?: string | null;
+            /** Document Key */
+            document_key?: string | null;
+            /** Path */
+            path?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** BundleSearchHit */
         BundleSearchHit: {
             /** Id */
@@ -5304,6 +5621,146 @@ export interface components {
              * @default operator
              */
             reason_code: string;
+        };
+        /**
+         * CampaignActionResponse
+         * @description POST campaign pause/resume/cancel (`sak484-e`).
+         */
+        CampaignActionResponse: {
+            /** Campaign Id */
+            campaign_id?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Dispatch Mode */
+            dispatch_mode?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CampaignArtifactBundleResponse
+         * @description GET /runs/{run_id}/campaign-artifact-bundle (`sak484-f`).
+         */
+        CampaignArtifactBundleResponse: {
+            /** Version */
+            version?: number | null;
+            /** Run Id */
+            run_id?: string | null;
+            /** Allowed Sources */
+            allowed_sources?: string[] | null;
+            /** Forbidden Omitted */
+            forbidden_omitted?: string[] | null;
+            /** Sources */
+            sources?: {
+                [key: string]: unknown;
+            } | null;
+            /** Checksum Sha256 */
+            checksum_sha256?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CampaignBacklogResponse
+         * @description GET /campaigns/{campaign_id}/backlog (`sak484-e`).
+         */
+        CampaignBacklogResponse: {
+            /** Campaign Id */
+            campaign_id?: string | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            } | null;
+            /** Completion Criteria */
+            completion_criteria?: {
+                [key: string]: unknown;
+            } | null;
+            /** Epics */
+            epics?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Has Backlog */
+            has_backlog?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CampaignProgressResponse
+         * @description GET /campaigns/{campaign_id}/progress (`sak484-e`).
+         */
+        CampaignProgressResponse: {
+            /** Progress */
+            progress?: {
+                [key: string]: unknown;
+            } | null;
+            /** Backlog */
+            backlog?: {
+                [key: string]: unknown;
+            } | null;
+            /** Maintenance Events */
+            maintenance_events?: unknown[] | null;
+            /** Completion Evaluations */
+            completion_evaluations?: unknown[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CatalogCandidatesResponse
+         * @description GET /bundles/catalog-candidates (`sak480-e`).
+         */
+        CatalogCandidatesResponse: {
+            /** Candidates */
+            candidates?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * CatalogInfoResponse
+         * @description GET /platform/models/catalog-info (`sak445-c`).
+         */
+        CatalogInfoResponse: {
+            /** Model Count */
+            model_count?: number | null;
+            /** Version */
+            version?: string | number | null;
+            /** Updated At */
+            updated_at?: string | null;
+            /** Source */
+            source?: string | null;
+            /** Path */
+            path?: string | null;
         };
         /** ChatGraphResponse */
         ChatGraphResponse: {
@@ -5394,6 +5851,12 @@ export interface components {
             }[] | null;
             /** My Participant Role */
             my_participant_role?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** ClarificationAnswerBody */
         ClarificationAnswerBody: {
@@ -5413,12 +5876,23 @@ export interface components {
              */
             answer: string;
         };
-        /** ClassificationResponse */
+        /**
+         * ClassificationResponse
+         * @description POST /chat/classify (`sak491-h` peel miss fields optional).
+         */
         ClassificationResponse: {
             /** Classification */
             classification: {
                 [key: string]: unknown;
             };
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** ClassifyIntentBody */
         ClassifyIntentBody: {
@@ -5434,6 +5908,14 @@ export interface components {
             platform_hints?: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * CollabDisciplinesResponse
+         * @description GET /platform/collab-disciplines (`sak449-d`).
+         */
+        CollabDisciplinesResponse: {
+            /** Disciplines */
+            disciplines?: unknown[];
         };
         /** CollabPolicyBody */
         CollabPolicyBody: {
@@ -5463,15 +5945,82 @@ export interface components {
              */
             write_may_start_runs: boolean;
         };
+        /**
+         * CollabPolicyResponse
+         * @description GET/PUT /collab-policy (`sak486-f`).
+         */
+        CollabPolicyResponse: {
+            /** Version */
+            version?: number | null;
+            /** Allow External Collaborators */
+            allow_external_collaborators?: boolean | null;
+            /** Max Session Participants */
+            max_session_participants?: number | null;
+            /** Host Transfer Consent Hours */
+            host_transfer_consent_hours?: number | null;
+            /** Default Invite Role */
+            default_invite_role?: string | null;
+            /** Write May Start Runs */
+            write_may_start_runs?: boolean | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Policy */
+            policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** CollabSettingsBody */
         CollabSettingsBody: {
             /** Collab Enabled */
             collab_enabled: boolean;
         };
+        /**
+         * CollabSettingsResponse
+         * @description GET/PUT /platform/collab-settings (`sak449-d`).
+         */
+        CollabSettingsResponse: {
+            /**
+             * Collab Enabled
+             * @default false
+             */
+            collab_enabled: boolean;
+            /** Source */
+            source?: string | null;
+        };
         /** CommentaryBody */
         CommentaryBody: {
             /** Text */
             text: string;
+        };
+        /**
+         * CommentaryResponse
+         * @description POST /chat/sessions/{id}/commentary (`sak482-e`).
+         */
+        CommentaryResponse: {
+            /** Turn */
+            turn?: {
+                [key: string]: unknown;
+            } | null;
+            /** Discipline Routes */
+            discipline_routes?: {
+                [key: string]: string;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** CompactRunBody */
         CompactRunBody: {
@@ -5527,6 +6076,38 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /**
+         * ComplianceSummaryResponse
+         * @description GET /enterprise/compliance/summary (`sak481-c`).
+         */
+        ComplianceSummaryResponse: {
+            /** Audit Retention Days */
+            audit_retention_days?: number | null;
+            /** Iam Action Count */
+            iam_action_count?: number | null;
+            /** Event Row Count */
+            event_row_count?: number | null;
+            /** Fleet Policy Counts */
+            fleet_policy_counts?: {
+                [key: string]: unknown;
+            } | null;
+            /** Tenant Count */
+            tenant_count?: number | null;
+            /** Gate Pass Rate */
+            gate_pass_rate?: number | null;
+            /** Gate Pass Count */
+            gate_pass_count?: number | null;
+            /** Completed Runs */
+            completed_runs?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ComputeNodeHeartbeatBody */
         ComputeNodeHeartbeatBody: {
             /** Status */
@@ -5535,6 +6116,24 @@ export interface components {
             capabilities?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /**
+         * ComputeNodeListResponse
+         * @description GET /compute/nodes list (`sak441-e`).
+         */
+        ComputeNodeListResponse: {
+            /** Nodes */
+            nodes?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** ComputeNodeRegisterBody */
         ComputeNodeRegisterBody: {
@@ -5570,19 +6169,106 @@ export interface components {
              */
             allow_host_resource_management: boolean;
         };
+        /**
+         * ComputeNodeWriteResponse
+         * @description POST register/heartbeat (`sak442-e`).
+         */
+        ComputeNodeWriteResponse: {
+            /** Node */
+            node?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Action */
+            action?: string | null;
+        };
+        /**
+         * ConfigBlastRadiusResponse
+         * @description GET /config/blast-radius (`sak487-f`).
+         */
+        ConfigBlastRadiusResponse: {
+            /** Workflow Profile */
+            workflow_profile?: string | null;
+            /** Proposed Effective */
+            proposed_effective?: {
+                [key: string]: unknown;
+            } | null;
+            /** Affected Run Count */
+            affected_run_count?: number | null;
+            /** Affected Runs */
+            affected_runs?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ConfigNotifyStatusResponse
+         * @description GET /enterprise/config-notify/status (`sak486-e`).
+         */
+        ConfigNotifyStatusResponse: {
+            /** Feature */
+            feature?: string | null;
+            /** Enabled */
+            enabled?: boolean | null;
+            /** Listener Enabled */
+            listener_enabled?: boolean | null;
+            /** Notify Flag */
+            notify_flag?: boolean | null;
+            /** Channel */
+            channel?: string | null;
+            /** Event Type */
+            event_type?: string | null;
+            /** Hub */
+            hub?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ContextArtifactBridgeResponse */
         ContextArtifactBridgeResponse: {
             /** Project Id */
             project_id: string;
             /** Artifact Id */
             artifact_id: string;
-            /** Bridge Path */
+            /**
+             * Bridge Path
+             * @default
+             */
             bridge_path: string;
             /**
              * Indexed
              * @default false
              */
             indexed: boolean;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ContextArtifactCreateBody */
         ContextArtifactCreateBody: {
@@ -5605,6 +6291,52 @@ export interface components {
         ContextArtifactFromCompactionBody: {
             /** Title */
             title?: string | null;
+        };
+        /**
+         * ContextArtifactFromCompactionResponse
+         * @description POST context-artifacts/from-compaction (`sak486-g`).
+         */
+        ContextArtifactFromCompactionResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /** Artifact Id */
+            artifact_id?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Kind */
+            kind?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ContextArtifactInsertResponse
+         * @description POST context-artifacts/{id}/insert (`sak486-g`).
+         */
+        ContextArtifactInsertResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Artifact Id */
+            artifact_id?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Kind */
+            kind?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ContextArtifactListResponse */
         ContextArtifactListResponse: {
@@ -5717,6 +6449,30 @@ export interface components {
             /** Enforcement Profile Id */
             enforcement_profile_id?: string | null;
         };
+        /**
+         * CreateCampaignResponse
+         * @description POST /campaigns (`sak484-e`).
+         */
+        CreateCampaignResponse: {
+            /** Campaign Id */
+            campaign_id?: string | null;
+            /** Run Id */
+            run_id?: string | null;
+            /** Dispatch Mode */
+            dispatch_mode?: string | null;
+            /** Autonomous */
+            autonomous?: boolean | null;
+            /** Workflow Profile */
+            workflow_profile?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** CreateChatSessionBody */
         CreateChatSessionBody: {
             /** Project Id */
@@ -5770,6 +6526,100 @@ export interface components {
             standards_profile_id?: string | null;
             /** Consumer Archetype */
             consumer_archetype?: string | null;
+        };
+        /**
+         * CreateRunResponse
+         * @description POST /runs (`sak487-e`).
+         */
+        CreateRunResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CriticPackDetailResponse
+         * @description GET /config/critic-packs/{pack_id} (`sak487-f`).
+         */
+        CriticPackDetailResponse: {
+            /** Pack Id */
+            pack_id?: string | null;
+            /** Content */
+            content?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CriticPackListResponse
+         * @description GET /config/critic-packs (`sak487-f`).
+         */
+        CriticPackListResponse: {
+            /** Pack Ids */
+            pack_ids?: string[] | null;
+            /** Count */
+            count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CriticPackUpsertResponse
+         * @description PUT /config/critic-packs/{pack_id} (`sak487-f`).
+         */
+        CriticPackUpsertResponse: {
+            /** Pack Id */
+            pack_id?: string | null;
+            /** Namespace */
+            namespace?: string | null;
+            /** Version */
+            version?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * CriticPackWorkflowsResponse
+         * @description GET /config/critic-packs/{pack_id}/workflows (`sak487-f`).
+         */
+        CriticPackWorkflowsResponse: {
+            /** Pack Id */
+            pack_id?: string | null;
+            /** Workflow Profiles */
+            workflow_profiles?: string[] | null;
+            /** Count */
+            count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** CustomAgentCreateRequest */
         CustomAgentCreateRequest: {
@@ -5835,6 +6685,28 @@ export interface components {
              */
             allow_host_resource_management: boolean;
         };
+        /**
+         * DelegateControlResponse
+         * @description POST session compute delegate-control (`sak444-d`).
+         */
+        DelegateControlResponse: {
+            /** Session Id */
+            session_id?: string | null;
+            /** Allow Host Resource Management */
+            allow_host_resource_management?: boolean | null;
+            /** Node */
+            node?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
         /** DeployApplyBody */
         DeployApplyBody: {
             /** Run Id */
@@ -5896,7 +6768,10 @@ export interface components {
              */
             use_playwright: boolean;
         };
-        /** DevEnvActionResponse */
+        /**
+         * DevEnvActionResponse
+         * @description POST /runs/{run_id}/dev-env/start|stop (`sak498-e` peel fields).
+         */
         DevEnvActionResponse: {
             /** Ok */
             ok: boolean;
@@ -5912,8 +6787,19 @@ export interface components {
             probe?: {
                 [key: string]: unknown;
             };
+            /** Via */
+            via?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
         };
-        /** DevEnvRegressionResponse */
+        /**
+         * DevEnvRegressionResponse
+         * @description POST /runs/{run_id}/dev-env/regression|ui-regression (`sak498-e` peel fields).
+         */
         DevEnvRegressionResponse: {
             /** Passed */
             passed: boolean;
@@ -5928,8 +6814,21 @@ export interface components {
             } | null;
             /** Flow Id */
             flow_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
         };
-        /** DevEnvStatusResponse */
+        /**
+         * DevEnvStatusResponse
+         * @description GET /runs/{run_id}/dev-env/status (`sak498-e` peel fields).
+         */
         DevEnvStatusResponse: {
             /** Run Id */
             run_id: string;
@@ -5950,11 +6849,176 @@ export interface components {
             logs?: {
                 [key: string]: unknown;
             };
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * DevEnvTheaterResponse
+         * @description GET /runs/{run_id}/dev-env/theater (`sak485-e`; peel fields `sak498-e`).
+         */
+        DevEnvTheaterResponse: {
+            /** Headline */
+            headline?: string | null;
+            /** Logs */
+            logs?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** DisciplineProfileBody */
         DisciplineProfileBody: {
             /** Default Discipline */
             default_discipline?: string | null;
+        };
+        /**
+         * DisciplineProfileResponse
+         * @description GET/PUT /users/me/discipline-profile (`sak483-g`).
+         */
+        DisciplineProfileResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * EffectiveRoleResponse
+         * @description GET effective-role (`sak481-d`).
+         */
+        EffectiveRoleResponse: {
+            /** User Id */
+            user_id?: string | null;
+            /** Effective Role */
+            effective_role?: string | null;
+            /** Direct Role */
+            direct_role?: string | null;
+            /** Grant Roles */
+            grant_roles?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * EgressAuditResponse
+         * @description GET /enterprise/egress-audit JSON (`sak486-e`).
+         */
+        EgressAuditResponse: {
+            /** Rows */
+            rows?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Count */
+            count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * EnforcementPresetResponse
+         * @description GET /enforcement/presets/{level} (`sak483-e`).
+         */
+        EnforcementPresetResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /** EnterpriseFeatureStatus */
+        EnterpriseFeatureStatus: {
+            /** Status */
+            status: string;
+            /**
+             * Epic
+             * @default
+             */
+            epic: string;
+        };
+        /**
+         * EnterpriseHealthResponse
+         * @description GET /enterprise/health (`sak449-e`).
+         */
+        EnterpriseHealthResponse: {
+            /**
+             * Ok
+             * @default false
+             */
+            ok: boolean;
+            /** Edition */
+            edition?: string | null;
+            /** Iam */
+            iam?: string | null;
+        };
+        /**
+         * EnterpriseStatusResponse
+         * @description GET /enterprise/status (`sak449-e`).
+         */
+        EnterpriseStatusResponse: {
+            /** Edition */
+            edition?: string | null;
+            /** Lane */
+            lane?: string | null;
+            /** Bootstrap Epic */
+            bootstrap_epic?: string | null;
+            /** Features */
+            features?: {
+                [key: string]: components["schemas"]["EnterpriseFeatureStatus"];
+            };
+            /** Message */
+            message?: string | null;
+        };
+        /**
+         * EnterpriseUserSearchResponse
+         * @description GET /users enterprise search (`sak486-e`).
+         */
+        EnterpriseUserSearchResponse: {
+            /** Users */
+            users?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** EscalateBody */
         EscalateBody: {
@@ -5964,6 +7028,59 @@ export interface components {
             reason_code: string;
             /** Notes */
             notes?: string | null;
+        };
+        /** EvolutionPromoteBody */
+        EvolutionPromoteBody: {
+            /** Artifact Id */
+            artifact_id: string;
+            /**
+             * Promote
+             * @default true
+             */
+            promote: boolean;
+        };
+        /** EvolutionTimelineResponse */
+        EvolutionTimelineResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Timeline */
+            timeline?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Pending */
+            pending?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Count */
+            count?: number | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ExternalChatCapabilitiesResponse
+         * @description GET /integrations/external-chat (`sak484-f`).
+         */
+        ExternalChatCapabilitiesResponse: {
+            /** Scope */
+            scope?: string | null;
+            /** Docs */
+            docs?: string | null;
+            /** In Product Chat */
+            in_product_chat?: string | null;
+            /** Supported Commands */
+            supported_commands?: string | null;
+            /** Steering Prefixes */
+            steering_prefixes?: string | null;
+            /** Mention Routing */
+            mention_routing?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ExternalChatWebhookBody */
         ExternalChatWebhookBody: {
@@ -6000,15 +7117,15 @@ export interface components {
              */
             note: string;
         };
-        /** FactoryEvidenceResponse */
+        /**
+         * FactoryEvidenceResponse
+         * @description GET /runs/{run_id}/factory-evidence (`sak486-g`).
+         */
         FactoryEvidenceResponse: {
             /** Run Id */
-            run_id: string;
-            /**
-             * Factory Complete
-             * @default false
-             */
-            factory_complete: boolean;
+            run_id?: string | null;
+            /** Factory Complete */
+            factory_complete?: boolean | null;
             /** Factory Status */
             factory_status?: {
                 [key: string]: unknown;
@@ -6020,19 +7137,79 @@ export interface components {
             /** Factory Stages */
             factory_stages?: {
                 [key: string]: unknown;
-            }[];
+            }[] | null;
             /** Put Artifacts */
             put_artifacts?: {
                 [key: string]: unknown;
-            };
+            } | null;
             /** Evidence */
             evidence?: {
                 [key: string]: unknown;
-            };
+            } | null;
             /** Scorecard Rows */
             scorecard_rows?: {
                 [key: string]: string;
-            }[];
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetAnalyticsCompareResponse
+         * @description GET /enterprise/fleet/analytics/compare (`sak485-f`).
+         */
+        FleetAnalyticsCompareResponse: {
+            /** Tenant A */
+            tenant_a?: {
+                [key: string]: unknown;
+            } | null;
+            /** Tenant B */
+            tenant_b?: {
+                [key: string]: unknown;
+            } | null;
+            /** Comparison */
+            comparison?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetAnalyticsTenantResponse
+         * @description GET /enterprise/fleet/analytics/tenant/{tenant_id} (`sak485-f`).
+         */
+        FleetAnalyticsTenantResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Runs Scanned */
+            runs_scanned?: number | null;
+            /** Gate Metrics */
+            gate_metrics?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ollama Sli */
+            ollama_sli?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** FleetAutopilotPolicyBody */
         FleetAutopilotPolicyBody: {
@@ -6043,6 +7220,26 @@ export interface components {
             max_autopilot_level: number;
             /** Required Checkpoints */
             required_checkpoints?: string[];
+        };
+        /**
+         * FleetAutopilotPolicyResponse
+         * @description GET/PUT tenant autopilot-policy (`sak483-f`).
+         */
+        FleetAutopilotPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Max Autopilot Level */
+            max_autopilot_level?: number | null;
+            /** Required Checkpoints */
+            required_checkpoints?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** FleetCommitPolicyBody */
         FleetCommitPolicyBody: {
@@ -6057,6 +7254,122 @@ export interface components {
              */
             message_regex: string;
         };
+        /**
+         * FleetCommitPolicyResponse
+         * @description GET/PUT fleet commit-policy (`sak449-e`).
+         */
+        FleetCommitPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /**
+             * Require Auto Commit
+             * @default false
+             */
+            require_auto_commit: boolean;
+            /**
+             * Message Regex
+             * @default
+             */
+            message_regex: string;
+        };
+        /**
+         * FleetCriticReliabilityResponse
+         * @description GET /enterprise/fleet/critic-reliability (`sak485-f`).
+         */
+        FleetCriticReliabilityResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Runs Scanned */
+            runs_scanned?: number | null;
+            /** Runs With Critics */
+            runs_with_critics?: number | null;
+            /** Critic Verdict Count */
+            critic_verdict_count?: number | null;
+            /** Critic Fail Count */
+            critic_fail_count?: number | null;
+            /** Critic Fail Rate */
+            critic_fail_rate?: number | null;
+            /** In Domain Verdict Count */
+            in_domain_verdict_count?: number | null;
+            /** In Domain Fail Count */
+            in_domain_fail_count?: number | null;
+            /** In Domain Fail Rate */
+            in_domain_fail_rate?: number | null;
+            /** Out Of Domain Verdict Count */
+            out_of_domain_verdict_count?: number | null;
+            /** Out Of Domain Fail Count */
+            out_of_domain_fail_count?: number | null;
+            /** Out Of Domain Rate */
+            out_of_domain_rate?: number | null;
+            /** Gate Block Count */
+            gate_block_count?: number | null;
+            /** Repeat Finding Paths */
+            repeat_finding_paths?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetDashboardResponse
+         * @description GET /admin/ui/enterprise/fleet-dashboard (`sak480-e`).
+         */
+        FleetDashboardResponse: {
+            /** Memory Rows */
+            memory_rows?: unknown[];
+            /** Worker Caption */
+            worker_caption?: string | null;
+            /** Sli Caption */
+            sli_caption?: string | null;
+            /** Hardware Rows */
+            hardware_rows?: unknown[];
+            /** Export Json */
+            export_json?: unknown;
+            /** Export Filename Slug */
+            export_filename_slug?: string | null;
+            /** Fleet Memory */
+            fleet_memory?: {
+                [key: string]: unknown;
+            } | null;
+            /** Preflight Aggregate */
+            preflight_aggregate?: {
+                [key: string]: unknown;
+            } | null;
+            /** Fleet Worker */
+            fleet_worker?: {
+                [key: string]: unknown;
+            } | null;
+            /** Hardware Fleet */
+            hardware_fleet?: {
+                [key: string]: unknown;
+            } | null;
+            /** Critic Reliability */
+            critic_reliability?: {
+                [key: string]: unknown;
+            } | null;
+            /** Critic Reliability Caption */
+            critic_reliability_caption?: string | null;
+            /** Critic Reliability Rows */
+            critic_reliability_rows?: unknown[] | null;
+            /** Archetype Fit Rows */
+            archetype_fit_rows?: unknown[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Capacity Source */
+            capacity_source?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** FleetDeployApprovalPolicyBody */
         FleetDeployApprovalPolicyBody: {
             /**
@@ -6065,15 +7378,278 @@ export interface components {
              */
             deploy_approval_chain: string;
         };
+        /**
+         * FleetDeployApprovalPolicyResponse
+         * @description GET/PUT tenant deploy-approval-policy (`sak483-f`).
+         */
+        FleetDeployApprovalPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Deploy Approval Chain */
+            deploy_approval_chain?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** FleetDeployPolicyBody */
         FleetDeployPolicyBody: {
             /** Allowed Deploy Targets */
             allowed_deploy_targets?: string[];
         };
+        /**
+         * FleetDeployPolicyResponse
+         * @description GET/PUT tenant deploy-policy (`sak483-f`).
+         */
+        FleetDeployPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Allowed Deploy Targets */
+            allowed_deploy_targets?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** FleetDiscoveryPolicyBody */
         FleetDiscoveryPolicyBody: {
             /** Discovery Required Fields */
             discovery_required_fields?: string[];
+        };
+        /**
+         * FleetDiscoveryPolicyResponse
+         * @description GET/PUT tenant discovery-policy (`sak483-f`).
+         */
+        FleetDiscoveryPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Discovery Required Fields */
+            discovery_required_fields?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetEnforcementPolicyResponse
+         * @description GET/PUT tenant enforcement-policy (`sak483-f`).
+         */
+        FleetEnforcementPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Min Enforcement Level */
+            min_enforcement_level?: number | null;
+            /** Max Enforcement Level */
+            max_enforcement_level?: number | null;
+            /** Required Enforcement Profile Id */
+            required_enforcement_profile_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetGovernanceResponse
+         * @description GET /platform/fleet-governance (`sak448-e`).
+         */
+        FleetGovernanceResponse: {
+            /** Setup Bundle */
+            setup_bundle?: string | null;
+            /** Mandatory Discovery */
+            mandatory_discovery?: boolean | null;
+            /** Default Surfaces */
+            default_surfaces?: string[] | null;
+            /** Surface Policy */
+            surface_policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Enforcement Policy */
+            enforcement_policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Deploy Chain Required */
+            deploy_chain_required?: boolean | null;
+            /** Allowed Deploy Targets */
+            allowed_deploy_targets?: string[] | null;
+            /** Discovery Required Fields */
+            discovery_required_fields?: string[] | null;
+            /** Deploy Approval Chain */
+            deploy_approval_chain?: string | null;
+            /** Allowed Stacks */
+            allowed_stacks?: {
+                [key: string]: string;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * FleetLearningsSearchResponse
+         * @description GET /enterprise/fleet-learnings/search (`sak485-f`).
+         */
+        FleetLearningsSearchResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Query */
+            query?: string | null;
+            /** Workspace Count */
+            workspace_count?: number | null;
+            /** Hit Count */
+            hit_count?: number | null;
+            /** Hits */
+            hits?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetMemoryRebuildResponse
+         * @description POST /enterprise/fleet-memory/rebuild (`sak483-g`).
+         */
+        FleetMemoryRebuildResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Org Scope Hash */
+            org_scope_hash?: string | null;
+            /** Generation Id */
+            generation_id?: string | null;
+            /** Chunks Added */
+            chunks_added?: number | null;
+            /** Chunks Skipped */
+            chunks_skipped?: number | null;
+            /** Embedding Mode */
+            embedding_mode?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetMemorySearchResponse
+         * @description GET /enterprise/fleet-memory/search (`sak480-e`).
+         */
+        FleetMemorySearchResponse: {
+            /** Org Scope Hash */
+            org_scope_hash?: string | null;
+            /** Query */
+            query?: string | null;
+            /** Embedding Mode */
+            embedding_mode?: string | null;
+            /**
+             * Hit Count
+             * @default 0
+             */
+            hit_count: number;
+            /** Hits */
+            hits?: {
+                [key: string]: unknown;
+            }[];
+            /** Excerpt */
+            excerpt?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * FleetMemoryStatusResponse
+         * @description GET /enterprise/fleet-memory/status (`sak480-e`).
+         */
+        FleetMemoryStatusResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Org Scope Hash */
+            org_scope_hash?: string | null;
+            /** Fleet Memory Enabled */
+            fleet_memory_enabled?: boolean | null;
+            /** Local Generation Id */
+            local_generation_id?: string | null;
+            /**
+             * Local Chunk Count
+             * @default 0
+             */
+            local_chunk_count: number;
+            /** Remote */
+            remote?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * FleetMemorySyncResponse
+         * @description POST /enterprise/fleet-memory/sync (`sak483-g`).
+         */
+        FleetMemorySyncResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * FleetMeshStatusResponse
+         * @description GET fleet-mesh status (COMPUTE peel-aware; sak444-e).
+         */
+        FleetMeshStatusResponse: {
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Nodes */
+            nodes?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Queue Depth
+             * @default 0
+             */
+            queue_depth: number;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Session Id */
+            session_id?: string | null;
         };
         /** FleetRebuildBody */
         FleetRebuildBody: {
@@ -6113,12 +7689,56 @@ export interface components {
              */
             require_unanimous_gate: boolean;
         };
+        /**
+         * FleetSlicePolicyResponse
+         * @description GET/PUT tenant slice-policy (`sak482-g`).
+         */
+        FleetSlicePolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Slice Budget Preset */
+            slice_budget_preset?: string | null;
+            /** Max Files */
+            max_files?: number | null;
+            /** Max Loc */
+            max_loc?: number | null;
+            /** Require Unanimous Gate */
+            require_unanimous_gate?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** FleetStackPolicyBody */
         FleetStackPolicyBody: {
             /** Allowed Stacks */
             allowed_stacks?: {
                 [key: string]: string;
             };
+        };
+        /**
+         * FleetStackPolicyResponse
+         * @description GET/PUT tenant stack-policy (`sak482-g`).
+         */
+        FleetStackPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Allowed Stacks */
+            allowed_stacks?: {
+                [key: string]: string;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** FleetStandardsPolicyBody */
         FleetStandardsPolicyBody: {
@@ -6131,6 +7751,28 @@ export interface components {
              * @default
              */
             required_facade_id: string;
+        };
+        /**
+         * FleetStandardsPolicyResponse
+         * @description GET/PUT tenant standards-policy (`sak483-f`).
+         */
+        FleetStandardsPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Min Bundle Ids */
+            min_bundle_ids?: string[] | null;
+            /** Blocked Origins */
+            blocked_origins?: string[] | null;
+            /** Required Facade Id */
+            required_facade_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** FleetSyncBody */
         FleetSyncBody: {
@@ -6159,6 +7801,42 @@ export interface components {
             /** Parent Folder Id */
             parent_folder_id?: string | null;
         };
+        /**
+         * FolderListResponse
+         * @description GET /chat/folders (`sak481-d`).
+         */
+        FolderListResponse: {
+            /** Folders */
+            folders?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * FolderMutationResponse
+         * @description POST/PATCH/DELETE folder (`sak481-d`).
+         */
+        FolderMutationResponse: {
+            /** Folder */
+            folder?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** FolderPatchBody */
         FolderPatchBody: {
             /** Name */
@@ -6176,6 +7854,22 @@ export interface components {
             /** Name */
             name: string;
         };
+        /**
+         * GroupListResponse
+         * @description GET /chat/groups (`sak481-d`).
+         */
+        GroupListResponse: {
+            /** Groups */
+            groups?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
         /** GroupMemberBody */
         GroupMemberBody: {
             /**
@@ -6183,6 +7877,26 @@ export interface components {
              * Format: uuid
              */
             user_id: string;
+        };
+        /**
+         * GroupMutationResponse
+         * @description POST /chat/groups + members (`sak482-e`).
+         */
+        GroupMutationResponse: {
+            /** Group */
+            group?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** HardwareRescanBody */
         HardwareRescanBody: {
@@ -6206,12 +7920,117 @@ export interface components {
              */
             to_user_id: string;
         };
+        /**
+         * HostTransferBundleResponse
+         * @description GET host-transfer bundle (`sak480-f`).
+         */
+        HostTransferBundleResponse: {
+            /** Manifest */
+            manifest?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * HostTransferListResponse
+         * @description GET host-transfer list (`sak449-f`).
+         */
+        HostTransferListResponse: {
+            /** Transfers */
+            transfers?: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * HostTransferResponse
+         * @description POST host-transfer (`sak449-f`).
+         */
+        HostTransferResponse: {
+            /**
+             * Ok
+             * @default true
+             */
+            ok: boolean;
+            /** Transfer */
+            transfer?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * IamBootstrapResponse
+         * @description POST /enterprise/iam/bootstrap (`sak485-g`).
+         */
+        IamBootstrapResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Key Id */
+            key_id?: string | null;
+            /** Key Prefix */
+            key_prefix?: string | null;
+            /** Api Key */
+            api_key?: string | null;
+            /** Role Taxonomy Keys */
+            role_taxonomy_keys?: string[] | null;
+            /** Api Scopes */
+            api_scopes?: string[] | null;
+            /** Message */
+            message?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * IamMeResponse
+         * @description GET /enterprise/iam/me (`sak485-g`).
+         */
+        IamMeResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Key Id */
+            key_id?: string | null;
+            /** Role Taxonomy Keys */
+            role_taxonomy_keys?: string[] | null;
+            /** Api Scopes */
+            api_scopes?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ImportBundleBody */
         ImportBundleBody: {
             /** Manifest */
             manifest: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * IndustryCriticPacksResponse
+         * @description GET /platform/industry-critic-packs (`sak480-d`).
+         */
+        IndustryCriticPacksResponse: {
+            /** Packs */
+            packs?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** InterjectionEnqueueBody */
         InterjectionEnqueueBody: {
@@ -6267,6 +8086,14 @@ export interface components {
             /** Recommended Discipline */
             recommended_discipline?: string | null;
         };
+        /**
+         * InviteTemplatesResponse
+         * @description GET /platform/invite-templates (`sak449-d`).
+         */
+        InviteTemplatesResponse: {
+            /** Templates */
+            templates?: unknown[];
+        };
         /** JoinBody */
         JoinBody: {
             /** Token */
@@ -6291,6 +8118,156 @@ export interface components {
             project_id: string;
             /** Role */
             role: string;
+        };
+        /**
+         * LaunchEvalResponse
+         * @description POST /runs/{id}/maker/launch-eval (`sak482-f`).
+         */
+        LaunchEvalResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * LifecyclePlanResponse
+         * @description POST /runs/{run_id}/lifecycle/plan (`sak486-g`).
+         */
+        LifecyclePlanResponse: {
+            /** Status */
+            status?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * LifecycleSliceResponse
+         * @description POST /runs/{run_id}/lifecycle/slice (`sak486-g`).
+         */
+        LifecycleSliceResponse: {
+            /** Status */
+            status?: string | null;
+            /** Dispatch */
+            dispatch?: string | null;
+            /** Slices Completed */
+            slices_completed?: number | null;
+            /** Slices Blocked */
+            slices_blocked?: number | null;
+            /** Slice Total */
+            slice_total?: number | null;
+            /** Pending */
+            pending?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * LifecycleStartResponse
+         * @description POST /runs/{run_id}/lifecycle/start (`sak486-g`).
+         */
+        LifecycleStartResponse: {
+            /** Status */
+            status?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * LifecycleVerifyResponse
+         * @description POST /runs/{run_id}/lifecycle/verify (`sak486-g`).
+         */
+        LifecycleVerifyResponse: {
+            /** Status */
+            status?: string | null;
+            /** Dispatch */
+            dispatch?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MakerActionResponse
+         * @description Maker workflow POST actions (`sak483-g`).
+         */
+        MakerActionResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MakerGitStatusResponse
+         * @description GET /runs/{id}/maker/git-status (`sak483-g`).
+         */
+        MakerGitStatusResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Git Commit */
+            git_commit?: {
+                [key: string]: unknown;
+            } | null;
+            /** Git Outputs */
+            git_outputs?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MakerOpenPrResponse
+         * @description POST /runs/{id}/maker/open-pr (`sak483-g`).
+         */
+        MakerOpenPrResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Pr */
+            pr?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** MakerProgressResponse */
         MakerProgressResponse: {
@@ -6352,6 +8329,123 @@ export interface components {
              */
             simple_mode: boolean;
         };
+        /**
+         * MakerRunTestsResponse
+         * @description POST /runs/{id}/maker/run-tests (`sak483-g`).
+         */
+        MakerRunTestsResponse: {
+            /** Tests Passed */
+            tests_passed?: boolean | null;
+            /** Exit Code */
+            exit_code?: number | null;
+            /** Detail */
+            detail?: string | null;
+            /** Targets */
+            targets?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MemoryChunkInsertResponse
+         * @description POST /runs/{run_id}/memory-chunks/{chunk_id}/insert (`sak487-e`).
+         */
+        MemoryChunkInsertResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Chunk Id */
+            chunk_id?: string | null;
+            /** Category */
+            category?: string | null;
+            /** Severity */
+            severity?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MemoryChunksResponse
+         * @description GET /memory/chunks (`sak480-e`).
+         */
+        MemoryChunksResponse: {
+            /** Project Id */
+            project_id?: string | null;
+            /** Repo Scope Hash */
+            repo_scope_hash?: string | null;
+            /** Workspace Path */
+            workspace_path?: string | null;
+            /** Chunks */
+            chunks?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
+            /** Caption */
+            caption?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * ModelBindingAuditResponse
+         * @description GET /runs/{id}/model-bindings/audit (`sak483-g`).
+         */
+        ModelBindingAuditResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Events */
+            events?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Count */
+            count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ModelBindingMutationResponse
+         * @description POST/DELETE model-binding mutations (`sak483-g`).
+         */
+        ModelBindingMutationResponse: {
+            /** Ok */
+            ok?: boolean | null;
+            /** Event */
+            event?: string | null;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ModelBindingSwapBody */
         ModelBindingSwapBody: {
             /** Agent Role */
@@ -6365,6 +8459,114 @@ export interface components {
             provider_kind: string;
             /** Model Id */
             model_id: string;
+        };
+        /**
+         * ModelBindingsDefaultsResponse
+         * @description GET/PUT /platform/model-bindings/defaults (`sak446-b`).
+         */
+        ModelBindingsDefaultsResponse: {
+            /** Defaults */
+            defaults?: {
+                [key: string]: unknown;
+            } | null;
+            /** Roles */
+            roles?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Providers */
+            providers?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * ModelBindingsPreflightResponse
+         * @description GET /platform/model-bindings/preflight (`sak446-b`).
+         */
+        ModelBindingsPreflightResponse: {
+            /** Ok */
+            ok?: boolean | null;
+            /** Roles */
+            roles?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Roles Total */
+            roles_total?: number | null;
+            /** Roles Covered */
+            roles_covered?: number | null;
+            /** Roles Without Provider */
+            roles_without_provider?: string[] | null;
+            /** Providers Reachable */
+            providers_reachable?: {
+                [key: string]: unknown;
+            } | null;
+            /** Inference Mode */
+            inference_mode?: string | null;
+            /** Inference Mode Label */
+            inference_mode_label?: string | null;
+            /** Ollama Required */
+            ollama_required?: boolean | null;
+            /** Issues */
+            issues?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Workflow Profile */
+            workflow_profile?: string | null;
+            /** Work Type */
+            work_type?: string | null;
+            /** Surface Stage Map */
+            surface_stage_map?: {
+                [key: string]: string;
+            } | null;
+            /** Stack Manifest Surfaces */
+            stack_manifest_surfaces?: string[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * ModelBindingsRolesResponse
+         * @description GET /platform/model-bindings/roles (`sak446-b`).
+         */
+        ModelBindingsRolesResponse: {
+            /** Roles */
+            roles?: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * ModelDependenciesResponse
+         * @description GET /platform/models/dependencies (`sak445-c`).
+         */
+        ModelDependenciesResponse: {
+            /** Ollama Reachable */
+            ollama_reachable?: boolean | null;
+            /** Ollama Message */
+            ollama_message?: string | null;
+            /** Docker Gpu Warning */
+            docker_gpu_warning?: string | null;
+            /** Checks */
+            checks?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Capacity Source */
+            capacity_source?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** ModelPolicyBody */
         ModelPolicyBody: {
@@ -6383,6 +8585,36 @@ export interface components {
              */
             audit_include_binding_events: boolean;
         };
+        /**
+         * ModelPolicyResponse
+         * @description GET/PUT /model-policy (`sak486-f`).
+         */
+        ModelPolicyResponse: {
+            /** Version */
+            version?: number | null;
+            /** Allowed Cloud Providers */
+            allowed_cloud_providers?: string[] | null;
+            /** Require Admin For Cloud Swap */
+            require_admin_for_cloud_swap?: boolean | null;
+            /** Blocked Model Ids */
+            blocked_model_ids?: string[] | null;
+            /** Audit Include Binding Events */
+            audit_include_binding_events?: boolean | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Policy */
+            policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** OllamaBootstrapRequest */
         OllamaBootstrapRequest: {
             /**
@@ -6399,16 +8631,27 @@ export interface components {
             message: string;
             /** Base Url */
             base_url?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** OllamaDeleteResponse */
         OllamaDeleteResponse: {
             /** Model */
             model: string;
-            /**
-             * Status
-             * @default deleted
-             */
-            status: string;
+            /** Status */
+            status?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** OllamaModelEntry */
         OllamaModelEntry: {
@@ -6436,6 +8679,14 @@ export interface components {
             models?: components["schemas"]["OllamaModelEntry"][];
             /** Query */
             query?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** OllamaPrimaryRoutingRequest */
         OllamaPrimaryRoutingRequest: {
@@ -6456,6 +8707,10 @@ export interface components {
             created_at?: string | null;
             /** Finished At */
             finished_at?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** OllamaPullRequest */
         OllamaPullRequest: {
@@ -6466,13 +8721,16 @@ export interface components {
         OllamaPullResponse: {
             /** Model */
             model: string;
-            /**
-             * Status
-             * @default pulled
-             */
-            status: string;
+            /** Status */
+            status?: string | null;
             /** Job Id */
             job_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** OllamaUserPolicyBody */
         OllamaUserPolicyBody: {
@@ -6493,6 +8751,14 @@ export interface components {
             allow_update_routing: boolean;
             /** Updated At */
             updated_at?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** OperatorChatMessageBody */
         OperatorChatMessageBody: {
@@ -6512,6 +8778,14 @@ export interface components {
             classification?: {
                 [key: string]: unknown;
             } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** OperatorProfilesBody */
         OperatorProfilesBody: {
@@ -6519,6 +8793,20 @@ export interface components {
             autopilot_profile_id?: string | null;
             /** Enforcement Profile Id */
             enforcement_profile_id?: string | null;
+        };
+        /**
+         * OperatorProfilesResponse
+         * @description GET/PUT /platform/operator-profiles (`sak483-g`).
+         */
+        OperatorProfilesResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** OptimizerWeightsBody */
         OptimizerWeightsBody: {
@@ -6538,6 +8826,18 @@ export interface components {
             /** Policy Snapshot Id */
             policy_snapshot_id?: string | null;
         };
+        /**
+         * ParticipantBindingsResponse
+         * @description GET/PUT session participant-bindings (`sak446-a`).
+         */
+        ParticipantBindingsResponse: {
+            /** User Id */
+            user_id?: string | null;
+            /** Roles */
+            roles?: {
+                [key: string]: unknown;
+            };
+        };
         /** ParticipantBody */
         ParticipantBody: {
             /** User Id */
@@ -6555,10 +8855,40 @@ export interface components {
             /** Expertise Bullets */
             expertise_bullets?: string[];
         };
+        /**
+         * ParticipantContextResponse
+         * @description GET/PUT /users/me/participant-context (`sak483-g`).
+         */
+        ParticipantContextResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ParticipantDisciplineBody */
         ParticipantDisciplineBody: {
             /** User Discipline */
             user_discipline?: string | null;
+        };
+        /**
+         * ParticipantRemoveResponse
+         * @description DELETE /chat/sessions/{session_id}/participants/{user_id} (`sak487-f`).
+         */
+        ParticipantRemoveResponse: {
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ParticipantResponse */
         ParticipantResponse: {
@@ -6650,6 +8980,28 @@ export interface components {
             version: number;
         };
         /**
+         * PersonaOverlapReportResponse
+         * @description GET /personas/overlap-report (`sak487-f`).
+         */
+        PersonaOverlapReportResponse: {
+            /** Pair Count */
+            pair_count?: number | null;
+            /** Rows */
+            rows?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Warning */
+            warning?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
          * PersonaShelfPatchRequest
          * @description Body for ``PATCH /v1/personas/{shelf}/{id}`` (partial update).
          *
@@ -6709,6 +9061,187 @@ export interface components {
             development_role?: {
                 [key: string]: unknown;
             }[];
+        };
+        /**
+         * PlatformCapacityResponse
+         * @description CAPACITY peel-aware platform response (`sak443-f` / `sak444-e` / `sak445-b`).
+         */
+        PlatformCapacityResponse: {
+            /** Via */
+            via?: string | null;
+            /** Capacity Source */
+            capacity_source?: string | null;
+            /** Fit Via */
+            fit_via?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Models */
+            models?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Models Ranked */
+            models_ranked?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Profile Tier */
+            profile_tier?: string | null;
+            /** Use Case */
+            use_case?: string | null;
+            /** Gpu Only */
+            gpu_only?: boolean | null;
+            /** Model Id */
+            model_id?: string | null;
+            /** Preset */
+            preset?: string | null;
+            /** Ollama Tag */
+            ollama_tag?: string | null;
+            /** Materialize Hint */
+            materialize_hint?: string | null;
+            /** Preset Applied */
+            preset_applied?: {
+                [key: string]: unknown;
+            } | null;
+            /** Profile */
+            profile?: {
+                [key: string]: unknown;
+            } | null;
+            /** Resource Governor */
+            resource_governor?: {
+                [key: string]: unknown;
+            } | null;
+            /** Hosts */
+            hosts?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Event Emitted */
+            event_emitted?: boolean | null;
+            /** Store Seq */
+            store_seq?: number | null;
+            /** Binding Id */
+            binding_id?: string | null;
+            /** Preset Id */
+            preset_id?: string | null;
+            /** Remote Host */
+            remote_host?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Routing Preset Id */
+            routing_preset_id?: string | null;
+            /** Cloud Runtime */
+            cloud_runtime?: {
+                [key: string]: unknown;
+            } | null;
+            /** Stage Providers */
+            stage_providers?: {
+                [key: string]: unknown;
+            } | null;
+            /** Cloud Preflight */
+            cloud_preflight?: {
+                [key: string]: unknown;
+            } | null;
+            /** Cloud Enabled */
+            cloud_enabled?: boolean | null;
+        };
+        /**
+         * PlatformDeployResponse
+         * @description OpenAPI payload (`sak481-e`).
+         */
+        PlatformDeployResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * PlatformEditionResponse
+         * @description GET /platform/edition (`sak449-d`).
+         */
+        PlatformEditionResponse: {
+            /** Edition */
+            edition?: string | null;
+            /** Individual */
+            individual?: boolean | null;
+            /** Enterprise */
+            enterprise?: boolean | null;
+            /** Env Var */
+            env_var?: string | null;
+            /** Features */
+            features?: {
+                [key: string]: unknown;
+            } | null;
+            /** Compose Profiles */
+            compose_profiles?: string[] | null;
+        };
+        /**
+         * PlatformOnboardingResponse
+         * @description GET/POST /platform/onboarding (`sak447-d`).
+         */
+        PlatformOnboardingResponse: {
+            /**
+             * Onboarded
+             * @default false
+             */
+            onboarded: boolean;
+        };
+        /**
+         * PlatformOptimizerWeightsResponse
+         * @description GET/PUT /platform/optimizer-weights (`sak446-c`).
+         */
+        PlatformOptimizerWeightsResponse: {
+            /** Weights */
+            weights?: {
+                [key: string]: number;
+            };
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /**
+         * PlatformReadinessResponse
+         * @description GET /platform/readiness (`sak447-d`).
+         */
+        PlatformReadinessResponse: {
+            /** Status */
+            status?: string | null;
+            /** Checks */
+            checks?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Capacity Source */
+            capacity_source?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Inference Mode Label */
+            inference_mode_label?: string | null;
+            /** Install Profile */
+            install_profile?: string | null;
+            /** Model Hub Cta */
+            model_hub_cta?: string | null;
+            /** Model Hub Action */
+            model_hub_action?: string | null;
+        };
+        /**
+         * PlaywrightBootstrapResponse
+         * @description GET/POST /platform/playwright-bootstrap (`sak449-d`).
+         */
+        PlaywrightBootstrapResponse: {
+            /** Status */
+            status?: string | null;
+            /** Plain Summary */
+            plain_summary?: string | null;
+            /** Error */
+            error?: string | null;
         };
         /** PolicyCompareRecordBody */
         PolicyCompareRecordBody: {
@@ -6985,6 +9518,56 @@ export interface components {
              */
             subscription_connected: boolean;
         };
+        /**
+         * ProviderConnectionMutationResponse
+         * @description PUT/POST provider-connection mutations (`sak447-e`).
+         */
+        ProviderConnectionMutationResponse: {
+            /** Connection */
+            connection?: {
+                [key: string]: unknown;
+            } | null;
+            /** Oauth Hint */
+            oauth_hint?: string | null;
+            /** Deleted */
+            deleted?: boolean | null;
+            /** Connection Id */
+            connection_id?: string | null;
+            /** Probe */
+            probe?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * ProviderConnectionsListResponse
+         * @description GET /platform/provider-connections (`sak447-e`).
+         */
+        ProviderConnectionsListResponse: {
+            /** Connections */
+            connections?: {
+                [key: string]: unknown;
+            }[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * ProviderPresetsResponse
+         * @description GET /platform/provider-presets (`sak447-e`).
+         */
+        ProviderPresetsResponse: {
+            /** Providers */
+            providers?: {
+                [key: string]: unknown;
+            }[];
+            /** Subscription Providers */
+            subscription_providers?: {
+                [key: string]: unknown;
+            }[];
+        };
         /** PushSubscriptionBody */
         PushSubscriptionBody: {
             /** Endpoint */
@@ -6997,6 +9580,64 @@ export interface components {
             expirationTime?: number | null;
             /** Run Id */
             run_id?: string | null;
+        };
+        /**
+         * PushSubscriptionDeleteResponse
+         * @description DELETE /maker/push-subscriptions (`sak484-f`).
+         */
+        PushSubscriptionDeleteResponse: {
+            /** Endpoint */
+            endpoint?: string | null;
+            /** Removed */
+            removed?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * PushSubscriptionListResponse
+         * @description GET /maker/push-subscriptions (`sak484-f`).
+         */
+        PushSubscriptionListResponse: {
+            /** Enabled */
+            enabled?: boolean | null;
+            /** Vapid Public Key */
+            vapid_public_key?: string | null;
+            /** Subscriptions */
+            subscriptions?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * PushSubscriptionRegisterResponse
+         * @description POST /maker/push-subscriptions (`sak484-f`).
+         */
+        PushSubscriptionRegisterResponse: {
+            /** Endpoint */
+            endpoint?: string | null;
+            /** Registered */
+            registered?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ReplayFromBody */
         ReplayFromBody: {
@@ -7038,6 +9679,24 @@ export interface components {
              */
             campaign_tick_enqueued: boolean;
         };
+        /**
+         * ResearchApproveResponse
+         * @description POST /runs/{run_id}/research/{brief_id}/approve (`sak486-g`).
+         */
+        ResearchApproveResponse: {
+            /** Status */
+            status?: string | null;
+            /** Brief Id */
+            brief_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ResearchBriefsResponse */
         ResearchBriefsResponse: {
             /** Run Id */
@@ -7051,6 +9710,46 @@ export interface components {
              * @default 0
              */
             count: number;
+        };
+        /**
+         * ResearchIndexResponse
+         * @description GET /enterprise/research-index (`sak486-e`).
+         */
+        ResearchIndexResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Rows */
+            rows?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Count */
+            count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * ResearchRejectResponse
+         * @description POST /runs/{run_id}/research/{brief_id}/reject (`sak486-g`).
+         */
+        ResearchRejectResponse: {
+            /** Status */
+            status?: string | null;
+            /** Brief Id */
+            brief_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** ResearchReviewBody */
         ResearchReviewBody: {
@@ -7093,6 +9792,23 @@ export interface components {
             /** Model Id */
             model_id: string;
         };
+        /**
+         * RoleClaimResponse
+         * @description POST/DELETE session role-claims (`sak447-f`).
+         */
+        RoleClaimResponse: {
+            /**
+             * Ok
+             * @default true
+             */
+            ok: boolean;
+            /** Event */
+            event?: string | null;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** RoleExecuteRequest */
         RoleExecuteRequest: {
             /**
@@ -7102,6 +9818,50 @@ export interface components {
             run_id: string;
             /** Workspace Path */
             workspace_path?: string | null;
+        };
+        /**
+         * RoleExecuteResponse
+         * @description POST /roles/{role_id}/execute (`sak487-e`).
+         */
+        RoleExecuteResponse: {
+            /** Status */
+            status?: string | null;
+            /** Taxonomy Key */
+            taxonomy_key?: string | null;
+            /** Stage Name */
+            stage_name?: string | null;
+            /** Run Id */
+            run_id?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * RoutingPresetsListResponse
+         * @description GET /platform/routing-presets (`sak445-c`).
+         */
+        RoutingPresetsListResponse: {
+            /** Presets */
+            presets?: {
+                [key: string]: unknown;
+            }[];
+            /** Active Preset Id */
+            active_preset_id?: string | null;
+            /** Cloud Preflight */
+            cloud_preflight?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** RunAutopilotBody */
         RunAutopilotBody: {
@@ -7202,6 +9962,52 @@ export interface components {
              */
             custom: boolean;
         };
+        /**
+         * RunFindingsResponse
+         * @description GET /runs/{run_id}/findings (`sak485-e`).
+         */
+        RunFindingsResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Findings */
+            findings?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * RunLearningsResponse
+         * @description GET /runs/{run_id}/learnings (`sak485-e`).
+         */
+        RunLearningsResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Learnings */
+            learnings?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Count */
+            count?: number | null;
+            /** Stitch Suggestion */
+            stitch_suggestion?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** RunListResponse */
         RunListResponse: {
             /** Run Ids */
@@ -7240,6 +10046,30 @@ export interface components {
             /** Status */
             status?: string | null;
         };
+        /**
+         * RunProjectionResponse
+         * @description Run detail projections (`sak482-f`).
+         */
+        RunProjectionResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Caption */
+            caption?: string | null;
+            /** Rows */
+            rows?: unknown[] | null;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** RunRequirementsBody */
         RunRequirementsBody: {
             /** Business Prompt */
@@ -7261,6 +10091,78 @@ export interface components {
             } | null;
             /** Solo Discipline */
             solo_discipline?: string | null;
+            /** Domain Keywords */
+            domain_keywords?: string[];
+        };
+        /**
+         * RunStandardsReportResponse
+         * @description GET /runs/{run_id}/standards/report (`sak483-e`).
+         */
+        RunStandardsReportResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Passed */
+            passed?: boolean | null;
+            /** Failing Check Ids */
+            failing_check_ids?: string[] | null;
+            /** Results */
+            results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * RunStandardsResponse
+         * @description GET/PUT /runs/{run_id}/standards (`sak483-e`).
+         */
+        RunStandardsResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Standards Effective */
+            standards_effective?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * RunStandardsRunResponse
+         * @description POST /runs/{run_id}/standards/run (`sak483-e`).
+         */
+        RunStandardsRunResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Result */
+            result?: {
+                [key: string]: unknown;
+            } | null;
+            /** Results */
+            results?: {
+                [key: string]: unknown;
+            }[] | {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** RunSummary */
         RunSummary: {
@@ -7415,6 +10317,22 @@ export interface components {
         SafeCodingPreferencesBody: {
             /** Industry Critic Pack Ids */
             industry_critic_pack_ids?: string[];
+        };
+        /**
+         * SafeCodingPreferencesResponse
+         * @description GET/PUT /platform/safe-coding-preferences (`sak480-d`).
+         */
+        SafeCodingPreferencesResponse: {
+            /** User Id */
+            user_id?: string | null;
+            /** Industry Critic Pack Ids */
+            industry_critic_pack_ids?: string[];
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** ScopeAnswerBody */
         ScopeAnswerBody: {
@@ -7596,6 +10514,26 @@ export interface components {
             /** Entries */
             entries: components["schemas"]["ScraperArtifactInventoryEntry"][];
         };
+        /**
+         * ScraperArtifactStorageResponse
+         * @description GET /enterprise/scraper-artifacts/storage (`sak486-e`).
+         */
+        ScraperArtifactStorageResponse: {
+            /** Feature */
+            feature?: string | null;
+            /** Enabled */
+            enabled?: boolean | null;
+            /** Signals */
+            signals?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** SessionComputeOptInBody */
         SessionComputeOptInBody: {
             /**
@@ -7625,12 +10563,79 @@ export interface components {
              */
             base_url: string;
         };
+        /**
+         * SessionComputeOptInResponse
+         * @description POST session compute opt-in/out (`sak443-g`).
+         */
+        SessionComputeOptInResponse: {
+            /** Session Id */
+            session_id?: string | null;
+            /** Enabled */
+            enabled?: boolean | null;
+            /** Share Policy */
+            share_policy?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Node */
+            node?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * SessionComputeStatusResponse
+         * @description GET session compute status (`sak441-e`).
+         */
+        SessionComputeStatusResponse: {
+            /** Session Id */
+            session_id?: string | null;
+            /** Nodes */
+            nodes?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Queue Depth
+             * @default 0
+             */
+            queue_depth: number;
+            /** Via */
+            via?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
         /** SessionLibraryBody */
         SessionLibraryBody: {
             /** Folder Id */
             folder_id?: string | null;
             /** Tags */
             tags?: string[] | null;
+        };
+        /**
+         * SessionLibraryResponse
+         * @description PUT /chat/sessions/{id}/library (`sak482-e`).
+         */
+        SessionLibraryResponse: {
+            /** Session */
+            session?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** SessionModelBindingSwapBody */
         SessionModelBindingSwapBody: {
@@ -7656,6 +10661,18 @@ export interface components {
             /** Priority */
             priority?: string[];
         };
+        /**
+         * SessionOptimizerWeightsResponse
+         * @description GET/PUT session optimizer-weights (`sak445-d`).
+         */
+        SessionOptimizerWeightsResponse: {
+            /** Priority */
+            priority?: string[];
+            /** Weights */
+            weights?: {
+                [key: string]: unknown;
+            };
+        };
         /** SessionRoleClaimBody */
         SessionRoleClaimBody: {
             /**
@@ -7670,6 +10687,34 @@ export interface components {
             /** Model Id */
             model_id: string;
         };
+        /**
+         * SettingsCatalogResponse
+         * @description GET /settings/catalog (`sak480-c`).
+         */
+        SettingsCatalogResponse: {
+            /** Install */
+            install?: {
+                [key: string]: unknown;
+            };
+            /** System */
+            system?: {
+                [key: string]: unknown;
+            };
+            /** User */
+            user?: {
+                [key: string]: unknown;
+            };
+            /** Run */
+            run?: {
+                [key: string]: unknown;
+            };
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
         /** SettingsPatchBody */
         SettingsPatchBody: {
             /** Values */
@@ -7677,12 +10722,54 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /**
+         * SettingsScopeResponse
+         * @description GET/PATCH settings scope payloads (`sak480-c`, `sak485-g`).
+         */
+        SettingsScopeResponse: {
+            /** Groups */
+            groups?: {
+                [key: string]: unknown;
+            } | null;
+            /** Stored */
+            stored?: {
+                [key: string]: string;
+            } | null;
+            /** Values */
+            values?: {
+                [key: string]: string;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** SigninBody */
         SigninBody: {
             /** Username */
             username: string;
             /** Password */
             password: string;
+        };
+        /**
+         * SignoutResponse
+         * @description POST /auth/signout (`sak487-g`).
+         */
+        SignoutResponse: {
+            /** Ok */
+            ok?: boolean | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** SignupBody */
         SignupBody: {
@@ -7728,6 +10815,34 @@ export interface components {
             /** File Count */
             file_count: number;
         };
+        /**
+         * StandardsPresetDefaultsResponse
+         * @description GET /standards/presets/{preset_id}/defaults (`sak483-e`).
+         */
+        StandardsPresetDefaultsResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * StandardsPresetResponse
+         * @description GET /standards/presets/{preset_id} (`sak483-e`).
+         */
+        StandardsPresetResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** StandardsProfileBody */
         StandardsProfileBody: {
             /** Facade Id */
@@ -7740,6 +10855,20 @@ export interface components {
             verdict_overrides?: {
                 [key: string]: "skip" | "warn" | "critique" | "hard_gate";
             };
+        };
+        /**
+         * StandardsRegistryResponse
+         * @description GET /standards/registry (`sak483-e`).
+         */
+        StandardsRegistryResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** StandardsRunBody */
         StandardsRunBody: {
@@ -7825,6 +10954,48 @@ export interface components {
             /** Default Model Id */
             default_model_id?: string | null;
         };
+        /**
+         * SubscriptionOauthProviderStatus
+         * @description One subscription provider OAuth readiness row (`sak448-d`).
+         */
+        SubscriptionOauthProviderStatus: {
+            /** Provider Id */
+            provider_id: string;
+            /** Label */
+            label?: string | null;
+            /**
+             * Oauth Ready
+             * @default false
+             */
+            oauth_ready: boolean;
+            /** Scopes */
+            scopes?: string | null;
+            /** Authorize Path */
+            authorize_path?: string | null;
+            /** Configure Hint */
+            configure_hint?: string | null;
+        };
+        /**
+         * SubscriptionOauthStatusResponse
+         * @description GET /platform/provider-subscriptions/oauth/status (`sak448-d`).
+         */
+        SubscriptionOauthStatusResponse: {
+            /** Providers */
+            providers?: components["schemas"]["SubscriptionOauthProviderStatus"][];
+            /** Callback Path */
+            callback_path?: string | null;
+            /**
+             * Mock Mode
+             * @default false
+             */
+            mock_mode: boolean;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
         /** SwitchModeBody */
         SwitchModeBody: {
             /** Work Type */
@@ -7873,6 +11044,30 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /**
+         * TenantCollabPolicyResponse
+         * @description GET/PUT tenant collab-policy (`sak481-c`).
+         */
+        TenantCollabPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Version */
+            version?: number | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Policy */
+            policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** TenantCreateBody */
         TenantCreateBody: {
             /** Slug */
@@ -7882,6 +11077,26 @@ export interface components {
              * @default
              */
             display_name: string;
+        };
+        /**
+         * TenantCreateResponse
+         * @description POST /enterprise/tenants (`sak485-g`).
+         */
+        TenantCreateResponse: {
+            /** Tenant Id */
+            tenant_id?: string | null;
+            /** Slug */
+            slug?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** TenantModelPolicyBody */
         TenantModelPolicyBody: {
@@ -7899,6 +11114,56 @@ export interface components {
              * @default true
              */
             audit_include_binding_events: boolean;
+        };
+        /**
+         * TenantModelPolicyResponse
+         * @description GET/PUT tenant model-policy (`sak483-f`).
+         */
+        TenantModelPolicyResponse: {
+            /** Tenant Slug */
+            tenant_slug?: string | null;
+            /** Version */
+            version?: number | null;
+            /** Allowed Cloud Providers */
+            allowed_cloud_providers?: string[] | null;
+            /** Require Admin For Cloud Swap */
+            require_admin_for_cloud_swap?: boolean | null;
+            /** Blocked Model Ids */
+            blocked_model_ids?: string[] | null;
+            /** Audit Include Binding Events */
+            audit_include_binding_events?: boolean | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Policy */
+            policy?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * TenantsListResponse
+         * @description GET /enterprise/tenants (`sak485-g`).
+         */
+        TenantsListResponse: {
+            /** Tenants */
+            tenants?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** TerraformValidateBody */
         TerraformValidateBody: {
@@ -7925,6 +11190,60 @@ export interface components {
             /** Next Cursor */
             next_cursor?: number | null;
         };
+        /**
+         * TimelineExplainResponse
+         * @description GET /runs/{run_id}/timeline/{section}/explain (`sak484-g`).
+         */
+        TimelineExplainResponse: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Section */
+            section?: string | null;
+            /** Markdown */
+            markdown?: string | null;
+            /** Event Count */
+            event_count?: number | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * TimelinePanelsResponse
+         * @description Admin timeline panel summaries — null panels stay in JSON for stable keys.
+         */
+        TimelinePanelsResponse: {
+            /** Run Id */
+            run_id: string;
+            /** Integrator Gate */
+            integrator_gate?: {
+                [key: string]: unknown;
+            } | null;
+            /** Agent Evaluator */
+            agent_evaluator?: {
+                [key: string]: unknown;
+            } | null;
+            /** Self Refinement */
+            self_refinement?: {
+                [key: string]: unknown;
+            } | null;
+            /** Run Escalated */
+            run_escalated?: {
+                [key: string]: unknown;
+            } | null;
+            /** Security Scan On Verify */
+            security_scan_on_verify?: {
+                [key: string]: unknown;
+            } | null;
+            /** Universal Critique */
+            universal_critique?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** UiRegressionRequest */
         UiRegressionRequest: {
             /** Flow Id */
@@ -7941,6 +11260,38 @@ export interface components {
             level: number;
             /** Checkpoints */
             checkpoints?: string[];
+        };
+        /**
+         * UserAutopilotProfileResponse
+         * @description PUT /platform/autopilot/user-profiles/{profile_id} (`sak483-e`).
+         */
+        UserAutopilotProfileResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * UserAutopilotProfilesResponse
+         * @description GET /platform/autopilot/user-profiles (`sak483-e`).
+         */
+        UserAutopilotProfilesResponse: {
+            /** Profiles */
+            profiles?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** UserDefaultsBody */
         UserDefaultsBody: {
@@ -7965,6 +11316,38 @@ export interface components {
              * @default 5
              */
             level: number;
+        };
+        /**
+         * UserEnforcementProfileResponse
+         * @description PUT /platform/enforcement/user-profiles/{profile_id} (`sak483-e`).
+         */
+        UserEnforcementProfileResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * UserEnforcementProfilesResponse
+         * @description GET /platform/enforcement/user-profiles (`sak483-e`).
+         */
+        UserEnforcementProfilesResponse: {
+            /** Profiles */
+            profiles?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** UserResponse */
         UserResponse: {
@@ -7993,6 +11376,80 @@ export interface components {
             /** Connectors */
             connectors?: string[];
         };
+        /**
+         * UserStandardsProfileResponse
+         * @description PUT /users/me/standards-profile/{profile_id} (`sak483-e`).
+         */
+        UserStandardsProfileResponse: {
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * UserStandardsProfilesResponse
+         * @description GET /users/me/standards-profile (`sak483-e`).
+         */
+        UserStandardsProfilesResponse: {
+            /** Profiles */
+            profiles?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * WebBootstrapResponse
+         * @description GET /maker|admin/app/bootstrap.json (`sak483-g`).
+         */
+        WebBootstrapResponse: {
+            /** Api Base */
+            api_base?: string | null;
+            /** Edition */
+            edition?: string | null;
+            /** Setup Bundle */
+            setup_bundle?: string | null;
+            /** Quick Mode */
+            quick_mode?: boolean | null;
+            /** Ui Backend */
+            ui_backend?: string | null;
+            /** User Token Required */
+            user_token_required?: boolean | null;
+            /** Admin Token Required */
+            admin_token_required?: boolean | null;
+            /** Default Profiles */
+            default_profiles?: {
+                [key: string]: unknown;
+            } | null;
+            /** Features */
+            features?: {
+                [key: string]: unknown;
+            } | null;
+            /** Push */
+            push?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Status */
+            status?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** WorkUnitClaimBody */
         WorkUnitClaimBody: {
             /**
@@ -8002,6 +11459,27 @@ export interface components {
             node_id: string;
             /** Session Id */
             session_id?: string | null;
+        };
+        /**
+         * WorkUnitClaimResponse
+         * @description Claim response: empty poll stays via=broker; miss uses via=broker_miss (`sak440-g`).
+         */
+        WorkUnitClaimResponse: {
+            /** Work Unit */
+            work_unit?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Via
+             * @default broker
+             */
+            via: ("broker" | "broker_miss" | "local") | string;
+            /** Error */
+            error?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
         };
         /** WorkUnitCompleteBody */
         WorkUnitCompleteBody: {
@@ -8016,10 +11494,121 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
+        /** WorkUnitEnqueueBody */
+        WorkUnitEnqueueBody: {
+            /**
+             * Kind
+             * @default mesh_stage
+             */
+            kind: string;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            };
+            /** Run Id */
+            run_id?: string | null;
+            /** Session Id */
+            session_id?: string | null;
+            /** Stage Name */
+            stage_name?: string | null;
+            /** Agent Role */
+            agent_role?: string | null;
+            /**
+             * Executor User Id
+             * @default
+             */
+            executor_user_id: string;
+        };
+        /**
+         * WorkUnitQueueDepthResponse
+         * @description GET /compute/work-units/queue (`sak441-e`).
+         */
+        WorkUnitQueueDepthResponse: {
+            /**
+             * Queued
+             * @default 0
+             */
+            queued: number;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * WorkUnitWriteResponse
+         * @description POST enqueue/complete/terminate-restart (`sak442-e`).
+         */
+        WorkUnitWriteResponse: {
+            /** Work Unit */
+            work_unit?: {
+                [key: string]: unknown;
+            } | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Feature */
+            feature?: string | null;
+            /** Action */
+            action?: string | null;
+        };
         /** WorkspacePathBody */
         WorkspacePathBody: {
             /** Workspace Path */
             workspace_path: string;
+        };
+        /**
+         * WorkspaceReadinessResponse
+         * @description GET /platform/workspace-readiness (`sak448-e`).
+         */
+        WorkspaceReadinessResponse: {
+            /**
+             * Ready
+             * @default false
+             */
+            ready: boolean;
+            /** Blockers */
+            blockers?: string[];
+            /** Warnings */
+            warnings?: string[];
+            /** Checks */
+            checks?: {
+                [key: string]: unknown;
+            };
+            /** Plain Summary */
+            plain_summary?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        };
+        /**
+         * WorkspaceScaffoldResponse
+         * @description POST workspace-scaffold / precommit (`sak480-d`).
+         */
+        WorkspaceScaffoldResponse: {
+            /** Created */
+            created?: string[] | null;
+            /** Skipped */
+            skipped?: string[] | null;
+            /** Plain Summary */
+            plain_summary?: string | null;
+            /** Via */
+            via?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Feature */
+            feature?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /** FleetEnforcementPolicyBody */
         api__routes__admin_ui_bff__FleetEnforcementPolicyBody: {
@@ -8173,6 +11762,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     create_run_v1_runs_post: {
@@ -8201,9 +11818,7 @@ export interface operations {
                      *       "run_id": "11111111-1111-4111-8111-111111111111"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CreateRunResponse"];
                 };
             };
             /** @description Structured validation error (unknown workflow, invalid persona assignment, incomplete critique pairings for registry producers, agent evaluator persona, etc.) */
@@ -8236,6 +11851,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8382,6 +12025,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     timeline_v1_runs__run_id__timeline_get: {
@@ -8493,6 +12164,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     findings_v1_runs__run_id__findings_get: {
@@ -8523,9 +12222,7 @@ export interface operations {
                      *       "findings": []
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunFindingsResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -8586,6 +12283,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8631,9 +12356,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -8694,6 +12417,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8745,9 +12496,7 @@ export interface operations {
                      *       "rows": []
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -8808,6 +12557,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8858,9 +12635,7 @@ export interface operations {
                      *       "status": "started"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["LifecycleStartResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -8921,6 +12696,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8971,9 +12774,7 @@ export interface operations {
                      *       "status": "plan_stage_recorded"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["LifecyclePlanResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9034,6 +12835,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9085,9 +12914,7 @@ export interface operations {
                      *       "dispatch": "sync"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["LifecycleVerifyResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9148,6 +12975,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9203,9 +13058,7 @@ export interface operations {
                      *       "slices_blocked": 0
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["LifecycleSliceResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9292,6 +13145,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_run_model_binding_swap_v1_runs__run_id__model_bindings_swap_post: {
@@ -9317,9 +13198,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -9352,6 +13231,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9403,9 +13310,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -9438,6 +13343,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9486,9 +13419,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -9521,6 +13452,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9568,9 +13527,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingAuditResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -9603,6 +13560,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9749,22 +13734,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9874,6 +13857,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     factory_evidence_scorecard_html_v1_runs__run_id__factory_evidence_scorecard_html_get: {
@@ -9894,6 +13905,16 @@ export interface operations {
                 };
                 content: {
                     "text/html": string;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9954,6 +13975,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9999,7 +14048,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    "application/zip": unknown;
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10060,6 +14119,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10192,6 +14279,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_dev_env_start_v1_runs__run_id__dev_env_start_post: {
@@ -10272,6 +14387,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10404,6 +14547,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_dev_env_regression_v1_runs__run_id__dev_env_regression_post: {
@@ -10484,6 +14655,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10622,6 +14821,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_dev_env_theater_v1_runs__run_id__dev_env_theater_get: {
@@ -10641,9 +14868,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["DevEnvTheaterResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10704,6 +14929,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10810,6 +15063,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10946,6 +15227,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_run_autopilot_v1_runs__run_id__autopilot_get: {
@@ -11026,6 +15335,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11162,6 +15499,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_run_enforcement_v1_runs__run_id__enforcement_get: {
@@ -11242,6 +15607,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11378,6 +15771,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_run_learnings_v1_runs__run_id__learnings_get: {
@@ -11397,9 +15818,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunLearningsResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -11497,22 +15916,292 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_run_evolution_v1_runs__run_id__evolution_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvolutionTimelineResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_run_evolution_promote_v1_runs__run_id__evolution_promote_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvolutionPromoteBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvolutionTimelineResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11596,6 +16285,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11706,6 +16423,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11843,6 +16588,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     replay_from_checkpoint_v1_runs__run_id__replay_from_post: {
@@ -11953,6 +16726,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_context_artifact_from_compaction_v1_runs__run_id__context_artifacts_from_compaction_post: {
@@ -11976,307 +16777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Run not found (no events for ``run_id``) */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    post_insert_context_artifact_v1_runs__run_id__context_artifacts__artifact_id__insert_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                run_id: string;
-                artifact_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Run not found (no events for ``run_id``) */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_campaign_artifact_bundle_v1_runs__run_id__campaign_artifact_bundle_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                run_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    post_insert_memory_chunk_v1_runs__run_id__memory_chunks__chunk_id__insert_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                run_id: string;
-                chunk_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ContextArtifactFromCompactionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12374,33 +16875,32 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
         };
     };
-    get_maker_git_status_v1_runs__run_id__maker_git_status_get: {
+    post_insert_context_artifact_v1_runs__run_id__context_artifacts__artifact_id__insert_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 run_id: string;
+                artifact_id: string;
             };
             cookie?: never;
         };
@@ -12412,9 +16912,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ContextArtifactInsertResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12475,6 +16973,409 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_campaign_artifact_bundle_v1_runs__run_id__campaign_artifact_bundle_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignArtifactBundleResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_insert_memory_chunk_v1_runs__run_id__memory_chunks__chunk_id__insert_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+                chunk_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryChunkInsertResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_maker_git_status_v1_runs__run_id__maker_git_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MakerGitStatusResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -12520,9 +17421,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerOpenPrResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12583,6 +17482,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -12715,6 +17642,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_maker_plan_approve_v1_runs__run_id__maker_plan_approve_post: {
@@ -12734,9 +17689,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["MakerActionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12797,6 +17750,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -12842,9 +17823,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerActionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12905,6 +17884,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -12954,9 +17961,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerActionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13017,6 +18022,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13066,9 +18099,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerActionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13129,6 +18160,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13174,9 +18233,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerActionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13237,6 +18294,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13282,9 +18367,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MakerRunTestsResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13345,6 +18428,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13390,9 +18501,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["LaunchEvalResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13453,6 +18562,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13596,22 +18733,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13639,9 +18774,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ResearchApproveResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13739,22 +18872,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13782,9 +18913,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ResearchRejectResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -13882,22 +19011,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13917,13 +19044,53 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description Server-sent events. Terminal ``event: error`` carries peel miss ``{via, feature, error, status}`` before the stream closes. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Status */
+                        status?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -13956,6 +19123,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -14093,6 +19288,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     export_run_theater_v1_runs__run_id__theater_export_get: {
@@ -14112,7 +19335,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
                     "text/markdown": unknown;
                 };
             };
@@ -14200,6 +19432,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_theater_stream_v1_runs__run_id__theater_stream_get: {
@@ -14218,13 +19478,53 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description Server-sent events. Terminal ``event: error`` carries peel miss ``{via, feature, error, status}`` before the stream closes. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Status */
+                        status?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14257,6 +19557,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -14363,6 +19691,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -14496,6 +19852,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_timeline_section_explain_v1_runs__run_id__timeline__section__explain_get: {
@@ -14516,9 +19900,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TimelineExplainResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14551,6 +19933,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -14598,9 +20008,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CreateCampaignResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14670,22 +20078,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14708,9 +20114,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CampaignBacklogResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -14808,22 +20212,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14850,8 +20252,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["CampaignActionResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14922,22 +20350,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14960,8 +20386,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["CampaignActionResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15032,22 +20484,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15074,8 +20524,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["CampaignActionResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15146,22 +20622,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15184,8 +20658,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["CampaignProgressResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15256,22 +20756,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15299,9 +20797,7 @@ export interface operations {
                      *       "status": "retry_recorded"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ActionStatusResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -15362,6 +20858,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -15416,9 +20940,7 @@ export interface operations {
                      *       "status": "escalated"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ActionStatusResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -15479,6 +21001,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -15533,9 +21083,7 @@ export interface operations {
                      *       "status": "gate_overridden"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ActionStatusResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -15596,6 +21144,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -15655,9 +21231,7 @@ export interface operations {
                      *       "run_id": "00000000-0000-4000-8000-000000000001"
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RoleExecuteResponse"];
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -15907,6 +21481,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     record_policy_compare_v1_policy_compare_record_post: {
@@ -16015,6 +21617,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     config_blast_radius_v1_config_blast_radius_get: {
@@ -16035,9 +21665,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ConfigBlastRadiusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -16096,6 +21724,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     audit_export_v1_runs__run_id__audit_export_get: {
@@ -16115,7 +21771,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
                     "application/gzip": unknown;
                 };
             };
@@ -16177,6 +21842,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -16275,6 +21968,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -16560,9 +22281,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["BundleCatalogSourceResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -16621,7 +22340,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (sak495-d) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -17316,6 +23035,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     promote_pending_stitch_catalog_candidates_v1_bundles_catalog_candidates_promote_stitch_pending_post: {
@@ -17452,6 +23199,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     list_bundle_catalog_candidates_v1_bundles_catalog_candidates_get: {
@@ -17473,9 +23248,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CatalogCandidatesResponse"];
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -17562,7 +23335,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (sak495-d) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -17609,9 +23382,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CriticPackListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -17644,6 +23415,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -17691,9 +23490,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CriticPackWorkflowsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -17726,6 +23523,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -17773,9 +23598,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CriticPackDetailResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -17808,6 +23631,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -17861,9 +23712,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CriticPackUpsertResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -17896,6 +23745,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -18029,6 +23906,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_persona_overlap_report_v1_personas_overlap_report_get: {
@@ -18079,9 +23984,7 @@ export interface operations {
                      *       ]
                      *     }
                      */
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PersonaOverlapReportResponse"];
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -18142,6 +24045,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -18285,6 +24216,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -19237,6 +25196,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     create_custom_agent_v1_custom_agents_post: {
@@ -19293,6 +25280,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -19425,6 +25440,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     delete_custom_agent_v1_custom_agents__agent_id__delete: {
@@ -19505,6 +25548,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -19643,6 +25714,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     list_projects_v1_projects_get: {
@@ -19695,6 +25794,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -19777,6 +25904,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -19909,6 +26064,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     delete_project_v1_projects__project_id__delete: {
@@ -19989,6 +26172,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -20127,6 +26338,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     auth_signup_v1_auth_signup_post: {
@@ -20181,6 +26420,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -20287,6 +26554,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     auth_signout_v1_auth_signout_post: {
@@ -20304,9 +26599,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: boolean;
-                    };
+                    "application/json": components["schemas"]["SignoutResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20339,6 +26632,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -20415,6 +26736,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -20553,6 +26902,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_session_scope_publish_v1_chat_sessions__session_id__scope_publish_post: {
@@ -20637,6 +27014,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -20769,6 +27174,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_session_scope_approve_v1_chat_sessions__session_id__scope_approve_post: {
@@ -20875,6 +27308,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_scope_discover_v1_chat_scope_discover_post: {
@@ -20929,6 +27390,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21035,6 +27524,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_scope_recommend_v1_chat_scope_recommend_post: {
@@ -21089,6 +27606,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21195,6 +27740,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     session_compute_delegate_control_v1_chat_sessions__session_id__compute_delegate_control_post: {
@@ -21220,8 +27793,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["DelegateControlResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21255,6 +27854,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21302,8 +27929,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["SessionOptimizerWeightsResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21337,6 +27990,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21388,8 +28069,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["SessionOptimizerWeightsResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21423,6 +28130,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21474,8 +28209,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["SessionComputeOptInResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21509,6 +28270,170 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    session_compute_status_v1_chat_sessions__session_id__compute_status_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionComputeStatusResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21556,8 +28481,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["ParticipantBindingsResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21591,6 +28542,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21642,8 +28621,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["ParticipantBindingsResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21677,6 +28682,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21783,6 +28816,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     create_chat_session_v1_chat_sessions_post: {
@@ -21839,6 +28900,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21975,6 +29064,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_chat_graph_v1_chat_sessions__session_id__graph_get: {
@@ -22057,6 +29174,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22195,6 +29340,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     set_chat_active_leaf_v1_chat_sessions__session_id__active_leaf_put: {
@@ -22281,6 +29454,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22419,6 +29620,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_chat_message_v1_chat_sessions__session_id__messages_post: {
@@ -22505,6 +29734,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22644,6 +29901,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     classify_chat_intent_v1_chat_classify_post: {
@@ -22700,6 +29985,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22838,6 +30151,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     session_role_claim_v1_chat_sessions__session_id__role_claims_post: {
@@ -22863,8 +30204,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["RoleClaimResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22898,6 +30265,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22948,8 +30343,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["RoleClaimResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22983,6 +30404,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23028,8 +30477,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferListResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23063,6 +30538,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23112,8 +30615,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23147,6 +30676,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23193,8 +30750,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferBundleResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23228,6 +30811,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23274,8 +30885,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23309,6 +30946,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23359,8 +31024,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23394,6 +31085,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23440,8 +31159,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23475,6 +31220,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23521,8 +31294,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["HostTransferResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23556,6 +31355,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23601,9 +31428,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FolderListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23636,6 +31461,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23683,9 +31536,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FolderMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23718,6 +31569,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23763,8 +31642,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["FolderMutationResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23798,6 +31703,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23847,8 +31780,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["FolderMutationResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23882,6 +31841,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -23925,9 +31912,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["GroupListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23960,6 +31945,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24007,9 +32020,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["GroupMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24042,6 +32053,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24091,8 +32130,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["GroupMutationResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24126,6 +32191,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24173,9 +32266,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AccessGrantListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24208,6 +32299,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24255,9 +32374,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AccessGrantMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24290,6 +32407,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24335,8 +32480,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["AccessGrantMutationResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24370,6 +32541,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24419,8 +32618,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["SessionLibraryResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24454,6 +32679,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24501,8 +32754,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["EffectiveRoleResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24536,6 +32815,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24642,6 +32949,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24778,6 +33113,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     remove_session_participant_v1_chat_sessions__session_id__participants__user_id__delete: {
@@ -24798,9 +33161,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: boolean;
-                    };
+                    "application/json": components["schemas"]["ParticipantRemoveResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -24861,6 +33222,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24997,6 +33386,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     preview_chat_join_v1_chat_join_preview_get: {
@@ -25075,6 +33492,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     create_session_invite_v1_chat_sessions__session_id__invites_post: {
@@ -25099,6 +33544,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InviteResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25131,6 +33604,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -25237,6 +33738,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     chat_session_stream_v1_chat_sessions__session_id__stream_get: {
@@ -25250,13 +33779,25 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description Server-sent events. Terminal ``event: error`` carries peel miss ``{via, feature, error, status}`` before the stream closes. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Status */
+                        status?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    "text/event-stream": string;
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -25343,6 +33884,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_session_commentary_v1_chat_sessions__session_id__commentary_post: {
@@ -25368,8 +33937,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["CommentaryResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25403,6 +33998,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -25511,6 +34134,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -25649,6 +34300,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     bridge_context_artifact_to_memory_v1_projects__project_id__context_artifacts__artifact_id__bridge_memory_post: {
@@ -25732,6 +34411,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -25888,6 +34595,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_scraper_artifact_inventory_v1_scraper_artifacts_inventory_get: {
@@ -25989,6 +34724,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_standards_registry_v1_standards_registry_get: {
@@ -26006,9 +34769,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["StandardsRegistryResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26041,6 +34802,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26088,9 +34877,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["StandardsPresetResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26123,6 +34910,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26170,9 +34985,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["StandardsPresetDefaultsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26205,6 +35018,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26250,9 +35091,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunStandardsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26285,6 +35124,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26334,9 +35201,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunStandardsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26369,6 +35234,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26414,9 +35307,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunStandardsReportResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26449,6 +35340,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26498,9 +35417,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RunStandardsRunResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26533,6 +35450,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26576,9 +35521,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserStandardsProfilesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26611,6 +35554,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26660,9 +35631,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserStandardsProfileResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26695,6 +35664,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26727,6 +35724,7 @@ export interface operations {
         parameters: {
             query?: {
                 remote_host?: string | null;
+                binding_id?: string | null;
             };
             header?: never;
             path?: never;
@@ -26740,9 +35738,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26775,6 +35771,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26824,9 +35848,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26859,6 +35881,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26902,8 +35952,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26937,6 +36013,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -26980,8 +36084,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27015,6 +36145,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27060,9 +36218,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AutopilotPresetResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27095,6 +36251,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27138,9 +36322,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserAutopilotProfilesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27173,6 +36355,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27222,9 +36432,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserAutopilotProfileResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27257,6 +36465,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27302,9 +36538,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["EnforcementPresetResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27337,6 +36571,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27380,9 +36642,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserEnforcementProfilesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27415,6 +36675,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27464,9 +36752,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["UserEnforcementProfileResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27499,6 +36785,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27542,9 +36856,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["OperatorProfilesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27577,6 +36889,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27624,9 +36964,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["OperatorProfilesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27659,6 +36997,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27702,9 +37068,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["DisciplineProfileResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27737,6 +37101,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27784,9 +37176,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["DisciplineProfileResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27819,6 +37209,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27862,9 +37280,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParticipantContextResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27897,6 +37313,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27944,9 +37388,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParticipantContextResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27979,6 +37421,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28022,9 +37492,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AgentOverlaysResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28057,6 +37525,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28106,9 +37602,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AgentOverlayResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28141,6 +37635,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28188,9 +37710,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28223,6 +37743,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28270,9 +37818,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28305,6 +37851,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28352,9 +37926,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28387,6 +37959,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28434,9 +38034,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28469,6 +38067,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28512,9 +38138,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28547,6 +38171,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28594,9 +38246,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28629,6 +38279,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28672,9 +38350,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28707,6 +38383,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28754,9 +38458,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28789,6 +38491,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28836,9 +38566,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28871,6 +38599,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28917,9 +38673,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28952,6 +38706,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -28995,9 +38777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformDeployResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29030,6 +38810,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29073,9 +38881,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CatalogInfoResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29108,6 +38914,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29156,9 +38990,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29191,6 +39023,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29238,9 +39098,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29273,6 +39131,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29316,9 +39202,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["RoutingPresetsListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29351,6 +39235,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29398,165 +39310,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_model_dependencies_v1_platform_models_dependencies_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_collab_disciplines_v1_platform_collab_disciplines_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformCapacityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29626,28 +39380,26 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
         };
     };
-    get_invite_templates_v1_platform_invite_templates_get: {
+    get_model_dependencies_v1_platform_models_dependencies_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -29662,9 +39414,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelDependenciesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29697,6 +39447,242 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_collab_disciplines_v1_platform_collab_disciplines_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollabDisciplinesResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_invite_templates_v1_platform_invite_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteTemplatesResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29740,9 +39726,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CollabSettingsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29775,6 +39759,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -29822,91 +39834,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    post_workspace_scaffold_v1_platform_workspace_scaffold_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["WorkspacePathBody"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CollabSettingsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29976,28 +39904,26 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
         };
     };
-    post_workspace_precommit_v1_platform_workspace_precommit_post: {
+    post_workspace_scaffold_v1_platform_workspace_scaffold_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -30016,9 +39942,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["WorkspaceScaffoldResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30051,6 +39975,142 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_workspace_precommit_v1_platform_workspace_precommit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspacePathBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceScaffoldResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30094,9 +40154,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformEditionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30129,6 +40187,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30172,9 +40258,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformReadinessResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30207,6 +40291,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30253,9 +40365,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetGovernanceResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30314,6 +40424,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_workspace_readiness_v1_platform_workspace_readiness_get: {
@@ -30333,9 +40471,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["WorkspaceReadinessResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30439,9 +40575,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlaywrightBootstrapResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30500,7 +40634,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -30545,9 +40679,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlaywrightBootstrapResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30606,7 +40738,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -30651,9 +40783,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformOnboardingResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30686,6 +40816,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30729,9 +40887,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformOnboardingResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30764,6 +40920,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30807,9 +40991,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformOptimizerWeightsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30842,6 +41024,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30889,9 +41099,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PlatformOptimizerWeightsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30924,6 +41132,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -30967,9 +41203,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["IndustryCriticPacksResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31002,6 +41236,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31045,9 +41307,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SafeCodingPreferencesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31080,6 +41340,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31127,9 +41415,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SafeCodingPreferencesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31162,6 +41448,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31207,9 +41521,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderPresetsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31242,6 +41554,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31291,9 +41631,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderConnectionMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31326,6 +41664,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31371,9 +41737,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderConnectionsListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31406,6 +41770,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31455,9 +41847,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderConnectionMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31490,6 +41880,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31537,9 +41955,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderConnectionMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31572,6 +41988,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31621,9 +42065,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProviderConnectionMutationResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31656,6 +42098,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -31701,9 +42171,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SubscriptionOauthStatusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31762,7 +42230,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (sak495-d) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -31881,22 +42349,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -32076,22 +42542,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -32118,9 +42582,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingsPreflightResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32153,6 +42615,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32198,9 +42688,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingsDefaultsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32233,6 +42721,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32282,9 +42798,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingsDefaultsResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32317,6 +42831,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32362,9 +42904,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelBindingsRolesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32397,6 +42937,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32444,9 +43012,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ComputeNodeListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32479,6 +43045,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32528,9 +43122,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ComputeNodeWriteResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -32563,6 +43155,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -32614,427 +43234,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    claim_work_unit_v1_compute_work_units_claim_post: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["WorkUnitClaimBody"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    work_unit_queue_depth_v1_compute_work_units_queue_get: {
-        parameters: {
-            query?: {
-                session_id?: string | null;
-            };
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    complete_work_unit_v1_compute_work_units__work_unit_id__complete_post: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path: {
-                work_unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["WorkUnitCompleteBody"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    terminate_restart_work_unit_v1_compute_work_units__work_unit_id__terminate_restart_post: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path: {
-                work_unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    list_memory_chunks_v1_memory_chunks_get: {
-        parameters: {
-            query: {
-                /** @description Project whose workspace defines repo scope */
-                project_id: string;
-                limit?: number;
-            };
-            header?: {
-                "X-Nimbusware-Admin-Token"?: string | null;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ComputeNodeWriteResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -33121,14 +43321,264 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
-    get_platform_stitch_outcomes_v1_platform_analytics_stitch_outcomes_get: {
+    enqueue_work_unit_v1_compute_work_units_enqueue_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkUnitEnqueueBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkUnitWriteResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    claim_work_unit_v1_compute_work_units_claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkUnitClaimBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkUnitClaimResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    work_unit_queue_depth_v1_compute_work_units_queue_get: {
         parameters: {
             query?: {
-                limit_runs?: number;
+                session_id?: string | null;
             };
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -33140,8 +43590,146 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["WorkUnitQueueDepthResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    complete_work_unit_v1_compute_work_units__work_unit_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                work_unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkUnitCompleteBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkUnitWriteResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -33201,7 +43789,387 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    terminate_restart_work_unit_v1_compute_work_units__work_unit_id__terminate_restart_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                work_unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkUnitWriteResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    list_memory_chunks_v1_memory_chunks_get: {
+        parameters: {
+            query: {
+                /** @description Project whose workspace defines repo scope */
+                project_id: string;
+                limit?: number;
+            };
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryChunksResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_platform_stitch_outcomes_v1_platform_analytics_stitch_outcomes_get: {
+        parameters: {
+            query?: {
+                limit_runs?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsPayloadResponse"];
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -33248,9 +44216,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AnalyticsPayloadResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33309,7 +44275,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -33356,9 +44322,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AnalyticsPayloadResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33417,7 +44381,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -33464,9 +44428,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AnalyticsPayloadResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33525,7 +44487,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -33570,9 +44532,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AnalyticsPayloadResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33631,7 +44591,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -33676,9 +44636,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsCatalogResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33711,6 +44669,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -33754,9 +44740,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsScopeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33789,6 +44773,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -33834,9 +44846,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsScopeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33869,6 +44879,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -33918,9 +44956,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsScopeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -33953,6 +44989,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -33996,9 +45060,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsScopeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -34031,6 +45093,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34078,9 +45168,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SettingsScopeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -34113,6 +45201,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34192,6 +45308,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34300,6 +45444,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     post_ollama_pull_v1_platform_ollama_pull_post: {
@@ -34380,6 +45552,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_ollama_pull_job_v1_platform_ollama_pull__job_id__get: {
@@ -34400,6 +45600,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OllamaPullJobStatusResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -34432,6 +45660,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34536,6 +45792,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     patch_primary_routing_v1_platform_ollama_routing_primary_patch: {
@@ -34590,6 +45874,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34698,6 +46010,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     admin_post_ollama_pull_v1_admin_ollama_pull_post: {
@@ -34754,6 +46094,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34860,6 +46228,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     enterprise_status_v1_enterprise_status_get: {
@@ -34877,9 +46273,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["EnterpriseStatusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -34912,6 +46306,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -34955,9 +46377,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["EnterpriseHealthResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -34990,6 +46410,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -35035,9 +46483,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["IamBootstrapResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35096,7 +46542,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35141,9 +46587,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["IamMeResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35202,7 +46646,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35247,9 +46691,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantsListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35308,7 +46750,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35357,9 +46799,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantCreateResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35418,7 +46858,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35469,9 +46909,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ApiKeyCreateResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35530,7 +46968,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35575,9 +47013,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetMemoryStatusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35610,6 +47046,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -35657,9 +47121,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetMemoryRebuildResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35718,7 +47180,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak494-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35768,9 +47230,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetMemorySearchResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35803,6 +47263,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -35850,9 +47338,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetMemorySyncResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -35911,7 +47397,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak494-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -35959,9 +47445,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetLearningsSearchResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36020,7 +47504,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -36065,9 +47549,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ConfigNotifyStatusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36126,7 +47608,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -36171,9 +47653,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ScraperArtifactStorageResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36232,7 +47712,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -36338,6 +47818,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     fleet_worker_metrics_v1_enterprise_fleet_worker_metrics_get: {
@@ -36416,6 +47924,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     fleet_mesh_status_v1_enterprise_fleet_mesh_status_get: {
@@ -36435,9 +47971,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetMeshStatusResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36470,6 +48004,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -36548,6 +48110,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -36656,6 +48246,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     fleet_analytics_compare_v1_enterprise_fleet_analytics_compare_get: {
@@ -36677,9 +48295,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetAnalyticsCompareResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36738,7 +48354,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -36787,9 +48403,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetAnalyticsTenantResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36848,7 +48462,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak495-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -36895,9 +48509,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetAutopilotPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -36930,6 +48542,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -36981,9 +48621,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetAutopilotPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37016,6 +48654,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37061,9 +48727,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetEnforcementPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37096,6 +48760,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37147,9 +48839,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetEnforcementPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37182,6 +48872,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37227,9 +48945,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetStandardsPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37262,6 +48978,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37313,9 +49057,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetStandardsPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37348,6 +49090,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37395,9 +49165,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetSlicePolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37430,6 +49198,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37481,9 +49277,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetSlicePolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37516,6 +49310,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37563,9 +49385,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetStackPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37598,6 +49418,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37649,9 +49497,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetStackPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37684,6 +49530,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37731,9 +49605,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetCommitPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37766,6 +49638,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37817,9 +49717,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetCommitPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37852,6 +49750,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37899,9 +49825,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDeployPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -37934,6 +49858,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -37985,9 +49937,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDeployPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38020,6 +49970,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38067,9 +50045,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDeployApprovalPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38102,6 +50078,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38153,9 +50157,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDeployApprovalPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38188,6 +50190,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38235,9 +50265,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDiscoveryPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38270,6 +50298,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38321,9 +50377,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDiscoveryPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38356,6 +50410,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38402,9 +50484,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetCriticReliabilityResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38463,7 +50543,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -38511,7 +50591,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        /** Via */
+                        via?: string | null;
+                        /** Error */
+                        error?: string | null;
+                        /** Feature */
+                        feature?: string | null;
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    "application/gzip": unknown;
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38570,7 +50660,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -38617,9 +50707,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AuditPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38652,6 +50740,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38701,9 +50817,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AuditPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38736,6 +50850,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38779,9 +50921,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ComplianceSummaryResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38840,7 +50980,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -38885,9 +51025,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -38920,6 +51058,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -38967,9 +51133,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ModelPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39002,6 +51166,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39045,9 +51237,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CollabPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39080,6 +51270,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39127,9 +51345,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["CollabPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39162,6 +51378,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39207,9 +51451,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantCollabPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39242,6 +51484,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39291,9 +51561,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantCollabPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39326,6 +51594,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39371,9 +51667,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantModelPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39406,6 +51700,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39455,9 +51777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TenantModelPolicyResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39490,6 +51810,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -39535,9 +51883,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["EnterpriseUserSearchResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39596,7 +51942,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak496-e`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -39643,9 +51989,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ResearchIndexResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39704,7 +52048,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak494-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -39751,7 +52095,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["EgressAuditResponse"];
+                    "application/x-ndjson": unknown;
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39810,7 +52155,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak494-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -39855,9 +52200,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["WebBootstrapResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39916,7 +52259,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (`sak494-c`) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -39961,9 +52304,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["WebBootstrapResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -39996,6 +52337,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -40154,9 +52523,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -40254,22 +52621,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -40294,9 +52659,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -40394,22 +52757,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -40434,9 +52795,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -40534,22 +52893,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -40574,9 +52931,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -40674,22 +53029,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -40716,9 +53069,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["FleetDashboardResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -40824,9 +53175,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -40859,6 +53208,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -40907,9 +53284,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -40942,6 +53317,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -40994,9 +53397,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41029,6 +53430,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -41077,9 +53506,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41112,6 +53539,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -41164,9 +53619,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41225,6 +53678,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     enterprise_fleet_compare_v1_admin_ui_enterprise_fleet_compare_get: {
@@ -41249,9 +53730,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminProjectionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41359,8 +53838,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["TimelinePanelsResponse"];
+                };
+            };
+            /** @description Run not found (no events for ``run_id``) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -41431,22 +53936,20 @@ export interface operations {
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
                         code: string;
                         /** Message */
                         message: string;
-                        /**
-                         * Details
-                         * @default null
-                         */
-                        details: Record<string, never> | null;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -41701,9 +54204,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["AdminOAuthSessionResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41762,7 +54263,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (sak495-d) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -41807,7 +54308,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AdminOAuthLogoutResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41866,7 +54367,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Broker-only peel miss (sak495-d) */
+            /** @description Server misconfiguration (e.g. admin token not set) */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -41913,9 +54414,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["ExternalChatCapabilitiesResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -41948,6 +54447,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -42085,6 +54612,34 @@ export interface operations {
                     };
                 };
             };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
         };
     };
     get_push_subscriptions_v1_maker_push_subscriptions_get: {
@@ -42102,9 +54657,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PushSubscriptionListResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -42137,6 +54690,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -42184,9 +54765,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PushSubscriptionRegisterResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -42219,6 +54798,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -42264,9 +54871,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PushSubscriptionDeleteResponse"];
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -42299,6 +54904,34 @@ export interface operations {
             };
             /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Server misconfiguration (e.g. admin token not set) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 _REPO = Path(__file__).resolve().parents[2]
 _SCRIPT = _REPO / "scripts" / "install_nimbusware.py"
 
@@ -67,7 +69,9 @@ def test_install_script_resolves_repo_from_env(
 ) -> None:
     import importlib.util
 
-    script_path = Path(__file__).resolve().parents[2] / "scripts" / "install" / "install_nimbusware.py"
+    script_path = (
+        Path(__file__).resolve().parents[2] / "scripts" / "install" / "install_nimbusware.py"
+    )
     spec = importlib.util.spec_from_file_location("install_nimbusware", script_path)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)

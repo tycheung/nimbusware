@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
-os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
+os.environ["NIMBUSWARE_REPO_ROOT"] = str(Path(__file__).resolve().parents[2])
 os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", DEFAULT_NIMBUSWARE_ADMIN_TOKEN)
 

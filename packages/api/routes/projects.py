@@ -8,15 +8,15 @@ from pydantic import BaseModel, Field
 from api.admin import AdminDep
 from api.deps import ProjectStoreDep
 from api.errors import problem
-from api.schemas.peel_responses import (
-    DeleteOkResponse,
-    long_tail_json_openapi_responses,
-    with_long_tail_peel_503,
-)
 from api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
+)
+from api.schemas.peel_responses import (
+    DeleteOkResponse,
+    long_tail_json_openapi_responses,
+    with_long_tail_peel_503,
 )
 from api.user import UserDep
 from env.edition import is_enterprise
@@ -160,14 +160,13 @@ def update_project(
 
 @router.delete(
     "/{project_id}",
-    response_model=DeleteOkResponse,
-    response_model_exclude_none=True,
+    status_code=204,
     responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-h
 )
-def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> DeleteOkResponse:
+def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> None:
     if not store.delete(project_id):
         raise HTTPException(
             status_code=404,
             detail=problem("project_not_found", f"Unknown project id: {project_id}"),
         )
-    return DeleteOkResponse(ok=True)
+    return None

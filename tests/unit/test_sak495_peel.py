@@ -37,9 +37,9 @@ def test_sak495_a_source_markers() -> None:
     executor = (_ROOT / "packages" / "orchestrator" / "slice" / "executor.py").read_text(
         encoding="utf-8",
     )
-    implement = (
-        _ROOT / "packages" / "maker" / "slice_workflow" / "implement_panel.py"
-    ).read_text(encoding="utf-8")
+    implement = (_ROOT / "packages" / "maker" / "slice_workflow" / "implement_panel.py").read_text(
+        encoding="utf-8"
+    )
     route = (_ROOT / "packages" / "memory" / "broker_route.py").read_text(encoding="utf-8")
 
     assert "sak495-a" in contribution
@@ -54,7 +54,9 @@ def test_sak495_a_source_markers() -> None:
 
 
 @pytest.mark.sak495_a
-def test_contribution_refuses_under_memory_1(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_contribution_refuses_under_memory_1(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """sak495-a: MEMORY=1 refuses run index contribution via refuse_legacy."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_MEMORY", "1")
     with pytest.raises(RuntimeError, match=r"MEMORY=1\|2"):
@@ -68,7 +70,9 @@ def test_contribution_refuses_under_memory_1(monkeypatch: pytest.MonkeyPatch, tm
 
 
 @pytest.mark.sak495_a
-def test_contribution_refuses_under_memory_2(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_contribution_refuses_under_memory_2(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """sak495-a: MEMORY=2 refuses run index contribution via refuse_legacy."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_MEMORY", "2")
     with pytest.raises(RuntimeError, match=r"MEMORY=1\|2"):
@@ -158,9 +162,7 @@ def test_faiss_bridge_skips_under_memory_2(
 
 def test_sak495_h_source_markers() -> None:
     """sak495-h: test_writer + refactor refuse stub/code_intel on non-transport peel errors."""
-    tw = (_ROOT / "packages" / "orchestrator" / "test_writer_stage.py").read_text(
-        encoding="utf-8"
-    )
+    tw = (_ROOT / "packages" / "orchestrator" / "test_writer_stage.py").read_text(encoding="utf-8")
     refactor = (_ROOT / "packages" / "orchestrator" / "refactor_stage.py").read_text(
         encoding="utf-8"
     )
@@ -324,10 +326,13 @@ def test_sak495_h_refactor_peel_off_runtime_error_falls_back(
     )
     run_id = uuid4()
 
-    with patch(
-        "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
-        side_effect=RuntimeError("invalid refactor payload"),
-    ), patch("orchestrator.refactor_stage.append_gate_decision_event"):
+    with (
+        patch(
+            "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
+            side_effect=RuntimeError("invalid refactor payload"),
+        ),
+        patch("orchestrator.refactor_stage.append_gate_decision_event"),
+    ):
         emit_refactor_stage_and_critique(
             store,
             registry,
@@ -485,7 +490,9 @@ def test_sak495_i_tool_run_shell_tools_broker_only_raises(
     def _boom(*_a, **_k):
         raise RuntimeError("broker_miss: shell_exec: down")
 
-    monkeypatch.setattr("agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        "agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None
+    )
     monkeypatch.setattr("broker_client.stage_bind.tools.try_broker_shell_exec", _boom)
     monkeypatch.setattr(
         "agent_tools.sandbox_bridge.run_subprocess_in_sandbox",
@@ -633,9 +640,8 @@ def test_sak495_c_peel_routes_source_wire_openapi_helpers() -> None:
 
 # --- sak495-d: long-tail peel OpenAPI (admin OAuth, subscription OAuth, bundle catalog) ---
 
-import json
 
-from api.schemas.openapi import PROBLEM_RESPONSE_401, PROBLEM_RESPONSE_503
+from api.schemas.openapi import PROBLEM_RESPONSE_401
 from api.schemas.peel_responses import (
     AdminOAuthLogoutMissResponse,
     AdminOAuthSessionMissResponse,
@@ -792,13 +798,7 @@ def test_sak495_g_source_markers() -> None:
         encoding="utf-8",
     )
     py_client = (
-        _ROOT.parent
-        / "SwissArmyNoife"
-        / "sdks"
-        / "python"
-        / "src"
-        / "swissarmynoife"
-        / "client.py"
+        _ROOT.parent / "SwissArmyNoife" / "sdks" / "python" / "src" / "swissarmynoife" / "client.py"
     ).read_text(encoding="utf-8")
 
     assert "sak495-g" in peel_assert

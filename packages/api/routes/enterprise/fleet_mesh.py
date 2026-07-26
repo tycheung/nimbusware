@@ -53,8 +53,7 @@ def fleet_mesh_status(
                 exc,
                 feature="fleet_mesh",
                 only_msg=(
-                    "fleet_mesh local status unavailable under "
-                    f"NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
+                    f"fleet_mesh local status unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
                 ),
                 miss_extra={
                     "status": "degraded",

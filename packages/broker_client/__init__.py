@@ -1,10 +1,10 @@
-from broker_client.client import BrokerClient
 from broker_client.capacity_bridge import (
     try_broker_capacity_pressure,
     try_broker_capacity_probe,
     try_broker_parallel_writer_stages,
     try_broker_probe_dict,
 )
+from broker_client.client import BrokerClient
 from broker_client.compute_bridge import try_broker_compute_work
 from broker_client.flags import (
     Backend,
@@ -18,9 +18,9 @@ from broker_client.flags import (
     broker_egress_only,
     broker_llm_enabled,
     broker_llm_only,
+    broker_mcp_enabled,
     broker_memory_enabled,
     broker_memory_only,
-    broker_mcp_enabled,
     broker_only,
     broker_research_enabled,
     broker_research_only,
@@ -52,11 +52,11 @@ from broker_client.stage_bind import (
     build_compute_complete_payload,
     build_compute_enqueue_payload,
     build_compute_get_payload,
-    build_compute_requeue_payload,
     build_compute_heartbeat_payload,
     build_compute_list_nodes_payload,
     build_compute_list_payload,
     build_compute_register_payload,
+    build_compute_requeue_payload,
     capacity_fit_via_broker,
     capacity_pressure_via_broker,
     capacity_probe_via_broker,

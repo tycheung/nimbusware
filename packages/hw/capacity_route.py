@@ -7,6 +7,8 @@ from typing import Any, TypeVar
 from broker_client.dual_run_route import (
     map_domain_broker_http_miss,
     refuse_when,
+)
+from broker_client.dual_run_route import (
     require_hit as _require_hit,
 )
 from broker_client.flags import broker_capacity_enabled, broker_capacity_only
@@ -63,8 +65,7 @@ def map_broker_capacity_http_miss(
         enabled=broker_capacity_enabled,
         only=broker_capacity_only,
         only_code="broker_capacity_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_CAPACITY=2: {exc}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_CAPACITY=2: {exc}",
         miss_extra=miss_extra,
         defaults={
             "capacity_source": "broker_miss",
@@ -86,6 +87,5 @@ def map_broker_capacity_http_error(
 ) -> None:
     """Raise refuse under CAPACITY=1|2 (non-HTTP callers) (`sak437-d` / `sak442-d`)."""
     raise RuntimeError(
-        only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_CAPACITY=1|2: {exc}"
+        only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_CAPACITY=1|2: {exc}"
     ) from exc

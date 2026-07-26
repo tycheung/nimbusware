@@ -20,8 +20,7 @@ from broker_client.peel_assert import build_http_miss
 from compute.broker_route import COMPUTE_ONLY_MSG
 
 LLM_ONLY_MSG = (
-    "Nimbusware chat stream unavailable under "
-    "NIMBUSWARE_BROKER_LLM=2; use SwissArmyNoife llm_chat"
+    "Nimbusware chat stream unavailable under NIMBUSWARE_BROKER_LLM=2; use SwissArmyNoife llm_chat"
 )
 
 
@@ -103,14 +102,14 @@ def sse_stream_openapi_responses(
                         "peel_miss": {
                             "summary": "Compute peel miss",
                             "value": (
-                                'event: error\n'
+                                "event: error\n"
                                 'data: {"via":"broker_miss","feature":"example",'
                                 '"error":"…","status":"degraded"}\n\n'
                             ),
                         },
                     },
                 },
-                "application/json": {"model": miss_model},
+                "application/json": {"schema": miss_model.model_json_schema()},
             },
         },
     }

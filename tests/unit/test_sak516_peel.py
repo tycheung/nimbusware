@@ -28,12 +28,13 @@ def test_sak516_a_openapi_commentary_artifacts_get_503() -> None:
         ),
     )
     for path, method in SAK516_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak516-a" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_stream.py"
-    ).read_text(encoding="utf-8")
+    assert "sak516-a" in (_ROOT / "packages" / "api" / "routes" / "chat_stream.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak516-a" in (
         _ROOT / "packages" / "api" / "routes" / "project_context_artifacts.py"
     ).read_text(encoding="utf-8")
@@ -57,8 +58,9 @@ def test_sak516_b_openapi_artifacts_post_autopilot_503() -> None:
         ),
     )
     for path, method in SAK516_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak516-b" in (
         _ROOT / "packages" / "api" / "routes" / "project_context_artifacts.py"
@@ -86,8 +88,9 @@ def test_sak516_c_openapi_enforcement_operator_503() -> None:
         ),
     )
     for path, method in SAK516_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak516-c" in (
         _ROOT / "packages" / "api" / "routes" / "platform_user_profiles.py"
@@ -121,10 +124,13 @@ def test_sak516_d_count_missing_peel_503_in_openapi_json(tmp_path: Path) -> None
         encoding="utf-8",
     )
     assert count_missing_peel_503_in_openapi_json(path, [("/t", "get")]) == 0
-    assert count_missing_peel_503_in_openapi_json(
-        path,
-        [("/t", "get"), ("/u", "post")],
-    ) == 1
+    assert (
+        count_missing_peel_503_in_openapi_json(
+            path,
+            [("/t", "get"), ("/u", "post")],
+        )
+        == 1
+    )
 
 
 # --- sak516-e: CI OpenAPI subsets ---
@@ -132,9 +138,9 @@ def test_sak516_d_count_missing_peel_503_in_openapi_json(tmp_path: Path) -> None
 
 def test_sak516_e_ci_openapi_subsets() -> None:
     """sak516-e: peel-flag-matrix runs sak516 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak516_a" in yml
     assert "sak516_b" in yml
     assert "sak516_c" in yml
@@ -150,9 +156,9 @@ def test_sak516_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak516_count_missing_file_helper" in soak
     assert "sak516-f — commentary/artifacts/presets OpenAPI + count-in-file" in soak
     assert 'label.startswith("sak516")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak516_peel.py" in peel_unit
 
@@ -175,8 +181,9 @@ def test_sak516_g_openapi_user_profile_puts_503() -> None:
         ),
     )
     for path, method in SAK516_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak516-g" in (
         _ROOT / "packages" / "api" / "routes" / "platform_user_profiles.py"
@@ -201,8 +208,9 @@ def test_sak516_h_openapi_discipline_participant_get_503() -> None:
         ),
     )
     for path, method in SAK516_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak516-h" in (
         _ROOT / "packages" / "api" / "routes" / "platform_discipline_profile.py"
@@ -227,8 +235,9 @@ def test_sak516_i_openapi_participant_put_overlays_get_503() -> None:
         ),
     )
     for path, method in SAK516_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak516-i" in (
         _ROOT / "packages" / "api" / "routes" / "platform_discipline_profile.py"
@@ -243,9 +252,9 @@ def test_sak516_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak516_user_profile_openapi" in soak
     assert "sak516-j — user-profile OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak516_g" in yml
     assert "sak516_h" in yml
     assert "sak516_i" in yml

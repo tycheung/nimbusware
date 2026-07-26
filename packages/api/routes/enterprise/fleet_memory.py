@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -13,6 +13,9 @@ from api.routes.enterprise.core import EnterpriseDep
 from api.schemas.peel_responses import memory_json_openapi_responses
 from broker_client.flags import broker_memory_enabled
 from broker_client.peel_assert import is_memory_store_or_miss
+from env.edition import enterprise_feature_enabled
+from env.env_flags import nimbusware_database_url
+from iam.context import get_auth_context
 from memory.broker_route import (
     STATUS_PROBE_QUERY,
     broker_memory_hits,
@@ -20,9 +23,7 @@ from memory.broker_route import (
     map_broker_memory_http_miss,
     resolve_memory_store_or_miss,
 )
-from env.edition import enterprise_feature_enabled
-from env.env_flags import nimbusware_database_url
-from iam.context import get_auth_context
+from memory.org_scope import fleet_scope_hash, resolve_fleet_scope
 from memory.peel_fleet.index import rebuild_fleet_memory_index
 from memory.peel_fleet.sync import (
     fleet_memory_remote_status,
@@ -31,7 +32,6 @@ from memory.peel_fleet.sync import (
 )
 from memory.peel_index.embeddings import resolve_fleet_embedding_mode
 from memory.peel_index.search import format_memory_excerpt, search_fleet_memory
-from memory.org_scope import fleet_scope_hash, resolve_fleet_scope
 
 router = APIRouter(prefix="/enterprise/fleet-memory", tags=["enterprise"])
 
@@ -138,9 +138,7 @@ def fleet_memory_status(_gate: EnterpriseDep) -> dict[str, Any]:
                     "remote": {"via": "broker", "configured": True},
                 }
             return map_broker_memory_http_miss(
-                RuntimeError(
-                    "fleet memory status unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"
-                ),
+                RuntimeError("fleet memory status unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"),
                 feature="fleet_memory_status",
                 miss_extra={
                     **status_base,
@@ -166,7 +164,7 @@ def fleet_memory_status(_gate: EnterpriseDep) -> dict[str, Any]:
         allow_none=True,
     )
     local_gen = None
-    if memory_store is not None:
+    if memory_store is not None and not isinstance(memory_store, dict):
         local_gen = memory_store.latest_generation(
             org_scope_hash=org_scope, tenant_id=ctx.tenant_id
         )
@@ -207,7 +205,7 @@ def fleet_memory_rebuild(
         },
     )
     if is_memory_store_or_miss(resolved):
-        return resolved
+        return cast(dict[str, Any], resolved)
     memory_store = resolved
     audit_uuid = UUID(body.audit_run_id) if body.audit_run_id else None
     conninfo = nimbusware_database_url()
@@ -274,9 +272,7 @@ def fleet_memory_search(
                     "via": "broker",
                 }
             return map_broker_memory_http_miss(
-                RuntimeError(
-                    "fleet memory search unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"
-                ),
+                RuntimeError("fleet memory search unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"),
                 feature="fleet_memory_search",
                 miss_extra=search_base,
             )
@@ -332,7 +328,7 @@ def fleet_memory_sync(body: FleetSyncBody, _gate: EnterpriseDep) -> dict[str, An
         miss_extra={"direction": body.direction.strip().lower()},
     )
     if is_memory_store_or_miss(resolved):
-        return resolved
+        return cast(dict[str, Any], resolved)
     memory_store = resolved
     direction = body.direction.strip().lower()
     try:
@@ -359,4 +355,4 @@ def fleet_memory_sync(body: FleetSyncBody, _gate: EnterpriseDep) -> dict[str, An
             status_code=409,
             detail=problem("fleet_sync_failed", str(exc)),
         ) from exc
-    return out
+    return cast(dict[str, Any], out)

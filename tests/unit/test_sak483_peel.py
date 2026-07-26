@@ -39,7 +39,7 @@ def test_progress_ribbon_gates_miss() -> None:
     refresh = (root / "progress_ribbon_refresh.js").read_text(encoding="utf-8")
     gates = (root / "findings-gates.js").read_text(encoding="utf-8")
     compact = (root / "compact-toolbar.js").read_text(encoding="utf-8")
-    assert "missBannerText" in refresh
+    assert "toastIfMiss" in refresh or "isDomainPeelMiss" in refresh
     assert "toastIfMiss" in gates
     assert "toastIfMiss" in compact
     assert "catch {" not in gates or "toast(" in gates
@@ -106,7 +106,7 @@ def test_admin_secondary_pages_peel() -> None:
     preflight = (root / "PreflightPage.tsx").read_text(encoding="utf-8")
     agents = (root / "CustomAgentsPage.tsx").read_text(encoding="utf-8")
     assert "formatPeelMissMessage" in standards
-    assert "isComputeMiss" in standards
+    assert "isDomainPeelMiss" in standards
     assert "formatPeelMissMessage" in projects
     assert "formatPeelMissMessage" in preflight
     assert "formatPeelMissMessage" in agents

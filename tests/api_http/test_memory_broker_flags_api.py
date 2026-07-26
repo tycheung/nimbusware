@@ -6,10 +6,10 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
+from agent_core.models import EventType
 from api.routes.enterprise import fleet_memory as fm
 from api.routes.memory_chunks import list_memory_chunks
 from api.routes.runs import memory_insert as mi
-from agent_core.models import EventType
 from env.edition import ENTERPRISE_EDITION, ENV_EDITION
 from iam.constants import DEFAULT_TENANT_ID
 from iam.context import reset_auth_context, set_auth_context

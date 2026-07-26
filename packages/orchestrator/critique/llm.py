@@ -91,7 +91,8 @@ def execute_scan_critique_llm(
     except RuntimeError:
         from broker_client.flags import broker_llm_enabled
 
-        # sak492-e / sak493-d / sak496-c: under LLM peel, propagate — no silent False fallback.
+        # sak492-e / sak493-d / sak496-c: under LLM peel, propagate broker_miss —
+        # no silent False fallback.
         if broker_llm_enabled():
             raise
         return False

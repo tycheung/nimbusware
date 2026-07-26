@@ -98,7 +98,7 @@ def is_fetch_peel_miss(body: Mapping[str, Any] | None) -> bool:
 
 
 def peel_fields_from_fetch(body: Mapping[str, Any] | None) -> dict[str, Any]:
-    if not is_fetch_peel_miss(body):
+    if not is_fetch_peel_miss(body) or body is None:
         return {}
     out: dict[str, Any] = {}
     for key in ("via", "error", "feature", "status", "capacity_source"):

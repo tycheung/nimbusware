@@ -6,10 +6,7 @@ from pathlib import Path
 def test_worker_cli_claim_miss() -> None:
     """sak490-a."""
     src = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "worker_cli.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "worker_cli.py"
     ).read_text(encoding="utf-8")
     assert "_broker_claim_work_or_miss" in src
     assert "_stderr_broker_miss" in src
@@ -19,22 +16,13 @@ def test_worker_cli_claim_miss() -> None:
 def test_queue_direct_ops_refuse() -> None:
     """sak490-b."""
     work_unit = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "work_unit.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "work_unit.py"
     ).read_text(encoding="utf-8")
     redis_q = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "work_unit_redis.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "work_unit_redis.py"
     ).read_text(encoding="utf-8")
     pg_q = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "work_unit_postgres.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "work_unit_postgres.py"
     ).read_text(encoding="utf-8")
     assert "_refuse_direct_queue_op" in work_unit
     assert "sak490-b" in work_unit
@@ -52,11 +40,7 @@ def test_writers_readiness_capacity_soft_close() -> None:
         / "writers_parallel.py"
     ).read_text(encoding="utf-8")
     readiness = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "maker"
-        / "readiness"
-        / "platform.py"
+        Path(__file__).resolve().parents[2] / "packages" / "maker" / "readiness" / "platform.py"
     ).read_text(encoding="utf-8")
     assert "sak490-c" in writers
     assert "sak490-c" in readiness
@@ -66,11 +50,7 @@ def test_writers_readiness_capacity_soft_close() -> None:
 def test_platform_fit_ranked_miss() -> None:
     """sak490-d."""
     hardware = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "routes"
-        / "platform_hardware.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "platform_hardware.py"
     ).read_text(encoding="utf-8")
     routing = (
         Path(__file__).resolve().parents[2]
@@ -79,9 +59,9 @@ def test_platform_fit_ranked_miss() -> None:
         / "routes"
         / "platform_model_routing.py"
     ).read_text(encoding="utf-8")
-    fit = (
-        Path(__file__).resolve().parents[2] / "packages" / "hw" / "fit.py"
-    ).read_text(encoding="utf-8")
+    fit = (Path(__file__).resolve().parents[2] / "packages" / "hw" / "fit.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak490-d" in hardware
     assert "sak490-d" in routing
     assert "sak490-d" in fit
@@ -115,17 +95,11 @@ def test_peel_assert_http_miss_builder() -> None:
     assert body["feature"] == "sse"
     assert body["error"] == "down"
 
-    sse = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "sse_peel.py"
-    ).read_text(encoding="utf-8")
+    sse = (Path(__file__).resolve().parents[2] / "packages" / "api" / "sse_peel.py").read_text(
+        encoding="utf-8"
+    )
     export = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "export_peel.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "export_peel.py"
     ).read_text(encoding="utf-8")
     assert "build_http_miss" in sse or "sak490-f" in sse
     assert "build_http_miss" in export or "sak490-f" in export
@@ -146,10 +120,7 @@ def test_api_compute_2_problem_matrix() -> None:
 def test_ci_flag_matrix_job() -> None:
     """sak490-h."""
     yml = (
-        Path(__file__).resolve().parents[3]
-        / ".github"
-        / "workflows"
-        / "nimbusware-peel.yml"
+        Path(__file__).resolve().parents[3] / ".github" / "workflows" / "nimbusware-peel.yml"
     ).read_text(encoding="utf-8")
     assert "peel-flag-matrix" in yml
     assert "test_compute_broker_flags_api.py" in yml

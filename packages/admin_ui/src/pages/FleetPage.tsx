@@ -12,6 +12,7 @@ import {
   getWorkUnitQueueDepth,
   isCapacityMiss,
   isDomainPeelMiss,
+  isMemoryMiss,
   peelMissFromFetchError,
   resolveEnterpriseApiKeyForTenant,
   selectedEnterpriseTenantSlug,
@@ -119,7 +120,7 @@ export function FleetPage() {
         }
         // sak494-h: surface fleet_memory status peel miss on dashboard load
         const memBody = body.fleet_memory;
-        if (isDomainPeelMiss(memBody)) {
+        if (isMemoryMiss(memBody)) {
           setMemoryPeelMiss(formatPeelMissMessage(memBody, "fleet memory unavailable"));
         } else {
           setMemoryPeelMiss("");
@@ -132,7 +133,7 @@ export function FleetPage() {
           setError("");
           return;
         }
-        if (miss && isDomainPeelMiss(miss)) {
+        if (miss && isMemoryMiss(miss)) {
           setMemoryPeelMiss(formatPeelMissMessage(miss, "fleet memory unavailable"));
           setError("");
           return;
@@ -648,7 +649,7 @@ export function FleetPage() {
         setFleetSearch(null);
         return;
       }
-      if (isDomainPeelMiss(memory)) {
+      if (isMemoryMiss(memory)) {
         setFleetSearchError(
           formatPeelMissMessage(memory, "broker_miss: fleet memory search unavailable"),
         );

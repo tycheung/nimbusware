@@ -28,12 +28,13 @@ def test_sak510_a_openapi_readiness_governance_503() -> None:
         ),
     )
     for path, method in SAK510_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-a" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-a" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-b: OpenAPI 503 — onboarding GET/POST ---
@@ -54,12 +55,13 @@ def test_sak510_b_openapi_onboarding_503() -> None:
         ),
     )
     for path, method in SAK510_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-b" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-b" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-c: OpenAPI 503 — optimizer-weights GET/PUT ---
@@ -80,12 +82,13 @@ def test_sak510_c_openapi_optimizer_weights_503() -> None:
         ),
     )
     for path, method in SAK510_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-c" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-c" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-d: patch_openapi_json_peel_503 helper ---
@@ -121,9 +124,9 @@ def test_sak510_d_patch_openapi_json_peel_503(tmp_path: Path) -> None:
 
 def test_sak510_e_ci_openapi_subsets() -> None:
     """sak510-e: peel-flag-matrix runs sak510 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak510_a" in yml
     assert "sak510_b" in yml
     assert "sak510_c" in yml
@@ -139,9 +142,9 @@ def test_sak510_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak510_patch_openapi_helper" in soak
     assert "sak510-f — readiness/onboarding/optimizer OpenAPI + patch helper" in soak
     assert 'label.startswith("sak510")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak510_peel.py" in peel_unit
 
@@ -164,12 +167,13 @@ def test_sak510_g_openapi_precommit_critic_packs_503() -> None:
         ),
     )
     for path, method in SAK510_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-g" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-g" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-h: OpenAPI 503 — safe-coding-preferences ---
@@ -190,12 +194,13 @@ def test_sak510_h_openapi_safe_coding_503() -> None:
         ),
     )
     for path, method in SAK510_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-h" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-h" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-i: OpenAPI 503 — model-bindings defaults PUT + roles ---
@@ -216,12 +221,13 @@ def test_sak510_i_openapi_model_bindings_503() -> None:
         ),
     )
     for path, method in SAK510_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak510-i" in (
-        _ROOT / "packages" / "api" / "routes" / "model_bindings.py"
-    ).read_text(encoding="utf-8")
+    assert "sak510-i" in (_ROOT / "packages" / "api" / "routes" / "model_bindings.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak510-j: soak/CI deepen ---
@@ -232,9 +238,9 @@ def test_sak510_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak510_prefs_bindings_openapi" in soak
     assert "sak510-j — precommit/safe-coding/bindings OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak510_g" in yml
     assert "sak510_h" in yml
     assert "sak510_i" in yml

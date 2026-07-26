@@ -34,61 +34,62 @@ router = APIRouter()
     response_model=RunListResponse,
     response_model_exclude_none=True,
     responses=with_long_tail_peel_503(  # sak502-a / sak502-d
-    {
-        200: {
-            "description": "Recent run identifiers",
-            "headers": {
-                "Link": RUN_LIST_LINK_HEADER,
-            },
-            "content": {
-                "application/json": {
-                    "example": {
-                        "run_ids": ["11111111-1111-4111-8111-111111111111"],
-                        "total": 1,
-                        "has_more": False,
-                        "order": "newest_first",
-                        "limit": 50,
-                        "offset": 0,
-                        "include_summary": 0,
-                    },
-                    "examples": {
-                        "keyset_page": {
-                            "summary": (
-                                "cursor + next_cursor (offset 0; Link rel=next uses cursor=)"
-                            ),
-                            "value": {
-                                "run_ids": ["11111111-1111-4111-8111-111111111111"],
-                                "total": 50,
-                                "has_more": True,
-                                "order": "newest_first",
-                                "limit": 1,
-                                "offset": 0,
-                                "include_summary": 0,
-                                "next_cursor": (
-                                    "eyJzIjoxMjM0LCJyIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIn0"
-                                ),
-                            },
+        {
+            200: {
+                "description": "Recent run identifiers",
+                "headers": {
+                    "Link": RUN_LIST_LINK_HEADER,
+                },
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "run_ids": ["11111111-1111-4111-8111-111111111111"],
+                            "total": 1,
+                            "has_more": False,
+                            "order": "newest_first",
+                            "limit": 50,
+                            "offset": 0,
+                            "include_summary": 0,
                         },
-                        "with_summaries": {
-                            "summary": "include_summary=1 (limit capped at 20)",
-                            "value": {
-                                "run_ids": ["11111111-1111-4111-8111-111111111111"],
-                                "total": 1,
-                                "has_more": False,
-                                "order": "newest_first",
-                                "limit": 10,
-                                "offset": 0,
-                                "include_summary": 1,
-                                "summaries": {
-                                    "11111111-1111-4111-8111-111111111111": {
-                                        "status": "created",
-                                        "workflow_profile": "default",
-                                        "event_count": 1,
-                                        "latest_event_type": "run.created",
-                                        "terminal_event_type": None,
-                                        "findings_count": 0,
-                                        "has_escalation": False,
-                                        "run_created_metadata": {},
+                        "examples": {
+                            "keyset_page": {
+                                "summary": (
+                                    "cursor + next_cursor (offset 0; Link rel=next uses cursor=)"
+                                ),
+                                "value": {
+                                    "run_ids": ["11111111-1111-4111-8111-111111111111"],
+                                    "total": 50,
+                                    "has_more": True,
+                                    "order": "newest_first",
+                                    "limit": 1,
+                                    "offset": 0,
+                                    "include_summary": 0,
+                                    "next_cursor": (
+                                        "eyJzIjoxMjM0LCJyIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIn0"
+                                    ),
+                                },
+                            },
+                            "with_summaries": {
+                                "summary": "include_summary=1 (limit capped at 20)",
+                                "value": {
+                                    "run_ids": ["11111111-1111-4111-8111-111111111111"],
+                                    "total": 1,
+                                    "has_more": False,
+                                    "order": "newest_first",
+                                    "limit": 10,
+                                    "offset": 0,
+                                    "include_summary": 1,
+                                    "summaries": {
+                                        "11111111-1111-4111-8111-111111111111": {
+                                            "status": "created",
+                                            "workflow_profile": "default",
+                                            "event_count": 1,
+                                            "latest_event_type": "run.created",
+                                            "terminal_event_type": None,
+                                            "findings_count": 0,
+                                            "has_escalation": False,
+                                            "run_created_metadata": {},
+                                        },
                                     },
                                 },
                             },
@@ -96,10 +97,9 @@ router = APIRouter()
                     },
                 },
             },
+            422: PROBLEM_RESPONSE_422,
+            500: PROBLEM_RESPONSE_500,
         },
-        422: PROBLEM_RESPONSE_422,
-        500: PROBLEM_RESPONSE_500,
-    },
     ),
 )
 def list_runs(

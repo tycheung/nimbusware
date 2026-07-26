@@ -108,9 +108,9 @@ def test_sak521_d_report_uses_coverage_in_file(tmp_path: Path) -> None:
 
 def test_sak521_e_ci_openapi_subsets() -> None:
     """sak521-e: peel-flag-matrix runs sak521 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak521_a" in yml
     assert "sak521_b" in yml
     assert "sak521_c" in yml
@@ -126,8 +126,8 @@ def test_sak521_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak521_product_complete_helper" in soak
     assert "sak521-f — product peel complete + oauth skip" in soak
     assert 'label.startswith("sak521")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak521_peel.py" in peel_unit

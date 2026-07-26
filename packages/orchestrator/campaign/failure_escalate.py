@@ -1,4 +1,3 @@
-"""Escalate campaign retries: same slice → ancestors → replan slice."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -121,11 +120,7 @@ def decide_escalation(
         if sl.status != SliceStatus.FAILED:
             continue
         deps = graph.get(sid, ())
-        passed = {
-            s
-            for s, (row, _, _) in index.items()
-            if row.status == SliceStatus.PASSED
-        }
+        passed = {s for s, (row, _, _) in index.items() if row.status == SliceStatus.PASSED}
         # Allow escalate even when deps are failed/passed — walk uses graph only.
         # Prefer heads whose deps are all passed (or none).
         if all(d in passed for d in deps):
@@ -181,9 +176,7 @@ def revise_backlog_with_replan(
             replan = BacklogSlice(
                 slice_id=replan_id,
                 status=SliceStatus.PENDING,
-                rationale=(
-                    f"Escalate replan after {fail_streak} failures on {failed_slice_id}"
-                ),
+                rationale=(f"Escalate replan after {fail_streak} failures on {failed_slice_id}"),
                 target_paths=("README.md", "docs/"),
                 estimated_loc=40,
             )

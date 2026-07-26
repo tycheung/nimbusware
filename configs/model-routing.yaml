@@ -125,7 +125,7 @@ routing_presets:
   presets:
     local_only:
       label: Local only
-      description: All stages use Ollama — default Individual profile.
+      description: "All stages use Ollama \u2014 default Individual profile."
       cloud_runtime:
         enabled: false
       stage_providers: {}

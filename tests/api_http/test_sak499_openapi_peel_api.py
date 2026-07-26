@@ -13,8 +13,7 @@ from orchestrator.context_artifacts import ContextArtifactRecord
 
 def _launch_eval_broker_miss() -> RuntimeError:
     return RuntimeError(
-        "broker_miss: launch_evaluator: LLM panel unavailable under "
-        "NIMBUSWARE_BROKER_LLM=1|2"
+        "broker_miss: launch_evaluator: LLM panel unavailable under NIMBUSWARE_BROKER_LLM=1|2"
     )
 
 
@@ -101,7 +100,10 @@ def test_launch_eval_under_llm_1_broker_miss(monkeypatch: pytest.MonkeyPatch) ->
     store = MagicMock()
     store.list_run_events.return_value = [{"event_type": "run.created", "payload": {}}]
     with (
-        patch("maker.workspace.workspace.resolve_run_workspace", return_value=MagicMock(is_dir=lambda: True)),
+        patch(
+            "maker.workspace.workspace.resolve_run_workspace",
+            return_value=MagicMock(is_dir=lambda: True),
+        ),
         patch(
             "orchestrator.launch.launch_eval_catalog.attach_context_from_run",
             return_value={},
@@ -124,7 +126,10 @@ def test_launch_eval_under_llm_2_returns_503(monkeypatch: pytest.MonkeyPatch) ->
     store = MagicMock()
     store.list_run_events.return_value = [{"event_type": "run.created", "payload": {}}]
     with (
-        patch("maker.workspace.workspace.resolve_run_workspace", return_value=MagicMock(is_dir=lambda: True)),
+        patch(
+            "maker.workspace.workspace.resolve_run_workspace",
+            return_value=MagicMock(is_dir=lambda: True),
+        ),
         patch(
             "orchestrator.launch.launch_eval_catalog.attach_context_from_run",
             return_value={},

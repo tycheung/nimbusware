@@ -1,4 +1,4 @@
-"""Shared dual-run refuse helpers for compute + capacity peels (`sak434-d` / `sak494-j` / `sak499-f`).
+"""Shared dual-run refuse helpers for compute + capacity peels (`sak434-d` / `sak491-f` / `sak494-j` / `sak499-f`).
 
 Domain packages keep thin facades (``compute.broker_route``, ``hw.capacity_route``,
 ``memory.broker_route``, ``research.broker_route``, ``executor.broker_route``,

@@ -1,13 +1,12 @@
 """Broker-first chat helpers after sak411 (replaces orchestrator.llm.common chat path)."""
+
 from __future__ import annotations
 
 from typing import Any
 
 from orchestrator.llm.broker_bridge import try_broker_chat_json
 
-_STRICT_BROKER_MISS = (
-    "broker_miss: chat_facade: LLM unavailable under NIMBUSWARE_BROKER_LLM=1|2"
-)
+_STRICT_BROKER_MISS = "broker_miss: chat_facade: LLM unavailable under NIMBUSWARE_BROKER_LLM=1|2"
 
 
 def _local_chat_json_via_plan_patch(

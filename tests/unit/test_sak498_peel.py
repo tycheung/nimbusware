@@ -298,9 +298,9 @@ def test_sak498_d_emit_peel_on_llm_none_raises(monkeypatch: pytest.MonkeyPatch) 
 
 def test_sak498_c_source_markers() -> None:
     """sak498-c: self_refinement critique wired via bind_post_verify_role_critique."""
-    gate_helpers = (
-        _ROOT / "packages" / "orchestrator" / "llm" / "gate_helpers.py"
-    ).read_text(encoding="utf-8")
+    gate_helpers = (_ROOT / "packages" / "orchestrator" / "llm" / "gate_helpers.py").read_text(
+        encoding="utf-8"
+    )
     bindings = (
         _ROOT / "packages" / "orchestrator" / "llm" / "post_verify_role_bindings.py"
     ).read_text(encoding="utf-8")
@@ -618,9 +618,9 @@ def test_sak498_e_peel_routes_source_wire_openapi_helpers() -> None:
 
 def test_sak498_i_source_markers() -> None:
     """sak498-i: lifecycle/test_writer narrow soft-swallow; faiss rebuild raises under MEMORY peel."""
-    lifecycle = (
-        _ROOT / "packages" / "orchestrator" / "_pipeline" / "lifecycle_plan.py"
-    ).read_text(encoding="utf-8")
+    lifecycle = (_ROOT / "packages" / "orchestrator" / "_pipeline" / "lifecycle_plan.py").read_text(
+        encoding="utf-8"
+    )
     tw = (_ROOT / "packages" / "orchestrator" / "test_writer_stage.py").read_text(
         encoding="utf-8",
     )
@@ -641,8 +641,6 @@ def test_sak498_i_lifecycle_peel_off_broker_miss_stub_fallback(
     """sak498-i: LLM=0 — broker_miss still soft-falls back to plan stub."""
     from collections.abc import Iterator
     from contextlib import contextmanager
-    from typing import Any
-    from unittest.mock import MagicMock
     from uuid import uuid4
 
     from orchestrator.pipeline import make_dev_orchestrator
@@ -684,8 +682,6 @@ def test_sak498_i_lifecycle_peel_off_non_broker_raises(
     """sak498-i: LLM=0 — non-broker RuntimeError propagates (no stub fallback)."""
     from collections.abc import Iterator
     from contextlib import contextmanager
-    from typing import Any
-    from unittest.mock import MagicMock
     from uuid import uuid4
 
     from orchestrator.pipeline import make_dev_orchestrator
@@ -957,7 +953,7 @@ def test_sak498_j_soak_lib_asserts_present() -> None:
 @pytest.mark.sak498_j
 def test_sak498_j_ci_workflow_lists_peel_unit() -> None:
     """sak498-j: nimbusware-peel.yml includes test_sak498_peel.py in peel-unit bundle."""
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "test_sak498_peel.py" in workflow

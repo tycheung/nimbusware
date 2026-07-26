@@ -1,5 +1,3 @@
-"""Expanded self-evolution tests: API handlers, track executors, theater, prompt goldens."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -90,9 +88,7 @@ def _seed_run(store: _Store, run_id, ws: Path, *, with_backlog: bool = False) ->
                 BacklogEpic(
                     epic_id="e1",
                     title="Epic",
-                    features=(
-                        BacklogFeature(feature_id="f1", title="Feat", slices=()),
-                    ),
+                    features=(BacklogFeature(feature_id="f1", title="Feat", slices=()),),
                 ),
             ),
         )
@@ -234,13 +230,16 @@ def test_maybe_auto_promote_respects_autopilot_and_enterprise(tmp_path: Path) ->
         has_p0_security=False,
     )
     assert maybe_auto_promote_prompts(store, run_id, ws, autopilot_level=7) == []
-    assert maybe_auto_promote_prompts(
-        store,
-        run_id,
-        ws,
-        autopilot_level=9,
-        enterprise=True,
-    ) == []
+    assert (
+        maybe_auto_promote_prompts(
+            store,
+            run_id,
+            ws,
+            autopilot_level=9,
+            enterprise=True,
+        )
+        == []
+    )
     promoted = maybe_auto_promote_prompts(store, run_id, ws, autopilot_level=8)
     assert aid in promoted
 
@@ -269,9 +268,9 @@ def test_skill_shelved_on_p0(tmp_path: Path) -> None:
         has_p0=True,
     )
     briefs = list_evolved_skill_briefs(ws)
-    assert all(str(b.get("id")) != sid or str(b.get("status")) == "shelved" for b in briefs) or not any(
-        str(b.get("id")) == sid for b in briefs
-    )
+    assert all(
+        str(b.get("id")) != sid or str(b.get("status")) == "shelved" for b in briefs
+    ) or not any(str(b.get("id")) == sid for b in briefs)
 
 
 # --- Track executors ---
@@ -357,7 +356,7 @@ def test_architecture_revise_emits_maintenance(tmp_path: Path) -> None:
 def test_theater_renders_evolution_promoted_and_rejected() -> None:
     run_id = uuid4()
     rows = []
-    for phase, severity_hint in (
+    for phase, _severity_hint in (
         (EvolutionPhase.PROPOSED, "info"),
         (EvolutionPhase.PROMOTED, "pass"),
         (EvolutionPhase.REJECTED, "warn"),
@@ -391,7 +390,6 @@ def test_theater_renders_evolution_promoted_and_rejected() -> None:
     assert promoted.get("severity") == "pass"
     rejected = next(m for m in msgs if m.get("data_testid") == "theater-evolution-rejected")
     assert rejected.get("severity") == "warn"
-    _ = severity_hint  # silence lint on loop unused in some checkers
 
 
 def test_promote_missing_draft_emits_rejected(tmp_path: Path) -> None:

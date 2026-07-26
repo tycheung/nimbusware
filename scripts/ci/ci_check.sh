@@ -33,9 +33,10 @@ export NIMBUSWARE_CI_STREAMS_SKIP_TEST=1
 poetry run python scripts/ci/run_all_streams.py --profile nimbusware-monorepo
 poetry run python scripts/ci/run_loc_budget_ci_gate.py
 mapfile -t _mypy_targets < <(poetry run python scripts/ci/mypy_ci_targets.py)
-poetry run mypy "${_mypy_targets[@]}"
-poetry run bandit -c pyproject.toml -r packages -lll -q
-poetry run pip-audit
+poetry run python -m mypy "${_mypy_targets[@]}"
+poetry run python -m bandit -c pyproject.toml -r packages -lll -q
+# pip-audit (module form)
+poetry run python -m pip_audit
 poetry run pytest tests -q -m "not integration and not slow and not benchmark and not e2e and not e2e_journey and not e2e_stack and not slice_e2e" \
   --cov=packages \
   --cov-report=term-missing:skip-covered \

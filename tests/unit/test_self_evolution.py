@@ -1,5 +1,3 @@
-"""Unit tests for Nimbusware self-evolution stack (ledger, tracks, L1/L2/L3)."""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -20,13 +18,20 @@ from orchestrator.improvement.evolution_loop import (
     run_distill_artifacts,
 )
 from orchestrator.improvement.improvement_council import ImprovementTrack, run_improvement_council
-from orchestrator.improvement.improvement_scope import RepoScope, filter_votes_by_scope, infer_repo_scope
+from orchestrator.improvement.improvement_scope import (
+    RepoScope,
+    filter_votes_by_scope,
+    infer_repo_scope,
+)
 from orchestrator.improvement.prompt_evolution import (
     promote_or_reject_prompt,
     propose_overlay_from_learning,
     score_prompt_proposal,
 )
-from orchestrator.improvement.skill_evolution import propose_skill_from_fingerprint, record_skill_outcome
+from orchestrator.improvement.skill_evolution import (
+    propose_skill_from_fingerprint,
+    record_skill_outcome,
+)
 from orchestrator.variant_arena import (
     VariantCandidate,
     promote_variant_to_workspace,

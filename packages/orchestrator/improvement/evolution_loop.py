@@ -117,7 +117,6 @@ def maybe_auto_promote_prompts(
         if proposal.get("layer") != "prompt":
             continue
         aid = str(proposal.get("artifact_id") or "")
-        detail = proposal.get("detail") if isinstance(proposal.get("detail"), dict) else {}
         # Need a scored event with eligible=true — check timeline
         from orchestrator.improvement.evolution_ledger import evolution_timeline_from_rows
 
@@ -142,5 +141,4 @@ def maybe_auto_promote_prompts(
 
 
 def l1_l2_evals_blocking(rows: list[dict[str, Any]]) -> bool:
-    """True when pending prompt/skill proposals exist that are not yet resolved."""
     return bool(pending_proposals(rows))

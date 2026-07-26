@@ -186,4 +186,13 @@ def internal_defs() -> tuple[SettingDef, ...]:
             kind=_BOOL,
             default="0",
         ),
+        _internal(
+            "NIMBUSWARE_BROKER_HTTP",
+            "Optional SwissArmyNoife HTTP base URL for compute/tool routing",
+        ),
+        _internal(
+            "NIMBUSWARE_BROKER_LLM_MODEL",
+            "Default broker LLM model id when routing chat through the broker",
+            default="echo",
+        ),
     )

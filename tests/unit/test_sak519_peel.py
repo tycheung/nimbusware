@@ -28,8 +28,9 @@ def test_sak519_a_openapi_stack_policy_503() -> None:
         ),
     )
     for path, method in SAK519_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-a" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_tenant_policies.py"
@@ -54,8 +55,9 @@ def test_sak519_b_openapi_deploy_discovery_put_503() -> None:
         ),
     )
     for path, method in SAK519_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-b" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_deploy.py"
@@ -83,8 +85,9 @@ def test_sak519_c_openapi_audit_policy_503() -> None:
         ),
     )
     for path, method in SAK519_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-c" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "audit_policy.py"
@@ -123,9 +126,9 @@ def test_sak519_d_complete_in_file_uses_count(tmp_path: Path) -> None:
 
 def test_sak519_e_ci_openapi_subsets() -> None:
     """sak519-e: peel-flag-matrix runs sak519 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak519_a" in yml
     assert "sak519_b" in yml
     assert "sak519_c" in yml
@@ -141,9 +144,9 @@ def test_sak519_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak519_complete_in_file_dry_helper" in soak
     assert "sak519-f — stack/deploy/audit OpenAPI + complete-in-file DRY" in soak
     assert 'label.startswith("sak519")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak519_peel.py" in peel_unit
 
@@ -166,8 +169,9 @@ def test_sak519_g_openapi_model_policy_503() -> None:
         ),
     )
     for path, method in SAK519_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-g" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "model_policy.py"
@@ -192,8 +196,9 @@ def test_sak519_h_openapi_collab_policy_503() -> None:
         ),
     )
     for path, method in SAK519_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-h" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "collab_policy.py"
@@ -218,8 +223,9 @@ def test_sak519_i_openapi_tenant_collab_policy_503() -> None:
         ),
     )
     for path, method in SAK519_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak519-i" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "tenant_collab_policy.py"
@@ -234,9 +240,9 @@ def test_sak519_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak519_policy_openapi" in soak
     assert "sak519-j — model/collab-policy OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak519_g" in yml
     assert "sak519_h" in yml
     assert "sak519_i" in yml

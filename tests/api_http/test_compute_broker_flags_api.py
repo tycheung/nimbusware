@@ -115,8 +115,9 @@ def test_session_opt_in_under_compute_2_returns_503(
 ) -> None:
     """sak490-g: session opt-in maps broker failure to 503 under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import chat_session as cs
     from fastapi import HTTPException
+
+    from api.routes import chat_session as cs
 
     sid = uuid4()
     with (
@@ -145,8 +146,9 @@ def test_delegate_control_under_compute_2_returns_503(
     """sak490-g: delegate-control maps no-node to 503 under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
     monkeypatch.setenv("NIMBUSWARE_COLLAB", "1")
-    from api.routes import chat_session as cs
     from fastapi import HTTPException
+
+    from api.routes import chat_session as cs
 
     sid = uuid4()
     mock_user = MagicMock()
@@ -182,11 +184,12 @@ def test_fleet_mesh_status_under_compute_2_returns_503(
 ) -> None:
     """sak490-g: fleet-mesh status maps broker failure to 503 under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes.enterprise import fleet_mesh as fm
     from fastapi import HTTPException
 
+    from api.routes.enterprise import fleet_mesh as fm
+
     with patch(
-        "compute.broker_session_status.broker_session_compute_status",
+        "api.routes.enterprise.fleet_mesh.broker_session_compute_status",
         side_effect=RuntimeError("fleet down"),
     ):
         with pytest.raises(HTTPException) as ei:
@@ -208,8 +211,9 @@ def test_enqueue_under_compute_2_broker_down_returns_503(
 ) -> None:
     """sak492-f: enqueue broker-down → 503 broker_compute_only under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import compute as c
     from fastapi import HTTPException
+
+    from api.routes import compute as c
 
     with (
         patch(
@@ -234,8 +238,9 @@ def test_nodes_list_under_compute_2_broker_down_returns_503(
 ) -> None:
     """sak492-f: nodes GET broker-down → 503 broker_compute_only under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import compute as c
     from fastapi import HTTPException
+
+    from api.routes import compute as c
 
     with (
         patch(
@@ -253,8 +258,9 @@ def test_queue_depth_under_compute_2_broker_down_returns_503(
 ) -> None:
     """sak492-f: queue GET broker-down → 503 broker_compute_only under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import compute as c
     from fastapi import HTTPException
+
+    from api.routes import compute as c
 
     with (
         patch(
@@ -272,8 +278,9 @@ def test_register_under_compute_2_broker_down_returns_503(
 ) -> None:
     """sak492-f: register broker-down → 503 broker_compute_only under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import compute as c
     from fastapi import HTTPException
+
+    from api.routes import compute as c
 
     with (
         patch(
@@ -297,8 +304,9 @@ def test_heartbeat_under_compute_2_broker_down_returns_503(
 ) -> None:
     """sak492-f: heartbeat broker-down → 503 broker_compute_only under COMPUTE=2."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
-    from api.routes import compute as c
     from fastapi import HTTPException
+
+    from api.routes import compute as c
 
     with (
         patch(
@@ -432,9 +440,7 @@ def test_terminate_restart_error_dict_is_broker_miss(
     assert body.get("via") == "broker_miss"
 
 
-def test_claim_empty_queue_via_broker(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_claim_empty_queue_via_broker(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """sak439-h: empty queue poll stays via=broker (not broker_miss)."""
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "1")
     with patch(
@@ -473,14 +479,14 @@ def test_openapi_nodes_and_queue_document_via(client: TestClient) -> None:
     spec = client.app.openapi()
     nodes = spec["paths"]["/v1/compute/nodes"]["get"]
     assert "sak441-e" in nodes.get("summary", "")
-    assert nodes["responses"]["200"]["content"]["application/json"]["schema"][
-        "$ref"
-    ].endswith("ComputeNodeListResponse")
+    assert nodes["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith(
+        "ComputeNodeListResponse"
+    )
     queue = spec["paths"]["/v1/compute/work-units/queue"]["get"]
     assert "sak441-e" in queue.get("summary", "")
-    assert queue["responses"]["200"]["content"]["application/json"]["schema"][
-        "$ref"
-    ].endswith("WorkUnitQueueDepthResponse")
+    assert queue["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith(
+        "WorkUnitQueueDepthResponse"
+    )
 
 
 def test_openapi_write_routes_document_schemas(client: TestClient) -> None:
@@ -488,13 +494,13 @@ def test_openapi_write_routes_document_schemas(client: TestClient) -> None:
     spec = client.app.openapi()
     reg = spec["paths"]["/v1/compute/nodes/register"]["post"]
     assert "sak442-e" in reg.get("summary", "")
-    assert reg["responses"]["200"]["content"]["application/json"]["schema"][
-        "$ref"
-    ].endswith("ComputeNodeWriteResponse")
+    assert reg["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith(
+        "ComputeNodeWriteResponse"
+    )
     enq = spec["paths"]["/v1/compute/work-units/enqueue"]["post"]
-    assert enq["responses"]["200"]["content"]["application/json"]["schema"][
-        "$ref"
-    ].endswith("WorkUnitWriteResponse")
+    assert enq["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith(
+        "WorkUnitWriteResponse"
+    )
 
 
 def test_complete_under_compute_1_broker_miss(

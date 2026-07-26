@@ -4,6 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
+from pydantic import BaseModel
 
 from api.errors import problem
 from projections.builders import (
@@ -17,6 +18,18 @@ from projections.builders import (
     universal_critique_timeline_summary,
 )
 from store.protocol import serialized_event_from_row
+
+
+class TimelinePanelsResponse(BaseModel):
+    """Admin timeline panel summaries — null panels stay in JSON for stable keys."""
+
+    run_id: str
+    integrator_gate: dict[str, Any] | None = None
+    agent_evaluator: dict[str, Any] | None = None
+    self_refinement: dict[str, Any] | None = None
+    run_escalated: dict[str, Any] | None = None
+    security_scan_on_verify: dict[str, Any] | None = None
+    universal_critique: dict[str, Any] | None = None
 
 
 def timeline_events_from_store(store: Any, run_id: UUID) -> list[dict[str, Any]]:

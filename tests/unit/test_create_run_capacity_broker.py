@@ -21,7 +21,9 @@ def test_resolve_resource_governor_uses_broker(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(rgr, "try_broker_capacity_probe", lambda: broker_gov)
 
     def _boom(_profile: object = None) -> object:
-        raise AssertionError("get_cached_profile / governor_for_profile should not run on broker hit")
+        raise AssertionError(
+            "get_cached_profile / governor_for_profile should not run on broker hit"
+        )
 
     monkeypatch.setattr(rgr, "get_cached_profile", _boom)
     monkeypatch.setattr(rgr, "governor_for_profile", _boom)

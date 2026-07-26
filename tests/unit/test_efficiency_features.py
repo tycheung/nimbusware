@@ -94,43 +94,6 @@ def test_campaign_artifact_bundle_omits_chat_transcript() -> None:
     assert "slice.plan" in bundle["sources"]
 
 
-def test_memory_index_fingerprint_skip_rebuild(tmp_path, monkeypatch) -> None:
-    from uuid import uuid4
-
-    from agent_core.models import EventType
-    from memory import InMemoryMemoryChunkStore, rebuild_memory_index
-    from memory.peel_index.fingerprint import memory_event_rows_fingerprint
-
-    monkeypatch.chdir(tmp_path)
-    rid = uuid4()
-    rows = [
-        {
-            "store_seq": 1,
-            "run_id": rid,
-            "event_type": EventType.RUN_CREATED.value,
-            "metadata": {},
-            "payload": {},
-        },
-        {
-            "store_seq": 2,
-            "run_id": rid,
-            "event_type": EventType.FINDING_CREATED.value,
-            "payload": {
-                "finding_id": str(uuid4()),
-                "category": "note",
-                "severity": "info",
-                "source_artifact": "test",
-            },
-        },
-    ]
-    store = InMemoryMemoryChunkStore()
-    first = rebuild_memory_index(store, repo_root=tmp_path, in_memory_event_rows=rows)
-    second = rebuild_memory_index(store, repo_root=tmp_path, in_memory_event_rows=rows)
-    assert first.rebuild_skipped is False
-    assert second.rebuild_skipped is True
-    assert memory_event_rows_fingerprint(rows) == memory_event_rows_fingerprint(rows)
-
-
 def test_campaign_read_staleness_tracker(tmp_path) -> None:
     from pathlib import Path
 

@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from broker_client.flags import broker_memory_enabled
 from config import ConfigMaterializer, config_from_db_enabled
 from env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
-from broker_client.flags import broker_memory_enabled
 from extensions.bundle_memory_factory import build_bundle_outcome_store
 from orchestrator.pipeline import RunOrchestrator, default_paths
 from orchestrator.registry import RoleRegistry

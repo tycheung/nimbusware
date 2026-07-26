@@ -50,7 +50,9 @@ def test_tool_run_shell_falls_back_when_broker_returns_none(
     proc.returncode = 0
     proc.backend = "none"
 
-    monkeypatch.setattr("agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        "agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None
+    )
     monkeypatch.setattr(
         "broker_client.stage_bind.tools.try_broker_shell_exec",
         lambda *_a, **_k: None,
@@ -81,7 +83,9 @@ def test_tool_run_shell_uses_tools_broker_when_sandbox_disabled(
         tools_called.append((argv, cwd))
         return {"exit_code": 0, "stdout": "tools broker ok"}
 
-    monkeypatch.setattr("agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        "agent_tools.sandbox_bridge.try_broker_sandbox_exec", lambda *_a, **_k: None
+    )
     monkeypatch.setattr("broker_client.stage_bind.tools.try_broker_shell_exec", _tools)
 
     with patch(

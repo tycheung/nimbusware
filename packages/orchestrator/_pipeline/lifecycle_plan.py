@@ -42,15 +42,14 @@ class LifecyclePlanMixin:
                         model_id=model,
                         timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                     )
-                except RuntimeError as exc:
+                except Exception as exc:
                     from broker_client.flags import broker_llm_enabled
 
                     if broker_llm_enabled():  # sak496-a / sak498-i
                         raise
-                    if _llm_broker_miss_or_transport(exc):
-                        self._execute_plan_stage_stub(run_id)
-                    else:
+                    if isinstance(exc, RuntimeError) and not _llm_broker_miss_or_transport(exc):
                         raise
+                    self._execute_plan_stage_stub(run_id)
             else:
                 from broker_client.flags import broker_llm_enabled
 
@@ -91,15 +90,16 @@ class LifecyclePlanMixin:
                                 runtime.get("request_timeout_seconds", 120),
                             ),
                         )
-                    except RuntimeError as exc:
+                    except Exception as exc:
                         from broker_client.flags import broker_llm_enabled
 
                         if broker_llm_enabled():  # sak496-a / sak498-i
                             raise
-                        if _llm_broker_miss_or_transport(exc):
-                            self._execute_plan_stage_stub(run_id)
-                        else:
+                        if isinstance(exc, RuntimeError) and not _llm_broker_miss_or_transport(
+                            exc
+                        ):
                             raise
+                        self._execute_plan_stage_stub(run_id)
                 else:
                     from broker_client.flags import broker_llm_enabled
 

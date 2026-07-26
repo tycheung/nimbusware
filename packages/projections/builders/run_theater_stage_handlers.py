@@ -281,9 +281,10 @@ def append_stage_passed_messages(
             },
         )
     elif sn.startswith("evolution."):
-        block = row_meta.get("evolution") if isinstance(row_meta.get("evolution"), dict) else {}
-        layer = str(block.get("layer") or "")
-        aid = str(block.get("artifact_id") or "")
+        evo = row_meta.get("evolution")
+        evo_block: dict[str, Any] = evo if isinstance(evo, dict) else {}
+        layer = str(evo_block.get("layer") or "")
+        aid = str(evo_block.get("artifact_id") or "")
         phase = sn.rsplit(".", 1)[-1]
         severity = "pass" if phase == "promoted" else ("warn" if phase == "rejected" else "info")
         messages.append(

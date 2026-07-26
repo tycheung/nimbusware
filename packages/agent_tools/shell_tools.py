@@ -1,4 +1,5 @@
 """Shell/memory tool surface after sak412 tools.py thin delete."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -170,24 +171,19 @@ def tool_memory_search(
             from memory.peel_index.search import format_memory_excerpt, search_memory
             from memory.peel_store.protocol import MemoryChunkStore
         except Exception:
-            MemoryChunkStore = ()  # type: ignore[misc, assignment]
-            format_memory_excerpt = None  # type: ignore[assignment]
-            search_memory = None  # type: ignore[assignment]
-        else:
-            if (
-                isinstance(MemoryChunkStore, type)
-                and isinstance(memory_store, MemoryChunkStore)  # type: ignore[arg-type]
-            ):
-                k = limit if limit is not None else 5
-                hits = search_memory(memory_store, q, repo_root=repo_root, k=k)
-                body = format_memory_excerpt(hits, max_chars=cap)
-                if body:
-                    return _result(
-                        "memory_search",
-                        True,
-                        body,
-                        audit=f"local hits={len(hits)}",
-                    )
-                return _result("memory_search", True, "no hits", audit="local hits=0")
+            return _result("memory_search", False, "memory peel unavailable")
+        if isinstance(MemoryChunkStore, type) and isinstance(memory_store, MemoryChunkStore):
+            k = limit if limit is not None else 5
+            hits = search_memory(memory_store, q, repo_root=repo_root, k=k)
+            body = format_memory_excerpt(hits, max_chars=cap)
+            if body:
+                return _result(
+                    "memory_search",
+                    True,
+                    body,
+                    audit=f"local hits={len(hits)}",
+                )
+            return _result("memory_search", True, "no hits", audit="local hits=0")
+        return _result("memory_search", False, "memory search unavailable")
 
     return _result("memory_search", False, "memory search unavailable")

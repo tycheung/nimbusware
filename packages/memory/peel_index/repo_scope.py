@@ -1,12 +1,21 @@
-"""Peel stub — local memory capability removed (sak413). Use memory_bridge / sak."""
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
 
-def __getattr__(name: str):
-    def _gone(*args, **kwargs):
-        raise RuntimeError(
-            f"{__name__}.{name} removed (sak413); use agent_tools.memory_bridge / sak memory_*"
-        )
+from env.env_flags import env_str
 
-    _gone.__name__ = name
-    return _gone
+
+def repo_scope_hash(repo_root: Path) -> str:
+    root = repo_root.resolve()
+    raw = str(root).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()[:16]
+
+
+def resolve_repo_root(explicit: Path | None = None) -> Path:
+    if explicit is not None:
+        return explicit.resolve()
+    env = env_str("NIMBUSWARE_REPO_ROOT")
+    if env:
+        return Path(env).resolve()
+    return Path(".").resolve()

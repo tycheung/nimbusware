@@ -56,6 +56,7 @@ def plan_one_slice(
     rows = orch._store.list_run_events(str(run_id))
     memory_excerpt = ""
     run_meta = orch._run_created_metadata(run_id)
+    from broker_client.flags import broker_memory_enabled
     from orchestrator.collab.binding_resolver import participant_memory_policy
     from orchestrator.workflow.memory import (
         actor_user_id_from_run_metadata,
@@ -63,8 +64,6 @@ def plan_one_slice(
         retrieve_memory_excerpt_for_slice,
         run_memory_retrieval_enabled,
     )
-
-    from broker_client.flags import broker_memory_enabled
 
     if run_memory_retrieval_enabled(run_meta) and (
         broker_memory_enabled() or orch._memory_chunk_store is not None

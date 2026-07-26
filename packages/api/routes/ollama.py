@@ -7,8 +7,6 @@ from fastapi import APIRouter, HTTPException, Query
 from api.admin import AdminDep
 from api.deps import OrchDep
 from api.errors import problem
-from api.schemas.openapi import PROBLEM_RESPONSE_404
-from api.schemas.peel_responses import llm_json_openapi_responses
 from api.schemas.ollama import (
     OllamaBootstrapRequest,
     OllamaBootstrapResponse,
@@ -21,12 +19,16 @@ from api.schemas.ollama import (
     OllamaPullResponse,
     OllamaUserPolicyBody,
 )
+from api.schemas.openapi import PROBLEM_RESPONSE_404
+from api.schemas.peel_responses import llm_json_openapi_responses
 from api.user import UserDep
 from config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from config.persist import load_model_routing_dict, persist_model_routing_dict
 from orchestrator.model_routing.bootstrap import bootstrap_ollama_from_repo
 from orchestrator.model_routing.manage import (
-    OllamaManageError,
+    OllamaManageError as _OllamaManageError,
+)
+from orchestrator.model_routing.manage import (
     delete_model,
     filter_models,
     list_installed_models,
@@ -42,6 +44,9 @@ from orchestrator.model_routing.user_policy import (
 )
 
 router = APIRouter(tags=["platform", "ollama"])
+
+# Peel stub exports callables via __getattr__; treat manage errors as Exception for handlers.
+OllamaManageError: type[Exception] = _OllamaManageError  # type: ignore[assignment]
 
 
 def _routing_models(routing: dict[str, Any]) -> tuple[str | None, list[str]]:

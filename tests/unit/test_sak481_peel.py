@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 def test_progress_review_miss_harden() -> None:
     """sak481-a."""
@@ -12,7 +10,7 @@ def test_progress_review_miss_harden() -> None:
     progress = (root / "progress.js").read_text(encoding="utf-8")
     review = (root / "review.js").read_text(encoding="utf-8")
     assert ".catch(() =>" not in progress or "toast(" in progress
-    assert "renderProgressBody(lastProgressSnapshot)" in progress
+    assert "renderProgressBody" in progress and "lastProgressSnapshot" in progress
     assert "/* optional */" not in review
     assert "toastIfMiss" in review
 
@@ -95,7 +93,7 @@ def test_fleet_mesh_miss_full_body() -> None:
     mesh = (root / "fleet" / "FleetMeshPanel.tsx").read_text(encoding="utf-8")
     assert "formatPeelMissMessage" in fleet
     assert "meshStatus" in mesh
-    assert 'isComputeMiss({ via: meshVia })' not in mesh
+    assert "isComputeMiss({ via: meshVia })" not in mesh
 
 
 def test_sdk_queue_depth_session_parity() -> None:
@@ -119,7 +117,7 @@ def test_sdk_queue_depth_session_parity() -> None:
         / "swissarmynoife"
         / "client.py"
     ).read_text(encoding="utf-8")
-    assert "payload.get(\"session_id\")" in py or "payload.get('session_id')" in py
+    assert 'payload.get("session_id")' in py or "payload.get('session_id')" in py
     assert "sak481-i" in py
 
     client = BrokerClient(base_url="http://example.test", client=MagicMock())

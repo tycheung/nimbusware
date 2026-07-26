@@ -76,16 +76,17 @@ def test_terminate_restart_via_broker(monkeypatch: pytest.MonkeyPatch) -> None:
 
     with patch(
         "broker_client.stage_bind.compute.compute_work_via_broker",
-        side_effect=lambda payload, **_: calls.append(payload) or {
-            "work": {"id": payload["work_id"], "status": "queued"},
-            "action": "requeue",
-        },
+        side_effect=lambda payload, **_: (
+            calls.append(payload)
+            or {
+                "work": {"id": payload["work_id"], "status": "queued"},
+                "action": "requeue",
+            }
+        ),
     ):
         out = terminate_restart_via_broker("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
     assert out["action"] == "requeue"
-    assert calls[0] == build_compute_requeue_payload(
-        "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-    )
+    assert calls[0] == build_compute_requeue_payload("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
 
 
 def test_inmemory_terminate_restart_refuses_compute_2(

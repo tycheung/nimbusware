@@ -4,10 +4,11 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 from uuid import UUID
 
+import pytest
+
 from compute.mesh_stage_runner import execute_mesh_stage_on_worker
 from compute.work_unit import WorkUnitRecord
 from orchestrator.parallel_writers import WriterStageResult
-import pytest
 
 
 def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:

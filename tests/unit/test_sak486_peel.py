@@ -90,7 +90,7 @@ def test_config_metrics_write_peel() -> None:
     assert "assertWriteOk" in peel
     assert "writeMissMessage" in config or "formatWriteCatchMessage" in config
     assert "competitive metrics unavailable" in metrics
-    assert "isComputeMiss" in metrics
+    assert "isDomainPeelMiss" in metrics
 
 
 def test_sdk_capacity_assert_rejects_via_broker_miss() -> None:

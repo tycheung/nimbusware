@@ -16,6 +16,14 @@ tenants:
     min_enforcement_level: 5
     max_enforcement_level: 9
     required_enforcement_profile_id: ''
+  enf-0c5ea0b9:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-139bb373:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
   enf-1dc26b73:
     min_enforcement_level: 5
     max_enforcement_level: 9
@@ -25,6 +33,10 @@ tenants:
     max_enforcement_level: 9
     required_enforcement_profile_id: ''
   enf-26d538a8:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-2ce12682:
     min_enforcement_level: 5
     max_enforcement_level: 9
     required_enforcement_profile_id: ''
@@ -69,6 +81,10 @@ tenants:
     max_enforcement_level: 9
     required_enforcement_profile_id: ''
   enf-c75b6ded:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+    required_enforcement_profile_id: ''
+  enf-c7cc5ed4:
     min_enforcement_level: 5
     max_enforcement_level: 9
     required_enforcement_profile_id: ''

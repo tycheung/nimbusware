@@ -48,6 +48,7 @@ idna = ">=3.15"
 numpy = ">=1.26"
 pywebview = ">=5"
 pywebpush = ">=2.0"
+setuptools = ">=83.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"
@@ -85,8 +86,6 @@ nimbusware-api = "api.cli:main"
 nimbusware-preflight = "orchestrator.preflight_cli:main"
 nimbusware-config = "config.cli:main"
 nimbusware-run-worker = "orchestrator.run_worker:main"
-nimbusware-memory-index = "memory.cli:main"
-nimbusware-memory-sync = "memory.sync_cli:main"
 nimbusware-memory-replay = "orchestrator.replay_cli:main"
 nimbusware-role-telemetry = "orchestrator.telemetry_cli:main"
 nimbusware-routing-suggest = "orchestrator.routing.suggestions_cli:main"
@@ -276,15 +275,15 @@ module = [
 ]
 ignore_errors = false
 
-# fo512 / fo526–fo530: explicit strict islands (documented in test_mypy_*_surface.py).
+# fo512 / fo526â€“fo530: explicit strict islands (documented in test_mypy_*_surface.py).
 [[tool.mypy.overrides]]
 module = [
   "api.*",
   "api.schemas.ollama",
   "api.routes.ollama",
   "api.errors",
-  "orchestrator.routing.manage",
-  "orchestrator.routing.user_policy",
+  "orchestrator.model_routing.manage",
+  "orchestrator.model_routing.user_policy",
   "orchestrator.preflight",
   "orchestrator.merge",
   "orchestrator.workflow.profiles",
@@ -332,7 +331,7 @@ module = [
 ]
 ignore_errors = false
 
-# fo720 (Lane W2): typing tranche B — small leaf packages checked in CI mypy.
+# fo720 (Lane W2): typing tranche B â€” small leaf packages checked in CI mypy.
 [[tool.mypy.overrides]]
 module = [
   "projections",
@@ -344,7 +343,7 @@ module = [
 ]
 ignore_errors = false
 
-# fo732 (Lane X2): typing tranche D — API list helpers + strict enterprise routes (CI mypy).
+# fo732 (Lane X2): typing tranche D â€” API list helpers + strict enterprise routes (CI mypy).
 [[tool.mypy.overrides]]
 module = [
   "api.routes.runs.list_helpers",
@@ -356,7 +355,7 @@ module = [
 ]
 ignore_errors = false
 
-# fo730 (Lane X1): typing tranche C — core libraries checked in CI mypy (strict globally).
+# fo730 (Lane X1): typing tranche C â€” core libraries checked in CI mypy (strict globally).
 [[tool.mypy.overrides]]
 module = [
   "agent_core",

@@ -49,8 +49,8 @@ _UI_STRICT = (
 
 # Tranche E: orchestrator strict islands (remaining mixins under blanket _pipeline.* ignore).
 _TRANCHE_E = (
-    "packages/orchestrator/routing/manage.py",
-    "packages/orchestrator/routing/user_policy.py",
+    "packages/orchestrator/model_routing/manage.py",
+    "packages/orchestrator/model_routing/user_policy.py",
     "packages/orchestrator/preflight.py",
     "packages/orchestrator/merge.py",
     "packages/orchestrator/workflow/profiles.py",

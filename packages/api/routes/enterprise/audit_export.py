@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 
 from api.deps import IamStoreDep, StoreDep
 from api.export_peel import early_export_json_miss
@@ -32,7 +32,9 @@ class EnterpriseAuditExportErrorResponse(ExportErrorResponse):
         200: {
             "content": {
                 "application/gzip": {},
-                "application/json": {"model": EnterpriseAuditExportErrorResponse},
+                "application/json": {
+                    "schema": EnterpriseAuditExportErrorResponse.model_json_schema(),
+                },
             },
         },
         **enterprise_peel_json_openapi_responses(),  # sak496-e
@@ -44,7 +46,7 @@ def enterprise_audit_export(
     iam: IamStoreDep,
     since: Annotated[datetime | None, Query()] = None,
     until: Annotated[datetime | None, Query()] = None,
-):
+) -> Any:
     if miss := early_export_json_miss(feature="enterprise_audit_export"):
         return miss
     payload = build_enterprise_audit_bundle_bytes(

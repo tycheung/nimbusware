@@ -8,7 +8,10 @@ from pydantic import BaseModel
 
 from api.export_peel import early_egress_export_json_miss
 from api.routes.enterprise.core import EnterpriseDep
-from api.schemas.peel_responses import egress_json_openapi_responses, research_json_openapi_responses
+from api.schemas.peel_responses import (
+    egress_json_openapi_responses,
+    research_json_openapi_responses,
+)
 from env.desktop_common import repo_root
 from research.enterprise_index import (
     export_egress_audit_rows,

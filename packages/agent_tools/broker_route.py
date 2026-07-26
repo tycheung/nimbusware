@@ -70,8 +70,7 @@ def map_broker_sandbox_http_miss(
         enabled=broker_sandbox_enabled,
         only=broker_sandbox_only,
         only_code="broker_sandbox_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_SANDBOX=2: {exc}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_SANDBOX=2: {exc}",
         miss_extra=miss_extra,
     )
 
@@ -89,7 +88,6 @@ def map_broker_tools_http_miss(
         enabled=broker_tools_enabled,
         only=broker_tools_only,
         only_code="broker_tools_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_TOOLS=2: {exc}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_TOOLS=2: {exc}",
         miss_extra=miss_extra,
     )

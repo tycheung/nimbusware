@@ -48,15 +48,20 @@ def _execute_slice_implement_llm(
     timeout_seconds: float,
     system_prompt: str,
 ) -> list[dict[str, str]] | None:
+    from typing import cast
+
     from orchestrator.llm.slice_facade import execute_slice_implement_llm
 
-    return execute_slice_implement_llm(
-        plan=plan,
-        workspace=workspace,
-        base_url=base_url,
-        model_id=model_id,
-        timeout_seconds=timeout_seconds,
-        system_prompt=system_prompt,
+    return cast(
+        list[dict[str, str]] | None,
+        execute_slice_implement_llm(
+            plan=plan,
+            workspace=workspace,
+            base_url=base_url,
+            model_id=model_id,
+            timeout_seconds=timeout_seconds,
+            system_prompt=system_prompt,
+        ),
     )
 
 
@@ -68,14 +73,19 @@ def _execute_slice_critique_llm(
     verify_log: str,
     timeout_seconds: float,
 ) -> list[str]:
+    from typing import cast
+
     from orchestrator.llm.slice_facade import execute_slice_critique_llm
 
-    return execute_slice_critique_llm(
-        plan=plan,
-        base_url=base_url,
-        model_id=model_id,
-        verify_log=verify_log,
-        timeout_seconds=timeout_seconds,
+    return cast(
+        list[str],
+        execute_slice_critique_llm(
+            plan=plan,
+            base_url=base_url,
+            model_id=model_id,
+            verify_log=verify_log,
+            timeout_seconds=timeout_seconds,
+        ),
     )
 
 

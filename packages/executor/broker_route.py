@@ -22,11 +22,11 @@ def refuse_legacy(msg: str | None = None) -> None:
 
 
 def raise_egress_peel_miss(feature: str = "egress") -> None:
-    """Raise structured broker miss when EGRESS peel is on (`sak496-d`)."""
-    if broker_egress_enabled():
-        raise RuntimeError(
-            f"broker_miss: {feature}: unavailable under NIMBUSWARE_BROKER_EGRESS=1|2"
-        )
+    """Raise structured broker miss for EGRESS peel (`sak496-d` / sak416-i)."""
+    raise RuntimeError(
+        f"broker_miss: {feature}: unavailable under NIMBUSWARE_BROKER_EGRESS=1|2; "
+        "executor local egress removed (sak416-i)"
+    )
 
 
 def map_broker_egress_http_miss(

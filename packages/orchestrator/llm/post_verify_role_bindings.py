@@ -11,8 +11,11 @@ from agent_core.critique_stages import (
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
-from orchestrator.llm.gate_helpers import MODULE_INTEGRATOR_CRITIQUE_STAGE, SELF_REFINEMENT_CRITIQUE_STAGE
-from orchestrator.llm.gate_helpers import bind_post_verify_role_critique  # sak497-h
+from orchestrator.llm.gate_helpers import (
+    MODULE_INTEGRATOR_CRITIQUE_STAGE,
+    SELF_REFINEMENT_CRITIQUE_STAGE,
+    bind_post_verify_role_critique,  # sak497-h
+)
 from orchestrator.registry import RoleRegistry
 from store.protocol import EventStore
 

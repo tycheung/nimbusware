@@ -382,7 +382,7 @@ def long_tail_json_openapi_responses(
     return responses  # sak495-d: mirrored in packages/admin_ui/src/api/openapi.json
 
 
-def with_long_tail_peel_503(
+def with_long_tail_peel_503(  # sak502-d
     responses: dict[int | str, dict[str, Any]] | None = None,
     *,
     not_found: dict[str, Any] | None = None,
@@ -398,7 +398,7 @@ def with_long_tail_peel_503(
     return out
 
 
-def with_enterprise_peel_503(
+def with_enterprise_peel_503(  # sak503-d
     responses: dict[int | str, dict[str, Any]] | None = None,
     *,
     not_found: dict[str, Any] | None = None,
@@ -457,7 +457,7 @@ def count_missing_peel_503(
     return len(list_missing_peel_503(openapi_paths, targets))
 
 
-def list_missing_peel_503(
+def list_missing_peel_503(  # sak508-d
     openapi_paths: dict[str, Any],
     targets: list[tuple[str, str]] | tuple[tuple[str, str], ...],
 ) -> list[tuple[str, str]]:
@@ -487,7 +487,7 @@ def patch_openapi_json_peel_503(
     return added
 
 
-def list_missing_peel_503_in_openapi_json(
+def list_missing_peel_503_in_openapi_json(  # sak512-d
     openapi_json_path: Any,
     targets: list[tuple[str, str]] | tuple[tuple[str, str], ...],
 ) -> list[tuple[str, str]]:
@@ -507,7 +507,7 @@ def count_missing_peel_503_in_openapi_json(
     return len(list_missing_peel_503_in_openapi_json(openapi_json_path, targets))
 
 
-def openapi_peel_503_complete(
+def openapi_peel_503_complete(  # sak511-d
     openapi_paths: dict[str, Any],
     targets: list[tuple[str, str]] | tuple[tuple[str, str], ...],
 ) -> bool:
@@ -515,7 +515,7 @@ def openapi_peel_503_complete(
     return complete
 
 
-def peel_503_coverage(
+def peel_503_coverage(  # sak514-d
     openapi_paths: dict[str, Any],
     targets: list[tuple[str, str]] | tuple[tuple[str, str], ...],
 ) -> tuple[bool, list[tuple[str, str]]]:
@@ -534,7 +534,7 @@ def openapi_peel_503_complete_in_file(
     return count_missing_peel_503_in_openapi_json(openapi_json_path, targets) == 0
 
 
-def peel_503_coverage_in_file(
+def peel_503_coverage_in_file(  # sak515-d
     openapi_json_path: Any,
     targets: list[tuple[str, str]] | tuple[tuple[str, str], ...],
 ) -> tuple[bool, list[tuple[str, str]]]:
@@ -582,6 +582,7 @@ PEEL_503_OAUTH_SKIP: frozenset[tuple[str, str]] = frozenset(
 def iter_openapi_json_operations(
     openapi_json_path: Any,
 ) -> list[tuple[str, str]]:
+    """List (path, method) pairs from admin_ui openapi.json (`sak521-a`)."""
     import json
     from pathlib import Path
 
@@ -605,6 +606,7 @@ def list_missing_product_peel_503_in_openapi_json(
     *,
     skip: frozenset[tuple[str, str]] | set[tuple[str, str]] | None = None,
 ) -> list[tuple[str, str]]:
+    """Paths missing peel 503 in openapi.json (`sak521-c`)."""
     skip_set = PEEL_503_OAUTH_SKIP if skip is None else frozenset(skip)
     targets = [t for t in iter_openapi_json_operations(openapi_json_path) if t not in skip_set]
     return list_missing_peel_503_in_openapi_json(openapi_json_path, targets)
@@ -615,6 +617,7 @@ def openapi_product_peel_503_complete_in_file(
     *,
     skip: frozenset[tuple[str, str]] | set[tuple[str, str]] | None = None,
 ) -> bool:
+    """True when product OpenAPI peel 503 coverage is complete (`sak521-c`)."""
     return not list_missing_product_peel_503_in_openapi_json(
         openapi_json_path,
         skip=skip,

@@ -9,6 +9,12 @@ from pydantic import BaseModel, Field
 from api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
 from api.errors import problem
 from api.routes.auth import AuthUserDep
+from api.routes.platform_deploy import router as deploy_router
+from api.routes.platform_discipline_profile import router as discipline_profile_router
+from api.routes.platform_hardware import router as hardware_router
+from api.routes.platform_model_routing import router as model_routing_router
+from api.routes.platform_operator_profiles import router as operator_profiles_router
+from api.routes.platform_user_profiles import router as user_profiles_router
 from api.schemas.openapi import PROBLEM_RESPONSE_422
 from api.schemas.peel_responses import (
     capacity_json_openapi_responses,
@@ -16,12 +22,6 @@ from api.schemas.peel_responses import (
     platform_peel_json_openapi_responses,
     with_long_tail_peel_503,
 )
-from api.routes.platform_deploy import router as deploy_router
-from api.routes.platform_discipline_profile import router as discipline_profile_router
-from api.routes.platform_hardware import router as hardware_router
-from api.routes.platform_model_routing import router as model_routing_router
-from api.routes.platform_operator_profiles import router as operator_profiles_router
-from api.routes.platform_user_profiles import router as user_profiles_router
 from api.user import maker_user_id_str
 from config.collab_settings_store import save_persisted_collab_enabled
 from env import find_repo_root

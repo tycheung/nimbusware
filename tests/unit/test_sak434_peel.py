@@ -93,14 +93,19 @@ def test_worker_register_uses_broker_client(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "1")
     from compute.worker_cli import _broker_register_node
 
-    client = MagicMock()
-    client.register_node.return_value = {
-        "node": {"id": "11111111-2222-3333-4444-555555555555", "label": "h"},
-    }
-    with patch("broker_client.client.BrokerClient", return_value=client):
+    nid = "11111111-2222-3333-4444-555555555555"
+
+    def _via(payload: dict, **_kwargs: object) -> dict:
+        assert payload.get("action") == "register"
+        return {"node": {"id": nid, "label": payload.get("label", "h")}, "action": "register"}
+
+    with patch(
+        "broker_client.stage_bind.compute.compute_node_via_broker",
+        side_effect=_via,
+    ) as mock_via:
         out = _broker_register_node(host_label="h1", session_id="s1")
-    assert out["node_id"] == "11111111-2222-3333-4444-555555555555"
-    client.register_node.assert_called_once()
+    assert out["node_id"] == nid
+    mock_via.assert_called_once()
 
 
 def test_parallel_critics_refuses_capacity_1(monkeypatch: pytest.MonkeyPatch) -> None:

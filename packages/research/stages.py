@@ -22,7 +22,6 @@ from agent_core.models import (
     Verdict,
 )
 from extensions.extension_runtime import UniversalCritiqueRouter
-from research.registry_facade import RoleRegistry
 from research.artifacts import persist_research_brief
 from research.bundle_promotion import (
     primary_stack_id_from_requirements,
@@ -32,6 +31,7 @@ from research.enterprise_index import append_enterprise_research_index
 from research.models import ResearchBrief, ResearchBriefSource
 from research.pattern_index import append_pattern_index, new_pattern_id
 from research.prompt_security import wrap_researcher_prompt
+from research.registry_facade import RoleRegistry
 from research.stage_builder import (
     code_brief_summary,
     domain_brief_summary,

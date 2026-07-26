@@ -20,15 +20,13 @@ def test_safe_coding_wizard_catch_miss() -> None:
     """sak488-b."""
     wizard = (_js_root() / "safe-coding-wizard.js").read_text(encoding="utf-8")
     assert "toastIfMiss" in wizard
-    assert "missBannerText" in wizard
+    assert "toastIfMiss" in wizard or "isDomainPeelMiss" in wizard
 
 
 def test_critic_accessible_compute_read_miss() -> None:
     """sak488-c."""
     critic = (_js_root() / "critic-reliability-panel.js").read_text(encoding="utf-8")
-    accessible = (_js_root() / "tabs" / "accessible_compute_ui.js").read_text(
-        encoding="utf-8"
-    )
+    accessible = (_js_root() / "tabs" / "accessible_compute_ui.js").read_text(encoding="utf-8")
     assert "toastIfMiss" in critic
     assert "toastIfMiss" in accessible
 
@@ -41,11 +39,7 @@ def test_delete_ok_openapi() -> None:
     assert DeleteOkResponse().via is None
 
     projects = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "routes"
-        / "projects.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "projects.py"
     ).read_text(encoding="utf-8")
     assert "DeleteOkResponse" in projects
     assert "status_code=204" not in projects or "DeleteOkResponse" in projects

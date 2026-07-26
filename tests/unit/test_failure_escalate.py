@@ -123,15 +123,8 @@ def test_decide_escalation_needs_replan_past_root() -> None:
 
 def test_revise_backlog_with_replan_prepends_slice() -> None:
     backlog = _chain_backlog()
-    revised = revise_backlog_with_replan(
-        backlog, failed_slice_id="slice-c", fail_streak=6
-    )
-    slices = {
-        s.slice_id: s
-        for e in revised.epics
-        for f in e.features
-        for s in f.slices
-    }
+    revised = revise_backlog_with_replan(backlog, failed_slice_id="slice-c", fail_streak=6)
+    slices = {s.slice_id: s for e in revised.epics for f in e.features for s in f.slices}
     assert "replan-slice-c-6" in slices
     assert slices["replan-slice-c-6"].status == SliceStatus.PENDING
     assert "replan-slice-c-6" in slices["slice-c"].depends_on

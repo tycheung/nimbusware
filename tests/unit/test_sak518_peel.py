@@ -28,15 +28,16 @@ def test_sak518_a_openapi_terminate_settings_system_get_503() -> None:
         ),
     )
     for path, method in SAK518_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak518-a" in (
-        _ROOT / "packages" / "api" / "routes" / "compute.py"
-    ).read_text(encoding="utf-8")
-    assert "sak518-a" in (
-        _ROOT / "packages" / "api" / "routes" / "operator_settings.py"
-    ).read_text(encoding="utf-8")
+    assert "sak518-a" in (_ROOT / "packages" / "api" / "routes" / "compute.py").read_text(
+        encoding="utf-8"
+    )
+    assert "sak518-a" in (_ROOT / "packages" / "api" / "routes" / "operator_settings.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak518-b: OpenAPI 503 — settings/system PATCH + settings/me GET ---
@@ -57,12 +58,13 @@ def test_sak518_b_openapi_settings_system_patch_me_get_503() -> None:
         ),
     )
     for path, method in SAK518_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak518-b" in (
-        _ROOT / "packages" / "api" / "routes" / "operator_settings.py"
-    ).read_text(encoding="utf-8")
+    assert "sak518-b" in (_ROOT / "packages" / "api" / "routes" / "operator_settings.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak518-c: OpenAPI 503 — settings/me PATCH + fleet-mesh ---
@@ -83,12 +85,13 @@ def test_sak518_c_openapi_settings_me_patch_fleet_mesh_503() -> None:
         ),
     )
     for path, method in SAK518_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak518-c" in (
-        _ROOT / "packages" / "api" / "routes" / "operator_settings.py"
-    ).read_text(encoding="utf-8")
+    assert "sak518-c" in (_ROOT / "packages" / "api" / "routes" / "operator_settings.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak518-c" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_mesh.py"
     ).read_text(encoding="utf-8")
@@ -122,9 +125,9 @@ def test_sak518_d_ensure_paths_skips_absent() -> None:
 
 def test_sak518_e_ci_openapi_subsets() -> None:
     """sak518-e: peel-flag-matrix runs sak518 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak518_a" in yml
     assert "sak518_b" in yml
     assert "sak518_c" in yml
@@ -140,9 +143,9 @@ def test_sak518_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak518_ensure_paths_skip_helper" in soak
     assert "sak518-f — settings/fleet-mesh OpenAPI + ensure_paths skip" in soak
     assert 'label.startswith("sak518")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak518_peel.py" in peel_unit
 
@@ -165,8 +168,9 @@ def test_sak518_g_openapi_fleet_ollama_sli_503() -> None:
         ),
     )
     for path, method in SAK518_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak518-g" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_ops.py"
@@ -191,8 +195,9 @@ def test_sak518_h_openapi_enforcement_standards_put_503() -> None:
         ),
     )
     for path, method in SAK518_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak518-h" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_enforcement.py"
@@ -220,8 +225,9 @@ def test_sak518_i_openapi_slice_policy_503() -> None:
         ),
     )
     for path, method in SAK518_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak518-i" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_tenant_policies.py"
@@ -236,9 +242,9 @@ def test_sak518_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak518_fleet_policy_openapi" in soak
     assert "sak518-j — fleet-ollama/tenant-policy OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak518_g" in yml
     assert "sak518_h" in yml
     assert "sak518_i" in yml

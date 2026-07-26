@@ -18,7 +18,7 @@ def test_home_readiness_miss_banner() -> None:
         / "home_readiness_ui.js"
     )
     text = path.read_text(encoding="utf-8")
-    assert "isBrokerMiss" in text
+    assert "isDomainPeelMiss" in text
     assert "maker-home-readiness-miss" in text
 
 
@@ -52,7 +52,7 @@ def test_connections_api_miss_helpers() -> None:
     )
     text = path.read_text(encoding="utf-8")
     assert "toastIfMiss" in text
-    assert "isBrokerMiss" in text
+    assert "isDomainPeelMiss" in text
 
 
 def test_subscription_oauth_status_openapi() -> None:
@@ -104,8 +104,8 @@ def test_review_git_readiness_miss() -> None:
         / "review_git_ui.js"
     )
     text = path.read_text(encoding="utf-8")
-    assert "isBrokerMiss" in text
-    assert "isBrokerMiss(readiness)" in text
+    assert "isDomainPeelMiss" in text
+    assert "isDomainPeelMiss(readiness)" in text
 
 
 def test_broker_client_health_and_terminate_assert() -> None:

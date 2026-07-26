@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 
+from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 from api.schemas.peel_responses import (
     FleetMemorySearchMissResponse,
     IntentClassifierMissResponse,
@@ -17,7 +18,6 @@ from api.schemas.peel_responses import (
     llm_json_openapi_responses,
     memory_json_openapi_responses,
 )
-from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.handlers import execute_security_critique_llm
 from orchestrator.launch.launch_test_llm import generate_llm_ui_flow_dict
@@ -149,10 +149,13 @@ def test_sak493_e_refactor_stage_peel_off_broker_miss_falls_back(
     )
     run_id = uuid4()
 
-    with patch(
-        "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
-        side_effect=_broker_miss,
-    ), patch("orchestrator.refactor_stage.append_gate_decision_event"):
+    with (
+        patch(
+            "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
+            side_effect=_broker_miss,
+        ),
+        patch("orchestrator.refactor_stage.append_gate_decision_event"),
+    ):
         emit_refactor_stage_and_critique(
             store,
             registry,
@@ -393,9 +396,9 @@ def test_fleet_memory_routes_wire_memory_openapi() -> None:
     root = _ROOT / "packages" / "api"
     fleet = (root / "routes" / "enterprise" / "fleet_memory.py").read_text(encoding="utf-8")
     peel = (root / "schemas" / "peel_responses.py").read_text(encoding="utf-8")
-    admin_peel = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts"
-    ).read_text(encoding="utf-8")
+    admin_peel = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts").read_text(
+        encoding="utf-8"
+    )
     fleet_page = (_ROOT / "packages" / "admin_ui" / "src" / "pages" / "FleetPage.tsx").read_text(
         encoding="utf-8"
     )
@@ -455,13 +458,9 @@ def test_sak493_a_platform_readiness_openapi() -> None:
     """sak493-a: readiness wires capacity OpenAPI helper."""
     from api.schemas.peel_responses import PlatformReadinessPeelMissResponse
 
-    miss = PlatformReadinessPeelMissResponse(
-        via="broker_miss", status="degraded", checks={}
-    )
+    miss = PlatformReadinessPeelMissResponse(via="broker_miss", status="degraded", checks={})
     assert miss.via == "broker_miss"
-    platform = (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
-        encoding="utf-8"
-    )
+    platform = (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(encoding="utf-8")
     assert "sak493-a" in platform
     assert "capacity_json_openapi_responses" in platform
     assert "/platform/readiness" in platform
@@ -486,12 +485,12 @@ def test_sak493_f_ui_shared_503_peel_map() -> None:
 
 def test_sak493_g_admin_use_api_get_parity() -> None:
     """sak493-g: admin formatReadCatchMessage + useApiGet catch parity."""
-    peel = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts"
-    ).read_text(encoding="utf-8")
-    hook = (
-        _ROOT / "packages" / "admin_ui" / "src" / "hooks" / "useApiGet.ts"
-    ).read_text(encoding="utf-8")
+    peel = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts").read_text(
+        encoding="utf-8"
+    )
+    hook = (_ROOT / "packages" / "admin_ui" / "src" / "hooks" / "useApiGet.ts").read_text(
+        encoding="utf-8"
+    )
     assert "formatReadCatchMessage" in peel or "sak493-g" in peel
     assert "formatReadCatchMessage" in hook or "peelMissFromFetchError" in hook
 

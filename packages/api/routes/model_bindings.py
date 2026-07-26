@@ -29,9 +29,18 @@ class ModelBindingsPreflightResponse(BaseModel):
 
     ok: bool | None = None
     roles: list[dict[str, Any]] | None = None
+    roles_total: int | None = None
+    roles_covered: int | None = None
+    roles_without_provider: list[str] | None = None
+    providers_reachable: dict[str, Any] | None = None
+    inference_mode: str | None = None
+    inference_mode_label: str | None = None
+    ollama_required: bool | None = None
     issues: list[dict[str, Any]] | None = None
     workflow_profile: str | None = None
     work_type: str | None = None
+    surface_stage_map: dict[str, str] | None = None
+    stack_manifest_surfaces: list[str] | None = None
     via: str | None = None
     error: str | None = None
     feature: str | None = None

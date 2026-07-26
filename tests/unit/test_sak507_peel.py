@@ -28,8 +28,9 @@ def test_sak507_a_openapi_maker_status_503() -> None:
         ),
     )
     for path, method in SAK507_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak507-a" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "maker_approval.py"
@@ -54,8 +55,9 @@ def test_sak507_b_openapi_maker_plan_prepare_503() -> None:
         ),
     )
     for path, method in SAK507_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak507-b" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "maker_approval.py"
@@ -80,12 +82,13 @@ def test_sak507_c_openapi_standards_profile_503() -> None:
         ),
     )
     for path, method in SAK507_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak507-c" in (
-        _ROOT / "packages" / "api" / "routes" / "standards.py"
-    ).read_text(encoding="utf-8")
+    assert "sak507-c" in (_ROOT / "packages" / "api" / "routes" / "standards.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak507-d: count_missing_peel_503 helper ---
@@ -114,9 +117,9 @@ def test_sak507_d_count_missing_peel_503() -> None:
 
 def test_sak507_e_ci_openapi_subsets() -> None:
     """sak507-e: peel-flag-matrix runs sak507 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak507_a" in yml
     assert "sak507_b" in yml
     assert "sak507_c" in yml
@@ -132,9 +135,9 @@ def test_sak507_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak507_count_missing_peel" in soak
     assert "sak507-f — maker/standards-profile OpenAPI + count_missing" in soak
     assert 'label.startswith("sak507")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak507_peel.py" in peel_unit
 
@@ -157,8 +160,9 @@ def test_sak507_g_openapi_maker_open_apply_503() -> None:
         ),
     )
     for path, method in SAK507_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak507-g" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "maker_approval.py"
@@ -183,8 +187,9 @@ def test_sak507_h_openapi_maker_skip_revert_503() -> None:
         ),
     )
     for path, method in SAK507_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak507-h" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "maker_approval.py"
@@ -209,8 +214,9 @@ def test_sak507_i_openapi_maker_tests_bundle_503() -> None:
         ),
     )
     for path, method in SAK507_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak507-i" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "maker_approval.py"
@@ -228,9 +234,9 @@ def test_sak507_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak507_maker_mutate_openapi" in soak
     assert "sak507-j — maker mutate/bundle OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak507_g" in yml
     assert "sak507_h" in yml
     assert "sak507_i" in yml

@@ -77,10 +77,12 @@ streams:
     checks:
       - id: bandit
         default_verdict: hard_gate
-        command: ["poetry", "run", "bandit", "-c", "pyproject.toml", "-r", "packages", "-lll", "-q"]
+        # Use python -m: Windows bandit.EXE wrapper exits 1 with empty output.
+        command: ["poetry", "run", "python", "-m", "bandit", "-c", "pyproject.toml", "-r", "packages", "-lll", "-q"]
       - id: pip.audit
         default_verdict: hard_gate
-        command: ["poetry", "run", "pip-audit"]
+        # Prefer python -m: Windows pip-audit.EXE can exit 1 with empty output.
+        command: ["poetry", "run", "python", "-m", "pip_audit"]
       - id: semgrep.ci
         default_verdict: warn
         runner: standards.connectors.semgrep:run_semgrep_check

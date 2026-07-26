@@ -56,29 +56,23 @@ def test_rust_assert_capacity_ok_export() -> None:
     )
     text = client_rs.read_text(encoding="utf-8")
     assert "fn assert_capacity_ok" in text
-    assert "assert_list_ok(&raw, \"modules\")" in text
+    assert 'assert_list_ok(&raw, "modules")' in text
 
 
 def test_python_sdk_capacity_modules_assert() -> None:
     """sak446-f."""
     import sys
 
-    sdk_src = (
-        Path(__file__).resolve().parents[3]
-        / "SwissArmyNoife"
-        / "sdks"
-        / "python"
-        / "src"
-    )
+    sdk_src = Path(__file__).resolve().parents[3] / "SwissArmyNoife" / "sdks" / "python" / "src"
     sys.path.insert(0, str(sdk_src))
     from swissarmynoife.client import SakClient
 
     assert SakClient.assert_capacity_ok({"snapshot": {}})["snapshot"] == {}
     with pytest.raises(RuntimeError, match="broker_miss"):
         SakClient.assert_capacity_ok({"error": "down"})
-    assert SakClient.assert_list_ok(
-        {"modules": []}, list_key="modules", feature="t"
-    )["modules"] == []
+    assert (
+        SakClient.assert_list_ok({"modules": []}, list_key="modules", feature="t")["modules"] == []
+    )
 
 
 def test_broker_client_list_modules_assert() -> None:
@@ -104,7 +98,7 @@ def test_maker_web_routing_catalog_miss_helpers() -> None:
     models = (root / "tabs" / "models_local_ui.js").read_text(encoding="utf-8")
     drawer = (root / "tabs" / "chat_model_drawer_ui.js").read_text(encoding="utf-8")
     assert "toastIfMiss" in routing and "Routing presets unavailable" in routing
-    assert "isBrokerMiss(info)" in models or "isBrokerMiss(info)" in models.replace(" ", "")
+    assert "isDomainPeelMiss(info)" in models or "isDomainPeelMiss(info)" in models.replace(" ", "")
     assert "maker-chat-model-drawer-miss" in drawer
 
 

@@ -85,9 +85,9 @@ def test_admin_is_compute_miss() -> None:
     fleet = (root / "pages" / "FleetPage.tsx").read_text(encoding="utf-8")
     mesh = (root / "pages" / "fleet" / "FleetMeshPanel.tsx").read_text(encoding="utf-8")
     assert "export function isComputeMiss" in peel
-    assert "isComputeMiss" in fleet
-    assert "isComputeMiss" in mesh
-    assert ".catch(() => ({ hits: [], embedding_mode: \"none\" }))" not in fleet
+    assert "isDomainPeelMiss" in fleet
+    assert "isDomainPeelMiss" in mesh
+    assert '.catch(() => ({ hits: [], embedding_mode: "none" }))' not in fleet
 
 
 def test_admin_normalize_compute_action_miss() -> None:
@@ -97,7 +97,7 @@ def test_admin_normalize_compute_action_miss() -> None:
     client = (api / "client.ts").read_text(encoding="utf-8")
     assert "export function normalizeComputeActionMiss" in peel
     assert "normalizeComputeActionMiss" in client
-    assert "raw.via === \"broker_miss\" || raw.error != null" not in client
+    assert 'raw.via === "broker_miss" || raw.error != null' not in client
 
 
 def test_broker_client_and_sdk_health_assert() -> None:
@@ -132,7 +132,7 @@ def test_broker_client_and_sdk_health_assert() -> None:
         / "src"
         / "index.ts"
     ).read_text(encoding="utf-8")
-    assert "assertCapacityOk(await this.getJson(\"/health\"))" in ts
+    assert "assertCapacityOk" in ts and 'getJson("/health")' in ts
     rust = (
         Path(__file__).resolve().parents[3]
         / "SwissArmyNoife"

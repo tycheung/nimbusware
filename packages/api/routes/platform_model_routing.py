@@ -67,6 +67,7 @@ class PlatformCapacityResponse(BaseModel):
     cloud_runtime: dict[str, Any] | None = None
     stage_providers: dict[str, Any] | None = None
     cloud_preflight: dict[str, Any] | None = None
+    cloud_enabled: bool | None = None
 
 
 class CatalogInfoResponse(BaseModel):

@@ -26,7 +26,10 @@ def test_broker_client_register_heartbeat_helpers() -> None:
     class _Fake(BrokerClient):
         def compute_nodes(self, payload: dict) -> dict:  # type: ignore[override]
             calls.append(("nodes", payload))
-            return {"node": {"id": "n1", "label": payload.get("label")}, "action": payload["action"]}
+            return {
+                "node": {"id": "n1", "label": payload.get("label")},
+                "action": payload["action"],
+            }
 
     client = _Fake.__new__(_Fake)
     out = BrokerClient.register_node(client, "w", caps=["mesh"], session_id="s")

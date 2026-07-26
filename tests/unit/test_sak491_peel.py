@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 from api.schemas.peel_responses import (
     ComputeNodeListMissResponse,
     ComputePeelMissResponse,
@@ -10,22 +11,15 @@ from api.schemas.peel_responses import (
     WorkUnitQueueDepthMissResponse,
     compute_json_openapi_responses,
 )
-from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 
 
 def test_queue_read_ops_refuse() -> None:
     """sak491-a."""
     work_unit = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "work_unit.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "work_unit.py"
     ).read_text(encoding="utf-8")
     redis_q = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "work_unit_redis.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "work_unit_redis.py"
     ).read_text(encoding="utf-8")
     assert "sak491-a" in work_unit
     assert '_refuse_direct_queue_op("list_units")' in work_unit
@@ -44,7 +38,9 @@ def test_capacity_2_flag_matrix() -> None:
     ).read_text(encoding="utf-8")
     assert "sak491-b" in flags
     assert "broker_capacity_only" in flags
-    assert "capacity_2" in flags.lower() or "CAPACITY\", \"2\"" in flags or "CAPACITY'] = \"2\"" in flags
+    assert (
+        "capacity_2" in flags.lower() or 'CAPACITY", "2"' in flags or 'CAPACITY\'] = "2"' in flags
+    )
 
 
 def test_compute_peel_miss_schemas() -> None:
@@ -94,9 +90,7 @@ def test_compute_routes_wire_openapi_responses() -> None:
     compute = (root / "compute.py").read_text(encoding="utf-8")
     chat = (root / "chat_session.py").read_text(encoding="utf-8")
 
-    assert "sak491-c" in (root.parent / "schemas" / "peel_responses.py").read_text(
-        encoding="utf-8"
-    )
+    assert "sak491-c" in (root.parent / "schemas" / "peel_responses.py").read_text(encoding="utf-8")
     assert "compute_json_openapi_responses" in compute
     assert (
         compute.count("503: PROBLEM_RESPONSE_503") >= 8
@@ -110,9 +104,7 @@ def test_compute_routes_wire_openapi_responses() -> None:
 
 def test_sak_admin_openapi_503() -> None:
     """sak491-d."""
-    yaml_path = (
-        Path(__file__).resolve().parents[3] / "docs" / "openapi" / "sak-admin.v0.yaml"
-    )
+    yaml_path = Path(__file__).resolve().parents[3] / "docs" / "openapi" / "sak-admin.v0.yaml"
     text = yaml_path.read_text(encoding="utf-8")
     assert "BrokerComputeOnlyProblem" in text or "broker_compute_only" in text
     assert "BrokerCapacityOnlyProblem" in text or "broker_capacity_only" in text
@@ -121,11 +113,9 @@ def test_sak_admin_openapi_503() -> None:
 
 def test_soak_asserts_present() -> None:
     """sak491-e."""
-    soak = (
-        Path(__file__).resolve().parents[2]
-        / "scripts"
-        / "peel_soak_lib.py"
-    ).read_text(encoding="utf-8")
+    soak = (Path(__file__).resolve().parents[2] / "scripts" / "peel_soak_lib.py").read_text(
+        encoding="utf-8"
+    )
     assert "_assert_sak491_queue_read_refuse" in soak
     assert "sak491 queue read refuse" in soak
 
@@ -133,10 +123,7 @@ def test_soak_asserts_present() -> None:
 def test_try_or_refuse_harden() -> None:
     """sak491-f."""
     dual = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "broker_client"
-        / "dual_run_route.py"
+        Path(__file__).resolve().parents[2] / "packages" / "broker_client" / "dual_run_route.py"
     ).read_text(encoding="utf-8")
     assert "sak491-f" in dual
     assert "try_or_refuse" in dual
@@ -145,10 +132,7 @@ def test_try_or_refuse_harden() -> None:
 def test_mesh_absorb_miss_harden() -> None:
     """sak491-g."""
     mesh = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "compute"
-        / "mesh_host_sync.py"
+        Path(__file__).resolve().parents[2] / "packages" / "compute" / "mesh_host_sync.py"
     ).read_text(encoding="utf-8")
     assert "sak491-g" in mesh
     assert "_absorb_completed_mesh_units_broker" in mesh

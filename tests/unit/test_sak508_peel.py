@@ -31,8 +31,9 @@ def test_sak508_a_openapi_deploy_apply_smoke_503() -> None:
         ),
     )
     for path, method in SAK508_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak508-a" in (
         _ROOT / "packages" / "api" / "routes" / "platform_deploy_mutations.py"
@@ -57,8 +58,9 @@ def test_sak508_b_openapi_deploy_rollback_ci_503() -> None:
         ),
     )
     for path, method in SAK508_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak508-b" in (
         _ROOT / "packages" / "api" / "routes" / "platform_deploy_mutations.py"
@@ -83,12 +85,13 @@ def test_sak508_c_openapi_deploy_credentials_503() -> None:
         ),
     )
     for path, method in SAK508_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak508-c" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_deploy.py"
-    ).read_text(encoding="utf-8")
+    assert "sak508-c" in (_ROOT / "packages" / "api" / "routes" / "platform_deploy.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak508-c" in (
         _ROOT / "packages" / "api" / "routes" / "platform_deploy_mutations.py"
     ).read_text(encoding="utf-8")
@@ -119,9 +122,9 @@ def test_sak508_d_list_missing_peel_503() -> None:
 
 def test_sak508_e_ci_openapi_subsets() -> None:
     """sak508-e: peel-flag-matrix runs sak508 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak508_a" in yml
     assert "sak508_b" in yml
     assert "sak508_c" in yml
@@ -137,9 +140,9 @@ def test_sak508_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak508_list_missing_peel" in soak
     assert "sak508-f — platform deploy OpenAPI + list_missing" in soak
     assert 'label.startswith("sak508")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak508_peel.py" in peel_unit
 
@@ -162,12 +165,13 @@ def test_sak508_g_openapi_deploy_approve_tf_503() -> None:
         ),
     )
     for path, method in SAK508_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak508-g" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_deploy.py"
-    ).read_text(encoding="utf-8")
+    assert "sak508-g" in (_ROOT / "packages" / "api" / "routes" / "platform_deploy.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak508-h: OpenAPI 503 — deploy audit + github workflow template ---
@@ -188,12 +192,13 @@ def test_sak508_h_openapi_deploy_audit_template_503() -> None:
         ),
     )
     for path, method in SAK508_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak508-h" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_deploy.py"
-    ).read_text(encoding="utf-8")
+    assert "sak508-h" in (_ROOT / "packages" / "api" / "routes" / "platform_deploy.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak508-i: OpenAPI 503 — platform hardware GET + rescan ---
@@ -214,12 +219,13 @@ def test_sak508_i_openapi_hardware_503() -> None:
         ),
     )
     for path, method in SAK508_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak508-i" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_hardware.py"
-    ).read_text(encoding="utf-8")
+    assert "sak508-i" in (_ROOT / "packages" / "api" / "routes" / "platform_hardware.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak508-j: soak/CI deepen ---
@@ -230,9 +236,9 @@ def test_sak508_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak508_deploy_hardware_openapi" in soak
     assert "sak508-j — deploy approve/audit/hardware OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak508_g" in yml
     assert "sak508_h" in yml
     assert "sak508_i" in yml

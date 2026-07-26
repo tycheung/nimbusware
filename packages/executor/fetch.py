@@ -14,17 +14,63 @@ class EgressResponseTooLarge(Exception):
         self.message = message
 
 
-def _apply_broker_egress_check(url: str) -> None:
-    """Require broker egress decision (local policy removed sak416-i)."""
-    from executor.broker_route import raise_egress_peel_miss
+def _host_matches_allowlist(host: str, domain_allowlist: list[str]) -> bool:
+    host_l = host.lower()
+    for raw in domain_allowlist:
+        item = str(raw or "").strip().lower()
+        if not item:
+            continue
+        if item.startswith("."):
+            if host_l == item[1:] or host_l.endswith(item):
+                return True
+        elif host_l == item:
+            return True
+    return False
+
+
+def _local_egress_allowed(
+    *,
+    actor_role_id: UUID,
+    host: str,
+    scraper_role_allowlist: list[UUID],
+    domain_allowlist: list[str],
+) -> None:
+    if scraper_role_allowlist and actor_role_id not in scraper_role_allowlist:
+        msg = f"actor {actor_role_id} not in scraper_role_allowlist"
+        raise PermissionError(msg)
+    if domain_allowlist and not _host_matches_allowlist(host, domain_allowlist):
+        msg = f"host {host!r} not in domain_allowlist"
+        raise PermissionError(msg)
+
+
+def _apply_broker_egress_check(
+    url: str,
+    *,
+    actor_role_id: UUID,
+    host: str,
+    scraper_role_allowlist: list[UUID],
+    domain_allowlist: list[str],
+) -> None:
+    """Broker egress when EGRESS peel is on; otherwise enforce frozen run allowlists."""
+    from broker_client.flags import broker_egress_enabled
     from executor.egress_bridge import try_broker_egress_check
+
+    if not broker_egress_enabled():
+        _local_egress_allowed(
+            actor_role_id=actor_role_id,
+            host=host,
+            scraper_role_allowlist=scraper_role_allowlist,
+            domain_allowlist=domain_allowlist,
+        )
+        return
 
     hit = try_broker_egress_check(url)
     if hit is None:
-        raise_egress_peel_miss("egress")  # sak494-e / sak496-d: broker_miss: egress
-        raise RuntimeError(
-            "executor local egress removed (sak416-i); set NIMBUSWARE_BROKER_EGRESS=1|2"
-        )
+        # sak416-i / sak494-e / sak496-d: peel on + no broker hit — refuse local fallthrough.
+        # raise_egress_peel_miss → RuntimeError("broker_miss: egress: ... local egress removed")
+        from executor.broker_route import raise_egress_peel_miss
+
+        raise_egress_peel_miss("egress")
     if hit.get("allowed") is False or hit.get("ok") is False:
         msg = hit.get("reason") or hit.get("message") or f"broker egress denied for {url!r}"
         raise PermissionError(msg)
@@ -40,14 +86,19 @@ def egress_checked_httpx_get(
     client: httpx.Client | None = None,
     max_response_bytes: int | None = None,
 ) -> httpx.Response:
-    """``GET`` ``url`` after broker egress policy (local allowlist removed)."""
-    _ = (actor_role_id, scraper_role_allowlist, domain_allowlist)
+    """``GET`` ``url`` after egress policy (broker when EGRESS peel on, else local allowlists)."""
     parsed = urlparse(url)
     host = parsed.hostname
     if not host:
         msg = "URL has no hostname for egress check"
         raise ValueError(msg)
-    _apply_broker_egress_check(url)
+    _apply_broker_egress_check(
+        url,
+        actor_role_id=actor_role_id,
+        host=host,
+        scraper_role_allowlist=scraper_role_allowlist,
+        domain_allowlist=domain_allowlist,
+    )
     c = client or httpx.Client()
     if max_response_bytes is None:
         return c.get(url, timeout=timeout_seconds)

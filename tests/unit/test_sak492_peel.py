@@ -7,13 +7,13 @@ from uuid import uuid4
 
 import pytest
 
+from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 from api.schemas.peel_responses import (
     CapacityPeelMissResponse,
     FleetMeshStatusMissResponse,
     capacity_json_openapi_responses,
     compute_json_openapi_responses,
 )
-from api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_503
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.handlers import execute_security_critique_llm
 from orchestrator.registry import RoleRegistry
@@ -53,18 +53,19 @@ def test_capacity_routes_wire_openapi_responses() -> None:
     hardware = (root / "platform_hardware.py").read_text(encoding="utf-8")
     routing = (root / "platform_model_routing.py").read_text(encoding="utf-8")
     peel = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "schemas"
-        / "peel_responses.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "schemas" / "peel_responses.py"
     ).read_text(encoding="utf-8")
 
     assert "sak492-a" in peel
     assert "capacity_json_openapi_responses" in hardware
     assert "capacity_json_openapi_responses" in routing
-    assert "/platform/hardware" in hardware and "responses=capacity_json_openapi_responses" in hardware
-    assert "/platform/models/ranked" in routing and "responses=capacity_json_openapi_responses" in routing
+    assert (
+        "/platform/hardware" in hardware and "responses=capacity_json_openapi_responses" in hardware
+    )
+    assert (
+        "/platform/models/ranked" in routing
+        and "responses=capacity_json_openapi_responses" in routing
+    )
     assert "/platform/models/dependencies" in routing
     assert "/platform/models/apply-preset" in routing
     assert "/platform/routing-presets/apply" in routing
@@ -93,11 +94,7 @@ def test_fleet_mesh_route_wires_compute_openapi() -> None:
     fleet = (root / "enterprise" / "fleet_mesh.py").read_text(encoding="utf-8")
     chat = (root / "chat_session.py").read_text(encoding="utf-8")
     peel = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "schemas"
-        / "peel_responses.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "schemas" / "peel_responses.py"
     ).read_text(encoding="utf-8")
 
     assert "sak492-b" in peel
@@ -144,7 +141,9 @@ def test_sak492_c_openapi_artifact_documents_peel_503() -> None:
             .get("content", {})
             or {}
         )
-        assert "application/problem+json" in content, f"missing 503 problem+json on {method.upper()} {path}"
+        assert "application/problem+json" in content, (
+            f"missing 503 problem+json on {method.upper()} {path}"
+        )
         schema = content["application/problem+json"].get("schema", {})
         assert schema.get("type") == "object"
         assert "code" in schema.get("properties", {})
@@ -159,11 +158,7 @@ def test_sak492_c_peel_routes_source_wire_openapi_helpers() -> None:
     fleet = (root / "enterprise" / "fleet_mesh.py").read_text(encoding="utf-8")
     chat = (root / "chat_session.py").read_text(encoding="utf-8")
     peel = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "schemas"
-        / "peel_responses.py"
+        Path(__file__).resolve().parents[2] / "packages" / "api" / "schemas" / "peel_responses.py"
     ).read_text(encoding="utf-8")
 
     assert "sak492-c" in peel
@@ -203,12 +198,8 @@ def test_broker_session_status_nodes_ok_queue_fail_degraded(
 
 def test_sak492_e_critique_llm_peel_miss_source() -> None:
     """sak492-e: scan critique LLM re-raises broker_miss under peel (not return False)."""
-    llm = (_ROOT / "packages" / "orchestrator" / "critique" / "llm.py").read_text(
-        encoding="utf-8"
-    )
-    tw = (_ROOT / "packages" / "orchestrator" / "test_writer_stage.py").read_text(
-        encoding="utf-8"
-    )
+    llm = (_ROOT / "packages" / "orchestrator" / "critique" / "llm.py").read_text(encoding="utf-8")
+    tw = (_ROOT / "packages" / "orchestrator" / "test_writer_stage.py").read_text(encoding="utf-8")
     broker = (_ROOT / "packages" / "agent_tools" / "facades" / "llm_broker.py").read_text(
         encoding="utf-8"
     )
@@ -303,12 +294,8 @@ def test_sak492_d_peel_strict_wiring() -> None:
     root = Path(__file__).resolve().parents[2] / "packages"
     chat = (root / "orchestrator" / "llm" / "chat_facade.py").read_text(encoding="utf-8")
     refactor = (root / "orchestrator" / "refactor_stage.py").read_text(encoding="utf-8")
-    launch = (root / "orchestrator" / "launch" / "launch_evaluator.py").read_text(
-        encoding="utf-8"
-    )
-    slice_facade = (root / "orchestrator" / "llm" / "slice_facade.py").read_text(
-        encoding="utf-8"
-    )
+    launch = (root / "orchestrator" / "launch" / "launch_evaluator.py").read_text(encoding="utf-8")
+    slice_facade = (root / "orchestrator" / "llm" / "slice_facade.py").read_text(encoding="utf-8")
 
     assert "sak492-d" in chat
     assert "peel_strict" in chat
@@ -432,12 +419,7 @@ def test_sak492_i_admin_503_peel_map() -> None:
         / "peel_assert.ts"
     ).read_text(encoding="utf-8")
     client = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "admin_ui"
-        / "src"
-        / "api"
-        / "client.ts"
+        Path(__file__).resolve().parents[2] / "packages" / "admin_ui" / "src" / "api" / "client.ts"
     ).read_text(encoding="utf-8")
     assert "sak492-i" in peel
     assert "mapHttp503PeelMiss" in peel

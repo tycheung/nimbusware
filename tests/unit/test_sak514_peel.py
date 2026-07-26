@@ -28,12 +28,13 @@ def test_sak514_a_openapi_host_transfer_bundle_accept_503() -> None:
         ),
     )
     for path, method in SAK514_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-a" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-a" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-b: OpenAPI 503 — host-transfer import + complete ---
@@ -54,12 +55,13 @@ def test_sak514_b_openapi_host_transfer_import_complete_503() -> None:
         ),
     )
     for path, method in SAK514_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-b" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-b" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-c: OpenAPI 503 — host-transfer decline + library ---
@@ -80,12 +82,13 @@ def test_sak514_c_openapi_host_transfer_decline_library_503() -> None:
         ),
     )
     for path, method in SAK514_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-c" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-c" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-d: peel_503_coverage helper ---
@@ -114,9 +117,9 @@ def test_sak514_d_peel_503_coverage() -> None:
 
 def test_sak514_e_ci_openapi_subsets() -> None:
     """sak514-e: peel-flag-matrix runs sak514 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak514_a" in yml
     assert "sak514_b" in yml
     assert "sak514_c" in yml
@@ -132,9 +135,9 @@ def test_sak514_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak514_peel_503_coverage_helper" in soak
     assert "sak514-f — host-transfer deepen OpenAPI + peel_503_coverage" in soak
     assert 'label.startswith("sak514")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak514_peel.py" in peel_unit
 
@@ -157,12 +160,13 @@ def test_sak514_g_openapi_folders_list_create_503() -> None:
         ),
     )
     for path, method in SAK514_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-g" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-g" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-h: OpenAPI 503 — chat folders PATCH + DELETE ---
@@ -183,12 +187,13 @@ def test_sak514_h_openapi_folders_mutate_503() -> None:
         ),
     )
     for path, method in SAK514_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-h" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-h" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-i: OpenAPI 503 — chat groups ---
@@ -210,12 +215,13 @@ def test_sak514_i_openapi_groups_503() -> None:
         ),
     )
     for path, method in SAK514_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak514-i" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak514-i" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak514-j: soak/CI deepen ---
@@ -226,9 +232,9 @@ def test_sak514_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak514_folders_groups_openapi" in soak
     assert "sak514-j — folders/groups OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak514_g" in yml
     assert "sak514_h" in yml
     assert "sak514_i" in yml

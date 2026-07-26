@@ -28,12 +28,13 @@ def test_sak512_a_openapi_bundles_promote_503() -> None:
         ),
     )
     for path, method in SAK512_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak512-a" in (
-        _ROOT / "packages" / "api" / "routes" / "bundles.py"
-    ).read_text(encoding="utf-8")
+    assert "sak512-a" in (_ROOT / "packages" / "api" / "routes" / "bundles.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak512-b: OpenAPI 503 — critic-packs PUT + probation-reliability ---
@@ -54,15 +55,16 @@ def test_sak512_b_openapi_critic_probation_503() -> None:
         ),
     )
     for path, method in SAK512_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak512-b" in (
-        _ROOT / "packages" / "api" / "routes" / "critic_packs.py"
-    ).read_text(encoding="utf-8")
-    assert "sak512-b" in (
-        _ROOT / "packages" / "api" / "routes" / "personas_handlers.py"
-    ).read_text(encoding="utf-8")
+    assert "sak512-b" in (_ROOT / "packages" / "api" / "routes" / "critic_packs.py").read_text(
+        encoding="utf-8"
+    )
+    assert "sak512-b" in (_ROOT / "packages" / "api" / "routes" / "personas_handlers.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak512-c: OpenAPI 503 — custom-agents CRUD ---
@@ -85,12 +87,13 @@ def test_sak512_c_openapi_custom_agents_503() -> None:
         ),
     )
     for path, method in SAK512_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak512-c" in (
-        _ROOT / "packages" / "api" / "routes" / "custom_agents.py"
-    ).read_text(encoding="utf-8")
+    assert "sak512-c" in (_ROOT / "packages" / "api" / "routes" / "custom_agents.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak512-d: list_missing_peel_503_in_openapi_json helper ---
@@ -128,9 +131,9 @@ def test_sak512_d_list_missing_peel_503_in_openapi_json(tmp_path: Path) -> None:
 
 def test_sak512_e_ci_openapi_subsets() -> None:
     """sak512-e: peel-flag-matrix runs sak512 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak512_a" in yml
     assert "sak512_b" in yml
     assert "sak512_c" in yml
@@ -146,9 +149,9 @@ def test_sak512_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak512_list_missing_file_helper" in soak
     assert "sak512-f — bundles/critic/custom-agents OpenAPI + file missing helper" in soak
     assert 'label.startswith("sak512")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak512_peel.py" in peel_unit
 
@@ -171,8 +174,9 @@ def test_sak512_g_openapi_projects_create_get_503() -> None:
         ),
     )
     for path, method in SAK512_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "projects.py").read_text(
         encoding="utf-8",
@@ -198,8 +202,9 @@ def test_sak512_h_openapi_projects_mutate_503() -> None:
         ),
     )
     for path, method in SAK512_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "projects.py").read_text(
         encoding="utf-8",
@@ -227,8 +232,9 @@ def test_sak512_i_openapi_chat_start_scope_503() -> None:
         ),
     )
     for path, method in SAK512_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "chat_session.py").read_text(
         encoding="utf-8",
@@ -244,9 +250,9 @@ def test_sak512_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak512_projects_chat_openapi" in soak
     assert "sak512-j — projects/chat-start/scope OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak512_g" in yml
     assert "sak512_h" in yml
     assert "sak512_i" in yml

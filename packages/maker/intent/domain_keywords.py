@@ -1,5 +1,3 @@
-"""Extract domain-study keywords for self-evolve curriculum."""
-
 from __future__ import annotations
 
 import re
@@ -80,7 +78,6 @@ def _tokenize_keywords(fragment: str) -> list[str]:
 
 
 def extract_domain_keywords(text: str) -> list[str]:
-    """Parse operator text into domain keywords (e.g. accounting software → ['accounting software'])."""
     prompt = (text or "").strip()
     if not prompt:
         return []
@@ -137,8 +134,10 @@ def domain_keywords_from_rows(rows: list[dict[str, Any]]) -> list[str]:
         et_s = str(getattr(et, "value", et) or "")
         if et_s != "run.created":
             continue
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
-        req = meta.get("requirements") if isinstance(meta.get("requirements"), dict) else {}
+        meta_raw = row.get("metadata")
+        meta: dict[str, Any] = meta_raw if isinstance(meta_raw, dict) else {}
+        req_raw = meta.get("requirements")
+        req: dict[str, Any] = req_raw if isinstance(req_raw, dict) else {}
         raw = req.get("domain_keywords")
         if isinstance(raw, list) and raw:
             return [str(x).strip().lower() for x in raw if str(x).strip()][:_MAX_KEYWORDS]

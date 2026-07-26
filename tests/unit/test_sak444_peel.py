@@ -100,12 +100,7 @@ def test_maker_capacity_miss_helpers() -> None:
 def test_admin_complete_terminate_assert_exports() -> None:
     """sak444-a: admin client exports peel asserts used by complete/terminate."""
     client_path = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "admin_ui"
-        / "src"
-        / "api"
-        / "client.ts"
+        Path(__file__).resolve().parents[2] / "packages" / "admin_ui" / "src" / "api" / "client.ts"
     )
     text = client_path.read_text(encoding="utf-8")
     assert "completeWorkUnit" in text

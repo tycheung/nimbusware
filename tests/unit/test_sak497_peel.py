@@ -25,9 +25,10 @@ def test_sak497_a_slice_facade_peel_strict_wiring() -> None:
     assert "def execute_slice_replan_llm" in src
     assert "_require_broker_chat" in src
     assert "peel_strict=True" in src
-    assert "raise RuntimeError" not in src.split("execute_slice_plan_llm")[1].split(
-        "execute_slice_implement_llm"
-    )[0]
+    assert (
+        "raise RuntimeError"
+        not in src.split("execute_slice_plan_llm")[1].split("execute_slice_implement_llm")[0]
+    )
 
 
 def test_execute_slice_plan_llm_parses_broker_response() -> None:
@@ -360,9 +361,9 @@ def test_sak497_b_peel_strict_passed_to_chat(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_sak497_h_source_markers() -> None:
     """sak497-h: gate_helpers wires peel_strict for post-verify role critiques."""
-    gate_helpers = (
-        _ROOT / "packages" / "orchestrator" / "llm" / "gate_helpers.py"
-    ).read_text(encoding="utf-8")
+    gate_helpers = (_ROOT / "packages" / "orchestrator" / "llm" / "gate_helpers.py").read_text(
+        encoding="utf-8"
+    )
     role_emit = (
         _ROOT / "packages" / "orchestrator" / "_pipeline" / "role_critique_emit.py"
     ).read_text(encoding="utf-8")
@@ -841,10 +842,7 @@ def test_sak497_i_domain_broker_flags_api_modules() -> None:
         assert "_under_" in src and "_1_" in src
         assert "_2_returns_503" in src
     yml = (
-        Path(__file__).resolve().parents[3]
-        / ".github"
-        / "workflows"
-        / "nimbusware-peel.yml"
+        Path(__file__).resolve().parents[3] / ".github" / "workflows" / "nimbusware-peel.yml"
     ).read_text(encoding="utf-8")
     assert "test_sandbox_broker_flags_api.py" in yml
     assert "test_research_broker_flags_api.py" in yml
@@ -860,9 +858,9 @@ def test_sak497_g_maker_bootstrap_peel_http() -> None:
     bootstrap = (
         _ROOT / "packages" / "maker_web" / "static" / "js" / "bootstrap-load.js"
     ).read_text(encoding="utf-8")
-    api_client = (
-        _ROOT / "packages" / "maker_web" / "static" / "js" / "api-client.js"
-    ).read_text(encoding="utf-8")
+    api_client = (_ROOT / "packages" / "maker_web" / "static" / "js" / "api-client.js").read_text(
+        encoding="utf-8"
+    )
     peel_http = (_ROOT / "packages" / "ui_shared" / "js" / "peel-http.js").read_text(
         encoding="utf-8",
     )
@@ -881,9 +879,9 @@ def test_sak497_g_maker_bootstrap_peel_http() -> None:
 
 def test_sak497_f_admin_domain_peel_assert_markers() -> None:
     """sak497-f: peel_assert.ts domain miss detectors + write/read formatters."""
-    peel = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts"
-    ).read_text(encoding="utf-8")
+    peel = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts").read_text(
+        encoding="utf-8"
+    )
     assert "sak497-f" in peel
     assert "isDomainPeelMiss" in peel
     assert "writeMissMessage" in peel
@@ -931,9 +929,9 @@ def test_sak497_j_maker_sse_domain_peel_miss() -> None:
     sse = (_ROOT / "packages" / "maker_web" / "static" / "js" / "sse-client.js").read_text(
         encoding="utf-8",
     )
-    broker_miss = (
-        _ROOT / "packages" / "maker_web" / "static" / "js" / "broker_miss.js"
-    ).read_text(encoding="utf-8")
+    broker_miss = (_ROOT / "packages" / "maker_web" / "static" / "js" / "broker_miss.js").read_text(
+        encoding="utf-8"
+    )
     assert "sak497-j" in sse
     assert "isDomainPeelMiss" in sse
     assert "isDomainPeelMiss" in broker_miss
@@ -942,8 +940,8 @@ def test_sak497_j_maker_sse_domain_peel_miss() -> None:
 
 def test_sak497_j_format_domain_miss_message_ts() -> None:
     """sak497-j: admin formatDomainMissMessage exported."""
-    peel = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts"
-    ).read_text(encoding="utf-8")
+    peel = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts").read_text(
+        encoding="utf-8"
+    )
     assert "sak497-j" in peel
     assert "formatDomainMissMessage" in peel

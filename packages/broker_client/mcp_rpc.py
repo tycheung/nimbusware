@@ -35,7 +35,6 @@ def rpc_headers(token: str, session_id: str | None) -> dict[str, str]:
 
 
 def body_from_response(response: httpx.Response) -> Any:
-    """Parse JSON or SSE ``data:`` frames from Streamable HTTP MCP responses."""
     raw_text = getattr(response, "text", None)
     text = raw_text if isinstance(raw_text, str) else ""
     headers = getattr(response, "headers", None) or {}

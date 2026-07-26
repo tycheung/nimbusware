@@ -28,8 +28,9 @@ def test_sak517_a_openapi_overlays_subscription_link_503() -> None:
         ),
     )
     for path, method in SAK517_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak517-a" in (
         _ROOT / "packages" / "api" / "routes" / "platform_discipline_profile.py"
@@ -57,8 +58,9 @@ def test_sak517_b_openapi_provider_connections_mutate_503() -> None:
         ),
     )
     for path, method in SAK517_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak517-b" in (
         _ROOT / "packages" / "api" / "routes" / "provider_connections.py"
@@ -82,8 +84,9 @@ def test_sak517_c_openapi_provider_connections_probe_503() -> None:
         ),
     )
     for path, method in SAK517_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak517-c" in (
         _ROOT / "packages" / "api" / "routes" / "provider_connections.py"
@@ -129,9 +132,9 @@ def test_sak517_d_ensure_openapi_json_peel_503(tmp_path: Path) -> None:
 
 def test_sak517_e_ci_openapi_subsets() -> None:
     """sak517-e: peel-flag-matrix runs sak517 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak517_a" in yml
     assert "sak517_b" in yml
     assert "sak517_c" in yml
@@ -147,9 +150,9 @@ def test_sak517_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak517_ensure_openapi_helper" in soak
     assert "sak517-f — provider-connections OpenAPI + ensure helper" in soak
     assert 'label.startswith("sak517")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak517_peel.py" in peel_unit
 
@@ -172,12 +175,13 @@ def test_sak517_g_openapi_compute_nodes_503() -> None:
         ),
     )
     for path, method in SAK517_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak517-g" in (
-        _ROOT / "packages" / "api" / "routes" / "compute.py"
-    ).read_text(encoding="utf-8")
+    assert "sak517-g" in (_ROOT / "packages" / "api" / "routes" / "compute.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak517-h: OpenAPI 503 — heartbeat + claim ---
@@ -198,12 +202,13 @@ def test_sak517_h_openapi_heartbeat_claim_503() -> None:
         ),
     )
     for path, method in SAK517_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak517-h" in (
-        _ROOT / "packages" / "api" / "routes" / "compute.py"
-    ).read_text(encoding="utf-8")
+    assert "sak517-h" in (_ROOT / "packages" / "api" / "routes" / "compute.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak517-i: OpenAPI 503 — queue + complete ---
@@ -224,12 +229,13 @@ def test_sak517_i_openapi_queue_complete_503() -> None:
         ),
     )
     for path, method in SAK517_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak517-i" in (
-        _ROOT / "packages" / "api" / "routes" / "compute.py"
-    ).read_text(encoding="utf-8")
+    assert "sak517-i" in (_ROOT / "packages" / "api" / "routes" / "compute.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak517-j: soak/CI deepen ---
@@ -240,9 +246,9 @@ def test_sak517_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak517_compute_nodes_openapi" in soak
     assert "sak517-j — compute nodes OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak517_g" in yml
     assert "sak517_h" in yml
     assert "sak517_i" in yml

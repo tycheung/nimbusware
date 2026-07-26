@@ -41,7 +41,9 @@ def test_opt_out_under_compute_no_store_shape() -> None:
 def test_requeue_payload_known() -> None:
     from broker_client.stage_bind.compute import normalize_compute_work_payload
 
-    assert normalize_compute_work_payload({"action": "requeue", "work_id": "w"})["action"] == "requeue"
+    assert (
+        normalize_compute_work_payload({"action": "requeue", "work_id": "w"})["action"] == "requeue"
+    )
 
 
 def test_node_store_still_refuses_compute_2(monkeypatch: pytest.MonkeyPatch) -> None:

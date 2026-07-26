@@ -83,9 +83,7 @@ def test_admin_fleet_peel_deepen() -> None:
     """sak485-h."""
     root = Path(__file__).resolve().parents[2] / "packages" / "admin_ui" / "src"
     fleet = (root / "pages" / "FleetPage.tsx").read_text(encoding="utf-8")
-    compliance = (root / "pages" / "fleet" / "FleetCompliancePanel.tsx").read_text(
-        encoding="utf-8"
-    )
+    compliance = (root / "pages" / "fleet" / "FleetCompliancePanel.tsx").read_text(encoding="utf-8")
     assert "peelUnavailable" in fleet
     assert "complianceMiss" in fleet
     assert "formatPeelMissMessage" in fleet

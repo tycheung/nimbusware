@@ -266,7 +266,7 @@ def maybe_rebuild_memory_faiss_from_bridges(
     if broker_memory_enabled():
         from memory.broker_route import refuse_legacy
 
-        refuse_legacy(  # sak498-i: no silent skip when rebuild env set under MEMORY=1|2
+        refuse_legacy(  # sak495-a / sak498-i: no silent skip when rebuild env set under MEMORY=1|2
             "context-artifact FAISS rebuild unavailable under NIMBUSWARE_BROKER_MEMORY=1|2; "
             "use SwissArmyNoife memory_index",
         )

@@ -32,8 +32,9 @@ def test_sak502_a_openapi_runs_create_list_503() -> None:
         ),
     )
     for path, method in SAK502_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), f"{method} {path}"
     create = (_ROOT / "packages" / "api" / "routes" / "runs" / "create.py").read_text(
         encoding="utf-8",
@@ -63,12 +64,13 @@ def test_sak502_b_openapi_provider_503() -> None:
         ),
     )
     for path, method in SAK502_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    src = (
-        _ROOT / "packages" / "api" / "routes" / "provider_connections.py"
-    ).read_text(encoding="utf-8")
+    src = (_ROOT / "packages" / "api" / "routes" / "provider_connections.py").read_text(
+        encoding="utf-8"
+    )
     assert src.count("sak502-b") >= 2
 
 
@@ -90,12 +92,13 @@ def test_sak502_c_openapi_fleet_policies_503() -> None:
         ),
     )
     for path, method in SAK502_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    deploy = (
-        _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_deploy.py"
-    ).read_text(encoding="utf-8")
+    deploy = (_ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_deploy.py").read_text(
+        encoding="utf-8"
+    )
     discovery = (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_discovery.py"
     ).read_text(encoding="utf-8")
@@ -126,9 +129,9 @@ def test_sak502_d_with_long_tail_peel_503_merges() -> None:
 
 def test_sak502_e_ci_openapi_subsets() -> None:
     """sak502-e: peel-flag-matrix runs sak502 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak502_a" in yml
     assert "sak502_b" in yml
     assert "sak502_c" in yml
@@ -144,9 +147,9 @@ def test_sak502_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak502_with_long_tail_helper" in soak
     assert "sak502-f — runs/provider/fleet OpenAPI" in soak
     assert 'label.startswith("sak502")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak502_peel.py" in peel_unit
 
@@ -169,8 +172,9 @@ def test_sak502_g_openapi_run_detail_lifecycle_503() -> None:
         ),
     )
     for path, method in SAK502_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), f"{method} {path}"
     detail = (_ROOT / "packages" / "api" / "routes" / "runs" / "detail.py").read_text(
         encoding="utf-8",
@@ -200,12 +204,13 @@ def test_sak502_h_openapi_slice_stitch_503() -> None:
         ),
     )
     for path, method in SAK502_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak502-h" in (
-        _ROOT / "packages" / "api" / "routes" / "runs" / "slices.py"
-    ).read_text(encoding="utf-8")
+    assert "sak502-h" in (_ROOT / "packages" / "api" / "routes" / "runs" / "slices.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak502-h" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "stitch_summary.py"
     ).read_text(encoding="utf-8")
@@ -229,8 +234,9 @@ def test_sak502_i_openapi_factory_timeline_503() -> None:
         ),
     )
     for path, method in SAK502_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak502-i" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "factory_evidence.py"
@@ -248,9 +254,9 @@ def test_sak502_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak502_run_detail_openapi" in soak
     assert "sak502-j — run detail/slice/factory OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak502_g" in yml
     assert "sak502_h" in yml
     assert "sak502_i" in yml

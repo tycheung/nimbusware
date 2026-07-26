@@ -11,6 +11,7 @@ from api.admin import AdminDep
 from api.deps import IamStoreDep, OrchDep, StoreDep
 from api.errors import problem
 from api.routes.admin_ui_timeline import (
+    TimelinePanelsResponse,
     build_timeline_panels_payload,
     timeline_events_from_store,
 )
@@ -123,8 +124,6 @@ def operator_chat_message(
     )
 
 
-
-
 class AdminProjectionResponse(BaseModel):
     """OpenAPI payload (`sak481-e` / `sak481-f`)."""
 
@@ -133,6 +132,7 @@ class AdminProjectionResponse(BaseModel):
     via: str | None = None
     error: str | None = None
     feature: str | None = None
+
 
 @router.get(
     "/runs/{run_id}/findings-table",
@@ -550,8 +550,7 @@ def enterprise_fleet_compare(
 
 @router.get(
     "/runs/{run_id}/timeline-panels",
-    response_model=AdminProjectionResponse,
-    response_model_exclude_none=True,
+    response_model=TimelinePanelsResponse,
     responses=admin_bff_json_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-f
     summary="Timeline panels projection (`sak482-f`)",
 )

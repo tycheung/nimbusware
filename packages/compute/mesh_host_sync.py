@@ -139,8 +139,7 @@ def _wait_for_mesh_units_broker(
     if pending:
         # sak489-a: timeout waiting for broker mesh units is not a silent False.
         raise RuntimeError(
-            "broker_miss: mesh_host_sync.wait: stages not terminal: "
-            f"{sorted(pending)!r}"
+            f"broker_miss: mesh_host_sync.wait: stages not terminal: {sorted(pending)!r}"
         )
     return True
 
@@ -153,12 +152,8 @@ def wait_for_mesh_units(
 ) -> bool:
     # sak432-b: exclusive broker under COMPUTE=1|2 (no legacy fallback).
     if broker_compute_enabled():
-        return _wait_for_mesh_units_broker(
-            run_id, stage_names, timeout_seconds=timeout_seconds
-        )
-    return _legacy().wait_for_mesh_units(
-        run_id, stage_names, timeout_seconds=timeout_seconds
-    )
+        return _wait_for_mesh_units_broker(run_id, stage_names, timeout_seconds=timeout_seconds)
+    return _legacy().wait_for_mesh_units(run_id, stage_names, timeout_seconds=timeout_seconds)
 
 
 def critic_gate_fail_from_mesh(run_id: UUID, stage_name: str) -> bool:
@@ -169,9 +164,7 @@ def critic_gate_fail_from_mesh(run_id: UUID, stage_name: str) -> bool:
             wait_for_mesh_units(run_id, [stage_name])
             units = _broker_list_units(run_id, stage_name)
             rec = _latest_broker_unit(units, stage_name)
-        rec = _require_mesh_unit(
-            rec, stage_name=stage_name, feature="critic_gate_fail"
-        )
+        rec = _require_mesh_unit(rec, stage_name=stage_name, feature="critic_gate_fail")
         status = _unit_status(rec)
         if status not in {"completed", "ok"}:
             return True
@@ -193,9 +186,7 @@ def campaign_slice_passed_from_mesh(run_id: UUID, slice_id: str) -> bool:
             wait_for_mesh_units(run_id, [stage_name])
             units = _broker_list_units(run_id, stage_name)
             rec = _latest_broker_unit(units, stage_name)
-        rec = _require_mesh_unit(
-            rec, stage_name=stage_name, feature="campaign_slice_passed"
-        )
+        rec = _require_mesh_unit(rec, stage_name=stage_name, feature="campaign_slice_passed")
         if _unit_status(rec) not in {"completed", "ok"}:
             return False
         result = _unit_result(rec)
@@ -213,9 +204,7 @@ def writer_stage_result_from_mesh(run_id: UUID, stage_name: str) -> WriterStageR
             wait_for_mesh_units(run_id, [stage_name])
             units = _broker_list_units(run_id, stage_name)
             rec = _latest_broker_unit(units, stage_name)
-        rec = _require_mesh_unit(
-            rec, stage_name=stage_name, feature="writer_stage_result"
-        )
+        rec = _require_mesh_unit(rec, stage_name=stage_name, feature="writer_stage_result")
         status = _unit_status(rec)
         result = _unit_result(rec)
         if status in {"completed", "ok"}:
@@ -227,9 +216,7 @@ def writer_stage_result_from_mesh(run_id: UUID, stage_name: str) -> WriterStageR
         return WriterStageResult(
             stage_name=stage_name,
             verifier_exit_code=int(result.get("verifier_exit_code") or 1),
-            verifier_log=str(
-                result.get("verifier_log") or f"broker mesh status={status}"
-            ),
+            verifier_log=str(result.get("verifier_log") or f"broker mesh status={status}"),
         )
     return _legacy().writer_stage_result_from_mesh(run_id, stage_name)
 

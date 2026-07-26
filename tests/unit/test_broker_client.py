@@ -125,17 +125,17 @@ def test_health_uses_context_client_when_not_injected() -> None:
 
 
 @pytest.mark.parametrize(
-    ("method", "path"),
+    ("method", "path", "payload"),
     [
-        ("capacity", "/v1/sak/capacity"),
-        ("list_work", "/v1/sak/compute/work"),
-        ("list_nodes", "/v1/sak/compute/nodes"),
+        ("capacity", "/v1/sak/capacity", {"ok": True}),
+        ("list_work", "/v1/sak/compute/work", {"work": []}),
+        ("list_nodes", "/v1/sak/compute/nodes", {"nodes": []}),
     ],
 )
-def test_capacity_compute_helpers(method: str, path: str) -> None:
+def test_capacity_compute_helpers(method: str, path: str, payload: dict) -> None:
     mock_client = MagicMock(spec=httpx.Client)
     mock_response = MagicMock()
-    mock_response.json.return_value = {"items": []}
+    mock_response.json.return_value = payload
     mock_response.raise_for_status = MagicMock()
     mock_client.get.return_value = mock_response
 
@@ -147,4 +147,4 @@ def test_capacity_compute_helpers(method: str, path: str) -> None:
         headers={},
         timeout=15.0,
     )
-    assert out == {"items": []}
+    assert out == payload

@@ -27,7 +27,9 @@ def research_fetch_via_broker(
 ) -> dict[str, Any]:
     """Invoke ``research_fetch`` via MCP when the research dual-run flag is on."""
     if not broker_research_enabled():
-        raise BrokerDisabled("Set NIMBUSWARE_BROKER_RESEARCH=1 to route research through the broker")
+        raise BrokerDisabled(
+            "Set NIMBUSWARE_BROKER_RESEARCH=1 to route research through the broker"
+        )
     from broker_client.peel_assert import assert_research_ok, normalize_tool_result
 
     mcp = client or BrokerMcpClient()

@@ -8,9 +8,7 @@ from orchestrator.repo_intel.explorer import RepoExploreFinding, RepoExploreResu
 from orchestrator.slice.cycle_integration import maybe_run_repo_explore_slice_stage
 
 
-def test_sparse_graph_finding_does_not_revise_backlog(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_sparse_graph_finding_does_not_revise_backlog(tmp_path: Path, monkeypatch) -> None:
     store = MagicMock()
     store.list_run_events.return_value = []
     monkeypatch.setattr(
@@ -34,9 +32,7 @@ def test_sparse_graph_finding_does_not_revise_backlog(
         lambda *a, **k: emitted.append((a, k)),
     )
 
-    ok = maybe_run_repo_explore_slice_stage(
-        store, uuid4(), tmp_path, slice_index=1
-    )
+    ok = maybe_run_repo_explore_slice_stage(store, uuid4(), tmp_path, slice_index=1)
     assert ok is True
     assert emitted == []
     store.list_run_events.assert_not_called()

@@ -168,9 +168,7 @@ def test_compute_action_builders() -> None:
     assert enq == {"action": "enqueue", "kind": "echo", "payload": {"n": 1}}
     claim = build_compute_claim_payload("node-1")
     assert claim == {"action": "claim", "node_id": "node-1"}
-    done = build_compute_complete_payload(
-        work_id="w1", node_id="node-1", result={"ok": True}
-    )
+    done = build_compute_complete_payload(work_id="w1", node_id="node-1", result={"ok": True})
     assert done["action"] == "complete"
     assert done["result"] == {"ok": True}
     assert build_compute_get_payload("w1") == {"action": "get", "work_id": "w1"}
@@ -557,8 +555,9 @@ def test_models_ranked_capacity_2_raises_503(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setenv("NIMBUSWARE_BROKER_CAPACITY", "2")
     from unittest.mock import MagicMock
 
-    from api.routes import platform_model_routing as pmr
     from fastapi import HTTPException
+
+    from api.routes import platform_model_routing as pmr
 
     orch = MagicMock()
     orch.repo_root = "."
@@ -581,8 +580,9 @@ def test_models_dependencies_capacity_2_raises_503(
     monkeypatch.setenv("NIMBUSWARE_BROKER_CAPACITY", "2")
     from unittest.mock import MagicMock
 
-    from api.routes import platform_model_routing as pmr
     from fastapi import HTTPException
+
+    from api.routes import platform_model_routing as pmr
 
     orch = MagicMock()
     store = MagicMock()

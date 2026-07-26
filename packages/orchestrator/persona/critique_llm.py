@@ -22,8 +22,8 @@ from agent_core.models import (
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
 from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
-from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 from orchestrator.llm.gate_helpers import append_gate_decision_event
+from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 from orchestrator.registry import RoleRegistry
 from store.protocol import EventStore
 

@@ -23,7 +23,7 @@ def main() -> int:
     if not targets:
         print("mypy stream: no targets", file=sys.stderr)
         return 1
-    mypy = subprocess.run(["poetry", "run", "mypy", *targets], cwd=ROOT)
+    mypy = subprocess.run(["poetry", "run", "python", "-m", "mypy", *targets], cwd=ROOT)
     return mypy.returncode
 
 

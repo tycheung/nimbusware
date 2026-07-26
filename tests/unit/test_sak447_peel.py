@@ -106,13 +106,7 @@ def test_admin_peel_assert_module() -> None:
 
 def test_delegate_control_no_dead_exhaust_block() -> None:
     """sak447-i: redundant broker_compute_enabled exhaust path removed."""
-    path = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "api"
-        / "routes"
-        / "chat_session.py"
-    )
+    path = Path(__file__).resolve().parents[2] / "packages" / "api" / "routes" / "chat_session.py"
     text = path.read_text(encoding="utf-8")
     assert "delegate-control broker path exhausted" not in text
     assert "sak447-i" in text

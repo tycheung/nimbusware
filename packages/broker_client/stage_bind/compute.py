@@ -12,7 +12,6 @@ _KNOWN_ACTIONS = frozenset({"enqueue", "claim", "complete", "get", "list", "requ
 _KNOWN_NODE_ACTIONS = frozenset({"register", "heartbeat", "list"})
 
 
-
 def bind_compute_work(client: BrokerClient | None = None) -> dict[str, Any]:
     _ = client
     if not broker_compute_enabled():

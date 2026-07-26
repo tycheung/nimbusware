@@ -170,11 +170,7 @@ class WritersParallelMixin:
         if local_runners:
             from broker_client.flags import broker_compute_enabled
 
-            if (
-                broker_compute_enabled()
-                and session_id is not None
-                and workload != "host_only"
-            ):
+            if broker_compute_enabled() and session_id is not None and workload != "host_only":
                 names = ", ".join(sorted(name for name, _ in local_runners))
                 raise RuntimeError(
                     "writers_parallel local runner unavailable under "

@@ -28,12 +28,13 @@ def test_sak509_a_openapi_hardware_fleet_503() -> None:
         ),
     )
     for path, method in SAK509_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak509-a" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_hardware.py"
-    ).read_text(encoding="utf-8")
+    assert "sak509-a" in (_ROOT / "packages" / "api" / "routes" / "platform_hardware.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak509-b: OpenAPI 503 — models catalog-info + ranked ---
@@ -54,8 +55,9 @@ def test_sak509_b_openapi_models_catalog_ranked_503() -> None:
         ),
     )
     for path, method in SAK509_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak509-b" in (
         _ROOT / "packages" / "api" / "routes" / "platform_model_routing.py"
@@ -80,8 +82,9 @@ def test_sak509_c_openapi_preset_routing_503() -> None:
         ),
     )
     for path, method in SAK509_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak509-c" in (
         _ROOT / "packages" / "api" / "routes" / "platform_model_routing.py"
@@ -115,9 +118,9 @@ def test_sak509_d_count_missing_uses_list_missing() -> None:
 
 def test_sak509_e_ci_openapi_subsets() -> None:
     """sak509-e: peel-flag-matrix runs sak509 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak509_a" in yml
     assert "sak509_b" in yml
     assert "sak509_c" in yml
@@ -133,9 +136,9 @@ def test_sak509_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak509_count_missing_dry" in soak
     assert "sak509-f — hardware fleet/models OpenAPI + count_missing DRY" in soak
     assert 'label.startswith("sak509")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak509_peel.py" in peel_unit
 
@@ -158,8 +161,9 @@ def test_sak509_g_openapi_routing_deps_503() -> None:
         ),
     )
     for path, method in SAK509_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak509-g" in (
         _ROOT / "packages" / "api" / "routes" / "platform_model_routing.py"
@@ -184,12 +188,13 @@ def test_sak509_h_openapi_invite_edition_503() -> None:
         ),
     )
     for path, method in SAK509_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak509-h" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak509-h" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak509-i: OpenAPI 503 — collab-settings GET/PUT ---
@@ -210,12 +215,13 @@ def test_sak509_i_openapi_collab_settings_503() -> None:
         ),
     )
     for path, method in SAK509_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak509-i" in (
-        _ROOT / "packages" / "api" / "routes" / "platform.py"
-    ).read_text(encoding="utf-8")
+    assert "sak509-i" in (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak509-j: soak/CI deepen ---
@@ -226,9 +232,9 @@ def test_sak509_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak509_platform_residual_openapi" in soak
     assert "sak509-j — routing/invite/collab OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak509_g" in yml
     assert "sak509_h" in yml
     assert "sak509_i" in yml

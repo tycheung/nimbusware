@@ -11,8 +11,10 @@ from typing import Any
 from broker_client.dual_run_route import (
     broker_problem,
     map_domain_broker_http_miss,
-    refuse_broker_only_http as _refuse_broker_only_http,
     refuse_when,
+)
+from broker_client.dual_run_route import (
+    refuse_broker_only_http as _refuse_broker_only_http,
 )
 from broker_client.flags import broker_compute_enabled, broker_compute_only
 from compute.broker_miss import broker_miss
@@ -67,8 +69,7 @@ def map_broker_compute_http_error(
         feature=feature,
         only=broker_compute_only,
         only_code="broker_compute_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {exc}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {exc}",
         miss_extra=miss_extra,
         defaults={"node": None},
     )
@@ -87,8 +88,7 @@ def map_broker_chat_compute_miss(
         feature=feature,
         only=broker_compute_only,
         only_code="broker_compute_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {error}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {error}",
         miss_extra=miss_extra,
         defaults={"node": None},
     )

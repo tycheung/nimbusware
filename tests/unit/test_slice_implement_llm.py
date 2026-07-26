@@ -21,7 +21,7 @@ def test_slice_implement_llm_applies_mocked_edits(tmp_path: Path) -> None:
         clear=False,
     ):
         with patch(
-            "orchestrator.llm.llm_slice.execute_slice_implement_llm",
+            "orchestrator.llm.slice_facade.execute_slice_implement_llm",
             return_value=edits,
         ):
             with patch(

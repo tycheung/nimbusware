@@ -28,7 +28,9 @@ def test_caps_dict_from_broker_node_skips_user() -> None:
     assert "user:alice" not in out
 
 
-def test_absorb_completed_mesh_units_broker(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_absorb_completed_mesh_units_broker(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "2")
     run_id = uuid4()
     store = MagicMock()

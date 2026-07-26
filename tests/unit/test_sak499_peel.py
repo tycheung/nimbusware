@@ -180,7 +180,11 @@ def test_sak499_d_admin_ui_domain_peel_miss_markers() -> None:
         assert "isDomainPeelMiss" in src, path.name
         assert "isComputeMiss" not in src, path.name
         assert "isReadPeelMiss" not in src, path.name
-        assert "isMemoryMiss" not in src, path.name
+        # FleetPage keeps isMemoryMiss for fleet_memory / memory search (sak493-i).
+        if path.name != "FleetPage.tsx":
+            assert "isMemoryMiss" not in src, path.name
+    fleet = (root / "pages" / "FleetPage.tsx").read_text(encoding="utf-8")
+    assert "isMemoryMiss" in fleet
     assert "sak499-d" in peel.read_text(encoding="utf-8")
 
 
@@ -241,10 +245,7 @@ def test_sak499_e_peel_guard_module_and_callers() -> None:
 def test_sak499_g_ci_flag_matrix_deepens() -> None:
     """sak499-g: peel-flag-matrix blocks MEMORY/LLM flags + sak499-c openapi artifact subset."""
     yml = (
-        Path(__file__).resolve().parents[3]
-        / ".github"
-        / "workflows"
-        / "nimbusware-peel.yml"
+        Path(__file__).resolve().parents[3] / ".github" / "workflows" / "nimbusware-peel.yml"
     ).read_text(encoding="utf-8")
     assert "peel-flag-matrix" in yml
     assert "test_memory_broker_flags_api.py" in yml
@@ -308,9 +309,9 @@ def test_sak499_j_soak_lib_asserts_present() -> None:
 @pytest.mark.sak499_j
 def test_sak499_j_ci_workflow_lists_peel_unit() -> None:
     """sak499-j: nimbusware-peel.yml includes test_sak499_peel.py in peel-unit."""
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "test_sak499_peel.py" in workflow
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak499_peel.py" in peel_unit

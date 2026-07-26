@@ -6,9 +6,9 @@ import {
   enterpriseApiKey,
   formatPeelMissMessage,
   formatReadCatchMessage,
-  isDomainPeelMiss,
+  isReadPeelMiss,
   setEnterpriseApiKey,
-} from "./api/client"; // sak500-d
+} from "./api/client"; // sak495-f
 
 const TOKEN_KEY = "nimbusware_admin_token";
 
@@ -38,7 +38,8 @@ export function LoginGate({
           error?: string;
           status?: string;
         };
-        if (isDomainPeelMiss(b)) {
+        // sak495-f
+        if (isReadPeelMiss(b)) {
           setOidcOk(false);
           setOidcMiss(formatPeelMissMessage(b, "SSO session unavailable"));
           return;

@@ -4,12 +4,11 @@ from typing import Any
 
 import httpx
 
-from broker_client.http_get import get_json, post_json
 from broker_client.http import resolve_base_url, resolve_token
+from broker_client.http_get import get_json, post_json
 
 
 class BrokerClient:
-
     def __init__(
         self,
         base_url: str | None = None,
@@ -144,8 +143,8 @@ class BrokerClient:
         limit: int | None = None,
     ) -> Any:
         """POST filtered ``compute_work`` list (`sak424-h` / `sak442-f` / `sak488-i`)."""
-        from broker_client.stage_bind.compute import build_compute_list_payload
         from broker_client.peel_assert import assert_broker_compute_ok
+        from broker_client.stage_bind.compute import build_compute_list_payload
 
         return assert_broker_compute_ok(  # sak489-d  # sak488-i: empty ``[]`` ok; null/miss raises
             self.compute_work(
@@ -205,8 +204,8 @@ class BrokerClient:
         stale_secs: int | None = None,
     ) -> Any:
         """POST session-scoped ``compute_nodes`` list (`sak424-h` / `sak442-f`)."""
-        from broker_client.stage_bind.compute import build_compute_list_nodes_payload
         from broker_client.peel_assert import assert_broker_compute_ok
+        from broker_client.stage_bind.compute import build_compute_list_nodes_payload
 
         return assert_broker_compute_ok(  # sak489-d
             self.compute_nodes(
@@ -228,8 +227,8 @@ class BrokerClient:
         session_id: str | None = None,
     ) -> Any:
         """POST ``compute_nodes`` register (`sak427-f` / `sak438-f`)."""
-        from broker_client.stage_bind.compute import build_compute_register_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_register_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak484-i / sak487-i
             self.compute_nodes(
@@ -246,8 +245,8 @@ class BrokerClient:
 
     def heartbeat_node(self, node_id: str) -> Any:
         """POST ``compute_nodes`` heartbeat (`sak427-f` / `sak438-f`)."""
-        from broker_client.stage_bind.compute import build_compute_heartbeat_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_heartbeat_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak484-i / sak487-i
             self.compute_nodes(build_compute_heartbeat_payload(node_id)),
@@ -261,8 +260,8 @@ class BrokerClient:
         payload: dict[str, Any] | None = None,
     ) -> Any:
         """POST ``compute_work`` enqueue (`sak431-h` / `sak438-f`)."""
-        from broker_client.stage_bind.compute import build_compute_enqueue_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_enqueue_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak483-i / sak487-i
             self.compute_work(build_compute_enqueue_payload(kind, payload)),
@@ -272,8 +271,8 @@ class BrokerClient:
 
     def claim_work(self, node_id: str) -> Any:
         """POST ``compute_work`` claim (`sak432-e` / `sak438-f` / `sak439-c` / `sak488-i`)."""
-        from broker_client.stage_bind.compute import build_compute_claim_payload
         from broker_client.peel_assert import normalize_claim_work_response
+        from broker_client.stage_bind.compute import build_compute_claim_payload
 
         return normalize_claim_work_response(  # sak488-i / sak489-d
             self.compute_work(build_compute_claim_payload(node_id)),
@@ -288,8 +287,8 @@ class BrokerClient:
         result: dict[str, Any] | None = None,
     ) -> Any:
         """POST ``compute_work`` complete (`sak432-e` / `sak438-f`)."""
-        from broker_client.stage_bind.compute import build_compute_complete_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_complete_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak483-i / sak487-i
             self.compute_work(
@@ -305,8 +304,8 @@ class BrokerClient:
 
     def get_work(self, work_id: str) -> Any:
         """POST ``compute_work`` get (`sak432-e` / `sak438-f`)."""
-        from broker_client.stage_bind.compute import build_compute_get_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_get_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak483-i / sak487-i
             self.compute_work(build_compute_get_payload(work_id)),
@@ -316,8 +315,8 @@ class BrokerClient:
 
     def requeue_work(self, work_id: str) -> Any:
         """POST ``compute_work`` requeue (`sak429-c`)."""
-        from broker_client.stage_bind.compute import build_compute_requeue_payload
         from broker_client.peel_assert import assert_broker_compute_record_ok
+        from broker_client.stage_bind.compute import build_compute_requeue_payload
 
         return assert_broker_compute_record_ok(  # sak489-d  # sak483-i / sak487-i
             self.compute_work(build_compute_requeue_payload(work_id)),
@@ -344,8 +343,8 @@ class BrokerClient:
 
     def queue_depth(self, session_id: str | None = None) -> dict[str, Any]:
         """Queued work count for a session via broker list (`sak437-f` / `sak480-i` / `sak492-g`)."""
-        from broker_client.stage_bind.compute import queue_depth_for_session
         from broker_client.peel_assert import assert_broker_compute_ok, is_compute_miss
+        from broker_client.stage_bind.compute import queue_depth_for_session
 
         raw = assert_broker_compute_ok(
             self.list_work_filtered(status="queued", limit=200),

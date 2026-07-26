@@ -6,7 +6,7 @@ from typing import Any
 from broker_client.client import BrokerClient
 from broker_client.stage_bind.capacity import bind_capacity_probe
 from broker_client.stage_bind.compute import bind_compute_work
-from broker_client.stage_bind.llm import BrokerDisabled, bind_llm_chat
+from broker_client.stage_bind.llm import bind_llm_chat
 from broker_client.stage_bind.memory import bind_memory_search
 from broker_client.stage_bind.research import bind_egress_check, bind_research_fetch
 from broker_client.stage_bind.sandbox import bind_sandbox_exec

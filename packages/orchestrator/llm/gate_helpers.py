@@ -1,4 +1,5 @@
 """Harness gate/event helpers retained after sak411 common.py delete."""
+
 from __future__ import annotations
 
 import json
@@ -22,10 +23,10 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
+from broker_client.flags import broker_llm_enabled
 from env.env_flags import nimbusware_repo_root_path
 from extensions.extension_runtime import UniversalCritiqueRouter
 from orchestrator.critique.unanimous_gate import gate_decision_from_critic_verdicts
-from broker_client.flags import broker_llm_enabled
 from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
 from orchestrator.llm.peel_guard import _llm_broker_miss_or_transport  # sak499-e
 from orchestrator.registry import RoleRegistry
@@ -534,6 +535,7 @@ def bind_post_verify_role_critique(
         return emit_stub_panel, None
 
     if self_refinement:
+
         def execute_self_refinement_llm(
             store: EventStore,
             registry: RoleRegistry,

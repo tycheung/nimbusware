@@ -91,9 +91,7 @@ def _hardware_response(
             raise
         except Exception as exc:
             if broker_capacity_enabled():
-                raise RuntimeError(
-                    f"broker_miss: platform_hardware binding fit: {exc}"
-                ) from exc
+                raise RuntimeError(f"broker_miss: platform_hardware binding fit: {exc}") from exc
     body: dict[str, Any] = {
         "profile": profile.model_dump_public(),
         "resource_governor": dict(gov_meta),

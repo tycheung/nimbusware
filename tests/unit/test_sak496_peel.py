@@ -31,9 +31,7 @@ def _patched_plan_stage(
     model_id: str | None = "dev:primary",
     llm_raises: BaseException | None = None,
 ) -> Iterator[tuple[MagicMock, MagicMock]]:
-    llm_kwargs: dict[str, Any] = (
-        {"side_effect": llm_raises} if llm_raises is not None else {}
-    )
+    llm_kwargs: dict[str, Any] = {"side_effect": llm_raises} if llm_raises is not None else {}
     with (
         patch.object(orch, "_maybe_emit_research_stages"),
         patch.object(orch, "_maybe_emit_stitch_stages"),
@@ -414,18 +412,12 @@ def test_sak496_e_peel_routes_source_wire_openapi_helpers() -> None:
     )
     users = (root / "routes" / "enterprise" / "users.py").read_text(encoding="utf-8")
     iam = (root / "routes" / "enterprise" / "iam.py").read_text(encoding="utf-8")
-    object_store = (root / "routes" / "enterprise" / "object_store.py").read_text(
-        encoding="utf-8"
-    )
+    object_store = (root / "routes" / "enterprise" / "object_store.py").read_text(encoding="utf-8")
     config_notify = (root / "routes" / "enterprise" / "config_notify.py").read_text(
         encoding="utf-8"
     )
-    compliance = (root / "routes" / "enterprise" / "compliance.py").read_text(
-        encoding="utf-8"
-    )
-    audit_export = (root / "routes" / "enterprise" / "audit_export.py").read_text(
-        encoding="utf-8"
-    )
+    compliance = (root / "routes" / "enterprise" / "compliance.py").read_text(encoding="utf-8")
+    audit_export = (root / "routes" / "enterprise" / "audit_export.py").read_text(encoding="utf-8")
 
     assert "sak496-e" in peel
     assert enterprise_peel_json_openapi_responses()[503] is PROBLEM_RESPONSE_503
@@ -517,9 +509,7 @@ def test_sak496_f_peel_routes_source_wire_openapi_helpers() -> None:
     research = (root / "routes" / "runs" / "research.py").read_text(encoding="utf-8")
     memory_insert = (root / "routes" / "runs" / "memory_insert.py").read_text(encoding="utf-8")
     learnings = (root / "routes" / "runs" / "learnings.py").read_text(encoding="utf-8")
-    maker_progress = (root / "routes" / "runs" / "maker_progress.py").read_text(
-        encoding="utf-8"
-    )
+    maker_progress = (root / "routes" / "runs" / "maker_progress.py").read_text(encoding="utf-8")
     bff = (root / "routes" / "admin_ui_bff.py").read_text(encoding="utf-8")
     platform = (root / "routes" / "platform.py").read_text(encoding="utf-8")
     oauth = (root / "routes" / "provider_subscription_oauth.py").read_text(encoding="utf-8")
@@ -704,14 +694,14 @@ def test_sak496_c_source_markers() -> None:
 
 def test_sak496_h_admin_compute_miss_markers() -> None:
     """sak496-h: peel_assert.ts isComputeMiss requires structured peel signals."""
-    peel = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts"
-    ).read_text(encoding="utf-8")
-    peel_test = (
-        _ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.test.ts"
-    ).read_text(encoding="utf-8")
+    peel = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.ts").read_text(
+        encoding="utf-8"
+    )
+    peel_test = (_ROOT / "packages" / "admin_ui" / "src" / "api" / "peel_assert.test.ts").read_text(
+        encoding="utf-8"
+    )
     assert "sak496-h" in peel or "isComputeMiss" in peel
-    assert "body.via === \"broker_miss\"" in peel or "via === \"broker_miss\"" in peel
+    assert 'body.via === "broker_miss"' in peel or 'via === "broker_miss"' in peel
     assert "bare error" in peel_test or "validation failed" in peel_test
     assert "isComputeMiss({ error:" in peel_test
 
@@ -752,17 +742,11 @@ def test_sak496_i_domain_peel_assert_detectors() -> None:
 def test_sak496_i_sdk_domain_miss_markers() -> None:
     """sak496-i: SwissArmyNoife SDK domain miss detectors tagged."""
     py = (
-        _ROOT.parent
-        / "SwissArmyNoife"
-        / "sdks"
-        / "python"
-        / "src"
-        / "swissarmynoife"
-        / "client.py"
+        _ROOT.parent / "SwissArmyNoife" / "sdks" / "python" / "src" / "swissarmynoife" / "client.py"
     ).read_text(encoding="utf-8")
-    ts = (
-        _ROOT.parent / "SwissArmyNoife" / "sdks" / "typescript" / "src" / "index.ts"
-    ).read_text(encoding="utf-8")
+    ts = (_ROOT.parent / "SwissArmyNoife" / "sdks" / "typescript" / "src" / "index.ts").read_text(
+        encoding="utf-8"
+    )
     rust = (_ROOT.parent / "SwissArmyNoife" / "crates" / "sdk" / "src" / "client.rs").read_text(
         encoding="utf-8",
     )

@@ -1,4 +1,5 @@
 """Slice LLM entrypoints after sak411 llm_slice.py delete — broker or raise."""
+
 from __future__ import annotations
 
 import json
@@ -41,7 +42,7 @@ def _peel_reraise_or_none() -> None:
 def _agent_prompt_from_rows(
     rows: list[dict[str, Any]],
     *,
-    system_prompt: str | None,
+    system_prompt: str | None = None,
 ) -> str:
     if system_prompt and system_prompt.strip():
         base = system_prompt.strip()
@@ -63,6 +64,16 @@ def _agent_prompt_from_rows(
                     base = str(preview)
             break
     from orchestrator.collab.mesh_context import mesh_agent_overlay_prompt
+    from orchestrator.model_routing.audit import active_role_claims_from_events
+
+    claims = active_role_claims_from_events(rows)
+    if claims:
+        from env import find_repo_root
+        from maker.user_agent_overlay import prompt_addon_for_run_claims
+
+        claim_addon = prompt_addon_for_run_claims(claims, repo_root=find_repo_root()).strip()
+        if claim_addon and claim_addon not in base:
+            base = f"{base}\n\n{claim_addon}"
 
     mesh_addon = mesh_agent_overlay_prompt().strip()
     if mesh_addon and mesh_addon not in base:
@@ -212,10 +223,15 @@ def execute_slice_critique_llm(*args: Any, **kwargs: Any) -> Any:
     )
 
 
+# Back-compat alias used by overlay / critic pairing tests.
+_custom_agent_prompt_from_rows = _agent_prompt_from_rows
+
+
 __all__ = [
     "execute_slice_critique_llm",
     "execute_slice_implement_llm",
     "execute_slice_plan_llm",
     "execute_slice_replan_llm",
+    "_custom_agent_prompt_from_rows",
     "_require_broker_chat",
 ]

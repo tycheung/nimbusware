@@ -35,6 +35,10 @@ def _minimal_benchmark_env(**extra: str) -> dict[str, str]:
             "NIMBUSWARE_VERIFY_DISPATCH_FANOUT": "0",
             "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
             "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "0",
+            "PYTHONPATH": str(ROOT / "packages")
+            + os.pathsep
+            + str(ROOT / "tests")
+            + ((os.pathsep + os.environ["PYTHONPATH"]) if os.environ.get("PYTHONPATH") else ""),
             **extra,
         }
     )

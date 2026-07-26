@@ -6,52 +6,69 @@ from typing import Any
 import yaml
 
 from agent_core.mapping import mapping_or_empty
-from config.model_routing_sections import (
-    load_model_routing_doc,
-    model_routing_path,
-    routing_presets_mapping,
-)
+
+
+def load_routing_presets(repo_root: Path) -> dict[str, Any]:
+    from config.model_routing_sections import load_routing_preset_catalog_doc
+
+    return load_routing_preset_catalog_doc(repo_root)
 
 
 def list_routing_preset_summaries(repo_root: Path) -> list[dict[str, Any]]:
-    presets = routing_presets_mapping(repo_root)
-    rows: list[dict[str, Any]] = []
-    for preset_id, raw in presets.items():
-        if not isinstance(raw, dict):
-            continue
-        rows.append(
+    doc = load_routing_presets(repo_root)
+    presets = mapping_or_empty(doc.get("presets"))
+    out: list[dict[str, Any]] = []
+    for preset_id, raw in sorted(presets.items()):
+        block = mapping_or_empty(raw)
+        out.append(
             {
-                "id": str(preset_id),
-                "label": str(raw.get("label") or preset_id),
-                "description": str(raw.get("description") or ""),
-            }
+                "id": preset_id,
+                "label": str(block.get("label") or preset_id),
+                "description": str(block.get("description") or ""),
+                "stage_providers": dict(mapping_or_empty(block.get("stage_providers"))),
+                "cloud_enabled": bool(mapping_or_empty(block.get("cloud_runtime")).get("enabled")),
+            },
         )
-    return rows
+    return out
 
 
 def apply_routing_preset(repo_root: Path, preset_id: str) -> dict[str, Any]:
-    presets = routing_presets_mapping(repo_root)
-    if preset_id not in presets or not isinstance(presets[preset_id], dict):
+    doc = load_routing_presets(repo_root)
+    presets = mapping_or_empty(doc.get("presets"))
+    block = mapping_or_empty(presets.get(preset_id))
+    if not block:
         raise KeyError(preset_id)
-    chosen = dict(presets[preset_id])
-    routing = load_model_routing_doc(repo_root)
+    routing_path = repo_root / "configs" / "model-routing.yaml"
+    routing = load_model_routing_yaml(routing_path)
+    cloud_cfg = mapping_or_empty(block.get("cloud_runtime"))
+    stage_providers = mapping_or_empty(block.get("stage_providers"))
+    routing["cloud_runtime"] = {
+        "enabled": bool(cloud_cfg.get("enabled")),
+        "provider": str(cloud_cfg.get("provider") or "openai_compatible"),
+        "base_url": str(cloud_cfg.get("base_url") or "https://api.openai.com/v1"),
+        "api_key_env": str(cloud_cfg.get("api_key_env") or "OPENAI_API_KEY"),
+        "model_id": str(cloud_cfg.get("model_id") or "gpt-4o-mini"),
+        "health_path": str(cloud_cfg.get("health_path") or "/models"),
+    }
+    routing["stage_providers"] = dict(stage_providers)
     routing["routing_preset_id"] = preset_id
-    cloud = mapping_or_empty(chosen.get("cloud_runtime"))
-    if cloud:
-        existing = mapping_or_empty(routing.get("cloud_runtime"))
-        existing.update(cloud)
-        routing["cloud_runtime"] = existing
-    stages = mapping_or_empty(chosen.get("stage_providers"))
-    if stages:
-        routing["stage_providers"] = dict(stages)
-    path = model_routing_path(repo_root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(yaml.safe_dump(routing, sort_keys=False), encoding="utf-8")
+    write_model_routing_yaml(routing_path, routing)
     return {
         "status": "applied",
         "preset_id": preset_id,
-        "label": str(chosen.get("label") or preset_id),
-        "routing_preset_id": preset_id,
-        "cloud_runtime": mapping_or_empty(routing.get("cloud_runtime")),
-        "stage_providers": mapping_or_empty(routing.get("stage_providers")),
+        "label": str(block.get("label") or preset_id),
+        "cloud_enabled": bool(cloud_cfg.get("enabled")),
+        "stage_providers": dict(stage_providers),
+        "materialize_hint": "Restart API or run nimbusware-config materialize to reload routing",
     }
+
+
+def load_model_routing_yaml(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {"version": 1, "models": {}}
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return doc if isinstance(doc, dict) else {"version": 1, "models": {}}
+
+
+def write_model_routing_yaml(path: Path, content: dict[str, Any]) -> None:
+    path.write_text(yaml.dump(content, sort_keys=False), encoding="utf-8")

@@ -28,12 +28,13 @@ def test_sak515_a_openapi_access_grants_list_create_503() -> None:
         ),
     )
     for path, method in SAK515_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-a" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-a" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-b: OpenAPI 503 — access-grants DELETE + effective-role ---
@@ -54,12 +55,13 @@ def test_sak515_b_openapi_grants_delete_effective_role_503() -> None:
         ),
     )
     for path, method in SAK515_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-b" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-b" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-c: OpenAPI 503 — participants GET + POST ---
@@ -80,12 +82,13 @@ def test_sak515_c_openapi_participants_list_add_503() -> None:
         ),
     )
     for path, method in SAK515_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-c" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_participants.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-c" in (_ROOT / "packages" / "api" / "routes" / "chat_participants.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-d: peel_503_coverage_in_file helper ---
@@ -122,9 +125,9 @@ def test_sak515_d_peel_503_coverage_in_file(tmp_path: Path) -> None:
 
 def test_sak515_e_ci_openapi_subsets() -> None:
     """sak515-e: peel-flag-matrix runs sak515 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak515_a" in yml
     assert "sak515_b" in yml
     assert "sak515_c" in yml
@@ -140,9 +143,9 @@ def test_sak515_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak515_coverage_in_file_helper" in soak
     assert "sak515-f — access-grants/participants OpenAPI + coverage-in-file" in soak
     assert 'label.startswith("sak515")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak515_peel.py" in peel_unit
 
@@ -165,12 +168,13 @@ def test_sak515_g_openapi_participants_remove_discipline_503() -> None:
         ),
     )
     for path, method in SAK515_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-g" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_participants.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-g" in (_ROOT / "packages" / "api" / "routes" / "chat_participants.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-h: OpenAPI 503 — join-preview + invites ---
@@ -191,12 +195,13 @@ def test_sak515_h_openapi_join_preview_invites_503() -> None:
         ),
     )
     for path, method in SAK515_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-h" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_participants.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-h" in (_ROOT / "packages" / "api" / "routes" / "chat_participants.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-i: OpenAPI 503 — join + stream ---
@@ -217,15 +222,16 @@ def test_sak515_i_openapi_join_stream_503() -> None:
         ),
     )
     for path, method in SAK515_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak515-i" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_participants.py"
-    ).read_text(encoding="utf-8")
-    assert "sak515-i" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_stream.py"
-    ).read_text(encoding="utf-8")
+    assert "sak515-i" in (_ROOT / "packages" / "api" / "routes" / "chat_participants.py").read_text(
+        encoding="utf-8"
+    )
+    assert "sak515-i" in (_ROOT / "packages" / "api" / "routes" / "chat_stream.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak515-j: soak/CI deepen ---
@@ -236,9 +242,9 @@ def test_sak515_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak515_join_stream_openapi" in soak
     assert "sak515-j — join/stream OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak515_g" in yml
     assert "sak515_h" in yml
     assert "sak515_i" in yml

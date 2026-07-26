@@ -32,15 +32,16 @@ def test_sak503_a_openapi_policy_critic_packs_503() -> None:
         ),
     )
     for path, method in SAK503_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak503-a" in (
-        _ROOT / "packages" / "api" / "routes" / "policy.py"
-    ).read_text(encoding="utf-8")
-    assert "sak503-a" in (
-        _ROOT / "packages" / "api" / "routes" / "critic_packs.py"
-    ).read_text(encoding="utf-8")
+    assert "sak503-a" in (_ROOT / "packages" / "api" / "routes" / "policy.py").read_text(
+        encoding="utf-8"
+    )
+    assert "sak503-a" in (_ROOT / "packages" / "api" / "routes" / "critic_packs.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak503-b: OpenAPI 503 — deploy environments + discipline profile ---
@@ -61,12 +62,13 @@ def test_sak503_b_openapi_deploy_discipline_503() -> None:
         ),
     )
     for path, method in SAK503_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak503-b" in (
-        _ROOT / "packages" / "api" / "routes" / "platform_deploy.py"
-    ).read_text(encoding="utf-8")
+    assert "sak503-b" in (_ROOT / "packages" / "api" / "routes" / "platform_deploy.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak503-b" in (
         _ROOT / "packages" / "api" / "routes" / "platform_discipline_profile.py"
     ).read_text(encoding="utf-8")
@@ -90,8 +92,9 @@ def test_sak503_c_openapi_fleet_enforcement_standards_503() -> None:
         ),
     )
     for path, method in SAK503_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak503-c" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_enforcement.py"
@@ -126,9 +129,9 @@ def test_sak503_d_with_enterprise_peel_503_merges() -> None:
 
 def test_sak503_e_ci_openapi_subsets() -> None:
     """sak503-e: peel-flag-matrix runs sak503 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak503_a" in yml
     assert "sak503_b" in yml
     assert "sak503_c" in yml
@@ -144,9 +147,9 @@ def test_sak503_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak503_enterprise_peel_helper" in soak
     assert "sak503-f — policy/deploy/fleet OpenAPI" in soak
     assert 'label.startswith("sak503")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak503_peel.py" in peel_unit
 
@@ -169,12 +172,13 @@ def test_sak503_g_openapi_compact_compactions_503() -> None:
         ),
     )
     for path, method in SAK503_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak503-g" in (
-        _ROOT / "packages" / "api" / "routes" / "runs" / "compact.py"
-    ).read_text(encoding="utf-8")
+    assert "sak503-g" in (_ROOT / "packages" / "api" / "routes" / "runs" / "compact.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak503-g" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "compactions.py"
     ).read_text(encoding="utf-8")
@@ -198,8 +202,9 @@ def test_sak503_h_openapi_budget_replay_503() -> None:
         ),
     )
     for path, method in SAK503_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak503-h" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "context_budget.py"
@@ -227,12 +232,13 @@ def test_sak503_i_openapi_integrations_503() -> None:
         ),
     )
     for path, method in SAK503_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak503-i" in (
-        _ROOT / "packages" / "api" / "routes" / "integrations.py"
-    ).read_text(encoding="utf-8")
+    assert "sak503-i" in (_ROOT / "packages" / "api" / "routes" / "integrations.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak503-j: soak/CI deepen ---
@@ -243,9 +249,9 @@ def test_sak503_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak503_run_compact_openapi" in soak
     assert "sak503-j — run compact/budget/integrations OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak503_g" in yml
     assert "sak503_h" in yml
     assert "sak503_i" in yml

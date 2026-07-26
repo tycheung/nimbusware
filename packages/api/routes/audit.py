@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from api.deps import StoreDep
@@ -44,7 +44,9 @@ class RunAuditExportErrorResponse(ExportErrorResponse):
             200: {
                 "content": {
                     "application/gzip": {},
-                    "application/json": {"model": RunAuditExportErrorResponse},
+                    "application/json": {
+                        "schema": RunAuditExportErrorResponse.model_json_schema(),
+                    },
                 },
             },
             404: PROBLEM_RESPONSE_404,

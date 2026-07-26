@@ -31,12 +31,13 @@ def test_sak504_a_openapi_auth_503() -> None:
         ),
     )
     for path, method in SAK504_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak504-a" in (
-        _ROOT / "packages" / "api" / "routes" / "auth.py"
-    ).read_text(encoding="utf-8")
+    assert "sak504-a" in (_ROOT / "packages" / "api" / "routes" / "auth.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak504-b: OpenAPI 503 — fleet autopilot + commit ---
@@ -59,8 +60,9 @@ def test_sak504_b_openapi_fleet_autopilot_commit_503() -> None:
         ),
     )
     for path, method in SAK504_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak504-b" in (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_autopilot.py"
@@ -88,24 +90,15 @@ def test_sak504_c_openapi_deploy_approval_503() -> None:
         ),
     )
     for path, method in SAK504_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak504-c" in (
-        _ROOT
-        / "packages"
-        / "api"
-        / "routes"
-        / "enterprise"
-        / "fleet_deploy_approval.py"
+        _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_deploy_approval.py"
     ).read_text(encoding="utf-8")
     assert "with_enterprise_peel_503()" in (
-        _ROOT
-        / "packages"
-        / "api"
-        / "routes"
-        / "enterprise"
-        / "fleet_deploy_approval.py"
+        _ROOT / "packages" / "api" / "routes" / "enterprise" / "fleet_deploy_approval.py"
     ).read_text(encoding="utf-8")
 
 
@@ -132,9 +125,9 @@ def test_sak504_d_artifact_peel_503_response() -> None:
 
 def test_sak504_e_ci_openapi_subsets() -> None:
     """sak504-e: peel-flag-matrix runs sak504 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak504_a" in yml
     assert "sak504_b" in yml
     assert "sak504_c" in yml
@@ -150,9 +143,9 @@ def test_sak504_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak504_artifact_peel_helper" in soak
     assert "sak504-f — auth/fleet OpenAPI + artifact_peel_503" in soak
     assert 'label.startswith("sak504")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak504_peel.py" in peel_unit
 
@@ -175,12 +168,13 @@ def test_sak504_g_openapi_timeline_findings_503() -> None:
         ),
     )
     for path, method in SAK504_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    detail = (
-        _ROOT / "packages" / "api" / "routes" / "runs" / "detail.py"
-    ).read_text(encoding="utf-8")
+    detail = (_ROOT / "packages" / "api" / "routes" / "runs" / "detail.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak504-g" in detail
 
 
@@ -203,8 +197,9 @@ def test_sak504_h_openapi_lifecycle_stages_503() -> None:
         ),
     )
     for path, method in SAK504_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     assert "sak504-h" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "lifecycle.py"
@@ -229,12 +224,13 @@ def test_sak504_i_openapi_critic_memory_influence_503() -> None:
         ),
     )
     for path, method in SAK504_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    detail = (
-        _ROOT / "packages" / "api" / "routes" / "runs" / "detail.py"
-    ).read_text(encoding="utf-8")
+    detail = (_ROOT / "packages" / "api" / "routes" / "runs" / "detail.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak504-i" in detail
 
 
@@ -246,9 +242,9 @@ def test_sak504_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak504_run_projection_openapi" in soak
     assert "sak504-j — run timeline/lifecycle/projection OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak504_g" in yml
     assert "sak504_h" in yml
     assert "sak504_i" in yml

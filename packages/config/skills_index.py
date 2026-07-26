@@ -45,9 +45,7 @@ def list_skill_briefs(*, repo_root: Path | None = None) -> tuple[SkillBrief, ...
         tags_raw = item.get("tags") or []
         tags = tuple(str(t) for t in tags_raw) if isinstance(tags_raw, list) else ()
         surfaces_raw = item.get("surfaces") or []
-        surfaces = (
-            tuple(str(s) for s in surfaces_raw) if isinstance(surfaces_raw, list) else ()
-        )
+        surfaces = tuple(str(s) for s in surfaces_raw) if isinstance(surfaces_raw, list) else ()
         fp = item.get("fingerprint")
         parent = item.get("parent_id")
         desc = str(item.get("description") or "")[:200]

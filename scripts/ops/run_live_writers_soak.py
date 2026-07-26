@@ -12,6 +12,9 @@ from pathlib import Path
 import yaml
 
 _ROOT = Path(__file__).resolve().parents[2]
+_PACKAGES = _ROOT / "packages"
+if str(_PACKAGES) not in sys.path:
+    sys.path.insert(0, str(_PACKAGES))
 _PRODUCTION = _ROOT / "configs" / "workflows" / "nimbusware_production.yaml"
 _OUT = _ROOT / "benchmarks" / "latest_live_writers_soak.json"
 

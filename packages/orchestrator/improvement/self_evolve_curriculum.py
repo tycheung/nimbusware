@@ -1,5 +1,3 @@
-"""Self-evolve curriculum: harness meta-research, diverse repos, domain study, distill."""
-
 from __future__ import annotations
 
 import json
@@ -14,7 +12,6 @@ from maker.intent.domain_keywords import domain_keywords_from_rows
 from orchestrator.improvement.improvement_council import ImprovementTrack
 from orchestrator.merge import load_yaml
 from orchestrator.profiles.autopilot_profiles import autopilot_profile_from_rows
-
 
 DEFAULT_MIX = {
     ImprovementTrack.RESEARCH_HARNESS: 0.25,

@@ -7,12 +7,12 @@ from pathlib import Path
 
 from env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
 from orchestrator.merge import load_yaml
-from orchestrator.registry import RoleRegistry
-from orchestrator.role_telemetry import aggregate_recent_run_telemetry
 from orchestrator.model_routing.suggestions import (
     enrich_aggregate_with_model_selection,
     suggest_model_routing_changes,
 )
+from orchestrator.registry import RoleRegistry
+from orchestrator.role_telemetry import aggregate_recent_run_telemetry
 
 
 def _build_parser() -> argparse.ArgumentParser:

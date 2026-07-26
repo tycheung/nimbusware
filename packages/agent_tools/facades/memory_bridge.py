@@ -4,7 +4,7 @@ from broker_client.flags import broker_memory_enabled
 from broker_client.stage_bind import memory_search_via_broker
 
 
-def try_broker_memory_search(query: str, *, limit: int | None = None) -> dict | None:
+def try_broker_memory_search(query: str, *, limit: int | None = None) -> dict[str, object] | None:
     """Return broker memory search result when enabled.
 
     Disabled (``=0``): ``None``.

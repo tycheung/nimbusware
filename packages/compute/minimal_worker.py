@@ -60,9 +60,7 @@ def probe_minimal_worker_capabilities() -> dict[str, Any]:
                 caps["ollama_models"] = len(models)
         elif broker_capacity_enabled():
             # sak489-c: Ollama sidecar miss is not silent under CAPACITY peel.
-            raise RuntimeError(
-                f"{_MSG}: ollama sidecar status={resp.status_code}"
-            )
+            raise RuntimeError(f"{_MSG}: ollama sidecar status={resp.status_code}")
     except RuntimeError:
         raise
     except Exception as exc:

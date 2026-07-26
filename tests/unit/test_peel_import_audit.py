@@ -1,37 +1,22 @@
 from __future__ import annotations
 
-
-
 import subprocess
-
 import sys
-
 from pathlib import Path
-
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
 SCRIPTS = ROOT / "scripts"
 
 
-
-
-
 def test_audit_reverse_imports_exits_zero_and_agent_tools_cleared() -> None:
 
     proc = subprocess.run(
-
         [sys.executable, str(SCRIPTS / "audit_reverse_imports.py"), "--package", "agent_tools"],
-
         cwd=ROOT,
-
         check=False,
-
         capture_output=True,
-
         text=True,
-
     )
 
     assert proc.returncode == 0
@@ -39,31 +24,19 @@ def test_audit_reverse_imports_exits_zero_and_agent_tools_cleared() -> None:
     assert "agent_tools->orchestrator import sites: 0" in proc.stdout
 
 
-
-
-
 def test_audit_reverse_imports_research_cleared() -> None:
 
     proc = subprocess.run(
-
         [sys.executable, str(SCRIPTS / "audit_reverse_imports.py"), "--package", "research"],
-
         cwd=ROOT,
-
         check=False,
-
         capture_output=True,
-
         text=True,
-
     )
 
     assert proc.returncode == 0
 
     assert "research->orchestrator import sites: 0" in proc.stdout
-
-
-
 
 
 def test_forbidden_hits_product_edges_cleared() -> None:
@@ -134,7 +107,6 @@ def test_ci_peel_import_graph_warn_only_on_violation(tmp_path: Path) -> None:
     )
     assert warn.returncode == 0
     assert "forbidden edge" in warn.stdout.lower()
-
 
 
 def test_peel_checklist_exits_zero() -> None:
@@ -379,10 +351,20 @@ def test_ci_peel_delete_guard_post_delete_ok_on_repo() -> None:
 
 def test_ci_peel_delete_guard_post_delete_ok_when_paths_gone(tmp_path: Path) -> None:
     """Empty root: delete paths absent OK; create thin stubs so thin-must-exist passes."""
-    (tmp_path / "packages" / "research").mkdir(parents=True)
-    (tmp_path / "packages" / "research" / "fetch.py").write_text("# thin\n", encoding="utf-8")
-    (tmp_path / "packages" / "executor").mkdir(parents=True)
-    (tmp_path / "packages" / "executor" / "fetch.py").write_text("# thin\n", encoding="utf-8")
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    from ci_peel_delete_guard import inventory_candidates
+
+    for candidate in inventory_candidates():
+        if candidate.action != "thin":
+            continue
+        target = tmp_path / candidate.rel_path
+        if candidate.rel_path.endswith(".py"):
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("# thin stub\n", encoding="utf-8")
+        else:
+            target.mkdir(parents=True, exist_ok=True)
+            (target / "__init__.py").write_text("# thin stub\n", encoding="utf-8")
     proc = subprocess.run(
         [
             sys.executable,
@@ -396,7 +378,7 @@ def test_ci_peel_delete_guard_post_delete_ok_when_paths_gone(tmp_path: Path) -> 
         capture_output=True,
         text=True,
     )
-    assert proc.returncode == 0
+    assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "post-delete: ok" in proc.stdout
 
 
@@ -418,4 +400,3 @@ def test_peel_soak_smoke_exits_zero() -> None:
     assert "sak406-h" in proc.stdout
     assert "sak407-f" in proc.stdout
     assert "stage wire active" in proc.stdout
-

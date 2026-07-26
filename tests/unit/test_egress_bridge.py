@@ -58,6 +58,7 @@ def test_egress_checked_httpx_get_broker_allowed_skips_local_assert(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     role = UUID("11111111-1111-4111-8111-111111111101")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_EGRESS", "1")
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: {"allowed": True},
@@ -82,6 +83,7 @@ def test_egress_checked_httpx_get_broker_denied_raises(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     role = UUID("11111111-1111-4111-8111-111111111101")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_EGRESS", "1")
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: {"allowed": False, "reason": "policy.denied"},
@@ -104,6 +106,7 @@ def test_egress_checked_httpx_get_broker_none_raises(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     role = UUID("11111111-1111-4111-8111-111111111101")
+    monkeypatch.setenv("NIMBUSWARE_BROKER_EGRESS", "1")
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: None,

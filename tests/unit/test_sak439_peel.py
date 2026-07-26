@@ -26,9 +26,7 @@ def test_normalize_claim_empty_vs_miss() -> None:
         normalize_claim_work_response({"work": None, "error": "broker unreachable"})
     # sak488-i: via=broker_miss must raise even when error mentions empty queue
     with pytest.raises(RuntimeError, match="broker_miss"):
-        normalize_claim_work_response(
-            {"via": "broker_miss", "work": None, "error": "queue empty"}
-        )
+        normalize_claim_work_response({"via": "broker_miss", "work": None, "error": "queue empty"})
 
 
 def test_assert_list_via_broker_miss_with_empty_list() -> None:

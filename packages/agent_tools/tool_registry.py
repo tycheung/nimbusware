@@ -19,7 +19,9 @@ def agent_tool_list_prompt(*, shorthand: bool = True) -> str:
         return default_tool_schema_resolver().shorthand_list(tools)
     names = sorted(tools)
     base = "read, write, edit, grep, shell"
-    extras = [t for t in ("find", "ls", "browser_act", "memory_fetch", "memory_search") if t in names]
+    extras = [
+        t for t in ("find", "ls", "browser_act", "memory_fetch", "memory_search") if t in names
+    ]
     if extras:
         return base + ", " + ", ".join(extras)
     return base

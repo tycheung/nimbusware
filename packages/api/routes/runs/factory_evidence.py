@@ -4,7 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 
 from api.deps import StoreDep
@@ -80,7 +80,9 @@ def get_factory_evidence(run_id: UUID, store: StoreDep) -> FactoryEvidenceRespon
             200: {
                 "content": {
                     "text/html": {},
-                    "application/json": {"model": FactoryEvidenceScorecardExportResponse},
+                    "application/json": {
+                        "schema": FactoryEvidenceScorecardExportResponse.model_json_schema(),
+                    },
                 },
             },
             404: PROBLEM_RESPONSE_404,
@@ -110,7 +112,9 @@ def factory_evidence_scorecard_html(run_id: UUID, store: StoreDep):
             200: {
                 "content": {
                     "application/zip": {},
-                    "application/json": {"model": FactoryEvidenceZipExportResponse},
+                    "application/json": {
+                        "schema": FactoryEvidenceZipExportResponse.model_json_schema(),
+                    },
                 },
             },
             404: PROBLEM_RESPONSE_404,

@@ -152,9 +152,7 @@ def capacity_pressure_via_broker(
     max_system_ram_pct: float = 75.0,
 ) -> dict[str, Any]:
     probe = capacity_probe_via_broker(client=client)
-    level, details = pressure_from_capacity_probe(
-        probe, max_system_ram_pct=max_system_ram_pct
-    )
+    level, details = pressure_from_capacity_probe(probe, max_system_ram_pct=max_system_ram_pct)
     return {"level": level, "details": details, "probe": probe}
 
 

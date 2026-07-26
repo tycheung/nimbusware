@@ -30,8 +30,8 @@ def test_probe_hardware_broker_first(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_cache_broker_only_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_CAPACITY", "2")
-    from hw.cache import get_cached_profile
     import hw.cache as cache_mod
+    from hw.cache import get_cached_profile
 
     cache_mod._broker_cached = None
     with patch(

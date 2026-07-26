@@ -28,7 +28,7 @@ def test_chat_shell_session_miss() -> None:
     session = (tabs / "chat_session_ui.js").read_text(encoding="utf-8")
     assert "toastIfMiss" in chat or "isBrokerMiss" in chat
     assert "isBrokerMiss" in lifecycle or "toastIfMiss" in lifecycle
-    assert "isBrokerMiss" in session
+    assert "isDomainPeelMiss" in session
 
 
 def test_library_discovery_composer_miss() -> None:
@@ -109,9 +109,10 @@ def test_admin_run_detail_panels_peel() -> None:
     bundle = (root / "components" / "BundleOutcomePanel.tsx").read_text(encoding="utf-8")
     campaign = (root / "context" / "CampaignProgressContext.tsx").read_text(encoding="utf-8")
     assert "formatPeelMissMessage" in timeline
-    assert "isComputeMiss" in timeline
+    assert "isDomainPeelMiss" in timeline
     assert "formatPeelMissMessage" in theater
-    assert "formatPeelMissMessage" in launch
+    # Write-path panel: launch-eval POST uses writeMissMessage (sak486/sak499).
+    assert "writeMissMessage" in launch
     assert "formatPeelMissMessage" in bundle
     assert "formatPeelMissMessage" in campaign
     assert "_Explain unavailable._" not in timeline

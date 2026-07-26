@@ -283,9 +283,7 @@ class PipelineScraperMixin:
             except RuntimeError as exc:
                 msg = str(exc)[:2000]
                 reason_code = (
-                    "broker_miss"
-                    if "broker_miss" in msg
-                    else "scraper_fetch_error"  # sak494-e
+                    "broker_miss" if "broker_miss" in msg else "scraper_fetch_error"  # sak494-e
                 )
                 self._store.append(
                     StageFailedEvent(

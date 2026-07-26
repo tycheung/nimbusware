@@ -3,17 +3,17 @@ from __future__ import annotations
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, Verdict
+from orchestrator.model_routing.chat import extract_ollama_usage
+from orchestrator.model_routing.suggestions import (
+    enrich_aggregate_with_model_selection,
+    suggest_model_routing_changes,
+)
 from orchestrator.registry import RoleRegistry
 from orchestrator.role_telemetry import (
     ROLE_TELEMETRY_METADATA_KEY,
     aggregate_role_telemetry_rows,
     extract_role_telemetry_hint,
     merge_role_telemetry_metadata,
-)
-from orchestrator.model_routing.chat import extract_ollama_usage
-from orchestrator.model_routing.suggestions import (
-    enrich_aggregate_with_model_selection,
-    suggest_model_routing_changes,
 )
 
 

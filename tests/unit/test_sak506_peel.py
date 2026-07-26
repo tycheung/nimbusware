@@ -28,12 +28,13 @@ def test_sak506_a_openapi_theater_503() -> None:
         ),
     )
     for path, method in SAK506_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-a" in (
-        _ROOT / "packages" / "api" / "routes" / "runs" / "theater.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-a" in (_ROOT / "packages" / "api" / "routes" / "runs" / "theater.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak506-b: OpenAPI 503 — actions retry + escalate ---
@@ -54,12 +55,13 @@ def test_sak506_b_openapi_actions_503() -> None:
         ),
     )
     for path, method in SAK506_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-b" in (
-        _ROOT / "packages" / "api" / "routes" / "actions.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-b" in (_ROOT / "packages" / "api" / "routes" / "actions.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak506-c: OpenAPI 503 — run standards GET + report ---
@@ -80,12 +82,13 @@ def test_sak506_c_openapi_run_standards_503() -> None:
         ),
     )
     for path, method in SAK506_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-c" in (
-        _ROOT / "packages" / "api" / "routes" / "standards.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-c" in (_ROOT / "packages" / "api" / "routes" / "standards.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak506-d: ensure_paths_peel_503 helper ---
@@ -113,9 +116,9 @@ def test_sak506_d_ensure_paths_peel_503() -> None:
 
 def test_sak506_e_ci_openapi_subsets() -> None:
     """sak506-e: peel-flag-matrix runs sak506 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak506_a" in yml
     assert "sak506_b" in yml
     assert "sak506_c" in yml
@@ -131,9 +134,9 @@ def test_sak506_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak506_ensure_paths_peel" in soak
     assert "sak506-f — theater/actions/standards OpenAPI + ensure_paths" in soak
     assert 'label.startswith("sak506")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak506_peel.py" in peel_unit
 
@@ -156,12 +159,13 @@ def test_sak506_g_openapi_override_interjection_503() -> None:
         ),
     )
     for path, method in SAK506_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-g" in (
-        _ROOT / "packages" / "api" / "routes" / "actions.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-g" in (_ROOT / "packages" / "api" / "routes" / "actions.py").read_text(
+        encoding="utf-8"
+    )
     assert "sak506-g" in (
         _ROOT / "packages" / "api" / "routes" / "runs" / "interjection.py"
     ).read_text(encoding="utf-8")
@@ -185,12 +189,13 @@ def test_sak506_h_openapi_standards_presets_503() -> None:
         ),
     )
     for path, method in SAK506_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-h" in (
-        _ROOT / "packages" / "api" / "routes" / "standards.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-h" in (_ROOT / "packages" / "api" / "routes" / "standards.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak506-i: OpenAPI 503 — standards PUT + run ---
@@ -211,12 +216,13 @@ def test_sak506_i_openapi_standards_mutate_503() -> None:
         ),
     )
     for path, method in SAK506_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak506-i" in (
-        _ROOT / "packages" / "api" / "routes" / "standards.py"
-    ).read_text(encoding="utf-8")
+    assert "sak506-i" in (_ROOT / "packages" / "api" / "routes" / "standards.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak506-j: soak/CI deepen ---
@@ -227,9 +233,9 @@ def test_sak506_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak506_standards_actions_openapi" in soak
     assert "sak506-j — override/interjection/standards OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak506_g" in yml
     assert "sak506_h" in yml
     assert "sak506_i" in yml

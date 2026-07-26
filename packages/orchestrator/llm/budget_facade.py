@@ -1,11 +1,15 @@
+"""Budget sample binding — re-exports live emit helpers for stage call sites."""
+
 from __future__ import annotations
 
-from typing import Any
+from orchestrator.llm.budget_sample_emit import (
+    bind_budget_sample_context,
+    clear_budget_sample_context,
+    maybe_emit_context_budget_sample,
+)
 
-
-def bind_budget_sample_context(*args: Any, **kwargs: Any) -> None:
-    return None
-
-
-def maybe_emit_context_budget_sample(*args: Any, **kwargs: Any) -> None:
-    return None
+__all__ = [
+    "bind_budget_sample_context",
+    "clear_budget_sample_context",
+    "maybe_emit_context_budget_sample",
+]

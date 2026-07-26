@@ -1,4 +1,5 @@
 from broker_client.stage_bind.capacity import (
+    available_memory_gb_from_capacity,
     bind_capacity_fit,
     bind_capacity_pressure,
     bind_capacity_probe,
@@ -9,7 +10,6 @@ from broker_client.stage_bind.capacity import (
     parallel_writer_stages_from_capacity,
     pressure_from_capacity_probe,
     probe_dict_from_capacity,
-    available_memory_gb_from_capacity,
 )
 from broker_client.stage_bind.compute import (
     bind_compute_node,
@@ -18,11 +18,11 @@ from broker_client.stage_bind.compute import (
     build_compute_complete_payload,
     build_compute_enqueue_payload,
     build_compute_get_payload,
-    build_compute_requeue_payload,
     build_compute_heartbeat_payload,
     build_compute_list_nodes_payload,
     build_compute_list_payload,
     build_compute_register_payload,
+    build_compute_requeue_payload,
     compute_node_via_broker,
     compute_work_via_broker,
     node_id_from_broker_record,
@@ -32,6 +32,7 @@ from broker_client.stage_bind.compute import (
 )
 from broker_client.stage_bind.llm import BrokerDisabled, bind_llm_chat, llm_chat_via_broker
 from broker_client.stage_bind.memory import bind_memory_search, memory_search_via_broker
+from broker_client.stage_bind.registry import DOMAIN_BINDS, bind_plan, list_bind_domains
 from broker_client.stage_bind.research import (
     bind_egress_check,
     bind_research_fetch,
@@ -39,7 +40,6 @@ from broker_client.stage_bind.research import (
     research_fetch_via_broker,
 )
 from broker_client.stage_bind.sandbox import bind_sandbox_exec, sandbox_exec_via_broker
-from broker_client.stage_bind.registry import DOMAIN_BINDS, bind_plan, list_bind_domains
 from broker_client.stage_bind.tools import (
     bind_tools_shell,
     shell_exec_via_broker,

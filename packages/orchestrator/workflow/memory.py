@@ -243,9 +243,7 @@ def _retrieve_slice_memory_via_broker(
         hits = broker_memory_hits(broker_result)
         excerpt = format_broker_memory_excerpt(hits, max_chars=settings.excerpt_max_chars) or ""
         return excerpt, [], ""
-    raise RuntimeError(
-        "broker_miss: slice_memory: unavailable under NIMBUSWARE_BROKER_MEMORY=1|2"
-    )
+    raise RuntimeError("broker_miss: slice_memory: unavailable under NIMBUSWARE_BROKER_MEMORY=1|2")
 
 
 def memory_chunk_ids_from_hits(hits: list[MemoryRetrievalHit]) -> list[str]:

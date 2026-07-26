@@ -75,7 +75,9 @@ def get_run_theater(
         200: {
             "content": {
                 "text/markdown": {},
-                "application/json": {"model": TheaterExportMissResponse},
+                "application/json": {
+                    "schema": TheaterExportMissResponse.model_json_schema(),
+                },
             },
         },
         **export_openapi_responses(not_found=PROBLEM_RESPONSE_404),  # sak496-g / sak506-a

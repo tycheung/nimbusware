@@ -16,10 +16,8 @@ from compute.broker_public import (
     caps_from_capabilities,
 )
 from compute.broker_route import (
-    compute_broker_only,
     compute_dual_run_on,
     map_broker_compute_http_error,
-    miss,
     refuse_broker_only_http,
 )
 from compute.node_store import (
@@ -368,7 +366,6 @@ def enqueue_work_unit(body: WorkUnitEnqueueBody, _: UserDep) -> dict[str, Any]:
 @router.post(
     "/compute/work-units/claim",
     response_model=WorkUnitClaimResponse,
-    response_model_exclude_none=True,
     summary="Claim Work Unit (broker-first; empty→via=broker; sak440-g)",
     responses=compute_json_openapi_responses(),  # sak517-h
 )
@@ -430,9 +427,7 @@ def work_unit_queue_depth(
             from compute.broker_session_status import assert_broker_compute_ok
 
             raw = assert_broker_compute_ok(
-                compute_work_via_broker(
-                    build_compute_list_payload(status="queued", limit=200)
-                ),
+                compute_work_via_broker(build_compute_list_payload(status="queued", limit=200)),
                 feature="compute_queue_depth",
                 list_key="work",
             )

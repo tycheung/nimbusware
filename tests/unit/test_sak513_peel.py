@@ -28,8 +28,9 @@ def test_sak513_a_openapi_compute_delegate_opt_in_503() -> None:
         ),
     )
     for path, method in SAK513_A_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "chat_session.py").read_text(
         encoding="utf-8",
@@ -55,8 +56,9 @@ def test_sak513_b_openapi_optimizer_weights_503() -> None:
         ),
     )
     for path, method in SAK513_B_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "chat_session.py").read_text(
         encoding="utf-8",
@@ -82,8 +84,9 @@ def test_sak513_c_openapi_participant_bindings_503() -> None:
         ),
     )
     for path, method in SAK513_C_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
     src = (_ROOT / "packages" / "api" / "routes" / "chat_session.py").read_text(
         encoding="utf-8",
@@ -123,9 +126,9 @@ def test_sak513_d_openapi_peel_503_complete_in_file(tmp_path: Path) -> None:
 
 def test_sak513_e_ci_openapi_subsets() -> None:
     """sak513-e: peel-flag-matrix runs sak513 OpenAPI marker subsets."""
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak513_a" in yml
     assert "sak513_b" in yml
     assert "sak513_c" in yml
@@ -141,9 +144,9 @@ def test_sak513_f_soak_and_ci_closeout() -> None:
     assert "_assert_sak513_complete_in_file_helper" in soak
     assert "sak513-f — chat compute/weights/bindings OpenAPI + complete-in-file" in soak
     assert 'label.startswith("sak513")' in soak
-    workflow = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    workflow = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     peel_unit = workflow.split("  peel-unit:", 1)[1].split("  peel-flag-matrix:", 1)[0]
     assert "tests/unit/test_sak513_peel.py" in peel_unit
 
@@ -166,12 +169,13 @@ def test_sak513_g_openapi_chat_sessions_list_create_503() -> None:
         ),
     )
     for path, method in SAK513_G_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak513-g" in (
-        _ROOT / "packages" / "api" / "routes" / "chat.py"
-    ).read_text(encoding="utf-8")
+    assert "sak513-g" in (_ROOT / "packages" / "api" / "routes" / "chat.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak513-h: OpenAPI 503 — classify + role-claims ---
@@ -193,15 +197,16 @@ def test_sak513_h_openapi_classify_role_claims_503() -> None:
         ),
     )
     for path, method in SAK513_H_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak513-h" in (
-        _ROOT / "packages" / "api" / "routes" / "chat.py"
-    ).read_text(encoding="utf-8")
-    assert "sak513-h" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak513-h" in (_ROOT / "packages" / "api" / "routes" / "chat.py").read_text(
+        encoding="utf-8"
+    )
+    assert "sak513-h" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak513-i: OpenAPI 503 — host-transfer create/list ---
@@ -222,12 +227,13 @@ def test_sak513_i_openapi_host_transfer_create_list_503() -> None:
         ),
     )
     for path, method in SAK513_I_PEEL_OPENAPI:
-        assert "application/problem+json" in (
-            spec["paths"][path][method]["responses"]["503"]["content"]
+        assert (
+            "application/problem+json"
+            in (spec["paths"][path][method]["responses"]["503"]["content"])
         ), path
-    assert "sak513-i" in (
-        _ROOT / "packages" / "api" / "routes" / "chat_collab.py"
-    ).read_text(encoding="utf-8")
+    assert "sak513-i" in (_ROOT / "packages" / "api" / "routes" / "chat_collab.py").read_text(
+        encoding="utf-8"
+    )
 
 
 # --- sak513-j: soak/CI deepen ---
@@ -238,9 +244,9 @@ def test_sak513_j_soak_and_ci_deepen() -> None:
     soak = (_ROOT / "scripts" / "peel_soak_lib.py").read_text(encoding="utf-8")
     assert "_assert_sak513_sessions_transfer_openapi" in soak
     assert "sak513-j — sessions/classify/host-transfer OpenAPI" in soak
-    yml = (
-        _ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml"
-    ).read_text(encoding="utf-8")
+    yml = (_ROOT.parent / ".github" / "workflows" / "nimbusware-peel.yml").read_text(
+        encoding="utf-8"
+    )
     assert "sak513_g" in yml
     assert "sak513_h" in yml
     assert "sak513_i" in yml

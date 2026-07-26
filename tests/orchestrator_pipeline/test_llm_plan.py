@@ -19,6 +19,7 @@ from orchestrator.registry import RoleRegistry
 from store.memory import InMemoryEventStore
 
 _MOCK_RESOLVER_CHAT = "orchestrator.model_routing.resolver.ModelBindingResolver.chat_json"
+_MOCK_GATE_CHAT = "orchestrator.llm.gate_helpers.ollama_chat_json_via_plan_patch"
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"
 
@@ -122,7 +123,7 @@ def test_implementation_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
+    with patch(_MOCK_GATE_CHAT, side_effect=bad_json):
         ok = execute_implementation_critique_llm(
             store,
             reg,
@@ -163,10 +164,7 @@ def test_implementation_critique_llm_records_events() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch(
-        "orchestrator.llm.chat_facade.ollama_chat_json_via_plan_patch",
-        side_effect=good,
-    ):
+    with patch(_MOCK_GATE_CHAT, side_effect=good):
         ok = execute_implementation_critique_llm(
             store,
             reg,

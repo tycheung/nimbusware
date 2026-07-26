@@ -32,11 +32,14 @@ def test_peel_assert_list_contract(raw: dict, list_key: str, ok: bool) -> None:
 
 
 def test_peel_assert_record_and_claim_contract() -> None:
-    assert assert_broker_compute_record_ok(
-        {"work": {"id": "w1"}},
-        feature="t",
-        record_key="work",
-    )["work"]["id"] == "w1"
+    assert (
+        assert_broker_compute_record_ok(
+            {"work": {"id": "w1"}},
+            feature="t",
+            record_key="work",
+        )["work"]["id"]
+        == "w1"
+    )
     assert is_claim_empty_queue_error({"work": None, "error": "queue empty"})
     empty = normalize_claim_work_response({"work": None, "error": "no work"})
     assert empty["via"] == "broker"
@@ -92,8 +95,9 @@ def test_opt_out_via_broker_opt_out(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "1")
     from uuid import uuid4
 
-    from api.routes import chat_session as cs
     from fastapi import Request
+
+    from api.routes import chat_session as cs
 
     session_id = uuid4()
     body = cs.SessionComputeOptInBody(enabled=False)

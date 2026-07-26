@@ -79,6 +79,8 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/model-bindings/audit"),
         ("POST", "/runs/{run_id}/role-claims"),
         ("DELETE", "/runs/{run_id}/role-claims/{agent_role}"),
+        ("GET", "/runs/{run_id}/evolution"),
+        ("POST", "/runs/{run_id}/evolution/promote"),
     },
 )
 

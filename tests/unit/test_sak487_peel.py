@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -40,9 +39,7 @@ def test_home_settings_write_miss() -> None:
 
 def test_memory_stitch_write_miss() -> None:
     """sak487-d."""
-    stitch = (_js_root() / "tabs" / "settings_memory_stitch_ui.js").read_text(
-        encoding="utf-8"
-    )
+    stitch = (_js_root() / "tabs" / "settings_memory_stitch_ui.js").read_text(encoding="utf-8")
     assert "toastIfMiss" in stitch
     assert "promote" in stitch.lower() or "memory-chunk" in stitch
 
@@ -128,9 +125,6 @@ def test_sdk_assert_record_ok_rejects_via_broker_miss() -> None:
         assert_broker_compute_record_ok(miss, feature="test", record_key="work")
 
     client_src = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "broker_client"
-        / "client.py"
+        Path(__file__).resolve().parents[2] / "packages" / "broker_client" / "client.py"
     ).read_text(encoding="utf-8")
     assert "sak487-i" in client_src

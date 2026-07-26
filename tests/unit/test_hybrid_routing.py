@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from orchestrator.role_telemetry import merge_role_telemetry_metadata
 from orchestrator.model_routing.cost_summary import summarize_run_role_cost
 from orchestrator.model_routing.presets import (
     apply_routing_preset,
@@ -16,6 +15,7 @@ from orchestrator.provider_routing_facade import (
     resolve_stage_provider,
     stage_chat_json,
 )
+from orchestrator.role_telemetry import merge_role_telemetry_metadata
 
 
 def test_list_and_apply_routing_presets(tmp_path: Path) -> None:
@@ -99,7 +99,7 @@ def test_stage_chat_json_routes_cloud_stage(
             }
 
     monkeypatch.setattr(
-        "orchestrator.provider_routing_facade.httpx.post",
+        "orchestrator.stage_provider_routing.httpx.post",
         lambda *a, **k: _Resp(),
     )
     out = stage_chat_json(

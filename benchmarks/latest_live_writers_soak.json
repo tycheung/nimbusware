@@ -4,14 +4,14 @@
   "ollama_base_url": "http://127.0.0.1:11434",
   "passed": true,
   "pipeline_smoke": {
-    "duration_sec": 26.501,
+    "duration_sec": 1.475,
     "ok": true,
     "pass_rate": 1.0,
-    "run_id": "2da22ffa-9de2-4451-976a-7ce89d9bdcd2",
+    "run_id": "1dddfdc7-b6c5-4e74-a550-22c65c64c5f8",
     "workflow_profile": "micro_slice"
   },
   "profile_path": "configs/workflows/nimbusware_production.yaml",
-  "published_at": "2026-07-02T15:28:53.565176Z",
+  "published_at": "2026-07-26T01:10:21.651624Z",
   "use_llm_env": false,
   "writer_flags": {
     "integration_adapter_writer_stub_only": false,

@@ -127,7 +127,7 @@ def _pick_round_robin_batch(
 def _select_with_extra_passed(
     backlog: DeliveryBacklog,
     extra_passed: set[str],
-    rows: list[dict] | None = None,
+    rows: list[dict[str, object]] | None = None,
 ) -> SelectedSlice | None:
     ready = _ready_slices(backlog, extra_passed)
     if ready:
@@ -154,7 +154,7 @@ def _select_with_extra_passed(
 
 def select_next_slice(
     backlog: DeliveryBacklog,
-    rows: list[dict] | None = None,
+    rows: list[dict[str, object]] | None = None,
 ) -> SelectedSlice | None:
     return _select_with_extra_passed(backlog, set(), rows=rows)
 
@@ -162,7 +162,7 @@ def select_next_slice(
 def select_next_slices(
     backlog: DeliveryBacklog,
     max_n: int,
-    rows: list[dict] | None = None,
+    rows: list[dict[str, object]] | None = None,
 ) -> list[SelectedSlice]:
     if max_n <= 1:
         one = select_next_slice(backlog, rows=rows)

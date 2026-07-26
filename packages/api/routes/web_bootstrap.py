@@ -90,6 +90,7 @@ def admin_bootstrap_payload(request: Request) -> dict[str, Any]:
     response_model=WebBootstrapResponse,
     response_model_exclude_none=True,
     summary="Maker app bootstrap (`sak483-g`)",
+    responses=platform_bootstrap_json_openapi_responses(),  # sak520-b
 )
 def get_maker_app_bootstrap(request: Request) -> dict[str, Any]:
     return maker_bootstrap_payload(request)

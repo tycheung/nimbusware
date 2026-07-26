@@ -64,9 +64,7 @@ def _governor_from_resource_meta(
         from broker_client.flags import broker_capacity_enabled
 
         if broker_capacity_enabled():
-            raise RuntimeError(
-                f"broker_miss: parallel_critics governor: {exc}"
-            ) from exc
+            raise RuntimeError(f"broker_miss: parallel_critics governor: {exc}") from exc
         return None
 
 

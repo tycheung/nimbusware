@@ -216,7 +216,6 @@ def variant_touches_forbidden_paths(
         "docs/deploy/",
     ),
 ) -> list[str]:
-    """Return relative paths under forbidden prefixes that differ from base."""
     hits: list[str] = []
     if not winner.workspace.is_dir():
         return hits

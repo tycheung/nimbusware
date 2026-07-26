@@ -7,6 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.critique_stages import (
+    FRONTEND_WRITER_CRITIQUE_STAGE,
+    IMPLEMENTATION_CRITIQUE_STAGE,
+    MODULE_INTEGRATOR_CRITIQUE_STAGE,
+    PLANNER_CRITIQUE_STAGE,
+    TEST_WRITER_CRITIQUE_STAGE,
+)
 from orchestrator.llm.broker_bridge import try_broker_chat_json
 from orchestrator.llm.chat_facade import ollama_chat_json_via_plan_patch
 from orchestrator.llm.gate_helpers import (  # sak522-a/b / sak498-d
@@ -39,6 +46,11 @@ def _removed(*_args: Any, **_kwargs: Any) -> Any:
 # sak497-j: local modules deleted under peel — call sites refuse under LLM=1|2 (sak496-b).
 
 __all__ = [
+    "FRONTEND_WRITER_CRITIQUE_STAGE",
+    "IMPLEMENTATION_CRITIQUE_STAGE",
+    "MODULE_INTEGRATOR_CRITIQUE_STAGE",
+    "PLANNER_CRITIQUE_STAGE",
+    "TEST_WRITER_CRITIQUE_STAGE",
     "emit_stub_frontend_writer_critique_panel",
     "emit_stub_implementation_critique_panel",
     "emit_stub_module_integrator_critique_panel",

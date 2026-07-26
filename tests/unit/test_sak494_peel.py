@@ -343,23 +343,25 @@ def test_sak494_e_egress_checked_peel_on_broker_none_raises(
 def test_sak494_e_egress_checked_peel_off_broker_none_legacy_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """sak494-e: EGRESS=0 — broker None keeps sak416-i legacy error."""
+    """sak494-e: EGRESS=0 — local frozen allowlists apply (no broker call)."""
     monkeypatch.delenv("NIMBUSWARE_BROKER_EGRESS", raising=False)
     role = UUID("11111111-1111-4111-8111-111111111101")
+    mock_resp = MagicMock(spec=httpx.Response)
     client = MagicMock(spec=httpx.Client)
+    client.get.return_value = mock_resp
     monkeypatch.setattr(
         "executor.egress_bridge.try_broker_egress_check",
         lambda _url: None,
     )
-    with pytest.raises(RuntimeError, match="local egress removed"):
-        egress_checked_httpx_get(
-            "https://example.com/path",
-            actor_role_id=role,
-            scraper_role_allowlist=[role],
-            domain_allowlist=["example.com"],
-            client=client,
-        )
-    client.get.assert_not_called()
+    resp = egress_checked_httpx_get(
+        "https://example.com/path",
+        actor_role_id=role,
+        scraper_role_allowlist=[role],
+        domain_allowlist=["example.com"],
+        client=client,
+    )
+    assert resp is mock_resp
+    client.get.assert_called_once()
 
 
 @pytest.mark.sak494_e
@@ -393,9 +395,9 @@ def test_sak494_e_source_markers() -> None:
     outbound = (_ROOT / "packages" / "orchestrator" / "outbound_http.py").read_text(
         encoding="utf-8",
     )
-    scraper = (
-        _ROOT / "packages" / "orchestrator" / "_pipeline" / "pipeline_scraper.py"
-    ).read_text(encoding="utf-8")
+    scraper = (_ROOT / "packages" / "orchestrator" / "_pipeline" / "pipeline_scraper.py").read_text(
+        encoding="utf-8"
+    )
     research_ops = (
         _ROOT / "packages" / "api" / "routes" / "enterprise" / "research_ops.py"
     ).read_text(encoding="utf-8")
@@ -408,7 +410,6 @@ def test_sak494_e_source_markers() -> None:
 
 # --- sak494-f: launch_evaluator / launch_test_llm peel residuals ---
 
-import httpx
 from pydantic import ValidationError
 
 from orchestrator.launch.launch_evaluator import (
@@ -685,12 +686,8 @@ def test_sak494_g_bff_routes_wire_admin_openapi_helpers() -> None:
     """sak494-g: admin BFF routes wire admin_bff_json_openapi_responses."""
     from api.schemas.peel_responses import admin_bff_json_openapi_responses
 
-    bff = (_ROOT / "packages" / "api" / "routes" / "admin_ui_bff.py").read_text(
-        encoding="utf-8"
-    )
-    platform = (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(
-        encoding="utf-8"
-    )
+    bff = (_ROOT / "packages" / "api" / "routes" / "admin_ui_bff.py").read_text(encoding="utf-8")
+    platform = (_ROOT / "packages" / "api" / "routes" / "platform.py").read_text(encoding="utf-8")
     peel = (_ROOT / "packages" / "api" / "schemas" / "peel_responses.py").read_text(
         encoding="utf-8"
     )

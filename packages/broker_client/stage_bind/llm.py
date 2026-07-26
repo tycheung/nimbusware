@@ -35,7 +35,9 @@ def llm_chat_via_broker(
     if not broker_llm_enabled():
         raise BrokerDisabled("Set NIMBUSWARE_BROKER_LLM=1 to route LLM through the broker")
     mcp = client or BrokerMcpClient()
-    resolved_model = (model or os.environ.get("NIMBUSWARE_BROKER_LLM_MODEL") or "").strip() or "echo"
+    resolved_model = (
+        model or os.environ.get("NIMBUSWARE_BROKER_LLM_MODEL") or ""
+    ).strip() or "echo"
     arguments: dict[str, Any] = {"messages": messages, "model": resolved_model}
     from broker_client.peel_assert import assert_llm_ok, normalize_tool_result
 

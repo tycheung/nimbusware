@@ -4,11 +4,7 @@ import ast
 from pathlib import Path
 
 _GATE = (
-    Path(__file__).resolve().parents[2]
-    / "packages"
-    / "orchestrator"
-    / "llm"
-    / "gate_helpers.py"
+    Path(__file__).resolve().parents[2] / "packages" / "orchestrator" / "llm" / "gate_helpers.py"
 )
 
 _REQUIRED = frozenset(

@@ -8,15 +8,15 @@ from pydantic import BaseModel, Field
 from api.admin import AdminDep
 from api.deps import OrchDep
 from api.errors import problem
-from api.schemas.peel_responses import (
-    DeleteOkResponse,
-    long_tail_json_openapi_responses,
-    with_long_tail_peel_503,
-)
 from api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
+)
+from api.schemas.peel_responses import (
+    DeleteOkResponse,
+    long_tail_json_openapi_responses,
+    with_long_tail_peel_503,
 )
 from config.persist import load_custom_agent_registry, persist_custom_agent_registry
 from extensions.custom_agents import CustomAgent, CustomAgentRegistry
@@ -162,11 +162,10 @@ def update_custom_agent(
 
 @router.delete(
     "/{agent_id}",
-    response_model=DeleteOkResponse,
-    response_model_exclude_none=True,
+    status_code=204,
     responses=with_long_tail_peel_503({404: PROBLEM_RESPONSE_404}),  # sak512-c
 )
-def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> DeleteOkResponse:
+def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> None:
     reg = _registry(orch)
     if not reg.remove(agent_id):
         raise HTTPException(
@@ -174,4 +173,4 @@ def delete_custom_agent(agent_id: str, orch: OrchDep, _admin: AdminDep) -> Delet
             detail=problem("custom_agent_not_found", f"Unknown agent id: {agent_id}"),
         )
     _save(reg, orch)
-    return DeleteOkResponse(ok=True)
+    return None

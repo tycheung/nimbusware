@@ -138,8 +138,7 @@ def execute_claimed_work_unit(rec: WorkUnitRecord) -> dict[str, Any]:
         return result
     if broker_compute_enabled():
         raise RuntimeError(
-            "broker_miss: execute_claimed_work_unit under "
-            "NIMBUSWARE_BROKER_COMPUTE=1|2"
+            "broker_miss: execute_claimed_work_unit under NIMBUSWARE_BROKER_COMPUTE=1|2"
         )
     return execute_work_unit_on_worker(rec)
 
@@ -185,9 +184,7 @@ def _broker_claim_work_or_miss(claimed: Any) -> dict[str, Any] | None:
     if work is None:
         if is_claim_empty_queue_error(claimed) or claimed.get("via") == "broker":
             return None
-        raise RuntimeError(
-            f"broker_miss: claim empty work without poll semantics: {claimed!r}"
-        )
+        raise RuntimeError(f"broker_miss: claim empty work without poll semantics: {claimed!r}")
     if not isinstance(work, dict):
         raise RuntimeError(f"broker_miss: claim work not a record: {work!r}")
     work_id = str(work.get("id") or work.get("work_id") or "")
@@ -202,26 +199,34 @@ def _broker_register_node(
     capabilities: dict[str, Any] | None = None,
     session_id: str = "",
 ) -> dict[str, Any]:
-    """Register via BrokerClient (`sak434-c` / `sak439-a` / `sak440-e`)."""
-    from broker_client.client import BrokerClient
+    """Register via compute_node_via_broker (`sak422-b` / `sak434-c` / `sak439-a`)."""
+    from broker_client.stage_bind.compute import (
+        build_compute_register_payload,
+        compute_node_via_broker,
+    )
 
     caps = ["mesh_worker"]
     if capabilities:
         caps.extend(str(k) for k, v in capabilities.items() if v)
-    raw = BrokerClient().register_node(
-        host_label,
-        caps=caps,
-        session_id=session_id or None,
+    raw = compute_node_via_broker(
+        build_compute_register_payload(
+            host_label,
+            caps=caps,
+            session_id=session_id or None,
+        )
     )
     return _node_dict_from_broker_raw(raw, require_id=True)
 
 
 def _broker_heartbeat_node(node_id: str) -> dict[str, Any]:
-    """Heartbeat via BrokerClient (`sak434-c` / `sak439-a` / `sak440-e`)."""
-    from broker_client.client import BrokerClient
+    """Heartbeat via compute_node_via_broker (`sak422-b` / `sak434-c` / `sak439-a`)."""
+    from broker_client.stage_bind.compute import (
+        build_compute_heartbeat_payload,
+        compute_node_via_broker,
+    )
 
     return _node_dict_from_broker_raw(
-        BrokerClient().heartbeat_node(node_id),
+        compute_node_via_broker(build_compute_heartbeat_payload(node_id)),
         fallback_node_id=node_id,
     )
 
@@ -302,7 +307,10 @@ def run_worker_loop(
             return 1
         node_id = str(node.get("node_id") or "")
         if not node_id:
-            print(json.dumps({"error": "no node_id from broker register", "via": "broker_miss"}), file=sys.stderr)
+            print(
+                json.dumps({"error": "no node_id from broker register", "via": "broker_miss"}),
+                file=sys.stderr,
+            )
             return 1
         print(json.dumps({"registered": node, "via": "broker"}), flush=True)
         beats = 0

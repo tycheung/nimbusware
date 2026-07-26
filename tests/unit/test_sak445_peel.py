@@ -58,7 +58,7 @@ def test_maker_web_compute_miss_helpers_present() -> None:
     chat = (root / "tabs" / "chat_session_ui.js").read_text(encoding="utf-8")
     accessible = (root / "tabs" / "accessible_compute_ui.js").read_text(encoding="utf-8")
     run_card = (root / "tabs" / "chat_run_card_ui.js").read_text(encoding="utf-8")
-    assert "isBrokerMiss" in chat and "maker-chat-compute-miss" in chat
+    assert "isDomainPeelMiss" in chat and "maker-chat-compute-miss" in chat
     assert "maker-accessible-compute-miss" in accessible
     assert "computeMiss" in run_card
 
@@ -88,19 +88,13 @@ def test_python_sdk_assert_record_ok() -> None:
     """sak445-g: Python SakClient assert_record_ok."""
     import sys
 
-    sdk_src = (
-        Path(__file__).resolve().parents[3]
-        / "SwissArmyNoife"
-        / "sdks"
-        / "python"
-        / "src"
-    )
+    sdk_src = Path(__file__).resolve().parents[3] / "SwissArmyNoife" / "sdks" / "python" / "src"
     sys.path.insert(0, str(sdk_src))
     from swissarmynoife.client import SakClient
 
-    assert SakClient.assert_record_ok({"work": {"id": "w1"}}, record_key="work")["work"][
-        "id"
-    ] == "w1"
+    assert (
+        SakClient.assert_record_ok({"work": {"id": "w1"}}, record_key="work")["work"]["id"] == "w1"
+    )
     with pytest.raises(RuntimeError, match="broker_miss"):
         SakClient.assert_record_ok({"error": "down"}, record_key="work")
 
@@ -138,6 +132,6 @@ def test_maker_deps_assert_capacity_ok() -> None:
     assert is_capacity_miss({"via": "broker_miss"})
     with pytest.raises(RuntimeError, match="broker_miss"):
         assert_capacity_ok({"via": "broker_miss"}, feature="deps")
-    assert assert_capacity_ok({"ollama_reachable": True}, feature="deps")[
-        "ollama_reachable"
-    ] is True
+    assert (
+        assert_capacity_ok({"ollama_reachable": True}, feature="deps")["ollama_reachable"] is True
+    )

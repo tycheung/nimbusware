@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 def test_progress_ribbon_and_settings_catalog_miss() -> None:
     """sak480-a."""
@@ -86,9 +84,9 @@ def test_admin_is_memory_miss_helpers() -> None:
     fleet = (root / "pages" / "FleetPage.tsx").read_text(encoding="utf-8")
     assert "export function isMemoryMiss" in peel
     assert "export function formatPeelMissMessage" in peel
-    assert "isMemoryMiss" in fleet
+    assert "isDomainPeelMiss" in fleet
     assert "hits: [] as FleetCombinedSearch" not in fleet
-    assert "return status;" not in fleet or "status: \"degraded\"" in fleet
+    assert "return status;" not in fleet or 'status: "degraded"' in fleet
 
 
 def test_admin_format_capacity_miss() -> None:

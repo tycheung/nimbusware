@@ -14,10 +14,11 @@ from api.routes.chat_common import (
     StartChatSessionResponse,
     actor_user_id,
     chat_http_error,
+    is_campaign_like_work_type,
     maybe_apply_chat_replay_alignment,
     patch_context_payload,
+    prepare_start_requirements,
     require_collab_enabled,
-    requirements_payload,
     resolve_workflow_profile,
     start_campaign,
     start_run,
@@ -189,18 +190,12 @@ def start_chat_session(
     )
 
     last_user = next((t for t in reversed(path) if t.role == "user"), None)
-    requirements = requirements_payload(
-        body, last_user.text if last_user else None
-    ) or requirements_from_path(path)
-    if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE) and requirements is None:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("invalid_request", "requirements or prior chat message required"),
-        )
-    if work_type == WorkType.SELF_EVOLVE and requirements is not None:
-        from maker.intent.domain_keywords import attach_domain_keywords
-
-        requirements = attach_domain_keywords(requirements) or requirements
+    requirements = prepare_start_requirements(
+        body,
+        path_text=last_user.text if last_user else None,
+        path_requirements=requirements_from_path(path),
+        work_type=work_type,
+    )
 
     enforce_discovery_gate(requirements, workflow_profile=profile)
 
@@ -212,7 +207,7 @@ def start_chat_session(
     )
 
     try:
-        if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY, WorkType.SELF_EVOLVE):
+        if is_campaign_like_work_type(work_type):
             started = start_campaign(
                 orch=orch,
                 project_store=project_store,
@@ -555,17 +550,11 @@ def session_compute_delegate_control(
                 return map_broker_chat_compute_miss(
                     "no compute node for session",
                     feature="delegate_control",
-                    only_msg=(
-                        "register compute for this session before delegating control"
-                    ),
+                    only_msg=("register compute for this session before delegating control"),
                 )
             nid = node_id_from_broker_record(target)
             caps = list(target.get("caps") or []) if isinstance(target.get("caps"), list) else []
-            caps = [
-                c
-                for c in caps
-                if not str(c).startswith("allow_host_resource_management=")
-            ]
+            caps = [c for c in caps if not str(c).startswith("allow_host_resource_management=")]
             caps.append(
                 f"allow_host_resource_management="
                 f"{'true' if body.allow_host_resource_management else 'false'}"
@@ -584,7 +573,8 @@ def session_compute_delegate_control(
                 feature="delegate_control.register",
                 record_key="node",
             )
-            node = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            node_raw = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            node: dict[str, Any] = node_raw if isinstance(node_raw, dict) else {}
             return {
                 "node": {
                     "node_id": node_id_from_broker_record(node),
@@ -760,7 +750,8 @@ def session_compute_opt_in(
                 feature="session_compute_opt_in.register",
                 record_key="node",
             )
-            node = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            node_raw = raw.get("node") if isinstance(raw.get("node"), dict) else raw
+            node: dict[str, Any] = node_raw if isinstance(node_raw, dict) else {}
             nid = node_id_from_broker_record(node)
             return {
                 "session_id": str(session_id),
@@ -784,8 +775,7 @@ def session_compute_opt_in(
                 exc,
                 feature="session_compute_opt_in",
                 only_msg=(
-                    "session compute opt-in unavailable under "
-                    f"NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
+                    f"session compute opt-in unavailable under NIMBUSWARE_BROKER_COMPUTE=2: {exc}"
                 ),
                 miss_extra={
                     "session_id": str(session_id),
@@ -815,9 +805,9 @@ def session_compute_opt_in(
     store = build_compute_node_store(nimbusware_database_url())
     tid = resolve_store_tenant_id()
     tenant_id = tid if isinstance(tid, UUID) else default_tenant_id()
-    node = None
+    registered = None
     if body.enabled:
-        node = store.register(
+        registered = store.register(
             tenant_id=tenant_id,
             user_id=str(actor_id) if actor_id is not None else "",
             display_name=body.host_label or "local",
@@ -831,7 +821,7 @@ def session_compute_opt_in(
         "session_id": str(session_id),
         "enabled": body.enabled,
         "share_policy": body.share_policy,
-        "node": row_to_public(node) if node else None,
+        "node": row_to_public(registered) if registered else None,
     }
 
 
@@ -958,7 +948,7 @@ def get_participant_bindings(
     from orchestrator.collab.binding_resolver import participant_binding_overrides
 
     return {
-        "user_id": actor_id,
+        "user_id": str(actor_id),
         "roles": participant_binding_overrides(meta, str(actor_id)),
     }
 
@@ -1005,6 +995,6 @@ def put_participant_binding(
     )
     chat_store.update_session(session_id, metadata=meta)
     return {
-        "user_id": actor_id,
+        "user_id": str(actor_id),
         "roles": participant_binding_overrides(meta, str(actor_id)),
     }

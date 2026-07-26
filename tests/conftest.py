@@ -8,6 +8,12 @@ from env import find_repo_root, load_dotenv
 
 _REPO = find_repo_root(start=Path(__file__).resolve().parent)
 load_dotenv(repo_root=_REPO)
+# Stale NIMBUSWARE_REPO_ROOT in .env (moved checkout) must not break unit/API tests.
+import os
+
+_configured = os.environ.get("NIMBUSWARE_REPO_ROOT", "").strip()
+if not _configured or not (Path(_configured) / "configs" / "roles.yaml").is_file():
+    os.environ["NIMBUSWARE_REPO_ROOT"] = str(_REPO)
 
 
 @pytest.fixture(autouse=True)

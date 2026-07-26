@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from api.admin import AdminDep
 from api.deps import OrchDep, StoreDep
 from api.errors import problem
-from api.schemas.peel_responses import DeleteOkResponse, with_long_tail_peel_503
 from api.routes.personas_helpers import (
     _RESERVED_PERSONA_IDS,
     entry_version,
@@ -30,6 +29,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
 )
+from api.schemas.peel_responses import DeleteOkResponse, with_long_tail_peel_503
 from api.schemas.personas import (
     PersonaShelfPatchRequest,
     PersonaShelfUpsertRequest,
@@ -389,8 +389,7 @@ def patch_persona(
 
 @router.delete(
     "/{shelf}/{persona_id}",
-    response_model=DeleteOkResponse,
-    response_model_exclude_none=True,
+    status_code=204,
     responses={
         401: PROBLEM_RESPONSE_401,
         404: PROBLEM_RESPONSE_404,
@@ -409,7 +408,7 @@ def delete_persona(
     _admin: AdminDep,
     expected_version: int = Query(..., ge=1),
     actor: str | None = Query(default=None, max_length=200),
-) -> DeleteOkResponse:
+) -> None:
     validate_shelf_name(shelf)
     persona_shelf = load_shelf(orch)
     existing = persona_shelf.find_entry(shelf, persona_id)
@@ -449,4 +448,4 @@ def delete_persona(
         actor=actor,
         correlation_id=None,
     )
-    return DeleteOkResponse(ok=True)
+    return None

@@ -47,7 +47,6 @@ def map_broker_research_http_miss(
         enabled=broker_research_enabled,
         only=broker_research_only,
         only_code="broker_research_only",
-        only_msg=only_msg
-        or f"{feature} unavailable under NIMBUSWARE_BROKER_RESEARCH=2: {exc}",
+        only_msg=only_msg or f"{feature} unavailable under NIMBUSWARE_BROKER_RESEARCH=2: {exc}",
         miss_extra=miss_extra,
     )

@@ -4,13 +4,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import broker_client.capacity_bridge as bridge_mod
 from broker_client import (
     BrokerDisabled,
     bind_capacity_probe,
     capacity_probe_via_broker,
     try_broker_capacity_probe,
 )
-import broker_client.capacity_bridge as bridge_mod
 
 
 def test_bind_capacity_probe_returns_plan(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -94,9 +94,7 @@ def test_pressure_from_capacity_probe_levels() -> None:
 def test_parallel_writer_stages_from_capacity() -> None:
     from broker_client.stage_bind.capacity import parallel_writer_stages_from_capacity
 
-    assert (
-        parallel_writer_stages_from_capacity({"max_parallel_writer_stages": 3}) == 3
-    )
+    assert parallel_writer_stages_from_capacity({"max_parallel_writer_stages": 3}) == 3
     derived = parallel_writer_stages_from_capacity(
         {"snapshot": {"total_ram_mb": 32_768, "cpu_logical": 8}}
     )
@@ -170,8 +168,9 @@ def test_try_broker_probe_dict(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_compute_work_via_broker_http_first(monkeypatch: pytest.MonkeyPatch) -> None:
-    from broker_client.stage_bind.compute import compute_work_via_broker
     from unittest.mock import MagicMock
+
+    from broker_client.stage_bind.compute import compute_work_via_broker
 
     monkeypatch.setenv("NIMBUSWARE_BROKER_COMPUTE", "1")
     monkeypatch.setenv("NIMBUSWARE_BROKER_HTTP", "http://127.0.0.1:8787")

@@ -6,7 +6,7 @@ from broker_client.flags import broker_egress_enabled, broker_egress_only
 from broker_client.stage_bind import egress_check_via_broker
 
 
-def try_broker_egress_check(url: str) -> dict | None:
+def try_broker_egress_check(url: str) -> dict[str, object] | None:
     """Return broker egress check result when enabled; dual-run falls back with ``None``.
 
     Broker-only (``=2``): re-raise on failure (no local egress fallback).
