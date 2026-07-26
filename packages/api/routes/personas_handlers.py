@@ -29,7 +29,7 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
 )
-from api.schemas.peel_responses import DeleteOkResponse, with_long_tail_peel_503
+from api.schemas.peel_responses import with_long_tail_peel_503
 from api.schemas.personas import (
     PersonaShelfPatchRequest,
     PersonaShelfUpsertRequest,

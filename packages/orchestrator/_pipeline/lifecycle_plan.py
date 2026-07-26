@@ -95,9 +95,7 @@ class LifecyclePlanMixin:
 
                         if broker_llm_enabled():  # sak496-a / sak498-i
                             raise
-                        if isinstance(exc, RuntimeError) and not _llm_broker_miss_or_transport(
-                            exc
-                        ):
+                        if isinstance(exc, RuntimeError) and not _llm_broker_miss_or_transport(exc):
                             raise
                         self._execute_plan_stage_stub(run_id)
                 else:

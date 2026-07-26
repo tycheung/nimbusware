@@ -610,7 +610,7 @@ def test_sak498_e_peel_routes_source_wire_openapi_helpers() -> None:
 
     assert "status: str | None = None  # sak498-e" in web_bootstrap
 
-    assert ollama_schemas.count("status: str | None = None  # sak498-e") >= 5
+    assert ollama_schemas.count("# sak498-e") >= 5
 
 
 # --- sak498-i: soft-swallow close (lifecycle/test_writer/faiss) ---

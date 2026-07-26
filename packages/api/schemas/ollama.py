@@ -41,18 +41,17 @@ class OllamaPullRequest(BaseModel):
 
 class OllamaPullResponse(BaseModel):
     model: str
-    status: str = "pulled"
+    status: str | None = "pulled"  # sak498-e: pull result or peel envelope
     job_id: str | None = None
     via: str | None = None
     error: str | None = None
     feature: str | None = None
-    status: str | None = None  # sak498-e
 
 
 class OllamaPullJobStatusResponse(BaseModel):
     job_id: str
     model: str
-    status: str
+    status: str | None = None  # sak498-e: job state or peel envelope
     error: str | None = None
     created_at: str | None = None
     finished_at: str | None = None
@@ -62,11 +61,10 @@ class OllamaPullJobStatusResponse(BaseModel):
 
 class OllamaDeleteResponse(BaseModel):
     model: str
-    status: str = "deleted"
+    status: str | None = "deleted"  # sak498-e: delete result or peel envelope
     via: str | None = None
     error: str | None = None
     feature: str | None = None
-    status: str | None = None  # sak498-e
 
 
 class OllamaPrimaryRoutingRequest(BaseModel):

@@ -51,11 +51,11 @@ def memory_sync_manifest_stub(repo_root: Path) -> dict[str, Any]:
     remote_sync = "not_configured"
     if fleet_memory_enabled():
         try:
-            from memory.remote_store import resolve_canonical_store_root
+            from memory.peel_remote_store import resolve_canonical_store_root
 
             resolve_canonical_store_root()
             remote_sync = "configured"
-        except ValueError:
+        except (ValueError, RuntimeError, ImportError):
             remote_sync = "not_configured"
     return {
         "schema_version": 1,

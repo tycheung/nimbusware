@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from agent_tools.risk_caps_facade import AgentRiskCaps, resolve_agent_risk_caps
 import pytest
+
+from agent_tools.risk_caps_facade import AgentRiskCaps, resolve_agent_risk_caps
 
 
 def test_resolve_agent_risk_caps_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -14,7 +14,6 @@ from api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
 )
 from api.schemas.peel_responses import (
-    DeleteOkResponse,
     long_tail_json_openapi_responses,
     with_long_tail_peel_503,
 )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, NoReturn
 
 from broker_client.dual_run_route import map_domain_broker_http_miss, refuse_when
 from broker_client.flags import broker_egress_enabled, broker_egress_only
@@ -21,7 +21,7 @@ def refuse_legacy(msg: str | None = None) -> None:
     refuse_when(broker_egress_enabled, msg or EGRESS_EXCLUSIVE_MSG)
 
 
-def raise_egress_peel_miss(feature: str = "egress") -> None:
+def raise_egress_peel_miss(feature: str = "egress") -> NoReturn:
     """Raise structured broker miss for EGRESS peel (`sak496-d` / sak416-i)."""
     raise RuntimeError(
         f"broker_miss: {feature}: unavailable under NIMBUSWARE_BROKER_EGRESS=1|2; "

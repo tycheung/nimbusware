@@ -46,7 +46,7 @@ from orchestrator.model_routing.user_policy import (
 router = APIRouter(tags=["platform", "ollama"])
 
 # Peel stub exports callables via __getattr__; treat manage errors as Exception for handlers.
-OllamaManageError: type[Exception] = _OllamaManageError  # type: ignore[assignment]
+OllamaManageError: type[Exception] = _OllamaManageError
 
 
 def _routing_models(routing: dict[str, Any]) -> tuple[str | None, list[str]]:

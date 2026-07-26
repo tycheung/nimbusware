@@ -296,7 +296,9 @@ def fleet_memory_search(
         feature="fleet_memory_search",
         local_only=True,
     )
-    hits = search_fleet_memory(
+    if isinstance(memory_store, dict):
+        return memory_store
+    local_hits = search_fleet_memory(
         memory_store,
         q,
         org_scope_hash=org_scope,
@@ -306,9 +308,9 @@ def fleet_memory_search(
     )
     return {
         **search_base,
-        "hit_count": len(hits),
-        "hits": [h.model_dump(mode="json") for h in hits],
-        "excerpt": format_memory_excerpt(hits, max_chars=max_chars),
+        "hit_count": len(local_hits),
+        "hits": [h.model_dump(mode="json") for h in local_hits],
+        "excerpt": format_memory_excerpt(local_hits, max_chars=max_chars),
     }
 
 

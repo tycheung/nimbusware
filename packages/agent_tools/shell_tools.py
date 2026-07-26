@@ -174,7 +174,12 @@ def tool_memory_search(
             return _result("memory_search", False, "memory peel unavailable")
         if isinstance(MemoryChunkStore, type) and isinstance(memory_store, MemoryChunkStore):
             k = limit if limit is not None else 5
-            hits = search_memory(memory_store, q, repo_root=repo_root, k=k)
+            hits = search_memory(
+                memory_store,
+                q,
+                repo_root=repo_root or Path.cwd(),
+                k=k,
+            )
             body = format_memory_excerpt(hits, max_chars=cap)
             if body:
                 return _result(

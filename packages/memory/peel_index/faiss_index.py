@@ -37,7 +37,7 @@ def build_memory_faiss_index(
         encoding="utf-8",
     )
     try:
-        import faiss  # type: ignore[import-untyped]
+        import faiss
 
         index = faiss.IndexFlatIP(dim)
         index.add(mat)
