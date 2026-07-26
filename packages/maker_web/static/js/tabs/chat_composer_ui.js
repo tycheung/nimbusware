@@ -243,5 +243,4 @@ export {
   renderClassifierCard,
   startRunFromSession,
   mountScopeDiscoveryIfNeeded,
-  syncSelfEvolvePanel,
 };

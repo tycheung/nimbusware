@@ -1,5 +1,3 @@
-"""Per-user memory path helpers (hash + index dir)."""
-
 from __future__ import annotations
 
 import hashlib

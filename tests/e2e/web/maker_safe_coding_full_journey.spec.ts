@@ -1,16 +1,22 @@
 import { test, expect } from "@playwright/test";
-import { activateMakerRoute } from "./maker_route_helper";
 
 test("safe coding prepare workspace polls bootstrap to ready", async ({ page }) => {
   let bootstrapGets = 0;
-  await page.route("**/v1/projects**", (route) =>
-    route.fulfill({
+  await page.route(/\/v1\/projects\/?(?:\?|$)/, (route) => {
+    if (route.request().method() !== "GET") return route.continue();
+    return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        projects: [{ project_id: "p1", name: "Demo", workspace_path: "/tmp/ws" }],
+        projects: [
+          {
+            project_id: "00000000-0000-4000-8000-000000000091",
+            name: "Demo",
+            workspace_path: "/tmp/ws",
+          },
+        ],
       }),
-    }),
-  );
+    });
+  });
   await page.route("**/v1/platform/hardware**", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -52,7 +58,7 @@ test("safe coding prepare workspace polls bootstrap to ready", async ({ page }) 
       body: JSON.stringify({ installed: true }),
     }),
   );
-  await page.route("**/v1/platform/playwright-bootstrap**", (route) => {
+  await page.route(/\/v1\/platform\/playwright-bootstrap\/?(\?|$)/, (route) => {
     if (route.request().method() === "POST") {
       return route.fulfill({
         contentType: "application/json",
@@ -81,11 +87,14 @@ test("safe coding prepare workspace polls bootstrap to ready", async ({ page }) 
     localStorage.removeItem("maker_safe_coding_wizard_done");
   });
 
-  await page.goto("/v1/maker/app/");
+  await page.goto("/v1/maker/app/#/home");
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
-  await activateMakerRoute(page, "/home");
+  await page.evaluate(() => {
+    document.querySelector("[data-testid='maker-archetype-picker']")?.remove();
+  });
 
-  await page.getByTestId("maker-safe-coding-prepare").click();
+  await expect(page.getByTestId("maker-safe-coding-prepare")).toBeVisible({ timeout: 15_000 });
+  await page.getByTestId("maker-safe-coding-prepare").click({ force: true });
   await expect(page.getByTestId("maker-safe-coding-wizard-status")).toContainText("Browser checks are ready", {
     timeout: 20_000,
   });

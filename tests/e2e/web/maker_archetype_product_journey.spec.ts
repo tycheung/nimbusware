@@ -133,8 +133,10 @@ function mockChatDiscovery(page: Page) {
 }
 
 function mockPlanApis(page: Page, runId: string) {
+  // Match maker_playwright_extended: exact `/v1/campaigns/${runId}/backlog` globs.
+  // Loose `**/campaigns/**/backlog**` + continue() never intercepted in this journey.
   return Promise.all([
-    page.route(`**/v1/campaigns/${runId}/backlog`, (route) =>
+    page.route(`**/v1/campaigns/${runId}/backlog**`, (route) =>
       route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
@@ -247,10 +249,15 @@ for (const arch of ARCHETYPES) {
     await expect(page.getByTestId("maker-chat-discovery-explain-client_form")).toBeVisible();
 
     await mockPlanApis(page, runId);
+    const backlogResp = page.waitForResponse(
+      (r) =>
+        r.url().includes(`/v1/campaigns/${runId}/backlog`) && r.request().method() === "GET",
+      { timeout: 20_000 },
+    );
     await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/plan`);
     await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
     await activateMakerRoute(page, "/plan");
-
+    await backlogResp;
     await expect(page.getByTestId("maker-plan-surface-badge").first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("maker-plan-current-slice")).toContainText(SLICE_ID);
     await expect(page.getByTestId("maker-plan-maintenance")).toContainText("refactor in");

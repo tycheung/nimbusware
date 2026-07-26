@@ -280,11 +280,16 @@ export async function mountProgress(root) {
   });
 
   try {
-    const timeline = await apiJson(`/runs/${id}/timeline?limit=1`);
+    // Need enough history to find run.created (newest-first timelines miss it at limit=1).
+    const timeline = await apiJson(`/runs/${id}/timeline?limit=50`);
     if (!toastIfMiss(timeline, toast, "Context timeline unavailable")) {
       const created = (timeline.events || []).find((e) => e.event_type === "run.created");
-      const projectId = created?.metadata?.project?.id;
-      if (projectId) await renderContextArtifacts(projectId);
+      const meta = created?.metadata || {};
+      const projectId =
+        meta?.project?.id ||
+        meta?.project_id ||
+        (meta?.project && typeof meta.project === "object" ? meta.project.project_id : null);
+      if (projectId) await renderContextArtifacts(String(projectId));
     }
   } catch (e) {
     toast(String(e.message || e), "error");

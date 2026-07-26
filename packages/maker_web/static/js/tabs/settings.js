@@ -53,7 +53,6 @@ export async function mountSettings(root) {
   await wireSafeCodingSettingsPanel(root);
   wireDeploySettingsPanel(root);
   wireSoloDisciplinePanel(root);
-  await wireAgentOverlayPanel(root);
 
   const collabSection = root.querySelector("#settings-collab");
   const collabToggle = root.querySelector("#settings-collab-enabled");
@@ -166,6 +165,8 @@ export async function mountSettings(root) {
   }
 
   await wireGovernorPanel(root, stored);
+
+  await wireAgentOverlayPanel(root);
 
   const form = root.querySelector("#settings-form");
   const entries = Object.entries(stored).filter(

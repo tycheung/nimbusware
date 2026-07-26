@@ -4,9 +4,10 @@ import { activateMakerRoute } from "./maker_route_helper";
 test("settings agent overlay editor saves per discipline", async ({ page }) => {
   let savedBody: Record<string, unknown> | null = null;
 
-  await page.route("**/v1/users/me/agent-overlays**", async (route) => {
+  await page.route(/\/v1\/users\/me\/agent-overlays(\/|$|\?)/, async (route) => {
     const url = route.request().url();
-    if (route.request().method() === "GET" && url.endsWith("/agent-overlays")) {
+    const method = route.request().method();
+    if (method === "GET" && /\/agent-overlays\/?(\?|$)/.test(url)) {
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
@@ -20,7 +21,7 @@ test("settings agent overlay editor saves per discipline", async ({ page }) => {
       });
       return;
     }
-    if (route.request().method() === "PUT" && url.includes("/agent-overlays/backend")) {
+    if (method === "PUT" && url.includes("/agent-overlays/backend")) {
       savedBody = route.request().postDataJSON() as Record<string, unknown>;
       await route.fulfill({
         contentType: "application/json",
@@ -75,9 +76,20 @@ test("settings agent overlay editor saves per discipline", async ({ page }) => {
   await activateMakerRoute(page, "/settings");
 
   await expect(page.getByTestId("maker-settings-agent-overlays")).toBeVisible();
-  await page.getByTestId("maker-settings-agent-overlay-discipline").selectOption("backend");
-  await page.getByTestId("maker-settings-agent-overlay-prompt").fill("Prefer FastAPI idioms.");
+  const discipline = page.getByTestId("maker-settings-agent-overlay-discipline");
+  await expect(discipline.locator("option[value='backend']")).toHaveCount(1, { timeout: 15_000 });
+  await discipline.selectOption({ value: "backend" });
+  await expect(discipline).toHaveValue("backend");
+  const prompt = page.getByTestId("maker-settings-agent-overlay-prompt");
+  await prompt.fill("Prefer FastAPI idioms.");
+  await expect(prompt).toHaveValue("Prefer FastAPI idioms.");
+  const putPromise = page.waitForRequest(
+    (req) =>
+      req.method() === "PUT" && req.url().includes("/users/me/agent-overlays/backend"),
+    { timeout: 15_000 },
+  );
   await page.getByTestId("maker-settings-agent-overlay-save").click();
+  await putPromise;
 
   await expect.poll(() => savedBody?.prompt_extension).toBe("Prefer FastAPI idioms.");
 });

@@ -1,5 +1,3 @@
-"""Allowlist helpers still live locally after sak412 tool peel."""
-
 from __future__ import annotations
 
 from pathlib import Path

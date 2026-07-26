@@ -1,5 +1,3 @@
-"""Run role cost summary from telemetry rows (local aggregation; not LLM inference)."""
-
 from __future__ import annotations
 
 from typing import Any

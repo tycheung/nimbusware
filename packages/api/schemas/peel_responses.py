@@ -582,7 +582,6 @@ PEEL_503_OAUTH_SKIP: frozenset[tuple[str, str]] = frozenset(
 def iter_openapi_json_operations(
     openapi_json_path: Any,
 ) -> list[tuple[str, str]]:
-    """List (path, method) pairs from admin_ui openapi.json (`sak521-a`)."""
     import json
     from pathlib import Path
 
@@ -617,7 +616,6 @@ def openapi_product_peel_503_complete_in_file(
     *,
     skip: frozenset[tuple[str, str]] | set[tuple[str, str]] | None = None,
 ) -> bool:
-    """True when product OpenAPI peel 503 coverage is complete (`sak521-c`)."""
     return not list_missing_product_peel_503_in_openapi_json(
         openapi_json_path,
         skip=skip,

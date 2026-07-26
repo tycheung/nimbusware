@@ -189,8 +189,8 @@ function makerShellFactory() {
       window.matchMedia("(max-width: 720px)").addEventListener("change", (ev) => {
         if (ev.matches !== this.mobileMode) window.location.reload();
       });
+      // Single load on boot — hashchange also emits maker-route; do not double-dispatch.
       loadRouteOnInit();
-      window.dispatchEvent(new CustomEvent("maker-route", { detail: { route: this.route } }));
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
@@ -198,9 +198,25 @@ function makerShellFactory() {
       maybeRegisterPushSubscription();
     },
     navigate(hash) {
-      window.location.hash = hash;
-      this.route = parseRoute();
-      window.dispatchEvent(new CustomEvent("maker-route", { detail: { route: this.route } }));
+      let path = hash.startsWith("#") ? hash.slice(1) : hash;
+      if (!path.startsWith("/")) path = `/${path}`;
+      let next;
+      if (path.includes("?")) {
+        next = `#${path}`;
+      } else {
+        const cur = window.location.hash.replace(/^#/, "") || "";
+        const curPath = cur.split("?")[0] || "";
+        const curQuery = cur.includes("?") ? cur.slice(cur.indexOf("?")) : "";
+        // Keep query when re-activating the same path (e.g. #/chat?session_id=…).
+        next = `#${path}${curPath === path ? curQuery : ""}`;
+      }
+      if (window.location.hash === next) {
+        this.route = parseRoute();
+        window.dispatchEvent(new CustomEvent("maker-route", { detail: { route: this.route } }));
+        return;
+      }
+      // hashchange listener owns maker-route (avoids concurrent double mounts)
+      window.location.hash = next;
     },
     showToast(detail) {
       this.toastMsg = detail?.message || "";

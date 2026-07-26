@@ -276,6 +276,14 @@ export async function mountChat(root) {
       toast(String(e.message || e), "error");
       sessionApi.setSessionId("");
     }
+  } else if (chatResumeEnabled() && sessionApi.getSessionId()) {
+    // Resume from sessionStorage when hash has no session_id (e.g. bare #/chat).
+    try {
+      await sessionApi.loadSession(sessionApi.getSessionId());
+    } catch (e) {
+      toast(String(e.message || e), "error");
+      sessionApi.setSessionId("");
+    }
   }
 
   if (activeRunId) {

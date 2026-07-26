@@ -1,6 +1,5 @@
 import path from "node:path";
 import { test, expect } from "@playwright/test";
-import { activateMakerRoute } from "./maker_route_helper";
 
 const adminToken =
   process.env.NIMBUSWARE_ADMIN_TOKEN || "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD";
@@ -41,7 +40,10 @@ test("progress tab shows campaign controls after API campaign start", async ({ p
 
   await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/progress`);
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
-  await activateMakerRoute(page, "/progress");
+  await page.evaluate(() => {
+    localStorage.setItem("maker_archetype_subchoice", "engineer");
+    document.querySelector("[data-testid='maker-archetype-picker']")?.remove();
+  });
   await expect(page.locator("#slice-summary")).toContainText("campaign:", { timeout: 15_000 });
   await expect(page.getByTestId("maker-campaign-pause")).toBeVisible({ timeout: 15_000 });
 });

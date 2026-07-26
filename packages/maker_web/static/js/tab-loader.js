@@ -27,13 +27,18 @@ const MOUNTERS = {
 };
 
 let lastRoute = "";
+let loadChain = Promise.resolve();
 
 export function handleRouteLoadError(e) {
   if (String(e?.message || e) === "broker_miss") return;
   toast(String(e?.message || e), "error");
 }
 
-export async function loadRoute(route) {
+async function loadRouteInner(route) {
+  // Same-route re-entry is a no-op. Initial goto#/hash plus alpine init otherwise
+  // double-mounts and wipes in-flight UI (prepare wizard, ribbon listeners, etc.).
+  if (route === lastRoute) return;
+
   if (lastRoute === "/progress" && route !== "/progress") {
     unmountProgress();
   }
@@ -69,6 +74,12 @@ export async function loadRoute(route) {
   const root = document.getElementById(spec.el);
   if (!root) return;
   await spec.fn(root);
+}
+
+export function loadRoute(route) {
+  const run = loadChain.then(() => loadRouteInner(route));
+  loadChain = run.catch(() => {});
+  return run;
 }
 
 window.addEventListener("maker-route", (ev) => {

@@ -14,6 +14,9 @@ export default defineConfig({
     baseURL,
     viewport: { width: 1280, height: 800 },
     trace: "on-first-retry",
+    // Maker registers sw.js which respondWith(fetch) for all GETs; that bypasses
+    // page.route mocks after the first visit. Block SW so API stubs stay reliable.
+    serviceWorkers: "block",
   },
   webServer: {
     command: `poetry run python -m uvicorn api.app:app --host 127.0.0.1 --port ${port}`,

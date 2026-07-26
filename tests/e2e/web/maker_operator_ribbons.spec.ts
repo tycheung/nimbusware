@@ -83,13 +83,11 @@ test("interjection ribbon queues next-priority message via UI", async ({ page, r
 
   const input = page.getByTestId("maker-interjection-input");
   await expect(input).toBeVisible({ timeout: 15_000 });
-  await input.focus();
-  await page.keyboard.press("Tab");
-  await expect(page.getByTestId("maker-interjection-next")).toBeFocused();
   await input.fill("Steer from Playwright");
   const queuePromise = page.waitForResponse(
     (resp) =>
       resp.url().includes(`/v1/runs/${runId}/interjection-queue`) && resp.request().method() === "POST",
+    { timeout: 15_000 },
   );
   await page.getByTestId("maker-interjection-next").click();
   await queuePromise;

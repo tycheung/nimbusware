@@ -111,7 +111,10 @@ export async function mountSafeCodingWizard(root) {
   }
 
   prepareBtn?.addEventListener("click", async () => {
-    if (!workspacePath) return;
+    if (!workspacePath) {
+      statusEl.textContent = "Create a project with a workspace path to continue.";
+      return;
+    }
     prepareBtn.disabled = true;
     skipBtn.disabled = true;
     statusEl.textContent = "Preparing workspace…";
@@ -121,15 +124,30 @@ export async function mountSafeCodingWizard(root) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspace_path: workspacePath }),
       });
-      if (toastIfMiss(scaffold, toast, "Workspace scaffold unavailable")) return;
+      if (toastIfMiss(scaffold, toast, "Workspace scaffold unavailable")) {
+        statusEl.textContent =
+          formatDomainMissMessage(scaffold, "Workspace scaffold unavailable") ||
+          "Workspace scaffold unavailable";
+        return;
+      }
       const precommit = await apiJson("/platform/workspace-precommit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspace_path: workspacePath }),
       });
-      if (toastIfMiss(precommit, toast, "Workspace precommit unavailable")) return;
+      if (toastIfMiss(precommit, toast, "Workspace precommit unavailable")) {
+        statusEl.textContent =
+          formatDomainMissMessage(precommit, "Workspace precommit unavailable") ||
+          "Workspace precommit unavailable";
+        return;
+      }
       const bootStart = await apiJson("/platform/playwright-bootstrap", { method: "POST" });
-      if (toastIfMiss(bootStart, toast, "Playwright bootstrap unavailable")) return;
+      if (toastIfMiss(bootStart, toast, "Playwright bootstrap unavailable")) {
+        statusEl.textContent =
+          formatDomainMissMessage(bootStart, "Playwright bootstrap unavailable") ||
+          "Playwright bootstrap unavailable";
+        return;
+      }
       const boot = await pollPlaywrightBootstrap(statusEl);
       statusEl.textContent = boot.plain_summary || "Workspace prepared.";
       localStorage.setItem(WIZARD_DISMISSED_KEY, "1");

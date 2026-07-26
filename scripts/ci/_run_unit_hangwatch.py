@@ -1,4 +1,3 @@
-"""Run unit suite with hang detection (stdout stall)."""
 from __future__ import annotations
 
 import faulthandler

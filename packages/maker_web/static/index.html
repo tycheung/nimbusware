@@ -109,9 +109,11 @@
         </template>
       </nav>
     </div>
-    <script defer src="vendor/alpine.min.js"></script>
+    <!-- Modules (incl. alpine:init → Alpine.data) must run before the CDN
+         auto-starts via queueMicrotask; keep alpine last among these tags. -->
     <script type="module" src="js/bootstrap-load.js"></script>
     <script type="module" src="js/app-shell.js"></script>
     <script type="module" src="js/tab-loader.js"></script>
+    <script defer src="vendor/alpine.min.js"></script>
   </body>
 </html>
