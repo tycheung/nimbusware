@@ -27,7 +27,22 @@ const MOUNTERS = {
 };
 
 let lastRoute = "";
+let lastRouteKey = "";
 let loadChain = Promise.resolve();
+
+/** Path + hash query for tabs that bind run/session from the URL. */
+function routeKey(route) {
+  const hash = window.location.hash.replace(/^#/, "") || route;
+  const qIdx = hash.indexOf("?");
+  const q = qIdx >= 0 ? hash.slice(qIdx) : "";
+  if (
+    q &&
+    (route === "/chat" || route === "/progress" || route === "/plan" || route === "/review")
+  ) {
+    return `${route}${q}`;
+  }
+  return route;
+}
 
 export function handleRouteLoadError(e) {
   if (String(e?.message || e) === "broker_miss") return;
@@ -35,20 +50,18 @@ export function handleRouteLoadError(e) {
 }
 
 async function loadRouteInner(route) {
-  // Same-route re-entry is a no-op. Initial goto#/hash plus alpine init otherwise
-  // double-mounts and wipes in-flight UI (prepare wizard, ribbon listeners, etc.).
-  if (route === lastRoute) return;
+  // Same path+query is a no-op (avoids init double-mount wipe). Query changes
+  // (e.g. #/chat → #/chat?run_id=…) must remount so theater/escalation bind.
+  const key = routeKey(route);
+  if (key === lastRouteKey) return;
 
-  if (lastRoute === "/progress" && route !== "/progress") {
-    unmountProgress();
-  }
-  if (lastRoute === "/plan" && route !== "/plan") {
-    unmountPlan();
-  }
-  if (lastRoute === "/chat" && route !== "/chat") {
-    unmountChat();
-  }
+  const prev = lastRoute;
+  // Unmount whenever leaving or remounting these tabs (query-key change).
+  if (prev === "/progress") unmountProgress();
+  if (prev === "/plan") unmountPlan();
+  if (prev === "/chat") unmountChat();
   lastRoute = route;
+  lastRouteKey = key;
 
   if (route === "/home") {
     try {
