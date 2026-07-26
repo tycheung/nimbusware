@@ -35,6 +35,10 @@ from env.launcher_fetch import (
     fetch_nimbusware_source,
     run_install_script,
 )
+from env.swissarmynoife_install import (
+    default_swissarmynoife_target,
+    ensure_swissarmynoife,
+)
 from env.launcher_manage import (
     InstallState,
     convert_label,
@@ -399,13 +403,27 @@ class NimbuswareLauncherApp:
 
         def _worker() -> None:
             ok, message = git_pull(self.repo, log=self._append_log)
+            sak_note = ""
             if ok:
+                try:
+                    sak = ensure_swissarmynoife(
+                        self.repo,
+                        target=default_swissarmynoife_target(self.repo),
+                        skip_build=False,
+                        log=self._append_log,
+                    )
+                    sak_note = f"\n\nSwissArmyNoife updated at:\n{sak}"
+                except (FileNotFoundError, RuntimeError, OSError, ValueError) as exc:
+                    sak_note = f"\n\nSwissArmyNoife update skipped: {exc}"
                 self.root.after(0, self._refresh_version)
                 status, _, detail = check_for_updates(self.repo, fetch=False)
 
                 def _done() -> None:
                     self.status_label.configure(text=f"Updates: {status}")
-                    messagebox.showinfo("Update complete", message or detail)
+                    messagebox.showinfo(
+                        "Update complete",
+                        (message or detail) + sak_note,
+                    )
                     self._set_busy(False)
 
                 self.root.after(0, _done)
@@ -458,17 +476,18 @@ class NimbuswareLauncherApp:
         if needs_source:
             if enterprise:
                 setup_desc = (
-                    "Enterprise setup installs Poetry deps, connects to your PostgreSQL "
-                    "(application or admin URL), Ollama with default models, and Enterprise env."
+                    "Enterprise setup installs Poetry deps, PostgreSQL connection, Ollama, "
+                    "Enterprise env, and the SwissArmyNoife capability broker (sibling checkout)."
                 )
             elif full:
                 setup_desc = (
-                    "Full setup installs Poetry deps, connects to your PostgreSQL "
-                    "(application or admin URL), and Ollama with default models."
+                    "Full setup installs Poetry deps, PostgreSQL connection, Ollama, "
+                    "and the SwissArmyNoife capability broker (sibling checkout)."
                 )
             else:
                 setup_desc = (
-                    "Quick setup installs Poetry deps only (barebones profile, no Postgres/Ollama)."
+                    "Quick setup installs Poetry deps (barebones profile, no Postgres/Ollama) "
+                    "and the SwissArmyNoife capability broker beside Nimbusware."
                 )
             prompt = (
                 "No Nimbusware install was found.\n\n"
@@ -478,17 +497,18 @@ class NimbuswareLauncherApp:
         else:
             if enterprise:
                 prompt = (
-                    "Run Enterprise Nimbusware setup (Postgres + Ollama + strict env)?\n\n"
+                    "Run Enterprise Nimbusware setup (Postgres + Ollama + strict env + "
+                    "SwissArmyNoife broker)?\n\n"
                     "Existing database and .env data are preserved."
                 )
             elif full:
                 prompt = (
-                    "Run full Nimbusware setup (Postgres + Ollama)?\n\n"
+                    "Run full Nimbusware setup (Postgres + Ollama + SwissArmyNoife broker)?\n\n"
                     "Existing database and .env data are preserved."
                 )
             else:
                 prompt = (
-                    "Run quick Nimbusware setup (Poetry deps, barebones profile)?\n\n"
+                    "Run quick Nimbusware setup (Poetry deps + SwissArmyNoife broker)?\n\n"
                     "Existing database and .env data are preserved."
                 )
         if not messagebox.askyesno("Install Nimbusware", prompt):

@@ -9,16 +9,29 @@ There is **no single binary for all operating systems**. Release builds are per 
 ```text
 Download launcher for your OS
         ↓
-Quick setup  →  Poetry deps, barebones profile, default setup bundle (no Postgres/Ollama)
+Quick setup  →  Poetry deps, barebones profile, default setup bundle (no Postgres/Ollama),
+                plus SwissArmyNoife sibling clone/update (cargo build when Rust is installed)
    or
-Full setup   →  Poetry + your PostgreSQL (app or admin URL) + Ollama recommended profile (default bundle)
+Full setup   →  Poetry + your PostgreSQL + Ollama recommended profile + SwissArmyNoife
    or
-Enterprise setup  →  Full setup + enterprise edition strict env + fleet seeds
+Enterprise setup  →  Full setup + enterprise edition strict env + fleet seeds + SwissArmyNoife
         ↓
 Run Nimbusware  →  .venv python run.py  →  API + Maker window
+(start SwissArmyNoife http-admin separately when using peel / broker_client)
 ```
 
-**Requirements:** Python 3.10+ on PATH for install; Git *or* automatic GitHub zip fallback; Full setup additionally benefits from Docker and disk space for Ollama models.
+**Requirements:** Python 3.10+ on PATH for install; Git *or* automatic GitHub zip fallback; Full setup additionally benefits from Docker and disk space for Ollama models. **Rust/cargo** is optional but recommended so the launcher can build SwissArmyNoife `mcp` + `http-admin` after clone.
+
+## SwissArmyNoife (bundled with setup)
+
+Install and **Check for updates** keep a sibling checkout at `../SwissArmyNoife` (override with `NIMBUSWARE_SWISSARMYNOIFE_DIR` or `--swissarmynoife-dir`). Behavior:
+
+1. **Clone** from `https://github.com/tycheung/SwissArmyNoife.git` (or `SWISSARMYNOIFE_CLONE_URL`) when missing.
+2. **`git pull --ff-only`** when the tree is already a git checkout.
+3. **`cargo build -p mcp` / `cargo build -p http-admin`** when `cargo` is on PATH.
+4. Writes `NIMBUSWARE_BROKER_HTTP=http://127.0.0.1:8787` into `.env` if unset.
+
+Skip with installer flag `--skip-swissarmynoife` (or `--skip-swissarmynoife-build` to fetch without cargo). MCP client wiring: [SwissArmyNoife docs/mcp-setup.md](../../SwissArmyNoife/docs/mcp-setup.md).
 
 ## Release artifacts
 

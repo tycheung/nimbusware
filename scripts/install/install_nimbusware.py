@@ -639,6 +639,36 @@ def _bootstrap_slice_lsp(
     return True
 
 
+def _bootstrap_swissarmynoife(args: argparse.Namespace, repo: Path) -> Path | None:
+    if args.skip_swissarmynoife:
+        _log("SwissArmyNoife: skipped (--skip-swissarmynoife)")
+        return None
+    packages = repo / "packages"
+    if str(packages) not in sys.path:
+        sys.path.insert(0, str(packages))
+    from env.swissarmynoife_install import ensure_swissarmynoife, write_broker_env
+
+    _log("\nSwissArmyNoife broker (clone/update + optional cargo build)...")
+    try:
+        sak_root = ensure_swissarmynoife(
+            repo,
+            target=args.swissarmynoife_dir,
+            skip_build=bool(args.skip_swissarmynoife_build),
+            log=_log,
+        )
+    except (FileNotFoundError, RuntimeError, OSError, ValueError) as exc:
+        _warn(f"SwissArmyNoife bootstrap failed: {exc}")
+        _warn("Install Rust (rustup) and re-run, or clone https://github.com/tycheung/SwissArmyNoife")
+        return None
+    try:
+        env_path = write_broker_env(repo)
+        _log(f"Broker HTTP default written (if unset) → {env_path}")
+    except Exception as exc:  # noqa: BLE001
+        _warn(f"Could not write NIMBUSWARE_BROKER_HTTP: {exc}")
+    _log(f"SwissArmyNoife root: {sak_root}")
+    return sak_root
+
+
 def _bootstrap_ollama(args: argparse.Namespace, repo: Path) -> bool:
     if args.skip_ollama:
         return _check_ollama(args.ollama_host)
@@ -898,6 +928,7 @@ def _print_next_steps(
     slice_lsp_ok: bool,
     edition_name: str = "individual",
     install_profile: str = INSTALL_PROFILE_RECOMMENDED,
+    swissarmynoife_root: Path | None = None,
 ) -> None:
     _log("")
     _log("=== Nimbusware setup complete ===")
@@ -966,6 +997,19 @@ def _print_next_steps(
         _log("Slice LSP (Pyright documentSymbol):")
         _log("  NIMBUSWARE_SLICE_LSP_ENABLED=1 in .env (use --no-enable-slice-lsp to skip)")
         _log("  AST fallback when langserver is off or unavailable")
+    if swissarmynoife_root is not None:
+        _log("")
+        _log("SwissArmyNoife capability broker:")
+        _log(f"  Checkout: {swissarmynoife_root}")
+        _log("  Start HTTP admin (Nimbusware peel / broker_client):")
+        _log(f'  cd "{swissarmynoife_root}" && cargo run -p http-admin')
+        _log("  Or MCP stdio for any MCP client: cargo run -p mcp")
+        _log("  NIMBUSWARE_BROKER_HTTP defaults to http://127.0.0.1:8787 in .env")
+        _log("  Setup guide: SwissArmyNoife/docs/mcp-setup.md")
+    else:
+        _log("")
+        _log("SwissArmyNoife was skipped or failed — install separately or re-run without")
+        _log("  --skip-swissarmynoife (needs git; cargo optional for build).")
 
 
 def _check_prerequisites(*, install_poetry: bool) -> list[str]:
@@ -1208,6 +1252,22 @@ def main(argv: list[str] | None = None) -> int:
         help="Do not install or configure Ollama (implies barebones LLM posture)",
     )
     parser.add_argument(
+        "--skip-swissarmynoife",
+        action="store_true",
+        help="Do not clone/update/build the SwissArmyNoife broker sibling",
+    )
+    parser.add_argument(
+        "--swissarmynoife-dir",
+        type=Path,
+        default=None,
+        help="SwissArmyNoife checkout path (default: sibling ../SwissArmyNoife)",
+    )
+    parser.add_argument(
+        "--skip-swissarmynoife-build",
+        action="store_true",
+        help="Fetch/update SwissArmyNoife but skip cargo build",
+    )
+    parser.add_argument(
         "--install-ollama",
         action="store_true",
         help=(
@@ -1392,6 +1452,8 @@ def main(argv: list[str] | None = None) -> int:
     if postgres_ready:
         os.environ["NIMBUSWARE_DATABASE_URL"] = url
 
+    sak_root = _bootstrap_swissarmynoife(args, repo)
+
     ollama_ok = False
     if not args.skip_ollama:
         _log("\nOllama bootstrap...")
@@ -1422,6 +1484,7 @@ def main(argv: list[str] | None = None) -> int:
         slice_lsp_ok=lsp_ok,
         edition_name=edition_name,
         install_profile=install_profile,
+        swissarmynoife_root=sak_root,
     )
     return 0
 

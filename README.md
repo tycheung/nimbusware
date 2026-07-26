@@ -52,7 +52,14 @@ Package map and import rules: **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
 ## SwissArmyNoife
 
-Nimbusware talks to the local SwissArmyNoife broker via `packages/broker_client/` (dual-run / peel). Flags and rollback: Agentic [docs/dual-run-flags.md](../docs/dual-run-flags.md) · MCP roles: [docs/mcp-split.md](../docs/mcp-split.md).
+Installer and desktop launcher **clone/update** SwissArmyNoife beside Nimbusware (`../SwissArmyNoife` by default) and optionally `cargo build` MCP + HTTP admin. They also set `NIMBUSWARE_BROKER_HTTP` when unset.
+
+Nimbusware talks to the broker via `packages/broker_client/` (dual-run / peel). Flags: Agentic [docs/dual-run-flags.md](../docs/dual-run-flags.md) · MCP roles: [docs/mcp-split.md](../docs/mcp-split.md) · broker MCP setup: [SwissArmyNoife/docs/mcp-setup.md](../SwissArmyNoife/docs/mcp-setup.md).
+
+```bash
+# After install — start HTTP admin for peel (port 8787):
+cd ../SwissArmyNoife && cargo run -p http-admin
+```
 
 Maker/IDE MCP (`packages/mcp`) is **separate** from SwissArmyNoife capability MCP — register both when you need both.
 

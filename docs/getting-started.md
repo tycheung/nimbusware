@@ -31,7 +31,10 @@ python scripts/install_nimbusware.py --edition enterprise   # multi-tenant IAM, 
 python scripts/install_nimbusware.py --install-profile barebones   # no Ollama download
 ```
 
-The installer can set up Poetry deps, Postgres (Docker or native), schema, config seed, Ollama hints, and `.env`. See [install-profiles.md](install-profiles.md) and [model-hub.md](model-hub.md) for LLM setup after install.
+The installer can set up Poetry deps, Postgres (Docker or native), schema, config seed, Ollama hints, `.env`, and a sibling **SwissArmyNoife** checkout (git pull when present; cargo build when Rust is installed). See [install-profiles.md](install-profiles.md), [deploy/launcher.md](deploy/launcher.md), and [model-hub.md](model-hub.md).
+
+Skip the broker with `--skip-swissarmynoife`. Default broker URL written to `.env`: `NIMBUSWARE_BROKER_HTTP=http://127.0.0.1:8787`. Start HTTP admin from the sibling tree with `cargo run -p http-admin`.
+
 
 **Manual path:**
 
