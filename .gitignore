@@ -16,7 +16,7 @@ __pycache__/
 .venv/
 venv/
 ENV/
-env/
+/env/
 
 # Packaging / install metadata (repo-root setuptools/pip dirs only — not package src/lib/)
 .Python
