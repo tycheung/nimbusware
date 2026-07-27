@@ -156,3 +156,26 @@ def convert_label(state: InstallState) -> str:
     profile = "Quick" if state.install_profile == INSTALL_PROFILE_BAREBONES else "Full"
     bundle = "Enterprise" if state.setup_bundle == SETUP_BUNDLE_ENTERPRISE else "Individual"
     return f"{profile} / {bundle}"
+
+
+def format_install_summary(
+    version: str,
+    state: InstallState | None,
+    *,
+    installed: bool,
+) -> str:
+    """Launcher header line — always derived from the current install state var."""
+    if not installed or state is None:
+        return f"{version}  ·  not installed"
+    return f"{version}  ·  {convert_label(state)}"
+
+
+def active_setup_card_key(state: InstallState | None, *, installed: bool) -> str | None:
+    """Which setup card is current: quick | full | enterprise | None."""
+    if not installed or state is None:
+        return None
+    if state.setup_bundle == SETUP_BUNDLE_ENTERPRISE:
+        return "enterprise"
+    if state.install_profile == INSTALL_PROFILE_BAREBONES:
+        return "quick"
+    return "full"

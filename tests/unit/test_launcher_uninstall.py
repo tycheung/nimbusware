@@ -14,7 +14,11 @@ from env.launcher_fetch import (
     SETUP_BUNDLE_ENTERPRISE,
 )
 from env.launcher_manage import (
+    InstallState,
     UninstallResult,
+    active_setup_card_key,
+    convert_label,
+    format_install_summary,
     read_install_state,
     uninstall_nimbusware,
 )
@@ -48,6 +52,50 @@ UNINSTALL_FORMS: list[dict[str, Any]] = [
         "edition": "enterprise",
     },
 ]
+
+
+def test_format_install_summary_and_active_card_follow_state() -> None:
+    quick = InstallState(
+        install_profile=INSTALL_PROFILE_BAREBONES,
+        setup_bundle=SETUP_BUNDLE_DEFAULT,
+        edition="individual",
+        database_url=None,
+    )
+    full = InstallState(
+        install_profile=INSTALL_PROFILE_FULL,
+        setup_bundle=SETUP_BUNDLE_DEFAULT,
+        edition="individual",
+        database_url="postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware",
+    )
+    ent = InstallState(
+        install_profile=INSTALL_PROFILE_FULL,
+        setup_bundle=SETUP_BUNDLE_ENTERPRISE,
+        edition="enterprise",
+        database_url="postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware",
+    )
+    assert format_install_summary("0.5.0", None, installed=False) == "0.5.0  ·  not installed"
+    assert format_install_summary("0.5.0", quick, installed=True) == "0.5.0  ·  Quick / Individual"
+    assert format_install_summary("0.5.0", full, installed=True) == "0.5.0  ·  Full / Individual"
+    assert format_install_summary("0.5.0", ent, installed=True) == "0.5.0  ·  Full / Enterprise"
+    assert active_setup_card_key(quick, installed=True) == "quick"
+    assert active_setup_card_key(full, installed=True) == "full"
+    assert active_setup_card_key(ent, installed=True) == "enterprise"
+    assert active_setup_card_key(None, installed=False) is None
+
+
+def test_reload_picks_up_env_profile_change(tmp_path: Path) -> None:
+    """Simulates post-convert .env write — summary must follow the new profile."""
+    _write_checkout(tmp_path, with_venv=True)
+    _write_env(tmp_path, UNINSTALL_FORMS[0])  # quick
+    before = read_install_state(tmp_path)
+    assert convert_label(before) == "Quick / Individual"
+    assert format_install_summary("0.5.0", before, installed=True).endswith("Quick / Individual")
+
+    _write_env(tmp_path, UNINSTALL_FORMS[1])  # full
+    after = read_install_state(tmp_path)
+    assert convert_label(after) == "Full / Individual"
+    assert format_install_summary("0.5.0", after, installed=True).endswith("Full / Individual")
+    assert active_setup_card_key(after, installed=True) == "full"
 
 
 def _write_checkout(repo: Path, *, with_venv: bool = True) -> None:
@@ -264,5 +312,5 @@ def test_run_uninstall_confirm_invokes_worker(tmp_path: Path) -> None:
         done = app.root.after.call_args_list[-1][0][1]
         done()
     uninstall.assert_called_once()
-    mb.showinfo.assert_called_once()
-    app._sync_repo_ui.assert_called_once()
+    app._finish_setup_success.assert_called_once()
+    mb.showinfo.assert_not_called()

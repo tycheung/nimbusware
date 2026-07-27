@@ -5,6 +5,7 @@ import subprocess
 import threading
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from tkinter import messagebox
 
@@ -38,7 +39,9 @@ from env.launcher_fetch import (
 )
 from env.launcher_manage import (
     InstallState,
+    active_setup_card_key,
     convert_label,
+    format_install_summary,
     postgres_extra_args,
     read_env_file,
     read_install_state,
@@ -83,6 +86,15 @@ def _state(enabled: bool) -> str:
     return "normal" if enabled else "disabled"
 
 
+@dataclass
+class _SetupCard:
+    key: str
+    frame: ctk.CTkFrame
+    badge: ctk.CTkLabel
+    button: ctk.CTkButton
+    idle_badge: str
+
+
 class NimbuswareLauncherApp:
     def __init__(self, root: ctk.CTk, theme: LauncherTheme) -> None:
         self.root = root
@@ -91,6 +103,10 @@ class NimbuswareLauncherApp:
         self._manage_open = False
         self.theme = theme
         self._logo = theme.logo
+        self.product_version = read_poetry_version(self.repo)
+        self.install_state: InstallState | None = None
+        self._checkout_present = False
+        self._setup_cards: dict[str, _SetupCard] = {}
 
         root.title("Nimbusware")
         root.geometry("920x740")
@@ -106,7 +122,7 @@ class NimbuswareLauncherApp:
         self._build_activity(shell)
 
         self._append_log(f"Workspace: {self.repo}")
-        self._sync_repo_ui()
+        self._reload_and_render_install_state()
         if updates_check_supported(self.repo):
             self.root.after(400, self.check_updates)
 
@@ -233,12 +249,12 @@ class NimbuswareLauncherApp:
 
         self.install_btn = self._setup_card(
             row,
+            key="quick",
             column=0,
             title="Quick",
             badge="Recommended",
             body="Poetry deps + broker. No Postgres or Ollama required.",
             button="Install Quick",
-            primary=True,
             command=lambda: self.run_install(
                 INSTALL_PROFILE_BAREBONES,
                 setup_bundle=SETUP_BUNDLE_DEFAULT,
@@ -246,12 +262,12 @@ class NimbuswareLauncherApp:
         )
         self.install_full_btn = self._setup_card(
             row,
+            key="full",
             column=1,
             title="Full",
             badge="Local stack",
             body="Adds PostgreSQL connection and Ollama when available.",
             button="Install Full",
-            primary=False,
             command=lambda: self.run_install(
                 INSTALL_PROFILE_FULL,
                 setup_bundle=SETUP_BUNDLE_DEFAULT,
@@ -259,12 +275,12 @@ class NimbuswareLauncherApp:
         )
         self.install_enterprise_btn = self._setup_card(
             row,
+            key="enterprise",
             column=2,
             title="Enterprise",
             badge="Fleet",
             body="Full setup plus enterprise edition defaults and seeds.",
             button="Install Enterprise",
-            primary=False,
             command=lambda: self.run_install(
                 INSTALL_PROFILE_FULL,
                 setup_bundle=SETUP_BUNDLE_ENTERPRISE,
@@ -293,30 +309,31 @@ class NimbuswareLauncherApp:
         self,
         parent: ctk.CTkFrame,
         *,
+        key: str,
         column: int,
         title: str,
         badge: str,
         body: str,
         button: str,
-        primary: bool,
         command: Callable[[], None],
     ) -> ctk.CTkButton:
         card = ctk.CTkFrame(
             parent,
-            fg_color=BG_RAISED if primary else BG_CARD,
+            fg_color=BG_CARD,
             corner_radius=RADIUS,
             border_width=1,
-            border_color=ACCENT if primary else BORDER,
+            border_color=BORDER,
         )
         card.grid(row=0, column=column, sticky="nsew", padx=(0 if column == 0 else 8, 0))
         pad = ctk.CTkFrame(card, fg_color="transparent")
         pad.pack(fill="both", expand=True, padx=16, pady=16)
-        ctk.CTkLabel(
+        badge_label = ctk.CTkLabel(
             pad,
             text=badge.upper(),
             font=ui_font(size=10, weight="bold"),
-            text_color=ACCENT if primary else TEXT_MUTED,
-        ).pack(anchor="w")
+            text_color=TEXT_MUTED,
+        )
+        badge_label.pack(anchor="w")
         ctk.CTkLabel(
             pad,
             text=title,
@@ -335,15 +352,129 @@ class NimbuswareLauncherApp:
             pad,
             text=button,
             command=command,
-            font=ui_font(size=13, weight="bold" if primary else "normal"),
-            fg_color=CTA_BG if primary else ACCENT_SOFT,
-            hover_color=CTA_HOVER if primary else ACCENT_HOVER,
-            text_color=CTA_FG if primary else TEXT,
+            font=ui_font(size=13),
+            fg_color=ACCENT_SOFT,
+            hover_color=ACCENT_HOVER,
+            text_color=TEXT,
             corner_radius=RADIUS_SM,
             height=36,
         )
         btn.pack(anchor="w", fill="x")
+        self._setup_cards[key] = _SetupCard(
+            key=key,
+            frame=card,
+            badge=badge_label,
+            button=btn,
+            idle_badge=badge.upper(),
+        )
         return btn
+
+    def _set_status(self, text: str, *, tone: str = "info") -> None:
+        colors = {
+            "ok": OK,
+            "warn": WARN,
+            "info": ACCENT,
+        }
+        self.status_label.configure(text=text, text_color=colors.get(tone, ACCENT))
+
+    def _reload_install_state(self) -> None:
+        """Re-read version + .env into the live state vars (source of truth for the UI)."""
+        self.product_version = read_poetry_version(self.repo)
+        self._checkout_present = is_nimbusware_checkout(self.repo)
+        self.install_state = (
+            read_install_state(self.repo) if self._checkout_present else None
+        )
+
+    def _render_install_state(self) -> None:
+        """Paint header, manage buttons, and setup cards from ``self.install_state``."""
+        summary = format_install_summary(
+            self.product_version,
+            self.install_state,
+            installed=self._checkout_present,
+        )
+        self.version_label.configure(text=summary)
+        if self._checkout_present:
+            self._set_status("Ready", tone="ok")
+        else:
+            self._set_status("Setup needed", tone="warn")
+
+        active = active_setup_card_key(
+            self.install_state,
+            installed=self._checkout_present,
+        )
+        for key, card in self._setup_cards.items():
+            is_active = key == active
+            card.frame.configure(
+                fg_color=BG_RAISED if is_active else BG_CARD,
+                border_color=ACCENT if is_active else BORDER,
+            )
+            card.badge.configure(
+                text="CURRENT" if is_active else card.idle_badge,
+                text_color=ACCENT if is_active else TEXT_MUTED,
+            )
+            card.button.configure(
+                fg_color=CTA_BG if is_active else ACCENT_SOFT,
+                hover_color=CTA_HOVER if is_active else ACCENT_HOVER,
+                text_color=CTA_FG if is_active else TEXT,
+                font=ui_font(size=13, weight="bold" if is_active else "normal"),
+            )
+
+        if updates_check_supported(self.repo):
+            self.check_btn.configure(state="normal")
+        else:
+            self.check_btn.configure(state="disabled")
+
+        state = self.install_state
+        if self._checkout_present and state is not None:
+            self.to_full_btn.configure(
+                state=_state(state.install_profile == INSTALL_PROFILE_BAREBONES),
+            )
+            self.to_quick_btn.configure(
+                state=_state(state.install_profile == INSTALL_PROFILE_FULL),
+            )
+            self.to_enterprise_btn.configure(
+                state=_state(state.setup_bundle != SETUP_BUNDLE_ENTERPRISE),
+            )
+            self.to_individual_btn.configure(
+                state=_state(state.setup_bundle == SETUP_BUNDLE_ENTERPRISE),
+            )
+            self.uninstall_btn.configure(state="normal")
+            self.run_btn.configure(state="normal")
+            self.admin_btn.configure(state="normal")
+        else:
+            for btn in (
+                self.to_full_btn,
+                self.to_quick_btn,
+                self.to_enterprise_btn,
+                self.to_individual_btn,
+                self.uninstall_btn,
+            ):
+                btn.configure(state="disabled")
+
+    def _reload_and_render_install_state(self) -> None:
+        self._reload_install_state()
+        self._render_install_state()
+        try:
+            self.root.update_idletasks()
+        except Exception:
+            pass
+
+    def _finish_setup_success(self, *, title: str, detail: str) -> None:
+        """Main-thread: reload state from disk, render, then show completion dialog."""
+        self._reload_and_render_install_state()
+        current = (
+            convert_label(self.install_state)
+            if self.install_state is not None
+            else "not installed"
+        )
+        messagebox.showinfo(title, f"{detail}\n\nCurrent setup: {current}")
+        self._reload_and_render_install_state()
+
+    def _refresh_version(self) -> None:
+        self._reload_and_render_install_state()
+
+    def _sync_repo_ui(self) -> None:
+        self._reload_and_render_install_state()
 
     def _build_manage(self, parent: ctk.CTkFrame) -> None:
         self.manage_shell = ctk.CTkFrame(parent, fg_color="transparent")
@@ -474,64 +605,6 @@ class NimbuswareLauncherApp:
         )
         self.log.pack(fill="both", expand=True, padx=12, pady=(0, 12))
         self.log.configure(state="disabled")
-
-    def _set_status(self, text: str, *, tone: str = "info") -> None:
-        colors = {
-            "ok": OK,
-            "warn": WARN,
-            "info": ACCENT,
-        }
-        self.status_label.configure(text=text, text_color=colors.get(tone, ACCENT))
-
-    def _refresh_version(self) -> None:
-        version = read_poetry_version(self.repo)
-        if is_nimbusware_checkout(self.repo):
-            state = read_install_state(self.repo)
-            self.version_label.configure(text=f"{version}  ·  {convert_label(state)}")
-        else:
-            self.version_label.configure(text=f"{version}  ·  not installed")
-
-    def _sync_repo_ui(self) -> None:
-        self._refresh_version()
-        installed = is_nimbusware_checkout(self.repo)
-        if installed:
-            self._set_status("Ready", tone="ok")
-        else:
-            self._set_status("Setup needed", tone="warn")
-        if updates_check_supported(self.repo):
-            self.check_btn.configure(state="normal")
-        else:
-            self.check_btn.configure(state="disabled")
-            if installed and not is_git_checkout(self.repo):
-                self._append_log(
-                    "Updates: archive install — use Check for updates to connect git.",
-                )
-        if installed:
-            state = read_install_state(self.repo)
-            self.to_full_btn.configure(
-                state=_state(state.install_profile == INSTALL_PROFILE_BAREBONES),
-            )
-            self.to_quick_btn.configure(
-                state=_state(state.install_profile == INSTALL_PROFILE_FULL),
-            )
-            self.to_enterprise_btn.configure(
-                state=_state(state.setup_bundle != SETUP_BUNDLE_ENTERPRISE),
-            )
-            self.to_individual_btn.configure(
-                state=_state(state.setup_bundle == SETUP_BUNDLE_ENTERPRISE),
-            )
-            self.uninstall_btn.configure(state="normal")
-            self.run_btn.configure(state="normal")
-            self.admin_btn.configure(state="normal")
-        else:
-            for btn in (
-                self.to_full_btn,
-                self.to_quick_btn,
-                self.to_enterprise_btn,
-                self.to_individual_btn,
-                self.uninstall_btn,
-            ):
-                btn.configure(state="disabled")
 
     def _set_repo(self, repo: Path) -> None:
         self.repo = repo.resolve()
@@ -831,10 +904,12 @@ class NimbuswareLauncherApp:
                 )
                 return
             if code == 0:
-                self.root.after(0, self._sync_repo_ui)
                 self.root.after(
                     0,
-                    lambda: messagebox.showinfo("Install complete", "Setup finished successfully."),
+                    lambda: self._finish_setup_success(
+                        title="Install complete",
+                        detail="Setup finished successfully.",
+                    ),
                 )
             else:
                 self.root.after(
@@ -893,11 +968,11 @@ class NimbuswareLauncherApp:
                 )
                 return
             if code == 0:
-                self.root.after(0, self._sync_repo_ui)
                 self.root.after(
                     0,
-                    lambda: messagebox.showinfo(
-                        "Convert complete", "Install updated successfully."
+                    lambda: self._finish_setup_success(
+                        title="Convert complete",
+                        detail="Install updated successfully.",
                     ),
                 )
             else:
@@ -933,11 +1008,12 @@ class NimbuswareLauncherApp:
                 return
 
             def _done() -> None:
-                self._sync_repo_ui()
-                messagebox.showinfo(
-                    "Uninstall complete",
-                    "Python environment removed. User data preserved.\n"
-                    "Re-run Quick / Full / Enterprise setup to recreate the venv.",
+                self._finish_setup_success(
+                    title="Uninstall complete",
+                    detail=(
+                        "Python environment removed. User data preserved.\n"
+                        "Re-run Quick / Full / Enterprise setup to recreate the venv."
+                    ),
                 )
 
             self.root.after(0, _done)
