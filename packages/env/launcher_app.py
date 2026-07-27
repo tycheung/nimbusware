@@ -4,10 +4,11 @@ import os
 import subprocess
 import threading
 import time
-import tkinter as tk
 from collections.abc import Callable
 from pathlib import Path
-from tkinter import messagebox, scrolledtext, ttk
+from tkinter import messagebox
+
+import customtkinter as ctk
 
 from env.desktop_common import (
     can_init_git_updates,
@@ -35,10 +36,6 @@ from env.launcher_fetch import (
     fetch_nimbusware_source,
     run_install_script,
 )
-from env.swissarmynoife_install import (
-    default_swissarmynoife_target,
-    ensure_swissarmynoife,
-)
 from env.launcher_manage import (
     InstallState,
     convert_label,
@@ -49,184 +46,462 @@ from env.launcher_manage import (
     uninstall_nimbusware,
 )
 from env.launcher_theme import (
+    ACCENT,
+    ACCENT_HOVER,
+    ACCENT_SOFT,
     BG,
+    BG_CARD,
+    BG_CARD_HOVER,
+    BG_INPUT,
+    BG_RAISED,
+    BG_STATUS,
+    BORDER,
+    CTA_BG,
+    CTA_FG,
+    CTA_HOVER,
+    DANGER,
+    DANGER_HOVER,
+    OK,
+    RADIUS,
+    RADIUS_SM,
+    TEXT,
+    TEXT_MUTED,
+    TEXT_SOFT,
+    WARN,
+    LauncherTheme,
     apply_launcher_theme,
     mono_font,
-    style_log_widget,
+    ui_font,
+)
+from env.swissarmynoife_install import (
+    default_swissarmynoife_target,
+    ensure_swissarmynoife,
 )
 
 
+def _state(enabled: bool) -> str:
+    return "normal" if enabled else "disabled"
+
+
 class NimbuswareLauncherApp:
-    def __init__(self, root: tk.Tk) -> None:
+    def __init__(self, root: ctk.CTk, theme: LauncherTheme) -> None:
         self.root = root
         self.repo = repo_root()
         self._busy = False
-
-        self.theme = apply_launcher_theme(root)
-        self._logo_photo = self.theme.logo
+        self._manage_open = False
+        self.theme = theme
+        self._logo = theme.logo
 
         root.title("Nimbusware")
-        root.geometry("820x660")
-        root.minsize(700, 540)
+        root.geometry("920x740")
+        root.minsize(800, 640)
 
-        shell = ttk.Frame(root, padding=16)
-        shell.pack(fill=tk.BOTH, expand=True)
+        shell = ctk.CTkFrame(root, fg_color=BG, corner_radius=0)
+        shell.pack(fill="both", expand=True, padx=28, pady=24)
 
-        header = ttk.Frame(shell)
-        header.pack(fill=tk.X, pady=(0, 14))
-        header_left = ttk.Frame(header)
-        header_left.pack(side=tk.LEFT)
-        if self._logo_photo is not None:
-            ttk.Label(header_left, image=self._logo_photo).pack(side=tk.LEFT, padx=(0, 14))
-        header_text = ttk.Frame(header_left)
-        header_text.pack(side=tk.LEFT, fill=tk.Y)
-        ttk.Label(header_text, text="Nimbusware", style="Title.TLabel").pack(anchor=tk.W)
-        self.version_label = ttk.Label(header_text, text="", style="Muted.TLabel")
-        self.version_label.pack(anchor=tk.W, pady=(2, 0))
-        self.status_label = ttk.Label(header_text, text="Ready.", style="Muted.TLabel")
-        self.status_label.pack(anchor=tk.W, pady=(2, 0))
-
-        setup_panel = ttk.LabelFrame(shell, text="  Setup  ", padding=(12, 10), style="TLabelframe")
-        setup_panel.pack(fill=tk.X, pady=(0, 10))
-        buttons = ttk.Frame(setup_panel, style="Panel.TFrame")
-        buttons.pack(fill=tk.X)
-        buttons_row2 = ttk.Frame(setup_panel, style="Panel.TFrame")
-        buttons_row2.pack(fill=tk.X, pady=(8, 0))
-        self.check_btn = ttk.Button(
-            buttons,
-            text="Check for updates",
-            command=self.check_updates,
-        )
-        self.check_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.install_btn = ttk.Button(
-            buttons,
-            text="Quick setup",
-            command=lambda: self.run_install(
-                INSTALL_PROFILE_BAREBONES,
-                setup_bundle=SETUP_BUNDLE_DEFAULT,
-            ),
-        )
-        self.install_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.install_full_btn = ttk.Button(
-            buttons,
-            text="Full setup",
-            command=lambda: self.run_install(
-                INSTALL_PROFILE_FULL,
-                setup_bundle=SETUP_BUNDLE_DEFAULT,
-            ),
-        )
-        self.install_full_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.install_enterprise_btn = ttk.Button(
-            buttons,
-            text="Enterprise setup",
-            command=lambda: self.run_install(
-                INSTALL_PROFILE_FULL,
-                setup_bundle=SETUP_BUNDLE_ENTERPRISE,
-            ),
-        )
-        self.install_enterprise_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.run_btn = ttk.Button(
-            buttons_row2,
-            text="Run Nimbusware",
-            style="Accent.TButton",
-            command=self.run_nimbusware,
-        )
-        self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.admin_btn = ttk.Button(
-            buttons_row2,
-            text="Admin Console",
-            command=self.run_admin_console,
-        )
-        self.admin_btn.pack(side=tk.LEFT)
-
-        manage = ttk.LabelFrame(shell, text="  Manage install  ", padding=(12, 10))
-        manage.pack(fill=tk.X, pady=(0, 10))
-        manage_row = ttk.Frame(manage, style="Panel.TFrame")
-        manage_row.pack(fill=tk.X)
-        self.to_full_btn = ttk.Button(
-            manage_row,
-            text="Switch to Full",
-            command=lambda: self.run_convert(
-                INSTALL_PROFILE_FULL,
-                SETUP_BUNDLE_DEFAULT,
-                needs_postgres=True,
-            ),
-        )
-        self.to_full_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.to_quick_btn = ttk.Button(
-            manage_row,
-            text="Switch to Quick",
-            command=lambda: self.run_convert(
-                INSTALL_PROFILE_BAREBONES,
-                SETUP_BUNDLE_DEFAULT,
-            ),
-        )
-        self.to_quick_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.to_enterprise_btn = ttk.Button(
-            manage_row,
-            text="Switch to Enterprise",
-            command=lambda: self.run_convert(
-                INSTALL_PROFILE_FULL,
-                SETUP_BUNDLE_ENTERPRISE,
-                needs_postgres=True,
-            ),
-        )
-        self.to_enterprise_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.to_individual_btn = ttk.Button(
-            manage_row,
-            text="Switch to Individual",
-            command=lambda: self.run_convert(
-                INSTALL_PROFILE_FULL,
-                SETUP_BUNDLE_DEFAULT,
-                needs_postgres=True,
-            ),
-        )
-        self.to_individual_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.uninstall_btn = ttk.Button(
-            manage_row,
-            text="Uninstall",
-            command=self.run_uninstall,
-        )
-        self.uninstall_btn.pack(side=tk.LEFT)
-
-        log_frame = ttk.LabelFrame(shell, text="  Activity  ", padding=(10, 8))
-        log_frame.pack(fill=tk.BOTH, expand=True)
-        self.log = scrolledtext.ScrolledText(
-            log_frame,
-            height=16,
-            wrap=tk.WORD,
-            state=tk.DISABLED,
-            font=mono_font(root),
-        )
-        style_log_widget(self.log)
-        self.log.pack(fill=tk.BOTH, expand=True)
+        self._build_header(shell)
+        self._build_hero(shell)
+        self._build_setup_cards(shell)
+        self._build_manage(shell)
+        self._build_activity(shell)
 
         self._append_log(f"Workspace: {self.repo}")
         self._sync_repo_ui()
         if updates_check_supported(self.repo):
             self.root.after(400, self.check_updates)
 
+    def _build_header(self, parent: ctk.CTkFrame) -> None:
+        header = ctk.CTkFrame(parent, fg_color="transparent")
+        header.pack(fill="x", pady=(0, 20))
+
+        left = ctk.CTkFrame(header, fg_color="transparent")
+        left.pack(side="left", fill="x", expand=True)
+        if self._logo is not None:
+            ctk.CTkLabel(left, text="", image=self._logo).pack(side="left", padx=(0, 14))
+
+        titles = ctk.CTkFrame(left, fg_color="transparent")
+        titles.pack(side="left")
+        ctk.CTkLabel(
+            titles,
+            text="Nimbusware",
+            font=ui_font(size=26, weight="bold"),
+            text_color=TEXT,
+        ).pack(anchor="w")
+        ctk.CTkLabel(
+            titles,
+            text="Local-first agentic platform",
+            font=ui_font(size=13),
+            text_color=TEXT_MUTED,
+        ).pack(anchor="w", pady=(2, 0))
+        self.version_label = ctk.CTkLabel(
+            titles,
+            text="",
+            font=ui_font(size=12),
+            text_color=TEXT_SOFT,
+        )
+        self.version_label.pack(anchor="w", pady=(8, 0))
+
+        self.status_label = ctk.CTkLabel(
+            header,
+            text="Ready",
+            font=ui_font(size=12, weight="bold"),
+            text_color=OK,
+            fg_color=BG_STATUS,
+            corner_radius=RADIUS_SM,
+            height=28,
+            width=120,
+        )
+        self.status_label.pack(side="right", anchor="n")
+
+    def _build_hero(self, parent: ctk.CTkFrame) -> None:
+        hero = ctk.CTkFrame(
+            parent,
+            fg_color=BG_CARD,
+            corner_radius=RADIUS,
+            border_width=1,
+            border_color=BORDER,
+        )
+        hero.pack(fill="x", pady=(0, 16))
+        inner = ctk.CTkFrame(hero, fg_color="transparent")
+        inner.pack(fill="x", padx=22, pady=20)
+
+        copy = ctk.CTkFrame(inner, fg_color="transparent")
+        copy.pack(side="left", fill="both", expand=True)
+        ctk.CTkLabel(
+            copy,
+            text="Open Maker",
+            font=ui_font(size=18, weight="bold"),
+            text_color=TEXT,
+        ).pack(anchor="w")
+        ctk.CTkLabel(
+            copy,
+            text="Launch the desktop app for this install — API, Maker UI, and local broker.",
+            font=ui_font(size=13),
+            text_color=TEXT_MUTED,
+            wraplength=480,
+            justify="left",
+        ).pack(anchor="w", pady=(6, 0))
+
+        actions = ctk.CTkFrame(inner, fg_color="transparent")
+        actions.pack(side="right", padx=(16, 0))
+        self.run_btn = ctk.CTkButton(
+            actions,
+            text="Run Nimbusware",
+            command=self.run_nimbusware,
+            font=ui_font(size=14, weight="bold"),
+            fg_color=CTA_BG,
+            hover_color=CTA_HOVER,
+            text_color=CTA_FG,
+            corner_radius=RADIUS_SM,
+            height=42,
+            width=168,
+        )
+        self.run_btn.pack(anchor="e")
+        self.admin_btn = ctk.CTkButton(
+            actions,
+            text="Admin Console",
+            command=self.run_admin_console,
+            font=ui_font(size=13),
+            fg_color=ACCENT_SOFT,
+            hover_color=ACCENT,
+            text_color=TEXT,
+            corner_radius=RADIUS_SM,
+            height=36,
+            width=168,
+        )
+        self.admin_btn.pack(anchor="e", pady=(10, 0))
+
+    def _build_setup_cards(self, parent: ctk.CTkFrame) -> None:
+        section = ctk.CTkFrame(parent, fg_color="transparent")
+        section.pack(fill="x", pady=(0, 14))
+        ctk.CTkLabel(
+            section,
+            text="Setup",
+            font=ui_font(size=12, weight="bold"),
+            text_color=TEXT_MUTED,
+        ).pack(anchor="w")
+        ctk.CTkLabel(
+            section,
+            text="Pick a path. Quick is the usual first run.",
+            font=ui_font(size=12),
+            text_color=TEXT_SOFT,
+        ).pack(anchor="w", pady=(2, 10))
+
+        row = ctk.CTkFrame(section, fg_color="transparent")
+        row.pack(fill="x")
+        row.grid_columnconfigure((0, 1, 2), weight=1, uniform="setup")
+
+        self.install_btn = self._setup_card(
+            row,
+            column=0,
+            title="Quick",
+            badge="Recommended",
+            body="Poetry deps + broker. No Postgres or Ollama required.",
+            button="Install Quick",
+            primary=True,
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_BAREBONES,
+                setup_bundle=SETUP_BUNDLE_DEFAULT,
+            ),
+        )
+        self.install_full_btn = self._setup_card(
+            row,
+            column=1,
+            title="Full",
+            badge="Local stack",
+            body="Adds PostgreSQL connection and Ollama when available.",
+            button="Install Full",
+            primary=False,
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_FULL,
+                setup_bundle=SETUP_BUNDLE_DEFAULT,
+            ),
+        )
+        self.install_enterprise_btn = self._setup_card(
+            row,
+            column=2,
+            title="Enterprise",
+            badge="Fleet",
+            body="Full setup plus enterprise edition defaults and seeds.",
+            button="Install Enterprise",
+            primary=False,
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_FULL,
+                setup_bundle=SETUP_BUNDLE_ENTERPRISE,
+            ),
+        )
+
+        tools = ctk.CTkFrame(section, fg_color="transparent")
+        tools.pack(fill="x", pady=(12, 0))
+        self.check_btn = ctk.CTkButton(
+            tools,
+            text="Check for updates",
+            command=self.check_updates,
+            font=ui_font(size=13),
+            fg_color="transparent",
+            hover_color=BG_CARD_HOVER,
+            text_color=TEXT_MUTED,
+            border_width=1,
+            border_color=BORDER,
+            corner_radius=RADIUS_SM,
+            height=34,
+            width=150,
+        )
+        self.check_btn.pack(side="left")
+
+    def _setup_card(
+        self,
+        parent: ctk.CTkFrame,
+        *,
+        column: int,
+        title: str,
+        badge: str,
+        body: str,
+        button: str,
+        primary: bool,
+        command: Callable[[], None],
+    ) -> ctk.CTkButton:
+        card = ctk.CTkFrame(
+            parent,
+            fg_color=BG_RAISED if primary else BG_CARD,
+            corner_radius=RADIUS,
+            border_width=1,
+            border_color=ACCENT if primary else BORDER,
+        )
+        card.grid(row=0, column=column, sticky="nsew", padx=(0 if column == 0 else 8, 0))
+        pad = ctk.CTkFrame(card, fg_color="transparent")
+        pad.pack(fill="both", expand=True, padx=16, pady=16)
+        ctk.CTkLabel(
+            pad,
+            text=badge.upper(),
+            font=ui_font(size=10, weight="bold"),
+            text_color=ACCENT if primary else TEXT_MUTED,
+        ).pack(anchor="w")
+        ctk.CTkLabel(
+            pad,
+            text=title,
+            font=ui_font(size=17, weight="bold"),
+            text_color=TEXT,
+        ).pack(anchor="w", pady=(6, 0))
+        ctk.CTkLabel(
+            pad,
+            text=body,
+            font=ui_font(size=12),
+            text_color=TEXT_MUTED,
+            wraplength=220,
+            justify="left",
+        ).pack(anchor="w", pady=(8, 14))
+        btn = ctk.CTkButton(
+            pad,
+            text=button,
+            command=command,
+            font=ui_font(size=13, weight="bold" if primary else "normal"),
+            fg_color=CTA_BG if primary else ACCENT_SOFT,
+            hover_color=CTA_HOVER if primary else ACCENT_HOVER,
+            text_color=CTA_FG if primary else TEXT,
+            corner_radius=RADIUS_SM,
+            height=36,
+        )
+        btn.pack(anchor="w", fill="x")
+        return btn
+
+    def _build_manage(self, parent: ctk.CTkFrame) -> None:
+        self.manage_shell = ctk.CTkFrame(parent, fg_color="transparent")
+        self.manage_shell.pack(fill="x", pady=(0, 12))
+        self.manage_toggle = ctk.CTkButton(
+            self.manage_shell,
+            text="Manage install  ›",
+            command=self._toggle_manage,
+            font=ui_font(size=12, weight="bold"),
+            fg_color="transparent",
+            hover_color=BG_CARD,
+            text_color=TEXT_MUTED,
+            anchor="w",
+            height=28,
+        )
+        self.manage_toggle.pack(fill="x")
+
+        self.manage_body = ctk.CTkFrame(
+            self.manage_shell,
+            fg_color=BG_CARD,
+            corner_radius=RADIUS,
+            border_width=1,
+            border_color=BORDER,
+        )
+        inner = ctk.CTkFrame(self.manage_body, fg_color="transparent")
+        inner.pack(fill="x", padx=14, pady=12)
+        row = ctk.CTkFrame(inner, fg_color="transparent")
+        row.pack(fill="x")
+
+        def ghost(text: str, command: Callable[[], None]) -> ctk.CTkButton:
+            return ctk.CTkButton(
+                row,
+                text=text,
+                command=command,
+                font=ui_font(size=12),
+                fg_color=BG_RAISED,
+                hover_color=BG_CARD_HOVER,
+                text_color=TEXT_SOFT,
+                corner_radius=RADIUS_SM,
+                height=32,
+                width=132,
+            )
+
+        self.to_full_btn = ghost(
+            "Switch to Full",
+            lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_DEFAULT,
+                needs_postgres=True,
+            ),
+        )
+        self.to_full_btn.pack(side="left", padx=(0, 8))
+        self.to_quick_btn = ghost(
+            "Switch to Quick",
+            lambda: self.run_convert(
+                INSTALL_PROFILE_BAREBONES,
+                SETUP_BUNDLE_DEFAULT,
+            ),
+        )
+        self.to_quick_btn.pack(side="left", padx=(0, 8))
+        self.to_enterprise_btn = ghost(
+            "Switch to Enterprise",
+            lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_ENTERPRISE,
+                needs_postgres=True,
+            ),
+        )
+        self.to_enterprise_btn.pack(side="left", padx=(0, 8))
+        self.to_individual_btn = ghost(
+            "Switch to Individual",
+            lambda: self.run_convert(
+                INSTALL_PROFILE_FULL,
+                SETUP_BUNDLE_DEFAULT,
+                needs_postgres=True,
+            ),
+        )
+        self.to_individual_btn.pack(side="left", padx=(0, 8))
+        self.uninstall_btn = ctk.CTkButton(
+            row,
+            text="Uninstall",
+            command=self.run_uninstall,
+            font=ui_font(size=12),
+            fg_color=DANGER,
+            hover_color=DANGER_HOVER,
+            text_color=TEXT,
+            corner_radius=RADIUS_SM,
+            height=32,
+            width=100,
+        )
+        self.uninstall_btn.pack(side="right")
+
+    def _toggle_manage(self) -> None:
+        self._manage_open = not self._manage_open
+        if self._manage_open:
+            self.manage_body.pack(fill="x", pady=(6, 0))
+            self.manage_toggle.configure(text="Manage install  ˅")
+        else:
+            self.manage_body.pack_forget()
+            self.manage_toggle.configure(text="Manage install  ›")
+
+    def _build_activity(self, parent: ctk.CTkFrame) -> None:
+        section = ctk.CTkFrame(
+            parent,
+            fg_color=BG_CARD,
+            corner_radius=RADIUS,
+            border_width=1,
+            border_color=BORDER,
+        )
+        section.pack(fill="both", expand=True)
+        head = ctk.CTkFrame(section, fg_color="transparent")
+        head.pack(fill="x", padx=16, pady=(12, 6))
+        ctk.CTkLabel(
+            head,
+            text="Activity",
+            font=ui_font(size=12, weight="bold"),
+            text_color=TEXT_MUTED,
+        ).pack(side="left")
+        self.log = ctk.CTkTextbox(
+            section,
+            font=mono_font(size=12),
+            fg_color=BG_INPUT,
+            text_color=TEXT_SOFT,
+            corner_radius=RADIUS_SM,
+            border_width=0,
+            wrap="word",
+            activate_scrollbars=True,
+        )
+        self.log.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+        self.log.configure(state="disabled")
+
+    def _set_status(self, text: str, *, tone: str = "info") -> None:
+        colors = {
+            "ok": OK,
+            "warn": WARN,
+            "info": ACCENT,
+        }
+        self.status_label.configure(text=text, text_color=colors.get(tone, ACCENT))
+
     def _refresh_version(self) -> None:
         version = read_poetry_version(self.repo)
         if is_nimbusware_checkout(self.repo):
             state = read_install_state(self.repo)
-            self.version_label.configure(
-                text=f"Installed version: {version}  |  {convert_label(state)}",
-            )
+            self.version_label.configure(text=f"{version}  ·  {convert_label(state)}")
         else:
-            self.version_label.configure(text=f"Installed version: {version}")
+            self.version_label.configure(text=f"{version}  ·  not installed")
 
     def _sync_repo_ui(self) -> None:
         self._refresh_version()
         installed = is_nimbusware_checkout(self.repo)
         if installed:
-            self.status_label.configure(text="Ready.")
+            self._set_status("Ready", tone="ok")
         else:
-            self.status_label.configure(text="No Nimbusware install found — use Install / setup.")
+            self._set_status("Setup needed", tone="warn")
         if updates_check_supported(self.repo):
-            self.check_btn.configure(state=tk.NORMAL)
+            self.check_btn.configure(state="normal")
         else:
-            self.check_btn.configure(state=tk.DISABLED)
+            self.check_btn.configure(state="disabled")
             if installed and not is_git_checkout(self.repo):
                 self._append_log(
                     "Updates: archive install — use Check for updates to connect git.",
@@ -234,20 +509,20 @@ class NimbuswareLauncherApp:
         if installed:
             state = read_install_state(self.repo)
             self.to_full_btn.configure(
-                state=tk.NORMAL
-                if state.install_profile == INSTALL_PROFILE_BAREBONES
-                else tk.DISABLED,
+                state=_state(state.install_profile == INSTALL_PROFILE_BAREBONES),
             )
             self.to_quick_btn.configure(
-                state=tk.NORMAL if state.install_profile == INSTALL_PROFILE_FULL else tk.DISABLED,
+                state=_state(state.install_profile == INSTALL_PROFILE_FULL),
             )
             self.to_enterprise_btn.configure(
-                state=tk.NORMAL if state.setup_bundle != SETUP_BUNDLE_ENTERPRISE else tk.DISABLED,
+                state=_state(state.setup_bundle != SETUP_BUNDLE_ENTERPRISE),
             )
             self.to_individual_btn.configure(
-                state=tk.NORMAL if state.setup_bundle == SETUP_BUNDLE_ENTERPRISE else tk.DISABLED,
+                state=_state(state.setup_bundle == SETUP_BUNDLE_ENTERPRISE),
             )
-            self.uninstall_btn.configure(state=tk.NORMAL)
+            self.uninstall_btn.configure(state="normal")
+            self.run_btn.configure(state="normal")
+            self.admin_btn.configure(state="normal")
         else:
             for btn in (
                 self.to_full_btn,
@@ -256,7 +531,7 @@ class NimbuswareLauncherApp:
                 self.to_individual_btn,
                 self.uninstall_btn,
             ):
-                btn.configure(state=tk.DISABLED)
+                btn.configure(state="disabled")
 
     def _set_repo(self, repo: Path) -> None:
         self.repo = repo.resolve()
@@ -266,20 +541,20 @@ class NimbuswareLauncherApp:
 
     def _append_log(self, line: str) -> None:
         def _write() -> None:
-            self.log.configure(state=tk.NORMAL)
-            self.log.insert(tk.END, line + "\n")
-            self.log.see(tk.END)
-            self.log.configure(state=tk.DISABLED)
+            self.log.configure(state="normal")
+            self.log.insert("end", line + "\n")
+            self.log.see("end")
+            self.log.configure(state="disabled")
 
         self.root.after(0, _write)
 
     def _set_busy(self, busy: bool) -> None:
         self._busy = busy
-        state = tk.DISABLED if busy else tk.NORMAL
+        state = _state(not busy)
         if busy or updates_check_supported(self.repo):
             self.check_btn.configure(state=state)
         elif not updates_check_supported(self.repo):
-            self.check_btn.configure(state=tk.DISABLED)
+            self.check_btn.configure(state="disabled")
         for btn in (
             self.install_btn,
             self.install_full_btn,
@@ -300,7 +575,7 @@ class NimbuswareLauncherApp:
         if self._busy:
             return
         self._set_busy(True)
-        self.status_label.configure(text=label)
+        self._set_status(label, tone="info")
 
         def _target() -> None:
             try:
@@ -350,7 +625,7 @@ class NimbuswareLauncherApp:
         if self._busy:
             return
         self._set_busy(True)
-        self.status_label.configure(text="Checking for updates...")
+        self._set_status("Checking for updates...", tone="info")
 
         def _worker() -> None:
             if not updates_supported(self.repo):
@@ -381,7 +656,7 @@ class NimbuswareLauncherApp:
             self._append_log(detail)
 
             def _finish() -> None:
-                self.status_label.configure(text=f"Updates: {status}")
+                self._set_status(f"Updates: {status}", tone="info")
                 if available and messagebox.askyesno(
                     "Update available",
                     f"{detail}\n\nPull the latest code now?\n\n"
@@ -399,7 +674,7 @@ class NimbuswareLauncherApp:
 
     def _start_pull_updates(self) -> None:
         self._set_busy(True)
-        self.status_label.configure(text="Updating...")
+        self._set_status("Updating...", tone="info")
 
         def _worker() -> None:
             ok, message = git_pull(self.repo, log=self._append_log)
@@ -419,7 +694,7 @@ class NimbuswareLauncherApp:
                 status, _, detail = check_for_updates(self.repo, fetch=False)
 
                 def _done() -> None:
-                    self.status_label.configure(text=f"Updates: {status}")
+                    self._set_status(f"Updates: {status}", tone="ok")
                     messagebox.showinfo(
                         "Update complete",
                         (message or detail) + sak_note,
@@ -656,13 +931,16 @@ class NimbuswareLauncherApp:
                     lambda msg=message: messagebox.showerror("Uninstall failed", msg),
                 )
                 return
-            self.root.after(
-                0,
-                lambda: messagebox.showinfo(
+
+            def _done() -> None:
+                self._sync_repo_ui()
+                messagebox.showinfo(
                     "Uninstall complete",
-                    "Python environment removed. User data preserved.",
-                ),
-            )
+                    "Python environment removed. User data preserved.\n"
+                    "Re-run Quick / Full / Enterprise setup to recreate the venv.",
+                )
+
+            self.root.after(0, _done)
 
         self._run_background("Uninstalling...", _worker)
 
@@ -716,7 +994,7 @@ class NimbuswareLauncherApp:
             )
 
         threading.Thread(target=_watch, daemon=True).start()
-        self.status_label.configure(text="Starting Nimbusware...")
+        self._set_status("Starting Nimbusware...", tone="info")
         self._append_log("Starting Nimbusware (maker app + desktop window)...")
 
     def run_admin_console(self) -> None:
@@ -747,13 +1025,12 @@ class NimbuswareLauncherApp:
             messagebox.showerror("Run failed", str(exc))
             return
         self._append_log(f"$ {' '.join(cmd)}")
-        self.status_label.configure(text="Starting Admin Console...")
+        self._set_status("Starting Admin Console...", tone="info")
 
 
 def main() -> int:
-    root = tk.Tk()
-    root.configure(bg=BG)
-    NimbuswareLauncherApp(root)
+    root, theme = apply_launcher_theme()
+    NimbuswareLauncherApp(root, theme)
     root.mainloop()
     return 0
 

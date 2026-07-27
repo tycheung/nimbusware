@@ -28,7 +28,12 @@ class SetupError(RuntimeError):
 
 
 def _log(msg: str) -> None:
-    print(msg, flush=True)
+    try:
+        print(msg, flush=True)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+        safe = msg.encode(encoding, errors="replace").decode(encoding, errors="replace")
+        print(safe, flush=True)
 
 
 def _warn(msg: str) -> None:

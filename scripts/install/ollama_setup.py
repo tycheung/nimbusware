@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -125,13 +124,38 @@ def _model_present(model: str, installed: list[str]) -> bool:
 
 
 def models_from_repo(repo: Path) -> list[str]:
+    """Return Ollama pull targets from ``configs/model-routing.yaml``.
+
+    Only ``models.primary.id`` and ``models.fallbacks[].id`` are used. A naive
+    line scan for ``id:`` also matched ``providers[].id`` (e.g. ``ollama``),
+    which made Full setup / Quick→Full convert fail with ``pull model manifest:
+    file does not exist``.
+    """
     path = repo / "configs" / "model-routing.yaml"
     models: list[str] = []
     if path.is_file():
-        for line in path.read_text(encoding="utf-8").splitlines():
-            match = re.match(r"\s*-?\s*id:\s*(\S+)", line)
-            if match:
-                models.append(match.group(1))
+        try:
+            import yaml  # noqa: PLC0415
+
+            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except Exception:
+            raw = None
+        if isinstance(raw, dict):
+            section = raw.get("models")
+            if isinstance(section, dict):
+                primary = section.get("primary")
+                if isinstance(primary, dict):
+                    mid = primary.get("id")
+                    if isinstance(mid, str) and mid.strip():
+                        models.append(mid.strip())
+                fallbacks = section.get("fallbacks")
+                if isinstance(fallbacks, list):
+                    for item in fallbacks:
+                        if not isinstance(item, dict):
+                            continue
+                        mid = item.get("id")
+                        if isinstance(mid, str) and mid.strip():
+                            models.append(mid.strip())
     if not models:
         models = list(DEFAULT_MODELS)
     seen: set[str] = set()
@@ -402,7 +426,13 @@ def pull_ollama_models(
             log(f"Model already present: {model}")
             continue
         log(f"Pulling model {model} (this may take several minutes)...")
-        subprocess.run([binary, "pull", model], check=True)
+        result = subprocess.run([binary, "pull", model], check=False)
+        if result.returncode != 0:
+            log(
+                f"WARNING: failed to pull model {model} "
+                f"(exit {result.returncode}); continuing setup",
+            )
+            continue
         pulled.append(model)
     return pulled
 

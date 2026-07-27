@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from agent_core.yaml_io import load_yaml
@@ -22,9 +23,27 @@ _KIND = {
 
 
 def _settings_catalog_dir() -> Path:
-    return (
-        find_repo_root(start=Path(__file__).resolve().parents[3]) / "configs" / "settings_catalog"
-    )
+    """Resolve configs/settings_catalog for source checkouts and frozen launchers.
+
+    PyInstaller onefile extracts to ``sys._MEIPASS``; ``Path(__file__).parents[3]`` is
+    then the system Temp dir, not the repo — so prefer bundled datas, then the
+    checkout beside the exe / cwd.
+    """
+    candidates: list[Path] = []
+    if getattr(sys, "frozen", False):
+        meipass = getattr(sys, "_MEIPASS", None)
+        if meipass:
+            candidates.append(Path(meipass) / "configs" / "settings_catalog")
+        exe_dir = Path(sys.executable).resolve().parent
+        for base in (exe_dir, exe_dir / "Nimbusware", Path.cwd()):
+            candidates.append(base / "configs" / "settings_catalog")
+    # Source layout: packages/env/settings_catalog_extended → repo root = parents[3]
+    candidates.append(Path(__file__).resolve().parents[3] / "configs" / "settings_catalog")
+    candidates.append(find_repo_root() / "configs" / "settings_catalog")
+    for path in candidates:
+        if path.is_dir():
+            return path
+    return candidates[0]
 
 
 def load_setting_defs_yaml(name: str) -> tuple[SettingDef, ...]:

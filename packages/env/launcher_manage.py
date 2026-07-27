@@ -101,13 +101,38 @@ def run_convert_install(
     return subprocess.run(cmd, cwd=str(repo), env=env, text=True).returncode
 
 
-def uninstall_nimbusware(repo: Path, *, log: Callable[[str], None] | None = None) -> None:
-    """Remove the Poetry virtualenv only; preserve .env, Postgres data, and Ollama models."""
+@dataclass(frozen=True)
+class UninstallResult:
+    removed_venv: bool
+    ran_poetry_env_remove: bool
+
+
+def uninstall_nimbusware(repo: Path, *, log: Callable[[str], None] | None = None) -> UninstallResult:
+    """Remove the Poetry virtualenv only; preserve .env, Postgres data, and Ollama models.
+
+    Same behavior for every launcher install form (Quick / Full / Enterprise) — the single
+    Uninstall button always targets the Python environment, never profile/bundle/.env data.
+    """
+    removed_venv = False
     venv = repo / ".venv"
     if venv.is_dir():
         if log:
             log(f"Removing virtualenv: {venv}")
-        shutil.rmtree(venv, ignore_errors=True)
+        try:
+            shutil.rmtree(venv)
+        except OSError as exc:
+            raise OSError(
+                f"Could not remove virtualenv at {venv}: {exc}. "
+                "Close any process using that environment and retry.",
+            ) from exc
+        removed_venv = True
+        if venv.exists():
+            raise OSError(
+                f"Virtualenv still present after remove: {venv}. "
+                "Close any process using that environment and retry.",
+            )
+
+    ran_poetry = False
     poetry = shutil.which("poetry")
     if poetry and (repo / "pyproject.toml").is_file():
         if log:
@@ -119,8 +144,12 @@ def uninstall_nimbusware(repo: Path, *, log: Callable[[str], None] | None = None
             text=True,
             check=False,
         )
+        ran_poetry = True
+    elif log and not poetry:
+        log("Poetry not on PATH; skipped poetry env remove.")
     if log:
         log("Uninstall complete. User data preserved (.env, database, models).")
+    return UninstallResult(removed_venv=removed_venv, ran_poetry_env_remove=ran_poetry)
 
 
 def convert_label(state: InstallState) -> str:
